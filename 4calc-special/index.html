@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>南开经济学 · 计算专项记忆卡</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI','PingFang SC',Roboto,'Helvetica Neue',sans-serif;background:#f0f7f0;color:#1e3a2a;padding:20px;}
+.app-header{max-width:1200px;margin:0 auto 20px auto;background:#d9edd9;padding:18px 28px;border-radius:18px;box-shadow:0 4px 12px rgba(60,110,60,0.12);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.app-header h1{font-size:24px;font-weight:600;color:#1e4a2a;letter-spacing:0.5px;}
+.app-header .stats{display:flex;gap:20px;font-size:14px;background:#c4e0c4;padding:6px 18px;border-radius:40px;}
+.app-header .stats span{font-weight:500;}
+.app-header .stats .num{color:#1f6b3a;font-weight:700;}
+.filter-bar{max-width:1200px;margin:0 auto 20px auto;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#e6f3e6;padding:12px 20px;border-radius:14px;transition:opacity 0.3s;}
+.filter-bar.disabled{opacity:0.5;pointer-events:none;}
+.filter-bar label{font-size:14px;font-weight:500;color:#1f4a2a;}
+.filter-bar select,.filter-bar input{padding:6px 14px;border-radius:30px;border:1px solid #b3d9b3;background:#fafffa;font-size:14px;color:#1e3a2a;outline:none;}
+.filter-bar select:focus,.filter-bar input:focus{border-color:#6a9e6a;box-shadow:0 0 0 3px rgba(80,150,80,0.2);}
+.filter-bar select optgroup{font-style:normal;font-weight:700;color:#1f5a2f;}
+.filter-bar select:disabled{opacity:0.5;cursor:not-allowed;}
+.filter-bar .btn-clear-filter{background:#cfe2cf;border:none;padding:6px 18px;border-radius:30px;font-size:13px;cursor:pointer;color:#1e4a2a;font-weight:500;transition:background 0.2s;}
+.filter-bar .btn-clear-filter:hover{background:#b8d4b8;}
+.filter-bar .btn-random{background:#d4c49a;border:none;padding:6px 22px;border-radius:30px;font-size:14px;cursor:pointer;color:#3f3a1a;font-weight:600;transition:background 0.2s,transform 0.1s;}
+.filter-bar .btn-random:hover{background:#c9b888;transform:scale(1.02);}
+.filter-bar .btn-random:active{transform:scale(0.96);}
+.single-mode-bar{max-width:1200px;margin:0 auto 16px auto;background:#f5efe0;border:2px solid #d4a24e;border-radius:14px;padding:8px 20px;display:none;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;animation:fadeSlide 0.3s ease;}
+.single-mode-bar.show{display:flex;}
+.single-mode-bar .mode-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.single-mode-bar .mode-left .btn-nav{background:transparent;border:none;font-size:22px;cursor:pointer;padding:2px 10px;border-radius:8px;color:#7a5a2a;transition:background 0.15s,transform 0.1s;line-height:1;}
+.single-mode-bar .mode-left .btn-nav:hover{background:#e8ddd0;transform:scale(1.05);}
+.single-mode-bar .mode-left .btn-nav:active{transform:scale(0.92);}
+.single-mode-bar .mode-left .btn-nav.disabled{opacity:0.35;pointer-events:none;}
+.single-mode-bar .card-id-badge{font-size:15px;font-weight:600;color:#5a4a2a;background:#e8ddd0;padding:4px 18px;border-radius:30px;white-space:nowrap;}
+.single-mode-bar .mode-hint{font-size:13px;color:#8a7a5a;margin-left:4px;}
+.single-mode-bar .btn-exit-single{background:transparent;border:none;font-size:20px;cursor:pointer;padding:2px 10px;border-radius:8px;color:#8a5a4a;transition:background 0.15s,transform 0.1s;line-height:1;}
+.single-mode-bar .btn-exit-single:hover{background:#e8d5d0;transform:scale(1.05);}
+.single-mode-bar .btn-exit-single:active{transform:scale(0.92);}
+.card-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:18px;}
+.card-grid.single-mode{max-width:820px;}
+.card-grid.single-mode .card-item{box-shadow:0 8px 32px rgba(60,100,60,0.18);border-left-width:8px;}
+.card-item{background:#ffffff;border-radius:18px;box-shadow:0 4px 14px rgba(60,100,60,0.08);border-left:6px solid #8fbe8f;transition:box-shadow 0.25s,transform 0.15s,border-color 0.3s;overflow:hidden;position:relative;}
+.card-item:hover{box-shadow:0 8px 24px rgba(50,100,50,0.13);}
+.card-item.favorited{border-left-color:#d4a24e;background:#fcf9f0;}
+.card-header{padding:16px 22px 8px 22px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.card-header .label{display:flex;align-items:center;flex-wrap:wrap;gap:8px;}
+.card-header .label .tag{background:#dcebd9;padding:2px 12px;border-radius:40px;font-size:12px;font-weight:600;color:#1a4a2a;white-space:nowrap;}
+.card-header .label .tag.sub-tag{background:#e8e0c8;color:#5a4a2a;}
+.card-header .label .qid{font-weight:600;font-size:15px;color:#1f5a2f;}
+.card-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.card-actions button{background:transparent;border:none;font-size:20px;cursor:pointer;padding:4px 6px;border-radius:10px;transition:background 0.15s,transform 0.1s;line-height:1;color:#3f6a3f;}
+.card-actions button:hover{background:#e6f0e6;transform:scale(1.05);}
+.card-actions .btn-fav{color:#b8a06a;}
+.card-actions .btn-fav.active{color:#d4a24e;}
+.card-actions .btn-note{color:#4f7a4f;}
+.card-actions .btn-note.active{color:#2b6b2b;}
+.card-actions .btn-edit{color:#4f6a8f;}
+.card-actions .btn-edit.is-editing{color:#2b6b2b;}
+.card-actions .btn-cancel-edit{color:#8a4a4a;}
+.card-question{padding:6px 22px 12px 22px;font-size:15.5px;line-height:1.7;color:#1c3322;cursor:pointer;user-select:none;position:relative;}
+.card-question .q-text{display:inline;white-space:pre-wrap;}
+.card-question .toggle-hint{font-size:13px;color:#5f8a5f;margin-left:10px;font-weight:400;opacity:0.7;white-space:nowrap;}
+.card-question.editable{cursor:text;user-select:text;border:2px dashed #6a9e9e;border-radius:10px;padding:10px 18px;background:#fafffe;}
+.card-question.editable:focus{border-color:#2b6b6b;outline:none;box-shadow:0 0 0 3px rgba(60,150,150,0.15);}
+.card-answer{padding:0 22px 6px 22px;display:none;animation:fadeSlide 0.3s ease;}
+.card-answer.open{display:block;}
+.card-answer .answer-inner{background:#f3faf3;padding:18px 22px;border-radius:14px;font-size:14.8px;line-height:1.75;color:#1a3322;word-break:break-word;}
+.card-answer .answer-inner p{text-indent:2em;margin:0 0 0.2em 0;padding:0;line-height:1.75;white-space:pre-wrap;word-break:break-word;}
+.card-answer .answer-inner p:last-child{margin-bottom:0;}
+.card-answer.editable{cursor:text;user-select:text;border:2px dashed #6a9e9e;border-radius:10px;padding:8px 16px;background:#fafffe;}
+.card-answer.editable .answer-inner{background:transparent;padding:4px 6px;}
+.card-answer.editable:focus{border-color:#2b6b6b;outline:none;box-shadow:0 0 0 3px rgba(60,150,150,0.15);}
+.card-note-area{padding:0 22px 18px 22px;display:none;animation:fadeSlide 0.3s ease;}
+.card-note-area.open{display:block;}
+.card-note-area .note-editor{background:#f8fcf8;border:1px solid #c2ddc2;border-radius:14px;padding:12px 16px;min-height:80px;max-height:360px;overflow-y:auto;font-size:14px;line-height:1.7;color:#1c3322;outline:none;transition:border 0.2s,box-shadow 0.2s;word-break:break-word;position:relative;}
+.card-note-area .note-editor:focus{border-color:#6a9e6a;box-shadow:0 0 0 3px rgba(80,150,80,0.15);}
+.card-note-area .note-editor img{max-width:100%;max-height:300px;border-radius:10px;margin:6px 0;display:block;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#f0f5f0;border:2px solid transparent;transition:border 0.2s,box-shadow 0.2s;cursor:pointer;}
+.card-note-area .note-editor img.selected{border-color:#4f8a4f;box-shadow:0 0 0 3px rgba(79,138,79,0.25),0 4px 16px rgba(0,0,0,0.12);}
+.card-note-area .note-editor .note-placeholder{color:#8aaa8a;font-style:italic;}
+.card-note-area .img-resize-control{display:none;align-items:center;gap:12px;margin-top:8px;padding:6px 14px;background:#edf5ed;border-radius:30px;border:1px solid #c2ddc2;font-size:13px;color:#2a5a2a;flex-wrap:wrap;}
+.card-note-area .img-resize-control.show{display:flex;}
+.card-note-area .img-resize-control input[type="range"]{flex:1;min-width:80px;accent-color:#4f8a4f;height:4px;cursor:pointer;}
+.card-note-area .img-resize-control .size-val{font-weight:600;min-width:44px;text-align:center;}
+.card-note-area .img-resize-control .btn-reset-size{background:#dcebd9;border:none;padding:2px 14px;border-radius:30px;font-size:12px;cursor:pointer;color:#1e4a2a;transition:background 0.2s;}
+.card-note-area .note-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center;}
+.card-note-area .note-actions button{background:#dcebd9;border:none;padding:4px 18px;border-radius:30px;font-size:13px;cursor:pointer;color:#1e4a2a;font-weight:500;transition:background 0.2s,transform 0.1s;}
+.card-note-area .note-actions .btn-insert-img{background:#d4d9c4;color:#2f4a2f;}
+.card-note-area .note-actions .note-save{background:#a8c8a8;color:#1a3a1a;}
+.card-note-area .note-actions .note-clear{background:#e6d6d6;color:#6a3a3a;}
+.card-note-area .note-actions .note-size-hint{font-size:12px;color:#6f8f6f;margin-left:auto;opacity:0.7;}
+@keyframes fadeSlide{0%{opacity:0;transform:translateY(-6px);}100%{opacity:1;transform:translateY(0);}}
+.no-result{text-align:center;padding:50px 20px;color:#4f7a4f;font-size:17px;background:#e6f3e6;border-radius:24px;}
+.footer-note{max-width:1200px;margin:30px auto 10px auto;text-align:center;font-size:13px;color:#5f7f5f;border-top:1px solid #cce0cc;padding-top:18px;}
+.footer-note kbd{background:#dce8dc;padding:0 8px;border-radius:4px;font-size:12px;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#2a4a2a;color:#f0faf0;padding:10px 28px;border-radius:40px;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,0.25);z-index:999;opacity:0;transition:opacity 0.4s,transform 0.4s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media (max-width:640px){.app-header{flex-direction:column;align-items:stretch;padding:14px 18px;}.app-header h1{font-size:20px;}.filter-bar{flex-direction:column;align-items:stretch;}.single-mode-bar{flex-direction:column;align-items:stretch;text-align:center;padding:10px 14px;}.single-mode-bar .mode-left{justify-content:center;}.card-header{padding:14px 16px 4px 16px;}.card-question{padding:4px 16px 10px 16px;font-size:14.5px;}.card-answer{padding:0 16px 6px 16px;}.card-answer .answer-inner{padding:14px 16px;font-size:14px;}.card-note-area{padding:0 16px 14px 16px;}.card-grid.single-mode{max-width:100%;}}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:#dce8dc;border-radius:10px;}
+::-webkit-scrollbar-thumb{background:#8fbe8f;border-radius:10px;}
+/* ================= 返回主页按钮 ================= */
+.app-header .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 15px 7px 11px;
+    border-radius: 30px;
+    background: #c4e0c4;
+    color: #1e4a2a;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(60, 110, 60, 0.10);
+    transition: background .2s, transform .2s, box-shadow .2s;
+}
+.back-home:hover {
+    background: #a8d0a8;
+    transform: translateX(-2px);
+    box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+}
+.back-home .arrow {
+    font-size: 15px;
+    line-height: 1;
+    transition: transform .2s;
+}
+.back-home:hover .arrow {
+    transform: translateX(-3px);
+}
+
+/* 移动端微调 */
+@media (max-width: 640px) {
+    .app-header .header-left { gap: 10px; }
+    .back-home { padding: 6px 13px 6px 10px; font-size: 12.5px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-left">
+    <a href="../index.html" class="back-home" title="返回主页">
+        <span class="arrow">⬅</span><span>主页</span>
+    </a>
+    <h1>📐 南开经济学 · 计算专项记忆卡</h1>
+</div>
+  <div class="stats">
+    <span>📚 总卡 <span class="num" id="totalCards">0</span></span>
+    <span>⭐ 收藏 <span class="num" id="favCount">0</span></span>
+  </div>
+</div>
+
+<div class="filter-bar" id="filterBar">
+  <label for="filterMajor">专项</label>
+  <select id="filterMajor"></select>
+  <label for="filterSub">细分专项</label>
+  <select id="filterSub"></select>
+  <label for="filterFav">⭐ 收藏</label>
+  <select id="filterFav">
+    <option value="all">全部</option>
+    <option value="fav">仅收藏</option>
+  </select>
+  <input type="text" id="filterSearch" placeholder="搜索题目关键词…" style="flex:1;min-width:140px;" />
+  <button class="btn-clear-filter" id="clearFilterBtn">重置筛选</button>
+  <button class="btn-random" id="randomBtn">🎲 随机抽查</button>
+</div>
+
+<div class="single-mode-bar" id="singleModeBar">
+  <div class="mode-left">
+    <button class="btn-nav" id="prevCardBtn" title="上一张">◀</button>
+    <span class="card-id-badge" id="singleCardBadge">卡片 #1</span>
+    <button class="btn-nav" id="nextCardBtn" title="下一张">▶</button>
+    <span class="mode-hint">抽查中</span>
+  </div>
+  <button class="btn-exit-single" id="exitSingleBtn" title="退出抽查模式">✕</button>
+</div>
+
+<div class="card-grid" id="cardGrid"></div>
+
+<div class="footer-note">
+  点击题目区域可展开/收起答案 · 点击 ⭐ 收藏 · 点击 📝 添加笔记 · 点击 ✏️ 编辑题目/答案
+  <span style="display:block;font-size:12px;color:#8aaa8a;margin-top:4px;">
+    按 <kbd>R</kbd> 键快速随机抽查 · 抽查模式中 ◀ ▶ 切换卡片 · 点击笔记图片可调大小
+  </span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============= 数据 ============= */
+const cardData = [
+{id:'m1',special:'微观·消费者最优选择',qid:'A1 ★★',question:'假设某君的收入为 M、商品价格为 Px、Py 和消费品的效用函数 U=f(x,y) 为已知，请给出效用极大化所需条件。假如他只消费两种消费品，他是否必然总是同时买进这两种商品？为什么？',answer:`考察知识点：消费者效用最大化、拉格朗日法、角点解、完全替代品。\n思路：构造拉格朗日函数求一阶条件；举例说明完全替代品可能角点解。\n答案：效用最大化条件为 MUx/MUy=fx/fy=Px/Py；消费者不必然同时买进两种商品。例如 U=x+y 且价格不等时，会全部购买较便宜商品。`},
+{id:'m2',special:'微观·消费者最优选择',qid:'A2 ★★★',question:'假设一个消费者的效用函数为 u(x1,x2)=min{ax1,bx2}，收入为 m，商品1和商品2的价格分别是 p1 和 p2。（1）求出该消费者的最优选择。（2）如果对商品1征收从量税 t，请用图分析由此产生的替代效应和收入效应。（3）如果政府采用收入所得税的方式得到上述的税收收入，那么与征收从量税相比，该消费者的境况是变好，变坏，还是没有变化？请给出解释。',answer:`考察知识点：完全互补品、从量税、替代效应与收入效应、税收方式比较。\n思路：完全互补品满足 ax1=bx2，代入预算约束；从量税等价于价格上升；比较所得税与从量税。\n答案：（1）x1=bm/(bp1+ap2)，x2=am/(bp1+ap2)。（2）替代效应为0，需求变动完全归因于收入效应。（3）没有变化；完全互补品下两种征税方式对消费者影响相同。`},
+{id:'m3',special:'微观·消费者最优选择',qid:'A3 ★★',question:'假设某消费者的效用函数具有以下形式：U(X,Y)=ln(3+X)+ln(Y−2)，其中，X≥0，Y>2。商品 X 的价格为 p，Y 的价格为 q，消费者的收入为 I。（1）求出消费者关于 X 和 Y 的最优消费量，并说明 I≥3p+2q 是使得 X 和 Y 存在有效需求量的必备条件？（2）求出消费者对 X 和 Y 的需求收入弹性，X 和 Y 是否属于奢侈品？（3）X 和 Y 是否有劣质品或吉芬商品的情形？请给出严格的证明。',answer:`考察知识点：对数效用、需求收入弹性、正常品/奢侈品。\n思路：拉格朗日法求需求函数；求收入弹性；判断导数符号。\n答案：（1）X=(I−2q−3p)/(2p)，Y=(I+2q+3p)/(2q)；X≥0 要求 I≥3p+2q。（2）eI(X)=I/(I−2q−3p)>1，X 为奢侈品；eI(Y)=I/(I+2q+3p)<1，Y 为必需品。（3）∂X/∂I=1/(2p)>0，∂Y/∂I=1/(2q)>0，均为正常品，无劣质品或吉芬商品。`},
+{id:'m4',special:'微观·消费者最优选择',qid:'A4 ★★★',question:'假设某消费者的效用函数是 u(x,y)=y+12x−x²/2，其中 x 和 y 的价格分别为 px、py，该消费者收入为 m。（1）求此人对 x 的需求；（2）如果此人将消费3单位的 x，他能得到多少效用？（3）如果 x 的价格是9，此人对 x 的需求价格弹性是多少？',answer:`考察知识点：拟线性偏好、需求函数、需求价格弹性。\n思路：用预算约束消去 y，求一阶条件；代入求效用和弹性。\n答案：（1）x=12−px/py。（2）u=m/py+4.5。（3）ε=px/(12py−px)；当 px=9 时 ε=3/(4py−3)。`},
+{id:'m5',special:'微观·消费者最优选择',qid:'A5 ★★★',question:'假设小明的效用函数为 U(x,y)=x¹²y³⁸，其中 x 为食品消费量，y 为其它商品消费量，且该居民的收入为5000元，x 与 y 的价格均为10元，请计算：（1）该居民的最优消费组合。（2）若政府提供给该居民2000元的食品兑换券，此兑换券只能用于食品消费，则该居民的消费组合有何变化？',answer:`考察知识点：柯布-道格拉斯效用、预算约束、实物补贴/兑换券。\n思路：拉格朗日法或边际替代率条件；兑换券改变预算约束，分段讨论。\n答案：（1）x=120，y=380。（2）最终消费组合为 x=200，y=500。`},
+{id:'m6',special:'微观·消费者最优选择',qid:'A6 ★★★',question:'已知市场价格为 Px=2，Py=1，消费者收入为20，消费者的效用函数是 U(x,y)=xy。（1）写出消费者的预算线并求解消费者的选择；（2）现在厂家促销，消费者购买前两个单位的商品 x 时享受半价，之后回到原价，写出消费者的新的预算线；（3）写出消费者的新最优解。',answer:`考察知识点：预算线、分段定价、最优选择。\n思路：先求一般需求；再根据促销写分段预算线；分区间讨论。\n答案：（1）预算线 2x+y=20，选择 x=5，y=10。（2）新预算线：0≤x≤2 时 x+y=20；x>2 时 2x+y=22。（3）最优解 x=5.5，y=11。`},
+{id:'m7',special:'微观·消费者最优选择',qid:'A7 ★★★',question:'A县冬季取暖主要依靠消耗大量的天然气，为鼓励居民节约资源，该县天然气公司对天然气采取阶梯定价：家庭每月消费不超过100立方米的部分按照每立方米2元计价；超过100立方米的部分按照每立方米2.5元计价。令 x1 为天然气消费量，x2 为其他商品消费金额。（1）请写出月收入1000元家庭的预算方程，并在坐标系中画出预算线（标明截距值）。（2）假设该家庭的效用函数为 U(x1,x2)=min(x1,x2)，请计算该家庭每月消费的天然气数量。',answer:`考察知识点：阶梯定价、分段预算线、完全互补品。\n思路：分段写预算约束；完全互补品满足 x1=x2，分区间讨论。\n答案：（1）预算约束：0≤x1≤100 时 2x1+x2=1000；100<x1≤420 时 2.5x1+x2=1050。横轴截距420，纵轴截距1000。（2）x1=300。`},
+{id:'m8',special:'微观·消费者最优选择',qid:'B1 ★★',question:'效用函数为 u(x1,x2)=min{x2+2x1, x1+2x2}。（1）当 p1/p2 为何值的时候，唯一的最优解是 x1=0？（2）当 p1/p2 为何值的时候，唯一的最优解是 x2=0？',answer:`考察知识点：分段线性无差异曲线、角点解。\n思路：比较两段无差异曲线斜率与预算线斜率。\n答案：（1）p1/p2>2。（2）p1/p2<1/2。`},
+{id:'m9',special:'微观·消费者最优选择',qid:'B2 ★',question:'一个消费者消费食油(x1)和大米(x2)，一单位食油的价格是2元加1单位粮票。一单位大米的价格是1元加2单位粮票。此人拥有60元钱和30张粮票。效用函数是 U(x1,x2)=x1x2+10x2。（1）当货币和粮票不能互换的情况下，画出可能的 x1 和 x2 消费集。求出最优消费量。（2）假若存在黑市交易，该消费者可以以一元钱买入或者卖出一单位粮票，在图上画出可能消费集合。求出 x1 和 x2 最优消费量，请问该消费者会购买或者卖出多少粮票？',answer:`考察知识点：双重约束、配额、黑市交易、效用最大化。\n思路：分别列出货币约束和粮票约束；可互换时合并为单一预算约束。\n答案：（1）最优消费量(10,10)。（2）最优 x1=10，x2=20；需用20元钱换取20张粮票。`},
+{id:'m10',special:'微观·替代收入效应',qid:'A1 ★★★',question:'小明在A城市的一家企业工作，每期的收入为12个单位，他每月主要消费两种产品 x 和 y。他的效用函数为 U(x,y)=x^0.5y^0.5。A城市的两种产品 x,y 的价格分别是1和1，小明所在的企业往城市B发展，并设立分支机构。上司希望小明到城市B去上班，在城市B，两种产品 x,y 的价格分别为2和1。（1）如果在两个城市，小明的收入相同，问在城市A和城市B对商品X的需求变化是多少，其中有多少可以归结为替代效应，有多少归结为收入效应？（2）小明从城市A到城市B工作，要保证他福利不变，需要对他的收入进行多少补偿？',answer:`考察知识点：柯布-道格拉斯需求、斯勒茨基分解、补偿变化。\n思路：先求需求；用斯勒茨基补偿收入求替代效应；用支出最小化求补偿。\n答案：（1）总效应 −3；替代效应 −1.5；收入效应 −1.5。（2）需补偿 12(√2−1)。`},
+{id:'m11',special:'微观·替代收入效应',qid:'A2 ★★★',question:'某消费者效用函数为 U=xy，消费者初始收入 m=100，如果商品 x 的价格由 px=2 下降为 px′=1，求：（1）价格变动对商品 x 的斯勒茨基替代效应和收入效应；（2）价格变动对商品 x 的希克斯替代效应和收入效应。',answer:`考察知识点：斯勒茨基分解、希克斯分解、柯布-道格拉斯。\n思路：求初始/最终消费；斯勒茨基补偿收入；希克斯补偿保持效用不变。\n答案：（1）斯勒茨基替代效应12.5，收入效应12.5，总效应25。（2）希克斯替代效应 25(√2−1)，收入效应 25(2−√2)，总效应25。`},
+{id:'m12',special:'微观·替代收入效应',qid:'A3 ★★★',question:'假设小明只喜欢吃用两片奶酪(C)配三片面包(B)的三明治。（1）用B和C来定义这种效用函数，并求小明对B和C的需求函数。（2）如果价格 PB=2，PC=2，并且小明能花在食品上面的收入为72元，求小明的最优选择。（3）现在假定B的价格上涨为 PB′=4，小明的最优决策现在是什么？（4）求解B价格变化的斯勒茨基收入效应、替代效应。（5）求解小明的收入提供曲线和商品B的恩格尔曲线。',answer:`考察知识点：完全互补品、需求函数、斯勒茨基分解、恩格尔曲线。\n思路：构造 U=min{C/2,B/3}；最优满足 C/2=B/3；斯勒茨基替代效应为0。\n答案：（1）U=min{C/2,B/3}，B=3M/(3PB+2PC)，C=2M/(3PB+2PC)。（2）B=21.6，C=14.4。（3）B′=13.5，C′=9。（4）替代效应0，收入效应 −8.1。（5）收入提供曲线 C=2B/3；B的恩格尔曲线 B=3M/(3PB+2PC)。`},
+{id:'m13',special:'微观·替代收入效应',qid:'A4 ★★★',question:'某人的效用函数是 U(x1,x2)=lnx1+x2，他的收入 m=100。最初的商品价格向量是 p=(4,2)，假设现在价格变化为 p′=(1,2)。求：（1）商品1和商品2的斯勒茨基替代效应、收入效应与总效应；（2）CV、EV 和 ΔCS。',answer:`考察知识点：拟线性偏好、斯勒茨基分解、补偿变化、等价变化、消费者剩余。\n思路：求需求函数；拟线性偏好商品1收入效应为0；用支出函数求CV、EV。\n答案：（1）商品1：替代效应3/2，收入效应0，总效应3/2；商品2：替代效应−0.75，收入效应0.75，总效应0。（2）CV=−4ln2，EV=−4ln2，ΔCS=4ln2。`},
+{id:'m14',special:'微观·替代收入效应',qid:'A5 ★★★',question:'假设某个学生的月收入为 m=1000 元，他对面包的需求函数为 x=20/p+1000/m，面包的价格为 p=4。（1）当价格从4上涨到 p′=5 时，为使该学生仍买得起原来的面包消费量，他的收入应增加多少？（2）请计算斯勒茨基替代效应。（3）请计算收入效应。',answer:`考察知识点：斯勒茨基分解、需求函数直接给定。\n思路：按定义计算初始消费、补偿收入、替代效应和收入效应。\n答案：（1）收入应增加6。（2）斯勒茨基替代效应约 −1.006。（3）收入效应约 0.006。`},
+{id:'m15',special:'微观·替代收入效应',qid:'A6 ★★★',question:'某人的效用函数是 u(x1,x2)=x1x2，他的收入 m=100。最初的商品价格是 p=(1,1)，假设现在价格变化为 p′=(1/4,1)。计算 EV、CV 和 ΔCS，比较计算结果并作简明的解释。',answer:`考察知识点：柯布-道格拉斯、等价变化、补偿变化、消费者剩余。\n思路：求间接效用和支出函数；计算EV、CV；积分求CS变化。\n答案：EV=−100，CV=−50，ΔCS=100ln2；三者不等价，|CV|≤|ΔCS|≤|EV|。`},
+{id:'m16',special:'微观·替代收入效应',qid:'B1 ★★',question:'假设消费者的效用函数为 U(x,y)=x+y，商品价格分别为：Px=4，Py=6，消费者的收入为：m=60。（1）假设商品 x 的价格由 Px=4 下降为 Px′=3，求此过程中商品 x 需求量变化的斯勒茨基替代效应和收入效应。（2）假设商品 y 的价格由 Py=6 下降为 Py′=3，求出此过程中商品 y 需求量变化的斯勒茨基替代效应和收入效应。（3）假设商品 x 的价格由 Px=4 上升为 Px′=5，求此过程中的消费者剩余变化、补偿变化、等价变化。',answer:`考察知识点：完全替代品、斯勒茨基分解、CS、CV、EV。\n思路：完全替代品角点解；按定义求替代/收入；积分求CS。\n答案：（1）替代效应0，收入效应5，总效应5。（2）替代效应20，收入效应0，总效应20。（3）ΔCS=60ln(4/5)，CV=15，EV=12。`},
+{id:'m17',special:'微观·替代收入效应',qid:'B2 ★★',question:'某消费者对两种商品 x 和 y 的效用函数为 u(x,y)=xy²。商品 x 每单位售价2元，商品 y 每单位售价1元。如果该消费者初始的禀赋为3单位的商品 x 和6单位的商品 y。求：（1）她会消费多少单位的商品 x 和商品 y？（2）当商品 x 的价格变为每单位1元，求商品 x 的替代效应、普通收入效应、禀赋收入效应和总效应。',answer:`考察知识点：禀赋收入、斯勒茨基分解、总效应。\n思路：先求禀赋价值；求最优消费；再分解为替代、普通收入、禀赋收入。\n答案：（1）x1=2，y1=8。（2）替代效应4/3，普通收入效应2/3，禀赋收入效应−1，总效应1。`},
+{id:'m18',special:'微观·替代收入效应',qid:'B3 ★',question:'已知某消费者的效用函数为 u(x,y)=x+min(2x,y)，收入 m=100，初始时商品 x 的价格为 px=2，商品 y 的价格 py=4，现在商品 x 的价格变为 px′=8。（1）求商品 x 和商品 y 的需求函数。（2）求价格变动后商品 x 的斯勒茨基替代效应和收入效应。（3）求价格变动后的补偿变化 CV 和等价变化 EV。',answer:`考察知识点：分段效用、角点解/拐点解、斯勒茨基分解、CV、EV。\n思路：分 2x≤y 与 2x>y 讨论；求需求；按定义求替代/收入；支出最小化求CV、EV。\n答案：（1）当 px/py<1：x=m/px，y=0；当 px/py=1：预算线上满足 y<2x 任意点；当 px/py>1：x=m/(px+2py)，y=2m/(px+2py)。（2）替代效应 −25，收入效应 −18.75。（3）CV=500/3，EV=62.5。`},
+{id:'m19',special:'微观·跨期消费',qid:'A1 ★★★',question:'假设消费者只进行两期消费选择，两期收入分别为 Y1、Y2，两期消费分别为 C1、C2，消费者效用函数为 U(C)=(C^(1−θ)−1)/(1−θ)，其中 0<θ<1。同时假设年轻人对现在的偏好胜于未来偏好的程度（即时间偏好率 δ）高于贴现率（银行利率 r）。试用跨期选择理论说明，均衡时 C1>C2。',answer:`考察知识点：跨期消费、欧拉方程、时间偏好。\n思路：构造跨期效用最大化；由一阶条件得 (C2/C1)^θ=(1+r)/(1+δ)。\n答案：因 0<θ<1、δ>r，所以 C1>C2。`},
+{id:'m20',special:'微观·跨期消费',qid:'A2 ★★★',question:'小明时期1的收入为1000元，时期2的收入为1200元，他的跨时期效用函数为 U(C1,C2)=C1^0.8 C2^0.2。利率为25%。（1）画出小明的预算线，并标出其斜率和收入禀赋点。（2）求小明两个时期的最优消费，并标注在上一图中。（3）如果政府加征20%的利息收入税，请重新计算小明的预算线以及跨期最优消费。',answer:`考察知识点：跨期预算、柯布-道格拉斯跨期效用、利息收入税。\n思路：求两期最大消费；拉格朗日求最优；利息税改变有效利率。\n答案：（1）斜率 −1.25，禀赋点(1000,1200)。（2）C1=1568，C2=490。（3）新有效利率 r′=0.2，C1=1600，C2=480。`},
+{id:'m21',special:'微观·跨期消费',qid:'A3 ★★★',question:'考虑一个单一产品经济，张三的寿命分两期：第一期参加工作，收入用于当期的消费和储蓄；第二期不参加工作，使用第一期的储蓄满足该期的消费。效用函数为 U(c1,c2)=(c1^(1−θ)−1)/(1−θ)+β(c2^(1−θ)−1)/(1−θ)，0<β<1，θ>0。（1）写出张三的效用最大化问题，并给出张三在一、二期的消费函数。（2）讨论利率 r 升高后，储蓄 s 如何变化？并给出经济解释。',answer:`考察知识点：跨期消费、储蓄函数、利率变动的替代效应与收入效应。\n思路：由欧拉方程和预算约束求消费；对储蓄函数求导判断符号。\n答案：（1）c1=w/[1+β^(1/θ)(1+r)^((1−θ)/θ)]，c2=[β(1+r)]^(1/θ)w/[1+β^(1/θ)(1+r)^((1−θ)/θ)]。（2）∂s/∂r 符号取决于 (θ−1)/θ：0<θ<1 时储蓄随利率上升而增加；θ>1 时减少；θ=1 时不变。`},
+{id:'m22',special:'微观·跨期消费',qid:'B1 ★★',question:'考虑一个只有消费者借贷的债券市场。假定150个消费者具有相同的两期消费效用函数 U=C1C2。设100个消费者每个人都有预期的收入流 y1=10000，y2=8400，而剩下的50个消费者都有预期的收入流 y1=8000，y2=14000。求使债券市场均衡的利息率。',answer:`考察知识点：跨期消费与债券市场均衡、一般均衡。\n思路：求每类消费者第一期消费和超额需求；令总超额需求为0。\n答案：r=0.1。`},
+{id:'m23',special:'微观·跨期消费',qid:'B2 ★',question:'假设一个人只存活两期，并拥有效用函数 lnC1+lnC2。假定这个人的劳动收入在其生命的第一期为 Y1，在第二期为0。因此，其第二期消费为 (1+r)(Y1−C1)；收益 r 是随机的，r=E(r)+ε，这里 ε 是均值为0的随机误差。（1）求这个人在选择 C1 时的一阶最优条件；（2）假定 r 从随机变为确定，且 E(r) 没有任何变化，C1 将如何对这一调整做出反应？',answer:`考察知识点：不确定性、跨期消费、期望效用。\n思路：对 C1 求期望效用最大化一阶条件；利用 E(1/(Y1−C1))=1/(Y1−C1)。\n答案：（1）一阶条件为 1/C1−E(1/(Y1−C1))=0。（2）C1=Y1/2，不受 r 确定性影响。`},
+{id:'m24',special:'微观·不确定性',qid:'A1 ★★★',question:'假定某居民具有期望效用函数 u(w)=lnw，他有机会参与掷硬币，头面朝上的概率为 π。如果他下注 x 元，若头面朝上，他会拥有 w+x；反之，若背面朝上，则他拥有 w−x。（1）请解出居民作为 π 的函数的最优赌注 x 量。（2）当 π=1/2 时，什么是他的关于 x 的最优选择？为什么会有这个结果？',answer:`考察知识点：期望效用、风险规避、最优赌注。\n思路：最大化 πln(w+x)+(1−π)ln(w−x)。\n答案：（1）x*=0（0≤π<1/2）；x*=2πw−w（1/2<π≤1）。（2）x*=0，风险规避者不参与公平赌博。`},
+{id:'m25',special:'微观·不确定性',qid:'A2 ★★★',question:'假定张三的效用函数为 u(y)=y²，其中 y 代表年收入，单位为万元。（1）张三是风险中性的、风险规避的、还是风险爱好型的？请解释。（2）假设张三现在的年收入是2万元，该收入是稳定的，他可以获得另一份工作，收入为1万元的概率是0.5，收入为3万元的概率是0.5，张三会做何选择？原因是什么？（3）在第（2）问中，张三会为了防止新工作收入的波动，愿意购买保险吗？如果愿意，他愿意支付多少保费。',answer:`考察知识点：风险偏好、期望效用、保险。\n思路：看二阶导；比较期望效用；比较买保险效用。\n答案：（1）风险爱好型，因 u″(y)=2>0。（2）选择新工作，期望收入相同但风险更大，风险爱好者偏好。（3）不愿意购买保险。`},
+{id:'m26',special:'微观·不确定性',qid:'A3 ★★★',question:'某人具有预期效用函数 u(w)=√w。他具有初始财富4美元。除此之外，他还有一张彩票，彩票能够得到12美元的概率为1/2，能够得到0美元的概率为1/2。（1）判断该人的风险偏好类型；（2）他的预期效用是多少？（3）他卖掉彩票的最低价格是多少？',answer:`考察知识点：期望效用、风险规避、确定性等价。\n思路：二阶导判断风险规避；计算期望效用；令卖彩票后效用等于原期望效用。\n答案：（1）风险规避者。（2）EU=3。（3）最低价格5美元。`},
+{id:'m27',special:'微观·不确定性',qid:'A4 ★★★',question:'一消费者拥有关于火灾风险的初始财富160000货币单位。设发生较大火灾的概率为5%，其造成的损失为70000货币单位；发生严重火灾的概率为5%，损失为120000货币单位。假设消费者的效用函数为 U=W^0.5。他面临一种扣除性预防保险政策，根据这种政策，他自己要承担任何火灾损失的前7620。（1）对于这种政策，他愿意支付的最大保险金是多少？（2）与公平保金相比，保险公司的最大利润是多少？',answer:`考察知识点：期望效用、保险、公平保费、风险溢价。\n思路：分别求不买保险期望效用和买保险期望效用；令两者相等求最大保费；公平保费使期望利润为0。\n答案：（1）最大保险金约11004。（2）保险公司最大利润约2266。`},
+{id:'m28',special:'微观·不确定性',qid:'A5 ★★',question:'在一自由市场，一商贩的效用函数为 U(w)=lnw，w 代表收入。他每天的收入为200元，但按规定应交纳50元固定税费。市场监管人员按10%的概率抽查。被抽中肯定能被查清是否已缴税。偷税者将被罚款。（1）为了打击偷税，市场监管人员需要决定罚款额至少应为多少？（2）假定该商贩还有其他与该市场无关的随机收入，即各以50%的概率获得100元和300元，那么你对第一问中的回答是否有变化？如果有，请给出。',answer:`考察知识点：期望效用、偷税决策、罚款威慑。\n思路：令偷税与不偷税期望效用相等；加入随机收入后重新计算。\n答案：（1）罚款额至少 F=138.7。（2）有变化，F′=214.2。`},
+{id:'m29',special:'微观·不确定性',qid:'A6 ★★★',question:'老王开了一家冰粥店，冰粥的价格非常依赖于天气状况。如果天气晴朗，每碗冰粥要卖30元；如果下雨，每碗冰粥只能卖20元。冰粥必须头一天晚上熬制，第二天卖掉，否则就会变质。冰粥店每天的成本函数为 C=0.5q²+5q+100，其中 q 为冰粥的产量。在当晚生产第二天的冰粥之前，老王并不清楚第二天的天气情况，只能推测第二天是晴天和雨天的概率各为50%。（1）为了实现期望利润最大化，老王每天应该生产多少碗冰粥？（2）假设老王的效用函数为 U=√π，其中 π 为利润。请问，老王的风险态度是什么类型？他的期望效用水平为多少？（3）假设老王通过天气预报可以准确地知道第二天的天气状况，但是不能改变冰粥的价格。请问在这种情况下，他的期望效用水平是多少？天气的不确定性给他带来了多少效用损失？',answer:`考察知识点：不确定性生产、期望利润、期望效用、风险规避、信息价值。\n思路：分别写晴天/雨天利润；最大化期望利润；判断风险态度；完全信息下分别最优。\n答案：（1）q=20。（2）风险规避型；E(U)=5√2。（3）E(U)=½(√212.5+√12.5)；效用损失为 ½(√212.5+√12.5)−5√2。`},
+{id:'m30',special:'微观·不确定性',qid:'A7 ★★★',question:'小明在未名湖畔拥有一家店，专门出租滑冰和攀岩装置。他认为今年寒冬的概率为0.55，暖冬的概率为0.45。如果是寒冬，很多学生就会租用滑冰装置在未名湖上滑冰，而在旁边攀岩的人就会很少。小明必须要决定准备多少滑冰装置，多少攀岩装置。他的报酬矩阵如下：寒冬(0.55)滑冰20000、攀岩5000；暖冬(0.45)滑冰5000、攀岩15000。（1）如果小明选择只出租滑冰装置，他的期望报酬是多少？只出租攀岩装置呢？（2）如果小明选择将 x 比例的资源分配到滑冰装置上，他的期望报酬是多少（以 x 表示）？（3）假设小明是风险中性，他会把多大比例的资源分配在滑冰装置上？（4）如果小明的效用函数是 U(x)=lnx，写出他的期望效用（以 x 表示）。这种情况下，小明会把多大比例的资源分配在滑冰装置上？（5）一家保险公司给小明建议：“你只出租滑冰装置。如果是暖冬，我赔给你5000元；如果是寒冬，你付我5000元”。保险公司的期望报酬是多少？在什么条件下，小明会接受这个建议？',answer:`考察知识点：期望报酬、风险中性、期望效用、保险。\n思路：按概率加权；风险中性最大化期望报酬；对数效用求一阶条件。\n答案：（1）只滑冰13250；只攀岩9500。（2）E(x)=9500+3750x。（3）x=1。（4）E(U)=0.55ln(5000+15000x)+0.45ln(15000−10000x)；x=0.675。（5）保险公司期望报酬500；接受条件为 0.55ln15000+0.45ln10000>（4）中的最大期望效用。`},
+{id:'m31',special:'微观·不确定性',qid:'B1 ★★',question:'某消费者面临跨期消费选择问题。假设此消费者在今天的消费量为 c0，在明天的消费量为 c1，两期的价格均为1。假设该消费者今天的收入为 I0=100，说明天的收入为 I1。消费者的效用函数是 U(c0,c1)=lnc0+lnc1。消费者可以选择储蓄，但不能向他人借款，假设利率水平为 r=0。求：（1）若明天的收入为 I1=34，求消费者的消费决策。（2）若明天的收入存在两种可能，分别为 I1=100 和 I1=0，概率均为50%，求消费者的消费决策。',answer:`考察知识点：跨期消费、不确定性、借贷约束。\n思路：先求确定性最优；不确定时求期望效用最大化，注意 c0≤100。\n答案：（1）c0=67，c1=67。（2）c0=(900−100√17)/8，需满足 c0≤100。`},
+{id:'m32',special:'微观·不确定性',qid:'B2 ★★',question:'一个纳税人，效用函数为 lnw，w 为收入，w 是固定值。国家按照固定税率 t（0<t<1）对纳税人上报的收入征税，但此人可以少报收入，即报的收入为 x（0<x<w）。同时税务机关有 p 的概率（0<p<1）查此人的收入。一旦查肯定能查出此人的真实收入。查出之后，不仅要补齐所应缴纳的税款，同时还要承担罚金，罚金为应补交税款乘以一个大于0的固定常数 θ。（1）求此纳税人选择的最优 x 值。同时求此纳税人选择的 x 与其收入的关系；（2）如果 θ=0，问此时此人选择的最优 x；（3）此人有没有可能选择 x=0？在什么条件下此人会这样做？',answer:`考察知识点：偷税、期望效用、最优申报。\n思路：写期望效用；对 x 求一阶条件；讨论角点解。\n答案：（1）当 pθ−(1−p)(1−t−tθ)≥0 时，x*=[pθ−(1−p)(1−t−tθ)]w/(tθ)；否则 x*=0。（2）θ=0 时 x*=0。（3）有可能；条件为 pθ−(1−p)(1−t−tθ)<0。`},
+{id:'m33',special:'微观·不确定性',qid:'B3 ★',question:'当决定在一个非法的地点停车时，任何人都知道，会收到罚款通知单的可能性是 P，并且罚金为 f。假定所有的个人都是风险厌恶型的（也就是说，u″(w)<0，其中，w 是个人的财富）。那么被抓到的可能性按比例增加和罚金按比例增加在防止非法停车方面哪个更有效？（提示：运用泰勒级数展开式 u(w−f)=u(w)−fu′(w)+f²u″(w)/2）',answer:`考察知识点：期望效用、风险厌恶、威慑效果。\n思路：用泰勒展开比较同比例增加 P 与 f 对期望效用的降低。\n答案：罚金按比例增加更有效。`},
+{id:'m34',special:'微观·不确定性',qid:'B4 ★★',question:'抛一枚硬币，正面朝上的概率是 p；你连续抛硬币，直到第一次出现正面为止（连抛 j 次，在第 j 次第一次出现正面），这时候你的回报是 2^j。（1）如果 p=1/2，计算你的期望回报；（2）假定你的效用函数为 u(x)=lnx，用级数求和的形式表示抛硬币带来的期望效用。（3）如果 p=1/2，计算该预期效用值。',answer:`考察知识点：期望值、圣彼得堡悖论、期望效用。\n思路：几何分布概率 pj=(1−p)^(j−1)p；期望回报求和；期望效用级数。\n答案：（1）期望回报为 n（若有限次）或无穷（无限次）。（2）Eu=∑(1−p)^(j−1)p·jln2。（3）Eu=2ln2。`},
+{id:'m35',special:'微观·不确定性',qid:'B5 ★',question:'作为ASP行业董事会的主席，你估计你的年度利润如下表所示。利润（π）取决于市场需求和你新任CEO的努力水平。市场需求低(0.3)、中(0.4)、高(0.3)。低努力时利润分别为500万、1000万、1500万美元；高努力时分别为1000万、1500万、1700万美元。你必须设计一个酬金计划能够最大化企业的预期利润。如果企业是风险中性的，CEO是风险规避的，CEO的效用函数为：不努力时 U=W^0.5；努力时 U=W^0.5−100。在以下三种薪酬制度下，你宁愿选择哪一种？为什么？第一种，支付CEO固定工资575000美元/年；第二种，支付CEO企业年利润的6%；第三种，支付CEO固定工资500000美元/年，加上当企业利润超过1500万美元后超出部分的50%。',answer:`考察知识点：委托代理、激励薪酬、期望效用、风险规避。\n思路：分别计算三种制度下CEO努力与不努力的期望效用，判断其选择；再算企业期望利润。\n答案：应选择第三种。三种制度下企业期望利润分别约为942.5、1325.4、1330万美元；第三种最大。`},
+{id:'m36',special:'微观·不确定性',qid:'B6 ★★★',question:'一个在市场上售卖盗版光盘的小贩，以零成本拷贝正版光盘再转手卖给他人。如果小贩被警察抓住了，需要上交所有的非法所得收入，并且额外支付罚金 F。用 π(x) 表示小贩被警察抓住的概率，其中 x 表示售卖的光盘数量。π(x) 是关于 x 的单调递增函数，且一阶可导。此外，假设盗版光盘市场是一个完全竞争市场，每个售卖小贩的长期均衡利润均为零。（1）请证明小贩售卖光盘的最优数量 x* 与罚金 F 或光盘价格 p 均无关。（2）请将盗版光盘的售卖价格 p 表示成 x*、π(x*) 和 F 的函数。（3）如果给定 π(x)=1−e^(−λx)，其中 λ>0，请计算出 x*。',answer:`考察知识点：期望利润、完全竞争、最优数量、罚金。\n思路：写期望利润；利润最大化一阶条件；长期零利润条件。\n答案：（1）证明略；一阶条件中不含 F、p。（2）p=π(x*)F/[1−π(x*)]x*。（3）x*=0。`},
+{id:'m37',special:'微观·要素需求函数',qid:'A1 ★★★',question:'假设一个企业具有Cobb-Douglas生产函数 y=x1^α x2^β；其中，x1 和 x2 分别是两个投入要素，它们的价格外生给定，分别是 w1 和 w2；请回答以下问题：（1）请描述该企业长期的成本最小化问题；（2）假设长期内企业需要生产的产量为 y，请找出两个要素的最优投入量，以及此时的最小成本；（3）假设 a+b<1，求长期的要素需求函数；（4）假设该企业是规模报酬不变，并且第二种要素 x2 的投入量短期内固定在 k 的水平上，那么该企业的短期平均成本、短期平均可变成本与平均固定成本分别为多少。',answer:`考察知识点：成本最小化、条件要素需求、长期成本函数、短期成本。\n思路：拉格朗日法求条件要素需求；由利润最大化求要素需求；短期固定要素。\n答案：（1）min w1x1+w2x2 s.t. x1^α x2^β=y。（2）x1=(w2a/w1b)^(β/(α+β))y^(1/(α+β))，x2=(w1b/w2a)^(α/(α+β))y^(1/(α+β))；最小成本 TC=w1x1+w2x2。（3）要素需求函数略。（4）短期：AC=w1k^(b/a)y^(1/a−1)+w2k/y，AVC=w1k^(b/a)y^(1/a−1)，AFC=w2k/y。`},
+{id:'m38',special:'微观·要素需求函数',qid:'B1 ★★',question:'已知某企业的生产函数为 f(x1,x2)=[min{x1,x2}]^(1/a)，x1 和 x2 为两种投入要素的数量，α>0 为常数。已知产品价格为 p，要素价格分别为 w1 和 w2。请求出利润最大化的要素需求函数、供给函数和利润函数。再讨论利润最大化时 α 必须满足什么样的约束条件。',answer:`考察知识点：完全互补投入、利润最大化、规模报酬。\n思路：最优时 x1=x2=x；一阶条件求要素需求；供给函数；规模报酬递减条件。\n答案：要素需求 x1=x2=[(w1+w2)a/p]^(1/(1−a))；供给 Q=[(w1+w2)a/p]^(1/(1−a))；利润函数略；要求 a≥1。`},
+{id:'m39',special:'微观·要素需求函数',qid:'B2 ★★',question:'某厂商的生产函数为 q=10min(k,l)^γ，其中 k 为资本数量，l 为劳动数量，γ 是表示该生产函数的规模报酬的参数。该产品的市场价格为 P，资本和劳动的价格分别为 v、w。（1）解释为什么此处的利润最大化模型要求 0<γ<1。（2）假定 γ=0.5，计算该学校的总成本、供给函数以及利润最大化时的利润水平。（3）如果 γ=1000，w=500，P=600，则该厂商的产量是多少？对应的利润是多少？',answer:`考察知识点：规模报酬、成本函数、供给函数、利润最大化。\n思路：利润最大化二阶条件要求边际成本递增，即规模报酬递减；求成本函数；完全竞争 P=MC。\n答案：（1）需 0<γ<1 使边际成本递增。（2）C=q²(v+w)/100；供给 q=50P/(v+w)；利润 π=25P²/(v+w)。（3）q=20；π=6000。`},
+{id:'m40',special:'微观·要素需求函数',qid:'B3 ★★',question:'某企业的生产函数为：f(x1,x2,x3,x4,x5)=[min(3x1+x2,x3)]^(1/3)[min(3x4,x5)]^(1/3)，x1,x2,x3,x4,x5 分别为五种生产要素的投入量。假定所有要素均为可变要素，并且要素价格分别为 w1=w4=2，w3=w5=1，w2=7。求出该企业的条件要素需求函数及长期成本函数。',answer:`考察知识点：多要素、替代与互补、条件要素需求、长期成本。\n思路：先判断 x1,x2 替代关系；再令互补要素相等；拉格朗日求条件需求。\n答案：x2=0；x1=y^(3/2)/3，x3=y^(3/2)，x4=y^(3/2)/3，x5=y^(3/2)；长期成本 C=10y^(3/2)/3。`},
+{id:'m41',special:'微观·一厂商多工厂',qid:'A1 ★★',question:'某垄断企业由两个工厂构成，工厂1的生产函数为 y1=x1^α x2^(1−α)，工厂2的生产函数为 y2=x1^β x2^(1−β)，其中 x1 和 x2 为两种要素的投入数量，α 与 β 为常数。如果要素市场为完全竞争市场，r1 和 r2 为两种要素的价格，则该企业的成本函数如何？',answer:`考察知识点：多工厂成本函数、等边际成本、柯布-道格拉斯。\n思路：分别求两工厂成本函数；成本最小化时 MC1=MC2。\n答案：C1(Q)=(r1/α)^α(r2/(1−α))^(1−α)Q，C2(Q)=(r1/β)^β(r2/(1−β))^(1−β)Q；总成本函数按 MC1=MC2 分配产量，表达式略。`},
+{id:'m42',special:'微观·一厂商多工厂',qid:'A2 ★★',question:'考虑一个两工厂厂商，其工厂的成本函数分别为 C1(y1)=2y1² 和 C2(y2)=(y2+1)²。（1）什么条件下厂商只使用一个工厂？什么条件下厂商需要两个工厂同时生产？（2）推导厂商的成本函数。',answer:`考察知识点：多工厂、边际成本、成本函数。\n思路：比较边际成本；求等边际成本分配。\n答案：（1）y≤1/2 时只用工厂1；y>1/2 时同时使用两工厂。（2）C(y)=2y²+1（y≤1/2）；C(y)=2(y+1)²/3（y>1/2）。`},
+{id:'m43',special:'微观·一厂商多工厂',qid:'B1 ★★★',question:'一个富有进取心的企业家购买了两个工厂以生产装饰品。每个工厂生产相同产品而且每个工厂的生产函数都是 q=√(KiLi)（i=1,2）。每个工厂在各自拥有的资本存量方面却不同。工厂1拥有 K1=25，工厂2拥有 K2=100。L 与 K 的租金价格由 w=v=1 元给出。（1）如果该企业家试图使短期生产总成本最小，则产出应如何在两个厂间分配？（2）给定在两个工厂间的最优产量分配，计算短期总成本、平均成本与边际成本。（3）在长期，应如何在两个工厂间分配产量？计算长期总成本、平均成本与边际成本曲线。（4）如果两个厂商呈现规模报酬递减，则（3）将会有什么变化？',answer:`考察知识点：多工厂短期/长期成本、等边际成本、规模报酬。\n思路：短期固定资本，求各厂短期成本；等边际成本分配；长期资本可调。\n答案：（1）产量分配 q1:q2=1:4，即 q1=Q/5，q2=4Q/5。（2）STC=125+Q²/125，SAC=125/Q+Q/125，SMC=2Q/125。（3）长期任意分配不影响总成本；LTC=2Q，LAC=LMC=2。（4）规模报酬递减时，最优使两厂边际成本相等，且因生产函数相同，q1=q2=Q/2。`},
+{id:'m44',special:'微观·生产者其他计算',qid:'A1 ★★',question:'已知某企业的生产函数为 Q=L^(2/3)K^(1/3)，劳动的价格 w=4，资本的价格 r=2。（1）当产量 Q=2000 时，企业实现最小成本的 L、K 购买量及最小成本 C 的值。（2）当成本 C=6000 时，企业实现最大产量的 L、K 购买量及最大产量 Q 的值。',answer:`考察知识点：成本最小化、产量最大化、拉格朗日法。\n思路：分别构造拉格朗日函数求一阶条件。\n答案：（1）K=L=2000，最小成本 C=12000。（2）K=L=1000，最大产量 Q=1000。`},
+{id:'m45',special:'微观·生产者其他计算',qid:'A2 ★★',question:'Q=f(L,K)=AL^α K^(1−α)，A>0，0<α<1。（1）证明 MPL>0，MPK>0，∂²Q/∂L²<0，∂²Q/∂K²<0。（2）证明其满足欧拉定理。（3）证明其扩展线为通过原点的一条直线（当 w=4，r=2）。（4）劳动的产出弹性为 eL=α，资本的产出弹性为 eK=1−α。（5）证明 MRTSLK 只取决于 K/L，而不依赖于生产规模，而且 MRTSLK 随着 L/K 的增加而递减。（6）若市场为完全竞争市场，则使用资本的成本占总成本比例为 1−α，而劳动的相对份额为 α。',answer:`考察知识点：柯布-道格拉斯生产函数性质、欧拉定理、扩展线、要素份额。\n思路：求偏导；验证欧拉定理；由 MRTS=w/r 求扩展线；求弹性与份额。\n答案：证明略；结论如题所述。扩展线 K=2(1−α)L/α。`},
+{id:'m46',special:'微观·生产者其他计算',qid:'A3 ★★',question:'假设一家企业的生产函数是 f(K,L)=K²L²/4，其中 L 的价格是 w，K 的价格是 r，请回答以下问题：（1）证明企业的生产技术是规模报酬递增的。（2）长期扩展路径是由资本和劳动最优组合所组成的曲线，请用画图的方法把这一路径找出来。（3）如果 w=10，r=2，请找出这条长期扩展路径具体的函数形式。',answer:`考察知识点：规模报酬、扩展线、最优要素组合。\n思路：验证 f(λK,λL)>λf(K,L)；由 MRTS=w/r 求扩展线。\n答案：（1）规模报酬递增。（2）图略，为等成本线与等产量线切点连线。（3）K=5L。`},
+{id:'m47',special:'微观·生产者其他计算',qid:'A4 ★★★',question:'若生产函数为 y=x1^α x2^(1−α)，求其利润函数。',answer:`考察知识点：利润最大化、规模报酬不变、利润函数。\n思路：一阶条件；规模报酬不变时最大利润为0。\n答案：利润函数 π(p,w1,w2)=0。`},
+{id:'m48',special:'微观·长短期均衡',qid:'A1 ★★★',question:'假设一个完全竞争厂商，生产成本为：TC=10q²−20q+100，q 是产出水平，TC 是总成本。（1）写出该厂商的平均可变成本 AVC 和边际成本 MC。（2）如果市场价格 P=80，为实现利润最大化，它应生产多少产量？利润是多少？（3）在短期中该厂商是否可能关闭？请解释原因。',answer:`考察知识点：短期成本、利润最大化、停业条件。\n思路：求 AVC、MC；P=MC；比较 MC 与 AVC。\n答案：（1）AVC=10q−20，MC=20q−20。（2）q=5，利润150。（3）不可能关闭，因任何产量下 MC>AVC。`},
+{id:'m49',special:'微观·长短期均衡',qid:'A2 ★★★',question:'A企业所在的市场为完全竞争市场。A的短期成本函数为 C(q)=20+5q+q²，其中20为企业的固定成本。（1）请推导出A企业的短期供给曲线。（2）当市场价格为15时，短期均衡的利润为多少？此时的生产者剩余是多少？（3）若产量大于0时，长期成本函数 C(q)=9+4q+q²，则长期均衡的产出是多少？长期均衡的利润为多少？',answer:`考察知识点：短期供给曲线、生产者剩余、长期均衡。\n思路：P=MC 且 P≥AVC；生产者剩余 PS=π+TFC；长期 P=ACmin。\n答案：（1）q=(P−5)/2（P≥5）。（2）利润5，生产者剩余25。（3）长期均衡产出 q=3，利润0。`},
+{id:'m50',special:'微观·长短期均衡',qid:'A3 ★★★',question:'已知完全竞争的成本不变行业的单个厂商长期总成本函数为 LTC=Q³−4Q²+10Q。求：（1）该行业实现长期均衡时单个厂商的产量的市场价格。（2）当市场需求函数为 Q=200−10P 时，行业长期均衡时的企业数目。（3）当行业长期均衡时市场需求的价格点弹性是多少。',answer:`考察知识点：成本不变行业、长期均衡、需求弹性。\n思路：LAC 最低点；P=LACmin；市场需求求行业产量；企业数 n=Q/q。\n答案：（1）Q=2，P=6。（2）企业数70。（3）需求价格弹性3/7。`},
+{id:'m51',special:'微观·长短期均衡',qid:'A4 ★★★',question:'完全竞争市场存在着大量的潜在进入者。假设每个厂商都有相同的成本结构，且该行业为成本不变行业。当其产量为 q=20 单位时，长期平均成本最小，且最小的平均成本为10元。市场总需求曲线为 D=1500−50P。求：（1）该行业长期供给函数；（2）长期的均衡价格是多少？厂商数目是多少？（3）与每个厂商长期均衡产出相关的短期成本函数为 C=0.5q²−10q+200，求出厂商短期平均成本最低时的产出水平；（4）计算每个厂商的短期供给曲线和行业的短期供给函数；（5）假设市场需求曲线向外移动到 D=2000−50P。在短期中，重新计算均衡价格及厂商的产出水平。',answer:`考察知识点：成本不变行业、长期供给、短期供给、短期均衡。\n思路：长期供给水平线 P=LACmin；短期 P=MC；市场供求相等。\n答案：（1）P=10。（2）P=10，n=50。（3）q=20。（4）单个 q=P+10；行业 S=50P+500。（5）短期 P=15，Q=1250，单个厂商 q=25。`},
+{id:'m52',special:'微观·长短期均衡',qid:'A5 ★★★',question:'在一个完全竞争、成本不变的行业中有几百个企业，这些企业的长期成本函数相同，均为 LTC=0.1q³−1.2q²+111q，其中 q 是单个企业的年产量，市场对该行业产品的需求曲线为 Q=6000−20p，其中 Q 是行业的年产量。问：（1）该行业的长期均衡产量。（2）均衡时该行业将有多少企业？（3）若政府决定将该行业的企业数减至60家，并且用竞争性投标的方式每年出售60份许可证。那么产品的新价格是多少？一份一年期许可证的竞争均衡价格是多少？',answer:`考察知识点：长期均衡、许可证、租金。\n思路：长期 P=LACmin=LMC；市场需求求行业产量；限制企业数后市场均衡；许可证价格等于超额利润。\n答案：（1）行业长期均衡产量3852。（2）企业数642。（3）新价格约227.64；许可证价格约2108.25。`},
+{id:'m53',special:'微观·长短期均衡',qid:'A6 ★★★',question:'在某一座10万人口的城市，政府发了1000辆出租车经营牌照。为了模型的简便，我们设每辆出租车每天固定载客运行300公里，每天运行的成本（包括汽车折旧、司机劳动力投入和汽油等）是300元。设该城市中每人每天对出租车的需求函数是 p=32−10q，其中 q 为坐出租车出行的公里数，p 为每公里的价格。假设出租车市场是完全竞争的。（1）试计算当地出租车市场的均衡价格（每公里价格）以及数量（总里程数）。（2）设每一年365天，一辆出租车每天都按上述的情况在跑，人们对未来收益的年折现率是10%，求每块出租车经营牌照的价格。',answer:`考察知识点：完全竞争、牌照租金、永续年金现值。\n思路：市场供给固定为300000公里；需求求价格；利润现值。\n答案：（1）均衡价格2元，总里程300000公里。（2）牌照价格1095000元。`},
+{id:'m54',special:'微观·长短期均衡',qid:'B1 ★★★',question:'在某一产品市场，仅有七个企业可能经营，生产完全同质化产品，均为价格接受者，每个企业总成本函数 Ci=1+q²/i，i=1,2,…,7。市场需求 Q=30−P，Q 为总需求，P 为均衡价格。求产品市场的长期均衡价格。',answer:`考察知识点：完全竞争、市场供给、长期均衡。\n思路：求各企业供给；加总市场供给；供求相等。\n答案：P=2。`},
+{id:'m55',special:'微观·长短期均衡',qid:'B2 ★★',question:'在家政市场上，每个家政钟点工做每次家政的成本（MC）为10元，每天可以做7次家政工作，市场上对于家政工作的需求函数为 D(p)=1900−50p。（1）求每次家政工作的均衡价格、家政工作总次数以及家政工人的数量。（2）需求函数改变为：D(p)=2000−50p 时，如果政府给原有的家政人员每人颁发一个家政服务牌照，从而使得市场上的家政人员数量以及家政服务总量保持不变，那么均衡价格和利润是多少？（3）假设一年家政人员工作300天，利率 r=10%，那么，政府颁发的牌照值多少钱，其他的家政人员为了阻止政府多发放一个牌照，愿意支付多少钱？',answer:`考察知识点：完全竞争、牌照价值、超额利润现值。\n思路：P=MC；市场均衡；牌照价格等于未来超额利润现值。\n答案：（1）价格10元，总次数1400，工人数200。（2）均衡价格12元，单个利润14元。（3）牌照价格42000元；其他家政人员愿支付2940元阻止多发一个牌照。`},
+{id:'m56',special:'微观·长短期均衡',qid:'B3 ★★',question:'假定市场对某种产品的需求为：Q=1500−50P。生产该产品的厂商才能是稀缺的，假定每一个生产该产品的厂商需要并且只需要一个企业家（因此，所雇佣的企业家数量就等于厂商数目）。每个厂商的长期总成本为：C(q,w)=0.5q²−10q+w，w 为付给企业家的年工资。企业家的供给函数为 Qs=0.25w。（1）产品的长期均衡数量是多少？每个厂商均衡产量为多少？该产品长期均衡价格是多少？会有多少厂商？会雇佣多少企业家，其工资是多少？（2）假定产品的需求向外移至 Q=2500−50P，短期内产品均衡价格和数量是多少？厂商利润是多少？',answer:`考察知识点：长期均衡、企业家市场、短期均衡。\n思路：企业家市场均衡 n=0.25w；长期 P=ACmin；短期厂商数不变。\n答案：（1）长期均衡数量1000，单个厂商产量20，价格10，厂商数50，企业家工资200。（2）短期价格20，数量2000，单个厂商利润200。`},
+{id:'m57',special:'微观·市场均衡与政府干预',qid:'A1 ★★★',question:'假设商品X市场中有1000个相同的消费者，每个人的需求函数为 d=12−2P；同时又有100个相同的生产者，每个生产者的供给函数为 s=40P。求：（1）市场均衡时的价格和产量。（2）如果政府对每个企业销售的每单位商品X都征收3块钱的销售税，在这3块钱的税收中，消费者和生产者各承担多少？（3）与征税前相比，消费者剩余和生产者剩余的变化是多少？政府税收是多少？税收造成的福利净损失是多少？',answer:`考察知识点：市场均衡、从量税、税收归宿、福利分析。\n思路：加总需求供给；征税后 Pd=Ps+3；求CS、PS、税收、无谓损失。\n答案：（1）P=2，Q=8000。（2）消费者承担2元，生产者承担1元。（3）ΔCS=−12000，ΔPS=−6000，政府税收12000，福利净损失6000。`},
+{id:'m58',special:'微观·市场均衡与政府干预',qid:'A2 ★★★',question:'设一个商品的供给与需求曲线都是直线，函数分别为：QD=a−bp 和 Qs=c+dp。假如就该商品对厂商或销售方征收从量税，单位商品税收为 t。请回答如下问题：（1）计算其对均衡价格和均衡数量的影响；（2）计算供求双方各自负担的税收是多少，并利用经济学原理解释税收为什么被转嫁，又为什么没有全部转嫁；（3）计算双方各自负担的税收份额和供求弹性之间的关系，并利用经济学原理进行解释；（4）用曲线说明征税以后的均衡价格和数量的变化，并比较供求双方的税收份额。',answer:`考察知识点：从量税、税收归宿、弹性。\n思路：联立征税后方程；比较价格变化；弹性与税负份额关系。\n答案：（1）Q**=(ad+bc−bdt)/(b+d)，p**=(a−c+dt)/(b+d)。（2）消费者负担 TD=dt/(b+d)，生产者负担 TS=bt/(b+d)。（3）TD/t=eS/(eS+eD)，TS/t=eD/(eS+eD)。（4）图略。`},
+{id:'m59',special:'微观·市场均衡与政府干预',qid:'A3 ★★★',question:'市场中共有3000人，男女比例为2:1，其中男生对商品的需求函数为 q1=20−p，女生对商品的需求函数为 q2=20−2p。市场的供给函数为 Q=6000p。（1）求市场总的需求函数，当 p=5 时，求 ed1、ed2 以及市场的需求价格弹性；（2）求均衡价格与产量；（3）政府对每单位商品征收 t=1 的税收，求征税后的均衡价格和产量，计算政府税收收入与税率的关系，求最优解并解释。',answer:`考察知识点：市场加总、需求弹性、从量税、拉弗曲线。\n思路：分段加总需求；求弹性；征税后供求相等；税收收入最大化。\n答案：（1）总需求：0≤p≤10 时 Q=60000−4000p；10<p≤20 时 Q=40000−2000p。p=5 时 ed1=−1/3，ed2=−1，ed=−0.5。（2）均衡 p=6，Q=36000。（3）征税后 p=6.6，Q=33600；税收收入 T=−2400t²+36000t（t≤20/3）或 T=−1500t²+30000t（t>20/3）；最优税率 t=10，最大税收150000。`},
+{id:'m60',special:'微观·市场均衡与政府干预',qid:'A4 ★★',question:'某地区鲜花的市场需求函数是 D(p)=2000−40p，市场供给函数是 S(p)=−400+20p。（1）找出市场的均衡价格和均衡数量。（2）计算均衡下的消费者剩余和生产者剩余。（3）假设政府对鲜花征收消费税，消费者为每一束花需要额外支付15元的税。找到新的均衡价格和均衡数量。（4）计算这个税收政策所导致的无谓损失。（5）假设除了15元的消费税，政府又决定征收 t 元的生产税，即生产者为每一束花需要额外支付 t 元的税。新的市场均衡数量为100束。计算 t 的数值。',answer:`考察知识点：均衡、CS/PS、从量税、无谓损失。\n思路：供求相等；积分求剩余；征税后 Pd=Ps+15；无谓损失三角形。\n答案：（1）p=40，Q=400。（2）CS=2000，PS=4000。（3）p′=45，Q′=200。（4）无谓损失1500。（5）t=7.5。`},
+{id:'m61',special:'微观·市场均衡与政府干预',qid:'A5 ★★',question:'大学曲棍球运动员市场的供给和需求曲线如下：QD=1600−20P，QS=−900+30P，其中 Q 为运动员数量，P 为每周工资。（1）如果市场是完全自由的，均衡时的每周工资为多少？雇佣的运动员为多少？（2）现在假设NCAA介入，规定付给运动员的工资不能高于35美元/周。在这种情况下，达到均衡时雇佣了多少名运动员？（3）在价格控制下，生产者剩余（即运动员剩余）如何变化？（4）在价格控制下，与自由市场均衡时相比，学校少付给运动员多少工资？（5）价格上限带来的无谓损失为多大？',answer:`考察知识点：最高限价、生产者剩余、无谓损失。\n思路：自由均衡；限价后由供给决定雇佣量；计算剩余变化和福利损失。\n答案：（1）P*=50，Q*=600。（2）雇佣150名。（3）ΔPS=−5625。（4）学校少付24750。（5）无谓损失8437.5。`},
+{id:'m62',special:'微观·市场均衡与政府干预',qid:'A6 ★★★',question:'棉花市场的需求函数为 Qd=10−2p，供给函数是 Qs=3p−5，政府决定采取政策保护棉农利益。（1）政府规定棉花的最低收购价格是4，即政府愿意以4的价格采购任意数量的棉花。计算最低收购价政策前后棉农的供给量的变化，市场需求量的变化，以及在政策之后，政府采购量。（2）计算最低收购价政策前后消费者剩余和生产者剩余的变化，实施该政策政府的成本。（3）假设政府把最低收购价改成补贴政策，即棉农每销售单位棉花，政府给棉农补贴 s。问 s 为多少时，生产者认为政策变化不会影响其利益？问该补贴政策的政府成本是多少？',answer:`考察知识点：最低收购价、政府采购、补贴。\n思路：求原均衡；限价后供给、需求、收购量；剩余变化；补贴使生产者剩余相同。\n答案：（1）原均衡 p=3，Q=4；限价4后供给7，需求2，政府收购5。（2）ΔCS=−3，ΔPS=5.5，政府成本20。（3）s=2.5；政府成本17.5。`},
+{id:'m63',special:'微观·市场均衡与政府干预',qid:'A7 ★★',question:'某产品市场需求函数为 D=20−2p，市场供给函数为 S=2p−10，若政府进行如下补贴：消费者在购买商品时，只需按照市场价格的一半进行支付，另一半由政府买单，求：（1）补贴前的市场均衡价格、数量、消费者剩余、生产者剩余；（2）补贴后的消费者剩余、生产者剩余及政府补贴量，并结合以上分析社会福利的变化。',answer:`考察知识点：从价补贴、福利分析。\n思路：补贴前均衡；补贴后 pd=ps/2；计算剩余和补贴。\n答案：（1）p*=7.5，q*=5，CS=6.25，PS=6.25。（2）ps=10，pd=5，q′=10，CS′=25，PS′=25，政府补贴50；社会总福利0，比补贴前下降12.5。`},
+{id:'m64',special:'微观·市场均衡与政府干预',qid:'A8 ★★',question:'某商品的国内需求为：Q=5000−100P，国内供给曲线为：Q=150P。（1）在该商品的国内市场上，均衡点在何处？（2）假定可以以每单位10美元的世界市场价格进口。如果贸易不会受到限制，那么新的市场均衡点位于何处？会进口多少该商品？（3）如果国内该商品的生产者成功地要求政府征收5美元关税，那么，这将会怎样改变市场均衡？关税收益为多少？多少消费者剩余会转移到国内生产者手中？关税所带来的总损失会是多少？（4）如果政府与外国供应商达成了一项协议，每年会把该商品的出口量“自愿”限制在125单位，那么你在（3）中得出的结论将会有什么变化？',answer:`考察知识点：国际贸易、关税、配额、福利。\n思路：国内均衡；世界价格下进口；关税后价格；配额后进口固定。\n答案：（1）P=20，Q=3000。（2）价格10，需求4000，供给1500，进口2500。（3）价格15，需求3500，供给2250，进口1250；关税收入6250；消费者剩余转移给生产者9375；总损失3125。（4）配额下其他不变，但政府没有关税收益，福利损失更大。`},
+{id:'m65',special:'微观·综合题',qid:'A1 ★★★',question:'在一个完全竞争市场，企业使用两种原材料，记为1和2，两种原材料的市场价格均为1。每个企业的固定成本为 F=32，生产函数为 f(x1,x2)=√(x1x2)，其中 xi 是原材料 i 的使用量，消费者对该产品的需求函数为 Q=280−5p，其中 p 为市场价格。请找出这个市场的长期均衡价格和企业个数。',answer:`考察知识点：成本最小化、长期均衡、企业数。\n思路：求条件要素需求和成本函数；长期 P=ACmin；市场均衡求企业数。\n答案：长期均衡价格16；企业个数50。`},
+{id:'m66',special:'微观·综合题',qid:'A2 ★★★',question:'假设企业生产衣服需要两种投入资本和劳动力要素。生产函数为 f(K,L)=K^(1/4)L^(1/4)，资本和劳动的单价分别为40元和10元。（1）若企业决定生产 y 件衣服，那么需要花费的最小成本是多少？（2）假设该企业处在一个完全竞争的市场环境中，若该企业所生产的衣服的市场价格为 p 元每件，这个企业应该生产多少件衣服？（3）我们进一步假设在该完全竞争的市场中有800个企业，所有企业都生产相同的衣服，并且所有这些企业的生产技术都一样，即每个企业的生产函数都是 f(K,L)=K^(1/4)L^(1/4)。同时该衣服的市场反需求函数为 p=800−D/10，其中 D 表示市场的总需求，试求出当市场处于均衡时，该衣服的市场价格为多少？每个企业卖出的衣服数量是多少？',answer:`考察知识点：成本最小化、完全竞争供给、市场均衡。\n思路：由 MPL/MPK=w/r 求条件要素需求；成本函数；P=MC；市场供求相等。\n答案：（1）C=40y²。（2）y=p/80。（3）p*=400，y*=5。`},
+{id:'m67',special:'微观·综合题',qid:'B1 ★★★',question:'假设在完全竞争市场中，有100位完全相同的消费者，每个消费者的效用函数均为 u(x,y)=x−x²/2+y，其中 x 和 y 分别为两种商品的数量，x 的价格为 p，y 的价格为1，消费者的收入为比较大的某个值 m。（1）写出对 x 的市场需求函数。（2）假定市场中有若干个具有同样生产技术的厂商，每个厂商的长期成本函数为 c(q)=q²/16+1，请问均衡时，该行业中最多有多少个厂商？此时市场均衡价格和产量分别是多少？',answer:`考察知识点：拟线性效用、市场需求、长期均衡、企业数。\n思路：单个消费者需求 x=1−p；市场加总；长期 P=ACmin 或零利润；求最多厂商数。\n答案：（1）D(p)=100−100p。（2）最多12个厂商；均衡价格 pE=0.51，市场总产量49。`},
+{id:'m68',special:'微观·垄断均衡与政府干预',qid:'A1 ★★',question:'某垄断厂商短期固定生产成本为3000元，短期边际成本函数为 SMC=0.3Q²−12Q+140，其中 Q 为每月产量（吨）。为使利润最大，它每月生产40吨，获得利润为1000元。（1）计算该厂商的边际收益、销售价格和总收益。（2）计算在利润最大点的需求价格弹性。（3）假定该厂商面临线性的需求函数，请推导出这个函数的具体表达式。',answer:`考察知识点：垄断利润最大化、边际收益、需求弹性、线性需求。\n思路：MR=SMC；由利润求价格；弹性与 MR 关系；线性需求求参数。\n答案：（1）MR=140，P=160，TR=6400。（2）Ed=8。（3）需求函数 Q=360−2P。`},
+{id:'m69',special:'微观·垄断均衡与政府干预',qid:'A2 ★★★',question:'在一个中等城市中电话的需求为：Q=1000−50P，其中 Q 是家庭安装电话的数量（单位千门），P 是使用电话的每月租金（单位美元）。电话系统的成本由下式给出：TC=500ln(0.1Q−20)，对于 Q>200。（1）本城市的电信业务是否是一个自然垄断的行业？（2）在这种情况下，什么样的产出水平将产生一个无管制的垄断？消费者要支付的价格是多少？垄断利润是多少？（3）如果允许活跃的竞争，价格会有什么变化？',answer:`考察知识点：自然垄断、垄断均衡、竞争。\n思路：看平均成本是否递减；MR=MC；竞争导致价格下降。\n答案：（1）是自然垄断。（2）Q=450，P=11，利润 4950−500ln25。（3）竞争使价格下降。`},
+{id:'m70',special:'微观·垄断均衡与政府干预',qid:'A3 ★★★',question:'假设一个垄断厂商面临的需求曲线为 P=10−3Q，成本函数为 TC=Q²+2Q。（1）求厂商实现利润最大化时的产量、价格和利润；（2）如果政府试图对该垄断厂商采取限价措施迫使其达到完全竞争行业所能达到的产量水平，则限价应为多少？（3）如果政府通过对厂商生产的每单位产品进行补贴，使其生产的产量为完全竞争行业所能达到的产量水平，此时政府每单位补贴额为多少？（4）如果政府对该垄断厂商征收一笔固定的调节税，以便取得该厂商所获得的超额利润，那么这笔固定税的总额应是多少？（5）以上三种方法对消费者会产生什么影响？',answer:`考察知识点：垄断、限价、补贴、固定税、福利。\n思路：垄断 MR=MC；竞争 P=MC；补贴使 MC 下降；固定税拿走超额利润。\n答案：（1）Q=1，P=7，π=4。（2）限价5.2。（3）每单位补贴4.8。（4）固定税4。（5）限价和补贴使消费者剩余增加；固定税对消费者无直接影响。`},
+{id:'m71',special:'微观·垄断均衡与政府干预',qid:'A4 ★★★',question:'某完全垄断厂商面临的市场需求曲线是 Q=120−2P，其中 Q 是产量，P 是价格，成本函数为 TC=Q²。试求：（1）该厂商在利润最大化时的产量、价格和利润；（2）垄断带来的效率损失（即纯损）；（3）如果政府对每销售一单位产品向厂商征税15元，该厂商在利润最大化时的产量、价格和利润又是多少？与不征税相比，福利变化如何？',answer:`考察知识点：垄断、无谓损失、从量税、福利。\n思路：MR=MC；有效产出 P=MC；征税后 MC 增加15；计算福利变化。\n答案：（1）Q=20，P=50，π=600。（2）效率损失20。（3）征税后 Q=15，P=52.5，π=337.5；福利变化 −81.25。`},
+{id:'m72',special:'微观·垄断均衡与政府干预',qid:'A5 ★★★',question:'一家垄断厂商具有不变的边际成本 C，其面临的市场需求曲线为 D(P)，具有不变的需求弹性2。该厂商追求利润最大化。（1）求该厂商制定的垄断价格。此价格与竞争价格相比，有何差异？（2）如果政府对这个垄断厂商每单位产量征收 t 元的从量税，那么此时价格是多少？与问题（1）中没有税收的情况相比，价格有何变化？如果改为对利润征收税率为 t 的利润税，价格又将如何变化？（3）回到问题1中没有税收的情况。如果政府想使垄断厂商生产社会最优产量，考虑对该厂商的边际成本进行补贴，那么该选择怎样的补贴水平？',answer:`考察知识点：垄断定价、从量税、利润税、补贴。\n思路：MR=P(1−1/ed)=MC；从量税增加 MC；利润税不影响 MC；社会最优 P=MC。\n答案：（1）Pm=2C，高于竞争价格 C。（2）从量税后 Pm′=2(C+t)；利润税后价格仍 2C。（3）补贴 C/2。`},
+{id:'m73',special:'微观·垄断均衡与政府干预',qid:'A6 ★★',question:'假设垄断市场有需求函数 Q=(20−P)(1+0.1A−0.01A²)，垄断厂商的成本函数为：TC=10Q+15+A。（1）假设没有广告（A=0）。利润最大化的厂商选择的产出是多少？市场价格是多少？垄断利润是多少？垄断的福利损失是多少？（2）现在假设厂商选择最佳广告支出水平。在此情况下，产出水平为多少？价格是多少？广告水平是多少？此时厂商的利润是多少？',answer:`考察知识点：垄断、广告、利润最大化。\n思路：分别对 P 和 A 求偏导；联立一阶条件。\n答案：（1）Q=5，P=15，π=10；福利损失12.5。（2）P=15，A=3，Q=6.05，π=12.25。`},
+{id:'m74',special:'微观·垄断均衡与政府干预',qid:'A7 ★★',question:'某垄断厂商以两个工厂的生产来供给这个市场，成本函数分别是 C1=y1²+2y1 和 C2=2y2²。（1）求该厂商的总成本函数。（2）如果市场需求函数为 y=8−p，该厂商应该如何安排产量？（3）如果市场需求函数为 y=100/p，该厂商应该如何安排产量？',answer:`考察知识点：多工厂垄断、成本函数、需求函数。\n思路：等边际成本分配；求总成本；垄断 MR=MC。\n答案：（1）C(y)=2y²（y≤1/2）；C(y)=(2y²+4y−1)/3（y>1/2）。（2）y=2，y1=1，y2=1。（3）总收益为常数100，只需成本最小，令工厂2生产极小的 ε>0，工厂1停产。`},
+{id:'m75',special:'微观·垄断行为',qid:'A1 ★★★',question:'假定一个垄断企业以利润最大化为目标，并且不受政府管制。它的成本函数为 C=100−5Q+Q²，它面对两个完全分离的市场，分别是市场A和市场B。市场A的需求弹性是2，市场B的需求弹性是3。请分析两个市场的商品价格应具有什么关系。',answer:`考察知识点：三级价格歧视、需求弹性与垄断定价。\n思路：利润最大化满足 MRA=MRB=MC；由 MR=P(1−1/|ε|) 比较价格。\n答案：PA/PB=4/3。`},
+{id:'m76',special:'微观·垄断行为',qid:'A2 ★★★',question:'一家服装企业在两个子市场销售生产的相同服装。第一个市场贴畅销品牌（A品牌）；第二个市场贴自营品牌（B品牌）。两个市场对其产品的需求都表现为等弹性需求曲线的特征，分别为：lnQA=320−2lnPA 和 lnQB=260−4lnPB。这家企业当前在A品牌市场定价40元，在B品牌市场定价25元。（1）该企业面对的两个市场，需求的价格弹性分别是多少；（2）通过计算，判断该企业当前的定价是否已经实现了最优；（3）如果该企业的最优定价是在A市场定价30元，那么在B市场应该定价多少元？',answer:`考察知识点：三级价格歧视、等弹性需求、最优定价条件。\n思路：由对数需求求弹性；利润最大化满足 PA(1+1/edA)=PB(1+1/edB)。\n答案：（1）edA=−2，edB=−4。（2）最优价格比应为1.5，当前为1.6，未实现最优。（3）PB=20。`},
+{id:'m77',special:'微观·垄断行为',qid:'A3 ★★★',question:'某航空公司只有一条航线，同时售票给休闲旅客和商务旅客。休闲旅客的周需求函数为 QT=6000−10P，商务旅客的周需求函数为 QB=1000−P。如果每张票的边际成本为200美元。（1）该航空公司如何设定休闲票和商务票的价格？（2）如果政府强制要求所有票价必须一致，则该航空公司如何定价？两类消费者在该价格上的需求弹性是多少？（3）假设该航空公司每周最多只能售出1300张票，则分别应当给两类消费者售出多少张票，定价多少？',answer:`考察知识点：三级价格歧视、统一定价、容量约束。\n思路：分别求两市场 MR=MC；统一定价时分段加总需求；容量约束下最大化利润。\n答案：（1）PT=400，PB=600。（2）统一定价 P*=4600/11；EdT=23/10，EdB=23/32。（3）QT=1000，QB=300，PT=500，PB=700。`},
+{id:'m78',special:'微观·垄断行为',qid:'A4 ★★★',question:'假设一垄断者供应两个分市场，这两个分市场的反需求函数分别为：p1(x1)=1−x1（0<x1<1）；p2(x2)=2(1−x2)（0<x2<1）。垄断者的成本函数为 c(x)=k，这里 x=x1+x2。（1）假设垄断者按照第三级价格歧视的原则分别供应两个市场，那么它在两个市场上的价格和销售量分别为多少？（2）假设该垄断者必须以相同的价格供应这两个市场，那么什么是它的最优价格和最优销售量？（3）谁能从价格歧视中得益？谁会因价格歧视而受损失？',answer:`考察知识点：三级价格歧视、统一定价、消费者剩余、福利分析。\n思路：价格歧视下 MR1=MR2=MC=0；统一定价时加总需求，分段讨论；比较CS和利润。\n答案：（1）x1=0.5，p1=0.5；x2=0.5，p2=1。（2）p=2/3，x=1。（3）垄断厂商得益；总消费者剩余减少，但市场1消费者因价格下降而受益，市场2消费者受损。`},
+{id:'m79',special:'微观·垄断行为',qid:'A5 ★★',question:'市场上有A、B两种消费者，各占50%。其中A类的效用函数为：UA=5x−x²/2+y，B类的效用函数为：UB=6x−x²/2+y。垄断厂商的成本函数为 C(x)=x。其中 x 为垄断厂商生产的产品，y 为其它商品组合，价格为1。（1）求有A、B两类人各自对 x 的需求函数；（2）若垄断厂商在A、B中选一种消费者出售商品，那么你认为应该选择哪类消费者？若垄断厂商采用两部分定价制，问边际价格和一次性付费是多少？（3）若同时在A、B中出售，并且采用两部分定价制，问厂商的边际价格和一次性付费各为多少时，厂商能够实现利润最大化？',answer:`考察知识点：两部分定价、需求函数、利润最大化。\n思路：由效用最大化求需求；比较仅服务一类消费者的利润；两部分定价时边际价格等于MC，固定费等于消费者剩余。\n答案：（1）xA=5−p，xB=6−p。（2）选择B类；边际价格 p=1，一次性付费12.5。（3）边际价格1.5，一次性付费6.125。`},
+{id:'m80',special:'微观·垄断行为',qid:'B1 ★★★',question:'一家垄断厂商在市场1和市场2销售产品，两个市场的需求曲线为：Q1=60−0.25P1，Q2=100−0.5P2，厂商提供 Q 单位产品的成本为：C=1000+40Q，其中 Q=Q1+Q2。（1）市场1和市场2利润最大化价格和数量各是多少？（2）厂商只能定单一的价格时它会定什么价格，以及它在市场1和市场2的销量分别为多少？（3）在上面哪种情况下厂商是得益的？从消费者剩余的角度，市场1的消费者更偏爱哪种情况？市场2的消费者更偏爱哪种情况？为什么？',answer:`考察知识点：三级价格歧视、统一定价、消费者剩余。\n思路：价格歧视下 MR1=MR2=MC；统一定价加总需求；比较利润和CS。\n答案：（1）P1=140，Q1=25；P2=120，Q2=40。（2）P=126.67，Q1=28.3，Q2=36.7。（3）价格歧视下厂商利润更高；市场1消费者偏爱统一定价，市场2消费者偏爱价格歧视。`},
+{id:'m81',special:'微观·垄断行为',qid:'B2 ★★',question:'某垄断厂商生产产品X的边际成本和平均成本均为常数 c，所生产的X产品在两个分割的市场上销售，这两个市场的需求函数分别是 P1=a1−bq1 和 P2=a2−bq2，其中，a1>a2>c>0，且 3a2>a1+2c。证明：（1）该厂商无论实行三级价格歧视还是统一定价，总产量水平相同。（2）若统一定价时的价格为 P，三级价格歧视时两个市场的价格分别为 P1 和 P2，则 P1>P>P2。',answer:`考察知识点：三级价格歧视与统一定价的产量/价格比较。\n思路：分别求三级价格歧视和统一定价下的均衡产量与价格；比较总产量和价格。\n答案：证明略；结论成立。`},
+{id:'m82',special:'微观·垄断行为',qid:'B3 ★★',question:'A、B两种人，各有N人，A的效用函数为：UA(x1,x2)=4x1−x1²+x2，B的效用函数为：UB(x1,x2)=2x1−x1²+x2，商品 x2 的价格为1，A和B两组人的收入都为200，现有一垄断厂商，且该厂商不能实行价格歧视，其生产 x1 的边际成本 c>0，求该厂商的最优价格及产量。',answer:`考察知识点：统一定价、市场加总、利润最大化。\n思路：由效用最大化求需求；加总市场需求；分段讨论利润最大化。\n答案：略（需分段讨论，结果依赖 c）。`},
+{id:'m83',special:'微观·垄断竞争市场',qid:'A1 ★★',question:'考虑一个 n 个企业的垄断竞争市场。每个企业面对的逆需求函数是：p=200/n−0.1q，其中 p 和 q 分别是企业产品的价格和产量。每个企业的成本函数是：C=160+2q。求：（1）在短期均衡里，每个企业所设立的价格和 n 之间的关系是什么？（2）在长期均衡里，市场里有多少个企业（即 n 是多大）？每个企业有垄断力吗？为什么？',answer:`考察知识点：垄断竞争、短期均衡、长期均衡、垄断力。\n思路：短期 MR=MC；长期零利润。\n答案：（1）p=1+100/n。（2）n=20，p=6；价格高于边际成本，有垄断力。`},
+{id:'m84',special:'微观·垄断竞争市场',qid:'B1 ★',question:'在大西洋城，有一条沿海滩修建的海滨大道，其长度设为1。两个小贩打算在海滨大道上出售冰淇淋。假定冰淇淋的价格是确定的，并且消费者是沿海滩均匀分布的。消费者的效用取决于购买冰淇淋的路程，路程越长，消费者的效用越低，即消费者的效用函数可以表示为：u(x)=−x，这里 x 是消费者购买冰淇淋的路程。那么从社会最优的角度看：（1）两个小贩各自应该在什么地方出售冰淇淋？（2）实际上会出现第一问的结果吗？（3）如果有三个小贩，对第二问的回答有什么变化？',answer:`考察知识点：产品差异化、霍特林模型、社会最优与均衡。\n思路：社会最优使总路程最小；实际均衡小贩向中间聚集。\n答案：（1）分别在1/4和3/4处。（2）不会，实际会在中央。（3）不存在均衡位置。`},
+{id:'m85',special:'微观·寡头垄断市场',qid:'A1 ★★★',question:'两家公司生产同一商品，需求函数为 p=80−Q，商品的边际成本为常数20，没有固定成本。（1）如果两个公司为古诺垄断厂商，共同确定产量，问两个公司的产量分别是多少？价格分别为多少？利润分别为多少？（2）如果一公司先决定产量，二公司根据一公司产量来确定其产量，问两个公司的产量分别是多少？价格分别为多少？利润分别为多少？（3）如果两个公司形成卡特尔，请问市场供求和价格是多少？两家公司间如何分配产量？利润分别为多少？并说明企业的违约动机。（4）上述（1）中结果是否为囚徒困境？为什么？',answer:`考察知识点：古诺、斯塔克尔伯格、卡特尔、囚徒困境。\n思路：分别求反应函数、均衡产量、价格和利润；比较合作与不合作。\n答案：（1）QA=QB=20，p=40，πA=πB=400。（2）QA=30，QB=15，p=35，πA=450，πB=225。（3）Q=30，p=50，πA=πB=450；有违约动机，违约可增至506.25。（4）是囚徒困境。`},
+{id:'m86',special:'微观·寡头垄断市场',qid:'A2 ★★★',question:'考虑一个新开发的市场，该市场每年的需求为 Q=10−p。在第一期企业1抢先进入，并以广告的方式进行大量宣传。在它正要进行生产时得知企业2正在订购生产此产品的设备，并通过调查得知企业2的成本函数为 C2(Q2)=Q2²。已知企业1的成本函数为 C1(Q1)=4+2Q1。（1）在第一期，如果厂商1可以抢先宣布生产计划，那么厂商1将宣布什么样的生产计划，这时厂商2会宣布生产多少？（2）在第一期，如果厂商1可以抢先宣布价格，求该价格水平？（3）在第二期期初，出于行业的惯例，两厂商同时发布产量，这时你预计产量会有变化吗？',answer:`考察知识点：斯塔克尔伯格、价格领导、古诺。\n思路：分别按产量领导、价格领导、古诺求解。\n答案：（1）Q1=11/3，Q2=19/12。（2）p=13/3。（3）会变化；古诺均衡 Q1=22/7，Q2=12/7。`},
+{id:'m87',special:'微观·寡头垄断市场',qid:'A3 ★★★',question:'某企业的生产函数 F(l,k)=l^0.2 k^0.8，l 和 k 分别表示劳动和资本的数量，劳动和资本的价格为 w=4，r=16。（1）用拉格朗日乘数法，求生产 q 单位的商品的备件要素需求函数。（2）生产 q 单位商品时成本为多少？（3）如果厂商是价格领导者，市场需求为 Q=100−2p，市场上有4个追随者，追随者的成本函数为 cf=4qf+qf²，求追随者和领导者的利润。',answer:`考察知识点：条件要素需求、成本函数、价格领导。\n思路：拉格朗日求条件要素需求；求成本函数；追随者按 P=MC 供给，领导者面临剩余需求。\n答案：（1）l*=q，k*=q。（2）C=20q。（3）领导者利润49，追随者利润95.06。`},
+{id:'m88',special:'微观·寡头垄断市场',qid:'A4 ★★★',question:'市场中 N 个同质产品的古诺厂商。厂商的成本为 TCi(qi)=cqi，c>0，i=1,2,…,N。市场需求曲线为 P=a−bQ=a−b∑qi，P 为产品价格，参数 a,b>0，a>c。（1）给出厂商i利润最大化的一阶条件；（2）给出古诺纳什均衡结果，包括每个厂商的均衡产量、市场的总产量、市场的价格；（3）证明 N 趋近于无穷大时，此时古诺博弈的结果趋近于完全竞争结果。',answer:`考察知识点：古诺均衡、N厂商、完全竞争极限。\n思路：求一阶条件；对称均衡；取极限。\n答案：（1）a−bQ−bqi−c=0。（2）qi=(a−c)/[(N+1)b]，Q=N(a−c)/[(N+1)b]，P=(a+Nc)/(N+1)。（3）lim P=c，lim Q=(a−c)/b，与完全竞争一致。`},
+{id:'m89',special:'微观·寡头垄断市场',qid:'A5 ★★★',question:'假设企业A和B生产同种商品，消费者无法区分两个企业的产品。企业A的生产边际成本为10，企业B的生产边际成本为8。他们的固定成本均为0。市场需求函数为 QD=500−20P。（1）如果企业A和企业B进行伯特兰竞争，那么纳什均衡条件下的市场价格是多少？（2）每个企业的利润分别为多少？（3）该均衡是否为帕累托有效？',answer:`考察知识点：伯特兰竞争、边际成本差异、帕累托效率。\n思路：低成本企业定价略低于高成本企业边际成本；比较价格与边际成本。\n答案：（1）PA=10，PB=10−ε。（2）πA=0，πB=(2−ε)(500−20(10−ε))。（3）不是帕累托有效。`},
+{id:'m90',special:'微观·寡头垄断市场',qid:'A6 ★★',question:'某同质产品的市场，市场需求函数为 P=5−Q。市场中有两个厂商，厂商1和厂商2的边际成本分别为1和4，无固定成本。（1）若厂商组成卡特尔，求此时均衡的市场产量和价格；（2）若厂商进行价格竞争，求此时均衡的市场产量和价格。',answer:`考察知识点：卡特尔、伯特兰竞争、边际成本差异。\n思路：卡特尔由低成本厂商生产；伯特兰价格竞争。\n答案：（1）Q=2，P=3。（2）Q=2，P=3。`},
+{id:'m91',special:'微观·寡头垄断市场',qid:'A7 ★★★',question:'在一个古诺双寡头垄断市场中，市场需求函数为 p=100−q1−q2，其中 q1、q2 分别为企业1和2的产量。企业1的边际成本为20，企业2的边际成本为30，不考虑不变成本。（1）求两个企业的反应函数。（2）什么是纳什均衡？求纳什均衡价格、每个企业的产量和利润。（3）假如两个企业可以串谋，这时的市场价格、总产量和总利润又是什么？（4）现在假设企业2可以获得企业1同样的技术，其边际成本下降到企业1的水平。不考虑串谋，求新的均衡价格和企业2的产量。企业2为获得新技术愿意支付的成本是多少？',answer:`考察知识点：古诺、纳什均衡、串谋、技术授权。\n思路：求反应函数；联立求均衡；串谋由低成本厂商生产；技术改进后重新求均衡。\n答案：（1）q1=40−q2/2，q2=35−q1/2。（2）q1=30，q2=20，p=50，π1=900，π2=400。（3）q1=40，q2=0，p=60，π=1600。（4）q1=q2=80/3，p=140/3；企业2愿支付2800/9。`},
+{id:'m92',special:'微观·寡头垄断市场',qid:'A8 ★★★',question:'市场需求是 D(P)=30−P，两个厂商，厂商1的边际成本是0，厂商2的边际成本是2，两厂商都无固定成本。（1）两个厂商同时决定价格，求均衡产量和利润。（2）厂商1先行定产，那么求均衡产量和利润；厂商2先行定产，求均衡产量和利润；（3）如果行动有两期，第一期研发产品，研发费用高的一方将研发出产品，并获得专利权，同时获得先行定产的权利。第二期，按照定产顺序定产，那么求均衡研发费用，均衡产量。',answer:`考察知识点：伯特兰、斯塔克尔伯格、研发竞争。\n思路：分别按价格竞争、产量领导求解；研发费用取决于先行收益差。\n答案：（1）P=2−ε，Q=28+ε，π1=(2−ε)(28+ε)，π2=0。（2）厂商1先：Q1=16，Q2=6，π1=128，π2=36；厂商2先：Q1=17/2，Q2=13，π1=289/4，π2=169/2。（3）研发费在48.5到55.75之间；均衡 Q1=16，Q2=6。`},
+{id:'m93',special:'微观·寡头垄断市场',qid:'A9 ★★★',question:'假设某一行业只有三家生产厂商，每家厂商的边际成本都等于0，行业的反需求函数是一线性函数，p=60−q。（1）古诺竞争情况下，厂商1的反应函数是什么？求出此时的古诺均衡解。（2）如果厂商2和3决定合并成一家企业，请计算新的均衡，并分析厂商1是变好了还是变差了？厂商2和3的利润与之前相比，增加了还是减少了？（3）如果厂商1事先宣布生产一定数量 q1，那么厂商2和3的最优生产数量是多大？',answer:`考察知识点：古诺、合并、产量领导。\n思路：求反应函数；合并后重新求均衡；领导者先行。\n答案：（1）q1=30−q2/2−q3/2；q1=q2=q3=15，p=15，π=225。（2）q1=q4=20，p=20，π1=π4=400；厂商1变好，厂商2、3总利润减少。（3）q1=30，q2=q3=10。`},
+{id:'m94',special:'微观·寡头垄断市场',qid:'A10 ★★★',question:'考虑两阶段三个企业的斯塔克尔伯格数量竞争模型。在第一阶段，企业1和企业2非合作地同时选择产量 q1 和 q2；在第二阶段，企业3选择产量 q3。已知市场的需求曲线为 P=60−5Q，P 和 Q 分别为市场价格和市场总需求量。假设所有企业的边际成本和固定成本都为零。（1）求出各个企业的均衡产量。（2）求出市场均衡价格。（3）通过计算说明，与三个企业同时进行产量竞争的情形相比较，企业3产出是增加了还是减少了？',answer:`考察知识点：多领导者一追随者、斯塔克尔伯格、古诺比较。\n思路：先求追随者反应；再求两个领导者古诺均衡；与三企业古诺比较。\n答案：（1）q1=q2=4，q3=2。（2）P=10。（3）三企业古诺时 q3=3，所以企业3产出减少。`},
+{id:'m95',special:'微观·寡头垄断市场',qid:'A11 ★★',question:'考虑差别产品的价格竞争。两厂商通过选择价格竞争，它们面临的需求曲线是：Q1=20−P1+P2，Q2=20+P1−P2。厂商的边际成本为零。（1）假设两厂商同时决定它们的价格，求出相应的纳什均衡。各厂商会定什么价格，它们将销出多少，利润为多少？（2）设厂商1先定价格，然后厂商2定价。各厂商将定价多少，能销出多少，利润为多少？（3）设你是两厂商之一，且你们有三种博弈的方法：①两厂商同时定价；②你先定价；③你的竞争者先定价。如果能从中选择，你喜欢哪种？解释为什么。',answer:`考察知识点：差别产品价格竞争、纳什均衡、价格领导。\n思路：求价格反应函数；同时定价联立；序贯定价逆推。\n答案：（1）P1=P2=20，Q1=Q2=20，π1=π2=400。（2）P1=30，P2=25，Q1=15，Q2=25，π1=450，π2=625。（3）首选③，次选②；价格领导使双方利润均增加，追随者增加更多。`},
+{id:'m96',special:'微观·寡头垄断市场',qid:'B1 ★★',question:'一个双寡头市场的（反）需求函数是 p=a−bX，a,b>0，寡头1和2的边际成本分别为 c1 和 c2，且满足 c2<c1<a。（1）求Cournot竞争中双方的均衡产量；（2）求伯特兰均衡；（3）如果厂商1是先行定产者，求两厂商的均衡产量。',answer:`考察知识点：古诺、伯特兰、斯塔克尔伯格、成本差异。\n思路：分别按古诺、伯特兰、产量领导求解。\n答案：（1）X1=(a+c2−2c1)/(3b)，X2=(a+c1−2c2)/(3b)。（2）分情况：若 a+c2<2c1，P=(a+c2)/2；若 a+c2>2c1，P1=c1，P2=c1−ε。（3）X1=(a+c2−2c1)/(2b)，X2=(a+2c1−3c2)/(4b)。`},
+{id:'m97',special:'微观·寡头垄断市场',qid:'B2 ★★',question:'古诺市场上的寡头有 n 个，按固定边际成本 c 生产，需求曲线 P=a−Q，行业总产量为 Q。（1）所有厂商独立生产时的均衡产量及利润；（2）n 个厂商中有 m−1 个厂商合并，此时厂商的均衡产量及利润；（3）试说明合并外的企业可获得利润。',answer:`考察知识点：古诺、合并、利润比较。\n思路：分别求独立古诺和部分合并后的均衡；比较利润。\n答案：（1）q=(a−c)/(n+1)，π=(a−c)²/(n+1)²。（2）合并厂商利润 π=(a−c)²/(n−m+3)²，未合并企业利润相同。（3）说明略。`},
+{id:'m98',special:'微观·寡头垄断市场',qid:'B3 ★',question:'考虑一个有 n 个厂商的古诺竞争行业，厂商的产量由 y1,…,yn 表示，总产量以 Y=∑yi 表示，行业需求曲线 P(Y)，每个厂商的成本函数由 ci(yi)=cyi 给出。P″(Y)<0，假定每个厂商要支付一个特别的税 ti。（1）写出厂商i的一阶条件。（2）证明：行业的产量和价格仅只依赖税率的总和。（3）假设单个厂商的税率发生了变化，但不影响整个行业的税负。令 Δti 代表厂商 i 的税率变化量，则 ∑Δti=0。计算此时厂商 i 均衡的产出变化 Δyi。',answer:`考察知识点：古诺、税收、比较静态。\n思路：写一阶条件；加总；求比较静态。\n答案：（1）P′(Y)yi+P(Y)=c+ti。（2）证明略。（3）Δyi=Δti/P′(Y)。`},
+{id:'m99',special:'微观·寡头垄断市场',qid:'B4 ★',question:'产品A的市场需求函数为 Q=240−P，其中 P 为市场价格，Q 为市场需求。在当前科技水平下，产品A的边际成本为120，无固定成本。某风险中性的产学研机构拟投入研发资金 k 元进行技术攻关。如果成功，则将边际成本降低到了60元，但是成功几率为0.5。此外，如果成功，该机构可以将技术授权给至多一家生产产品A的厂商，并收取一次性授权费用 L 元。假设两期间的贴现因子为常数0.8。（1）假设产品市场A的结构为垄断，该机构最多可以收取多少授权费？为使创新不亏损，研发投入 k 的最大值是多少？（2）假设产品市场A的结构是两家厂商进行产量竞争（古诺竞争），该机构最多可以收取多少授权费？为使得创新不亏损，研发投入 k 的最大值应该是多少？（3）假设产品市场A的结构是两家同质的进行价格竞争的厂商，该机构最多可以收取多少授权费？为了使创新不亏损，研发投入 k 的最大值应该是多少？（4）假设在（1）的情况下，垄断厂商面临着一家潜在的进入厂商。潜在进入者需要获得该技术才能进入市场。此外并无其他成本。若成功进入，两个厂商将进行产量竞争。为了使得利润最大化，请问该机构应该授权给在位厂商还是新厂商？为什么？',answer:`考察知识点：研发、技术授权、垄断/古诺/伯特兰、贴现。\n思路：分别计算不同市场结构下技术带来的利润增量现值；比较授权对象。\n答案：（1）L=22500，k=11250。（2）L=30000，k=15000。（3）L=36000，k=18000。（4）授权给在位厂商，最大授权费38500。`},
+{id:'m100',special:'微观·纳什均衡求解',qid:'A1 ★★',question:'考虑一个博弈的支付矩阵：A上/B左=(a,b)，A上/B右=(c,d)，A下/B左=(e,f)，A下/B右=(g,h)。（1）如果（上，左）为一占优策略均衡，那么关于a,…,h必须成立什么不等式？（2）如果（上，左）为一纳什均衡，那么，上述不等式中哪一个必须要满足？（3）如果（上，左）为占优策略均衡，它必然是一个纳什均衡吗？',answer:`考察知识点：占优策略、纳什均衡。\n思路：占优策略要求严格优于另一策略；纳什均衡只要求给定对方策略下最优。\n答案：（1）a>e，c>g，b>d，f>h。（2）a>e，b>d。（3）必然。`},
+{id:'m101',special:'微观·纳什均衡求解',qid:'A2 ★★★',question:'试求出以下静态博弈的所有纳什均衡（包括混合策略均衡）。参与人1有两个行动：B和S；参与人2有三个行动：B、S和X。支付矩阵为：B,B=(4,2)；B,S=(0,0)；B,X=(0,1)；S,B=(0,0)；S,S=(2,4)；S,X=(1,3)。方框中的第一个数字表示参与人1的效用，第二个数字表示参与人2的效用。',answer:`考察知识点：纯策略纳什均衡、混合策略纳什均衡。\n思路：划线法找纯策略；剔除X后求混合策略。\n答案：纯策略纳什均衡（B，B）和（S，S）；混合策略均衡为参与人1以(2/3,1/3)选择(B,S)，参与人2以(1/3,2/3)选择(B,S)。`},
+{id:'m102',special:'微观·纳什均衡求解',qid:'A3 ★★★',question:'参与者A和B参加一个简单的单阶段博弈。两个人同时选择1和2。如果两个人都选择了1，则A需要付给B1元；如果两个人都选择了2，则A需要付给B2元；如果两个人选择的数字不一样，则B需要付给A1元。（1）在表格中表示出两个参与者的策略和支付矩阵。（2）该博弈是否存在占优策略、弱劣势策略或劣势策略？找出每个参与者的最佳反应。（3）该博弈是否存在纳什均衡？解出博弈的混合策略均衡。',answer:`考察知识点：支付矩阵、占优策略、混合策略纳什均衡。\n思路：写矩阵；求反应函数；联立求混合均衡。\n答案：（1）矩阵略。（2）无占优策略；最佳反应：A选1当B选1，A选2当B选2；B类似。（3）无纯策略纳什均衡；混合均衡 p=q=3/5。`},
+{id:'m103',special:'微观·纳什均衡求解',qid:'A4 ★★',question:'两个邻居，i=1,2，同时选择自己花费多少时间 li 来修剪草坪。每小时的平均收益为：10−li+lj/2。同时，机会成本为每小时4元。房主 i 的平均收益随邻居 j 除草时间的增加而增加。（1）计算纳什均衡。（2）画出最优反应函数，并且在图中标注出纳什均衡。（3）如果每小时的平均收益函数的截距由10变为一个比10小的数值，纳什均衡如何变化。',answer:`考察知识点：纳什均衡、反应函数、比较静态。\n思路：写利润函数；求一阶条件；联立反应函数。\n答案：（1）li*=lj*=4。（2）图略。（3）均衡点向左下移动，修剪时间变短。`},
+{id:'m104',special:'微观·纳什均衡求解',qid:'A5 ★★',question:'两个室友同时选择打扫寝室的努力程度 e1 与 e2，他们的效用函数分别为：U1=kln(e1+e2)−e1²，U2=ln(e1+e2)−e2²。其中 ln(e1+e2) 代表寝室的清洁度，它与打扫的努力成正比。假设寝室的清洁对两人的重要性并不一样，即 k>1。（1）求出纯策略纳什均衡；（2）讨论两人的不同清洁倾向（即 k）如何影响打扫的努力程度？',answer:`考察知识点：纳什均衡、反应函数、比较静态。\n思路：分别对 e1,e2 求一阶条件；联立。\n答案：（1）e1=k/√(2(1+k))，e2=1/√(2(1+k))。（2）k 越大，e1 越大，e2 越小。`},
+{id:'m105',special:'微观·博弈论与寡头结合',qid:'A1 ★★',question:'假设你是一个相同产品的双寡头之一，你和你的竞争者生产的边际成本都是零。而市场的需求函数是：P=30−Q。（1）假设你们只有一次博弈，而且必须同时宣布产量，你会选择生产多少？你期望的利润为多少？为什么？（2）若你必须先宣布你的产量，你会生产多少？你认为你的竞争者会生产多少？你预计你的利润为多少？先宣布是一种优势还是劣势？为了得到先宣布或者后宣布的选择权，你愿意付出多少？（3）现在假设你正和同一个对手进行十次系列博弈中的第一次，每次都同时宣布产量。你想要十次利润的总和（不考虑贴现）最大化，在第一次你将生产多少？你期望第十次生产多少？第九次呢？为什么？',answer:`考察知识点：古诺、斯塔克尔伯格、有限重复博弈。\n思路：分别求古诺和斯塔克尔伯格均衡；有限重复博弈逆推。\n答案：（1）Q1=Q2=10，π=100。（2）Q1=15，Q2=7.5，π1=112.5；先宣布是优势，愿付12.5。（3）每次均为古诺产量10。`},
+{id:'m106',special:'微观·博弈论与寡头结合',qid:'A2 ★',question:'在一个重复、对称的双寡头垄断中，如果两个厂商生产最大化他们共同利润的产量（即两个厂商合谋时的产量），那么他们的利润为 πj；如果他们生产古诺产量水平，那么他们的利润为 πc。如果选择最大化自身利润的产量水平，每个局中人可以得到的最大支付为 πd。假设贴现率为 r，局中人采用的是惩罚策略，即如果在 t 期一个局中人背叛共同利润最大化策略，那么在 t 期以后的各期，另一个局中人就会生产古诺产量。试问要使惩罚策略构成该重复博弈的一个均衡，r 的取值应为多少？',answer:`考察知识点：重复博弈、触发策略、贴现率。\n思路：比较背叛与不背叛的利润现值。\n答案：r≤(πj−πc)/(πd−πj)。`},
+{id:'m107',special:'微观·博弈论与寡头结合',qid:'B1 ★',question:'有一个产业，厂商1已经进入该产业，厂商2观察厂商1的产量来决定自己是否进入产业以及相应的生产规模。市场的反需求函数为 p=56−2q，厂商1成本函数为 C1(q1)=20q1+f，厂商2的成本函数为 C2(q2)=20q2+f，其中 f 为固定成本。（1）给定厂商1的产量 q1，求厂商2的产量 q2 及利润 π2。（2）设 f=18，如果厂商2要求利润 π2 严格大于零才会进入该市场，那么厂商1预计到厂商2对 q1 的反应时，是允许厂商2进入该市场还是采取遏制措施阻止2进入？（3）若 f=2 时情况又如何？',answer:`考察知识点：序贯博弈、进入遏制、斯塔克尔伯格。\n思路：求追随者反应；比较垄断与允许进入的利润。\n答案：（1）q2=(18−q1)/2，π2=(18−q1)²/2−f。（2）f=18 时阻止进入。（3）f=2 时允许进入。`},
+{id:'m108',special:'微观·要素需求与供给',qid:'A1 ★★',question:'设某大学教授A需要雇佣一名研究助理来协助自己完成某项科研项目。研究助理的科研产出和他的工作时间之间的关系是 Q=12L−L²。教授A认为该研究助理每单位科研产出的价值为10元。（1）科研助理的边际收益产品是多少？（2）设该大学中有100名和教授A一样的教授需要雇佣研究助理。那么这个大学对研究助理的总需求是多少？（3）设研究助理的总供给曲线为 LS=15w。w研究助理的工资。那么该学校研究助理市场的均衡工资是多少？（4）在均衡工资水平下，教授A需要他的研究助理为他工作多少小时？',answer:`考察知识点：边际收益产品、要素需求、市场均衡。\n思路：求 MRP；加总需求；供求相等。\n答案：（1）MRP=120−20L。（2）Ld=600−5w。（3）w=30。（4）L=4.5。`},
+{id:'m109',special:'微观·要素需求与供给',qid:'A2 ★★★',question:'一个消费者要分配24小时给工作和休闲。她的效用来自于休闲时间 R 和收入 I，她工作一小时的工资率为 PL，她一天的效用函数为 U(R,I)=48R+RI−R²。（1）给出这个消费者的劳动供给函数。（2）她工作的时间会随着工资率的增加而增加吗？（3）不管工资率有多高，她的工作时间有一个极限吗？',answer:`考察知识点：劳动供给、效用最大化。\n思路：预算约束 I=(24−R)PL；对 R 求最大化。\n答案：（1）L=12PL/(1+PL)。（2）会，∂L/∂PL>0。（3）有，L<12。`},
+{id:'m110',special:'微观·要素需求与供给',qid:'B1 ★',question:'某厂商的生产函数为 q=f(x)，已知 f′(x)>0，f″(x)<0，该厂商只需要劳动这一种生产要素，市场对该产品的反需求函数 p(q) 是单调递减的，要素市场的工资率为 w。（1）若厂商在产品市场上是垄断者，而在要素市场上是完全竞争的，该如何求厂商的要素需求函数？（2）若厂商在产品市场上也是竞争的，又该如何求要素需求函数？（3）在前两小问所述的两种情况下，厂商对产品的要素需求量有何变化？请为你的结论给出严格证明。',answer:`考察知识点：要素需求、垄断与竞争、比较。\n思路：分别写利润最大化一阶条件；比较均衡条件。\n答案：（1）p′(f(x))f′(x)f(x)+p(f(x))f′(x)=w。（2）pf′(x)=w。（3）垄断下要素需求量小于竞争下，证明略。`},
+{id:'m111',special:'微观·要素市场均衡与干预',qid:'A1 ★★★',question:'假设劳动市场完全竞争。劳动需求方程是 L=−50w+450，供给方程是 L=100w。这里，L 表示雇佣劳动的数量，w 代表每小时的实际工资率。（1）在这一市场上，w 与 L 各为多少时，才能达到均衡？（2）假设政府希望通过给雇主提供补贴的方法，使均衡时的工资为每小时4美元，这份补贴应该是多少？就业的均衡水平又是多少？补助的总额是多大？（3）假如政府宣布最低工资率为每小时4美元，在这种价格下，需要多少劳动？有多少人失业？（4）进一步假设劳动的需求均来自于生产产品A的厂商，A产品市场中厂商拥有相同的技术，且生产函数均为 qA=L^0.5，且产品A的市场价格 pA=6，求没有政府干预时每个厂商的要素使用量以及厂商数目。',answer:`考察知识点：劳动市场均衡、补贴、最低工资、厂商要素需求。\n思路：供求相等；补贴使 wD=wS−s；最低工资下取需求；厂商利润最大化。\n答案：（1）w=3，L=300。（2）补贴3；L′=400；补贴总额1200。（3）需求250，失业150。（4）每个厂商 L=1，厂商数600。`},
+{id:'m112',special:'微观·要素市场均衡与干预',qid:'A2 ★★★',question:'偏远小镇上，独一公司是唯一雇主。该公司对劳动力的需求为：w=12−2L，其中 w 是工资率，劳动供给函数为 w=2L。（1）独一公司将雇用多少工人？工资率是多少？（2）如果当地的最低工资率是7，独一公司将雇用多少工人？（3）假设劳动市场不是买方垄断而是完全竞争，（1）和（2）两问的答案又是什么？',answer:`考察知识点：买方垄断、最低工资、完全竞争。\n思路：买方垄断 MFC=VMP；最低工资下取需求；完全竞争供求相等。\n答案：（1）L=2，w=4。（2）L=2.5。（3）完全竞争下（1）L=3，w=6；（2）不变。`},
+{id:'m113',special:'微观·要素市场均衡与干预',qid:'A3 ★★★',question:'假设只有一家香烟生产者收购大量农户所生产的烟叶，烟叶市场的供给曲线为 W=X，W 和 X 分别表示烟叶价格及烟叶供给量。香烟生产者的边际产品收益为 30−X。试求：（1）烟叶生产量与烟叶价格。（2）假设政府规定的烟叶最低收购价格为 W=12，且禁止低于烟叶最低收购价的交易行为，则烟叶种植农户与香烟生产者的剩余如何变化？',answer:`考察知识点：买方垄断、最低收购价、剩余分析。\n思路：MRP=MFC；最低价下供给决定数量；计算剩余变化。\n答案：（1）X=10，W=10。（2）烟农剩余增加22，香烟生产者剩余减少6。`},
+{id:'m114',special:'微观·要素市场均衡与干预',qid:'B1 ★★',question:'假设某个小镇有两个行业，一个生产服装，另一个生产钢铁。服装行业的生产函数为 yc=lc，钢铁行业生产函数为 ys=24√ls−2ls，lc 与 ls 分别是服装与钢铁行业的工人数。小镇中所有居民都会进入某个行业，居民的总人数为25，假设两个行业都是竞争性的，产品价格都是1。（1）假如劳动市场是竞争性的，服装业和钢铁业分别会雇佣多少工人，市场的工资是多少？（2）如果只有钢铁工人组成一个工会，它垄断性地向钢铁行业提供劳动力，工会的利益是最大化该本行业工人的总劳动收入，问此时服装业和钢铁业分别会雇佣多少工人，每个行业的工资会是多少？（3）如果两个行业的工人共同组成一个工会，它垄断性地向两个行业提供劳动力，工会的利益是最大化行业工人的总劳动收入，问此时服装业和钢铁业分别会雇佣多少工人，每个行业的工资会是多少？',answer:`考察知识点：劳动市场均衡、工会垄断、总劳动收入最大化。\n思路：竞争均衡 VMP=w；工会最大化总工资；联立求解。\n答案：（1）ls=16，lc=9，w=1。（2）ls=9，lc=16，ws=2，wc=1。（3）ls=4，lc=21，ws=4，wc=1。`},
+{id:'m115',special:'微观·上下游垄断',qid:'A1 ★★',question:'假定垄断厂商A和垄断厂商B具有共同信息。垄断厂商A生产的产品为 xs，边际成本为常数20。垄断厂商A将其产品销售给垄断厂商B的单位为 k。垄断厂商B利用生产要素 x 生产最终产品 y，生产函数为 y=x。假设最终产品 y 的市场需求函数为 P(y)=100−2y。试求：（1）垄断厂商A的定价 k；（2）最终产品的产量和价格；（3）各垄断厂商的利润。',answer:`考察知识点：上下游垄断、双重加价。\n思路：B根据 MR=MC 决定 x 需求；A面临需求曲线，再最大化利润。\n答案：（1）k=60。（2）y=10，P=80。（3）πA=400，πB=200。`},
+{id:'m116',special:'微观·上下游垄断',qid:'B1 ★★',question:'市场中一厂商生产和销售跑鞋。它面对的市场需求函数为 P=11−1.5QS，其中 QS 为销售跑鞋的数量，P 是以美元计的价格。生产一双跑鞋需要一单位的皮革。皮革由该厂商的生产部门成形和切割。皮革的成本函数是：TCL=1+QL+0.5QL²，其中，QL 是生产皮革的数量。跑鞋的成本函数（不包括皮革）是：TCS=2QS。（1）跑鞋的最优价格是多少？（2）皮革可以以价格 PL=1.5 在一竞争性市场上买卖，在这种情况下，皮革的市场价格为多少？生产部门应该内部供应多少皮革？它应该向外部市场供应多少？该厂商会在外部市场购买皮革吗？（3）现在假设该皮革是独特的和质量特别高的。因而，生产部门可能会作为外部市场的垄断供应商来供给外部市场。假设对皮革的外部需求由 P=32−QL 给出。此时，皮革卖到外部市场的价格应是多少？向外部市场销售的数量是多少？',answer:`考察知识点：内部转移定价、竞争性市场、垄断供应商。\n思路：分别按内部一体化、竞争市场、垄断外部市场求解。\n答案：（1）PS=8。（2）市场价格1.5；内部生产0.5，外部购买2。（3）只生产皮革，QL=31/3，PL=65/3。`},
+{id:'m117',special:'微观·交换的一般均衡',qid:'A1 ★★★',question:'考虑有2×2交换经济，2种商品为X和Y，2个消费者A和B，消费者A的效用函数为 uA=xAyA，初始票赋为 wA=(2,2)；消费者B的效用函数为 uB=xByB²，初始票赋为 wB=(3,3)，一个决策者断言 (xA,yA)=(4,1) 和 (xB,yB)=(1,4)，以及 pX=pY=1 是竞争均衡。（1）请问决策者断言的均衡配置是初始票赋的帕累托改进吗，请解释。（2）在这个价格下，请分别求出消费者A和B的最优消费向量。（3）根据前面的计算，决策者断言的配置向量和价格是竞争均衡吗，如果不是，请计算竞争均衡。',answer:`考察知识点：交换经济、帕累托改进、竞争均衡。\n思路：比较效用；求最优消费；验证市场出清。\n答案：（1）不是，B效用下降。（2）A：(2,2)，B：(2,4)。（3）不是；竞争均衡为 pX/pY=2/3，A：(5/2,5/3)，B：(5/2,10/3)。`},
+{id:'m118',special:'微观·交换的一般均衡',qid:'A2 ★★★',question:'a和b两人，在纯交换经济中，Ua=lnx1^a+2lnx2^a，Ub=lnx1^b+2lnx2^b，若初始禀赋为 a:(9,3)；b:(12,6)，求：（1）超额需求函数，并验证瓦尔拉斯定律。（2）均衡价格。（3）若总初始禀赋为(21,9)，求契约曲线。',answer:`考察知识点：纯交换经济、超额需求、瓦尔拉斯定律、契约曲线。\n思路：分别求需求；加总求超额需求；令超额需求为0；契约曲线满足 MRSA=MRSB。\n答案：（1）z1=3/p−14，z2=14p−3；验证略。（2）p=3/14。（3）契约曲线：x2a/(2x1a)=(9−x2a)/(2(21−x1a))。`},
+{id:'m119',special:'微观·交换的一般均衡',qid:'A3 ★★★',question:'假定在一个经济中只有三种商品 (x1,x2,x3)，对于 x2 与 x3 的过度需求函数为 ED2=−3p2/p1+2p3/p1−1，ED3=4p2/p1−2p3/p1−2。（1）请证明这些函数关于 p1,p2 与 p3 是零次齐次的。（2）运用瓦尔拉斯法则证明，如果 ED2=ED3=0，ED1 也一定为零。能否同样用瓦尔拉斯法则去计算 ED1？（3）请解有关均衡相对价格 p2/p1 与 p3/p1 的方程组，p3/p2 的均衡值是多少？',answer:`考察知识点：零次齐次、瓦尔拉斯法则、均衡相对价格。\n思路：验证齐次性；利用瓦尔拉斯法则；解方程组。\n答案：（1）证明略。（2）可以；ED1 表达式略。（3）p2/p1=3，p3/p1=5，p3/p2=5/3。`},
+{id:'m120',special:'微观·交换的一般均衡',qid:'A4 ★★★',question:'经济体中有两种消费者A和B。已知两者的效用为：UA=XA+lnYA，UB=XBYB，已经知道A有3单位X和2单位Y，而B有1单位X和6单位Y，又知道经济体中有50个A消费者和100个B消费者。他们能够通过市场交易来实现效用的最大化。请推导市场的均衡价格和两类消费者的消费量。',answer:`考察知识点：交换经济、市场需求、均衡价格。\n思路：令 PX=1，求各消费者需求；加总超额需求；令为0。\n答案：PY=0.25；A：XA=2.5，YA=4；B：XB=1.25，YB=5。`},
+{id:'m121',special:'微观·交换的一般均衡',qid:'A5 ★★★',question:'考虑一个拥有两个消费者和两种商品的纯交换经济。消费者A的效用函数为：UA(x1,x2)=3lnx1+lnx2，初始禀赋为 wA=(0,8)；消费者B的效用函数为：UB(x1,x2)=min(x1,x2)，初始禀赋为 wB=(8,0)。（1）请构造一个埃奇沃思盒状图清晰地描述出上述的纯交换经济；（2）假设商品1的价格是3，商品2的价格是1，请计算此时的消费者A的最优消费量；（3）请判断在第（2）题的价格体系下，该经济是否达到了具有帕累托最优的竞争均衡状态。如果达到了请给出证明或解释；如果没有达到，请说明价格应该如何调整才能趋于具有帕累托最优的竞争均衡状态。',answer:`考察知识点：埃奇沃思盒、竞争均衡、帕累托最优。\n思路：画图；A效用最大化；验证市场出清和契约曲线。\n答案：（1）图略。（2）x1A=x2A=2。（3）达到；市场出清且在契约曲线上。`},
+{id:'m122',special:'微观·交换的一般均衡',qid:'A6 ★★',question:'A的效用函数为 uA(x1,x2)=x1+x2，B的效用函数为 uB(x1,x2)=max(x1,x2)，A和B有相同的初始禀赋，均为 (1/2,1/2)。（1）在埃奇沃思盒中给出这一情形。（2）p1 和 p2 之间的均衡关系是什么？什么是均衡分配？',answer:`考察知识点：交换经济、完全替代、均衡。\n思路：画无差异曲线；分析价格关系。\n答案：（1）图略。（2）均衡价格关系 p1=p2；均衡分配为(1,0),(0,1)或(0,1),(1,0)。`},
+{id:'m123',special:'微观·交换的一般均衡',qid:'B1 ★★',question:'假设一个封闭的小国中只有A和B两个部落，在一个部落内人与人之间毫无差异，部落内的生产与消费都由其首领统一决定。两个部落消费的商品都只有食品（F）和衣物（C）两种。两个部落的效用函数分别为：UA(Fa,Ca)=FaCa，UB(Fb,Cb)=FbCb。假设今年A部落的收成为20单位食品和10单位衣物，而B部落为10单位食品和20单位衣物。两个首领聚在一起讨论是否需要交换。（1）用 P=Pf/Pc 表示两个部落对于两种商品的各自需求。（2）两个部落之间会发生交换吗？运用食品的市场出清条件，找出均衡价格 P*。（3）在价格水平 P* 下，不用通过计算，你能直接回答衣物市场存在过度供给或者过度需求吗？为什么？（4）在价格水平 P* 下，得到的是一个帕累托最优的分配吗？为什么？（5）如果世界价格水平为 P<1，哪个部落相对更加愿意对外开放？请提供相应的数字验证。',answer:`考察知识点：交换经济、均衡价格、帕累托最优。\n思路：求需求函数；市场出清；比较效用。\n答案：（1）Fa=10+5/P，Ca=10P+5；Fb=5+10/P，Cb=5P+10。（2）会；P*=1。（3）无过度供给或需求。（4）是帕累托最优。（5）B部落更愿意开放。`},
+{id:'m124',special:'微观·交换的一般均衡',qid:'B2 ★',question:'X和Y是某荒岛上唯一两个人，他们只消费椰子（N）和樱桃（B）两种商品。X的效用函数为 U(NX,BX)=NXBX，Y的效用函数为 U(NY,BY)=2NY+BY。X的初始禀赋为13单位椰子和5单位樱桃，而Y的初始禀赋为8单位椰子和6单位樱桃。求该经济最终的竞争性均衡结果。',answer:`考察知识点：交换经济、竞争性均衡。\n思路：求需求函数；分情况讨论角点解。\n答案：PN/PB=17/13；NX=143/17，BX=11，NY=214/17，BY=0。`},
+{id:'m125',special:'微观·交换和生产一般均衡',qid:'A1 ★★★',question:'鲁滨逊每天花9小时采摘椰子和捕鱼。他花 T 小时可以获得 T^0.5 单位的椰子，花 T 小时可以获得 T^0.5/2 单位的鱼。他消费这两种商品的效用是这两种商品数的乘积。（1）求他的生产可能性边界；（2）他劳动一天可以获得多少椰子和鱼？',answer:`考察知识点：生产可能性边界、效用最大化。\n思路：设时间分配；消去时间得PPF；在PPF上最大化效用。\n答案：（1）x²+4y²=9。（2）x=3√2/2，y=3√2/4。`},
+{id:'m126',special:'微观·外部性',qid:'A1 ★★★',question:'在某个小镇，一个果园挨着一个养蜂场。果园生产水果，养蜂场供养蜂蜜。果树的花朵为蜜蜂提供花蜜，蜜蜂也促进花粉传播。假设水果的价格为每单位是2元，而蜂蜜的价格是每单位4元。令 H 表示蜂蜜的产量，A 表示水果的产量。假设果园的成本函数为 CA(A,H)=A²/100−2H，养蜂场的成本函数为 CH(A,H)=H²/100−2A。（1）如果果园和养蜂场独立决策，那么水果和蜂蜜的产量分别是多少？（2）社会最优的水果和蜂蜜的产量各是多少？',answer:`考察知识点：正外部性、独立决策、社会最优。\n思路：分别最大化各自利润；合并后最大化总利润。\n答案：（1）A=100，H=200。（2）A=200，H=300。`},
+{id:'m127',special:'微观·外部性',qid:'A2 ★★★',question:'某钢铁企业S生产时向河中排放污染物，已知其成本函数为 Cs(s,x)=s²+x²−10x，其中 s 是生产钢铁的数量，x 是污染量。企业F是位于河边的渔场，它受到钢厂排污量 x 的影响，其成本函数为 Cf(f,x)=f²+x²+2x，其中 f 是鱼的产量。企业S和F分别是钢铁市场和鱼市场的价格接受者。（1）企业S排污量是多少？找到社会最优的排污量 x。（2）如果政府准备向污染企业征收每单位 t 元的庇古税，为达到社会最优配置应征收多少税？（3）假设钢厂拥有这条河流，企业F向钢厂每少排放一单位污染物支付 q 元，均衡时的 q 和 x 为多少？比较均衡时的 x 和社会最优排污量。如果是渔场拥有这条河流，结果如何？',answer:`考察知识点：负外部性、庇古税、科斯定理。\n思路：私人最优 MCx=0；社会最优 MCx+MECx=0；征税和产权交易。\n答案：（1）私人 x=5；社会最优 x=2。（2）t=6。（3）q=6，x=2，与社会最优相同；产权归属不影响结果。`},
+{id:'m128',special:'微观·外部性',qid:'A3 ★★★',question:'假定1和2两个厂商的成本函数分别为 C1=2Q1²+20Q1 和 C2=Q2²+150Q2−2Q1Q2，其中厂商1的生产有外在性，产品市场是完全竞争的。（1）如果每个厂商按其私人边际成本等于市场价格 P=200 来确定产量，它们的产量和利润分别是多少？（2）如果它们按社会边际成本等于市场价格来确定产量，它们的产量和利润分别是多少？（3）如果厂商1因此而亏损，政府应给他补贴多少？',answer:`考察知识点：外部性、私人边际成本、社会边际成本、补贴。\n思路：分别按私人和社会边际成本定价；补贴使产量达到社会最优。\n答案：（1）Q1=45，Q2=70，π1=4050，π2=4900。（2）Q1=115，Q2=140，π1=−5750，π2=19600。（3）补贴 S1=280，总补贴32200。`},
+{id:'m129',special:'微观·外部性',qid:'A4 ★★★',question:'一家垄断的钢铁厂的成本函数为：C(q)=q²+60q+100，该企业面临的需求曲线为：p=200−q，但是钢铁厂每生产1单位的钢铁将产生0.1单位的污染物 z，即 z=0.1q。清理污染的成本函数为：污染总成本=100+400z。（1）如果企业可以自由排放污染物，其产品价格和产出水平是多少？（2）假定生产者必须内部化其外部性，即它必须支付污染成本，则其产品价格和产出水平为多少？（3）上述计划是否能够消除污染？请分别计算出（1）和（2）两种情形下的污染物数量。（4）假定政府希望通过用税收减少企业的污染排放。如果政府希望减少的污染物排放量与（2）中相同，则应该怎样设计税收政策？',answer:`考察知识点：垄断、外部性内部化、税收。\n思路：分别写利润函数；一阶条件求最优；税收使产量降至社会最优。\n答案：（1）q=35，p=165。（2）q=25，p=175。（3）z1=3.5，z2=2.5；不能完全消除。（4）从量税 t=40。`},
+{id:'m130',special:'微观·外部性',qid:'A5 ★★★',question:'垄断企业的生产总成本函数为 2q²，面临的需求曲线为 QD=150−p。计算：（1）垄断企业利润最大化的产量是多少？社会有效率的产量是多少？（2）如果垄断企业生产还额外造成负外部性（如污染），每单位负外部性成本为 a，其中 0<a<50，求此时社会有效率的产量是多少？（3）在存在负外部性情况下，政府干预市场，如果让垄断企业生产社会有效率的产量，政府应该对垄断企业每单位产量进行补贴还是征税？大小是多少？',answer:`考察知识点：垄断、负外部性、社会最优、补贴/征税。\n思路：垄断 MR=MC；社会最优 P=SMC；比较私人产量和社会最优产量。\n答案：（1）垄断产量25；社会有效率产量30。（2）社会有效率产量 q=30−a/5。（3）a<25 时补贴 s=30−6a/5；a=25 时不干预；a>25 时征税 t=6a/5−30。`},
+{id:'m131',special:'微观·外部性',qid:'A6 ★★★',question:'某一个地区的纸品市场的需求曲线和供给曲线如下：QD=160000−2000P，QS=40000+2000P。由于没有任何废水排放管制措施，造纸厂向河中排放了大量废水。这些由于污染所产生的边际外部成本由曲线 MEC=0.0006QS 给出。（1）在没有任何管制措施下，竞争性的产出和价格是多少？（2）计算社会最优的产量和价格。（3）解释为什么（1）和（2）中的答案不同。（4）如果政府打算对纸张生产征收单位产出税，税率设置在什么水平比较合适？',answer:`考察知识点：负外部性、社会最优、庇古税。\n思路：竞争均衡供求相等；社会最优 SMC=P；税收使外部成本内部化。\n答案：（1）P=30，Q=100000。（2）Q=62500，P=48.75。（3）忽视外部成本导致产出过多、价格过低。（4）t=37.5。`},
+{id:'m132',special:'微观·外部性',qid:'A7 ★★',question:'市场中有两个捕鱼的企业，已经知道市场上鱼的价格为 p，而两家企业捕鱼的成本为：C(qi)=Qqi，其中 Q=q1+q2，i=1,2。（1）求纳什均衡时，两家企业的捕鱼量和利润；（2）若两家企业合并为一家，那么再问捕鱼量和利润；（3）比较（1），（2）的利润，问为什么会有这些差异。',answer:`考察知识点：公地悲剧、纳什均衡、合并。\n思路：分别求纳什均衡和合并后最优；比较利润。\n答案：（1）q1=q2=p/3，π1=π2=p²/9。（2）Q=p/2，π=p²/4。（3）合并利润更大，因外部性内部化。`},
+{id:'m133',special:'微观·外部性',qid:'B1 ★★',question:'假设一个地区有两家企业，企业1是上游企业，生产 x 产品，生产函数为 x=g(Lx)。企业2是下游企业，生产 y 产品，其产量不仅取决于自身劳动投入，还取决于企业1的产量 X，生产函数为 y=f(Ly,x)，劳动力的工资为 w，x,y 产品的价格分别为 px,py。请证明：在存在外部性的情况下，追求利润最大化的企业会出现无效率的资源配置。',answer:`考察知识点：外部性、利润最大化、资源配置效率。\n思路：比较私人利润最大化条件和社会最优条件；证明二者不等。\n答案：证明略。`},
+{id:'m134',special:'微观·外部性',qid:'B2 ★★',question:'假设有 n 个企业生产同样的商品，但它们的生产函数不同。这些企业的产出只由劳动力投入决定，所以生产函数可以写为 qi=fi(Li)。企业在生产过程中会造成一定的污染，各个企业产生的污染量是其劳动力投入的函数 gi(Li)。（1）假定政府想设置一个总污染上限 K，那么企业间最有效率的劳动力配置是怎样的？（2）依据企业的产量对企业征收统一的庇古税能否实现（1）中描述的有效率的资源配置？（3）假定政府不是根据企业的产量征税，而是对每单位污染征收庇古税。那么应该怎样制定税收？这一税收能否实现（1）中描述的资源配置？',answer:`考察知识点：外部性、庇古税、污染上限。\n思路：构造拉格朗日函数求最优配置；分析统一产量税和污染税的效果。\n答案：（1）条件略。（2）不能。（3）按 t=λ 征税，可以实现。`},
+{id:'m135',special:'微观·外部性',qid:'B3 ★★',question:'考虑这样一个外部性问题：某工厂的产品市场是完全竞争的，价格为 p；它生产过程中的噪音会影响附近一个住户，但它可以采取措施控制其生产过程中的噪音。假设厂商的成本函数是 c(x,e)，其中，x 是产量，e 是噪音水平。成本函数满足 ∂c/∂x>0，∂c/∂e≤0。住户的效用函数是 u(e)=v(e)+w，v′(e)<0。（1）推导利润最大化厂商的产出和噪音水平满足的一阶必要条件。（2）推导社会最优产量和噪音水平满足的一阶必要条件。（3）假设政府对厂商的产出水平征税，证明这种税收也必然是无效率的。（4）假设政府能够测量厂商产生的分贝水平 e，并直接对噪音征收从量税。证明：适量的税收可以导致帕累托有效配置。（5）假设 e 是按 x 的比例生产的，即 e(x)=αx，证明：对厂商产量征税能够导致帕累托有效配置，并求最优税率。（6）如果厂商与住户可以进行科斯式的交易，上一小问的结果是否会受影响？',answer:`考察知识点：外部性、庇古税、科斯定理。\n思路：分别求私人和社会最优一阶条件；分析不同税收工具。\n答案：略。`},
+{id:'m136',special:'微观·公共资源',qid:'A1 ★★',question:'某海湾盛产一种龙虾，附近有一个村子以捕龙虾为生。经营一艘捕虾船每个月花费200，如果有 x 艘捕虾船，捕龙虾船的总收入为 f(x)=1000(10.2x−x²)。（1）请计算最大化捕捉龙虾的总利润的船只数，此时的最大利润为多少？（2）实际情况下，每个村民都有捕虾的权利，因此，没有人可以限制别人的进入，此时会有多少艘捕虾船进入？利润水平又是如何？（3）该村委会决定发放捕虾许可证，提供许可证的成本为0，每张许可证只允许一艘船使用。该村委会的目标是最大化从发放许可证中获得的利润。请问该村委会对发放每一张许可证收费多少？村委会的利润为多少？（4）请问从经济直觉上说明为什么（2）问中的解是无效率的，而（3）问可以解决这种无效率问题？',answer:`考察知识点：公地悲剧、许可证、外部性内部化。\n思路：总利润最大化；自由进入零利润；许可证收费使进入数最优。\n答案：（1）x=5，π=25000。（2）x=10，π=0。（3）每张许可证收费5000，村委会利润25000。（4）产权明晰解决外部性。`},
+{id:'m137',special:'微观·公共资源',qid:'A2 ★★',question:'在一个小岛上有两个湖和20个垂钓者，每个垂钓者可以在任意一个湖上垂钓。在X湖上，可以钓到的鱼的总数量由下式给出：FX=10lx−lx²/2，这里，lx 是湖上垂钓的人数。Y湖的钓鱼数量为：FY=5ly，每单位鱼的价格为1。（1）均衡时钓到鱼的总数会是多少？（2）该小岛的管理者认为通过限制在X湖上垂钓的人数可以增加钓到的鱼的数量。为了最大化总的钓鱼量，被准许在X湖上垂钓的人数应是多少？在这种情况下钓到的鱼的总量是多少？（3）管理者决定发放在X湖上垂钓的执照。如果发放执照会带来最优的人力配置，那么，获取执照的费用应该是多少？（4）解释这个问题如何揭示了产权和外部性之间的联系？',answer:`考察知识点：公共资源、最优配置、执照收费。\n思路：均衡时两湖人均钓鱼量相等；最大化总钓鱼量；执照费等于租金。\n答案：（1）总数100。（2）lx=5，ly=15，总数112.5。（3）执照费2.5。（4）产权界定可解决外部性。`},
+{id:'m138',special:'微观·公共资源',qid:'B1 ★★',question:'考虑有一个任何人都可以捕鱼的湖泊。如果捕鱼的渔夫数量是 n，则总共可以捕到 f(n) 千克鱼（每个渔夫可捕 f(n)/n 千克），f′(n)>0，f″(n)<0。假设鱼的市场价格 p 不受这个湖泊鱼产量的影响，每个渔夫捕鱼的成本是 c>0。（1）求参与捕鱼的渔夫的均衡人数；（2）求参与捕鱼的渔夫的最优人数，将其与（1）的结果比较，解释为什么二者不同；（3）如果这个湖泊是某人的私人财产，他会派多少渔夫去湖上捕鱼？',answer:`考察知识点：公地悲剧、最优人数、私人产权。\n思路：自由进入零利润；社会最优边际条件；私人产权最大化利润。\n答案：（1）f(n*)/n*=c/p。（2）f′(ns)=c/p，ns<n*，因外部性。（3）ns。`},
+{id:'m139',special:'微观·公共资源',qid:'B2 ★★',question:'乔治海滩是新英格兰海岸外鱼的高产地区，但根据鱼的总数可分为两个区域。1区每天的捕捞量是：F1=200X1−2X1²；2区每天的捕捞量是：F2=100X2−X2²。各区的边际捕捞量由下式给出：MFC1=200−4X1，MFC2=100−2X2。现在有100条船得到美国政府许可在这两个区域捕鱼。鱼以每吨100美元出售。每条船的总成本为每天不变的1000美元。（1）如果船都能在他们想去的地方捕鱼，政府不加限制，每个区域将有多少条船捕鱼？捕捞的总值将是多少？（2）如果美国政府能够限制船只，每个区域应当配置多少条船？捕捞的总值将是多少？假定船的总数仍为100。（3）如果另有渔民想购买船只，加入捕鱼队伍，一个希望捕鱼净值最大化的政府是否应当给他们许可证让他们捕鱼？为什么？',answer:`考察知识点：公共资源、最优配置、许可证。\n思路：自由进入平均产量相等；社会最优边际产量相等；比较利润。\n答案：（1）X1=200/3，X2=100/3，总值666600。（2）X1=50，X2=50，总值750000。（3）不应，超过92.5条船会降低总利润。`},
+{id:'m140',special:'微观·公共物品',qid:'A1 ★★★',question:'某村庄有80户人家，他们正在决定是否在村里修一条马路，每个农户的效用函数可以表示为 u(x,y)=x^0.5+y，其中 x 代表马路长度，单位是米，y 代表花费在其他商品上的支出，单位是万元。修一米马路需要4万元，那么对于这个村庄而言，帕累托最优的马路长度是多少？',answer:`考察知识点：公共物品、萨缪尔森规则。\n思路：总效用最大化；或 ∑MRS=MC。\n答案：x=100 米。`},
+{id:'m141',special:'微观·公共物品',qid:'A2 ★★',question:'假定社会上只有两个人，对甲来说蚊虫控制的需求曲线为：qa=100−p，对乙来说其需求曲线为：qb=200−p。（1）假定蚊虫控制是纯公共品，即一旦生产出来，每个人都会从中受益。如果它能以每单位120美元的不变边际成本得到，其最优水平是多少？（2）如果蚊虫控制由私人市场来进行，又会提供多少？（3）如果政府提供最适当的蚊虫控制规模，这将花费多少？如果个人按其从蚊虫控制中所得的好处比例去分担费用，税收将怎样在两个人之间分配？',answer:`考察知识点：公共物品、私人提供、最优规模、税收分担。\n思路：垂直加总需求；私人提供由高需求者决定；按受益比例分担。\n答案：（1）Q=90。（2）私人提供80。（3）花费10800；甲900，乙9900。`},
+{id:'m142',special:'微观·公共物品',qid:'A3 ★',question:'假定经济生活中有三种商品，n 个人。两种商品是纯公共物品（非排他的），第三种商品是普通的私人商品。（1）为了资源在任意一种公共品与私人商品之间有效率的配置，什么条件成立？（2）为了在两种公共品之间有效配置资源，什么条件一定要成立？',answer:`考察知识点：公共物品、资源配置效率、萨缪尔森规则。\n思路：分别写出公共品与私人品、两公共品之间的效率条件。\n答案：略。`},
+{id:'m143',special:'微观·公共物品',qid:'B1 ★',question:'离散型公共物品的有效供应问题。考虑一个两人经济社会。两人只能消费两种商品：私人物品和公共物品。个人最初拥有资源禀赋 wi，i=1,2；如果他为公共物品贡献 gi，i=1,2，将会有 xi=wi−gi 的私人物品消费；个人的效用函数为 ui(G,xi)，G=g1+g2，效用函数关于 G 和 xi 都是严格递增的。公共物品仅能以一种离散的数量被利用，供应一单位公共物品的成本为150。试用简单的博弈说明独立决策不能提供有效的公共物品数量。',answer:`考察知识点：公共物品、免费乘车、博弈。\n思路：写收益矩阵；找占优策略均衡。\n答案：占优策略均衡为（不买，不买），无法有效提供。`},
+{id:'m144',special:'微观·信息不对称',qid:'A1 ★★',question:'一个二手车市场有10000辆车。这些车的价值均匀的分布在5000到15000美金之间。二手车车主愿意以车的真实价值的售价出售该车。二手车买主无法评估每辆二手车的真实价值，他们的需求取决于二手车市场的所有车的平均价值（AP）以及二手车的售价（P），即需求 Q=1.5AP−P。（1）如果二手车买主根据整个二手车市场来估计平均价值AP，那么AP将是多少？二手车的均衡价格将是多少？（2）在（1）的均衡中，最终实际交易的二手车的平均价值应为多少？（3）如果二手车买家根据实际交易的二手车的平均价值修改他们对AP的估计，新的二手车均衡价格应该为多少？这时，交易的二手车平均价值又当为多少？（4）这样下去，会存在一个价格和交易量为正的市场均衡吗？',answer:`考察知识点：逆向选择、二手车市场、均衡。\n思路：逐步下调平均价值估计；观察价格和交易量变化。\n答案：（1）AP=10000，P=10000。（2）AP=7500。（3）P=7500，AP=6250。（4）不存在正价格和正交易量的均衡。`},
+{id:'m145',special:'微观·信息不对称',qid:'B1 ★★',question:'假设一个厂商试图找出最适的劳工雇用量(L)和效率工资(W)来极大化它的利润，它的生产函数(F)是由劳工数量(L)和劳工的努力程度所组成的，Y=F[e(W)L]，e 为每位劳工的努力程度，eW=∂e/∂W>0。假设产品价格固定，P=1。（1）找出决定厂商利润极大化的均衡条件。（2）如果给定劳工的努力程度和工资的关系，e(W)=ln(W/3)，W>3；e(W)=0，W≤3 时。请根据（1）找出的均衡条件，求出最适效率工资是多少？',answer:`考察知识点：效率工资、利润最大化。\n思路：对 L 和 W 求一阶条件；代入具体函数求解。\n答案：（1）We′(W)/e(W)=1。（2）W=3e。`},
+{id:'m146',special:'微观·信息不对称',qid:'B2 ★',question:'团队合作中团队人数的增加可能会降低团队成员工作的积极性。假设 n 个合作者的共同产出的收益为 R=e1+e2+…+en，其中 ei 是合作者的努力程度，他付出努力 ei 需要的成本为 c(ei)=ei²/2。（1）如果合作者平分收益 R，那么均衡的努力程度和剩余分别是多少？（2）如果最后只有一个合作者能够获得收益，那么均衡的努力程度和平均剩余是多少？（3）回到（1），一个合作者获得的剩余随 n 递增还是递减？随着 n 的增加，每个合作者获得剩余的极限值是多少？（4）分析现代企业中员工持股计划的激励特征。',answer:`考察知识点：团队合作、搭便车、激励。\n思路：分别求平分收益和集中收益下的均衡；比较剩余。\n答案：（1）ei=1/n，πi=(2n−1)/(2n²)。（2）ei=1，πi=1/2；平均分配更好。（3）递减；极限为0。（4）员工持股计划在大团队中激励作用有限。`},
+{id:'h1',special:'宏观·宏观经济学数据',qid:'A1 ★★★',question:'假设某政府花钱10000修路，其中给工人支付工资5000，给水泥厂支付5000，水泥厂用5000来购买设备，而工人用2000来买大米，用2000来买电脑，另外1000存入银行。电脑店用收入获得的2000中的1000还之前电脑厂家贷款的欠款，又从银行借了1000，加上剩下的1000总共2000从电脑厂进了2000元的电脑（作为存货）。计算GDP、消费支出、耐用品消费支出、非耐用品消费支出、服务支出、国民投资、存货投资、固定资产投资和政府采购。',answer:`考察知识点：GDP核算、支出法、消费分类、投资分类、政府采购。\n思路：按支出法 GDP=C+I+G；区分耐用品、非耐用品、服务；投资含固定资产投资和存货投资。\n答案：GDP=21000；消费支出=4000；耐用品消费支出=2000；非耐用品消费支出=2000；服务支出=0；国民投资=7000；存货投资=2000；固定资产投资=5000；政府采购=10000。`},
+{id:'h2',special:'宏观·宏观经济学数据',qid:'A2 ★★',question:'假设一国的国民收入账户显示：GDP=100，C=70，I=40，G=20，NFP=0 以及 EX=20。（1）进口值（IM）是多少？（2）经常账目逆差是多少？（3）储蓄率是多少？（4）现在假设政府征税 T=10，其他条件不变。政府和私人和国民储蓄各为多少？',answer:`考察知识点：国民收入核算、经常账户、储蓄。\n思路：由 GDP=C+I+G+EX−IM 求IM；NX=EX−IM；储蓄 S=Y−C−G；征税后分别求私人、公共、国民储蓄。\n答案：（1）IM=50。（2）经常账户逆差 NX=−30。（3）储蓄率10%。（4）政府储蓄 −10；私人储蓄20；国民储蓄10。`},
+{id:'h3',special:'宏观·宏观经济学数据',qid:'A3 ★★★',question:'考虑一个只生产和消费香蕉与服装的经济，2006年香蕉10万/1元，服装5万/40元；2016年香蕉20万/2元，服装6万/50元。假设经济中生产的数量等于消费的数量。（1）以2006年为基期，计算2016年的名义GDP、实际GDP和GDP价格指数。（2）以2006年为基期，计算2016年的CPI指数。（3）在2006年和2016年之间，价格上涨了多少？比较GDP折算指数和CPI指数给出的答案，简要阐述两者的特点以及在衡量生活成本方面可能存在的误差。',answer:`考察知识点：名义GDP、实际GDP、GDP平减指数、CPI、生活成本指数。\n思路：分别用当期价格和基期价格计算；CPI用固定篮子；比较二者差异。\n答案：（1）名义GDP=340万元；实际GDP=260万元；GDP价格指数≈1.31。（2）CPI≈1.29。（3）GDP折算指数上涨31%，CPI上涨29%；特点与误差略。`},
+{id:'h4',special:'宏观·宏观经济学数据',qid:'A4 ★★★',question:'假设某国只生产3种产品：篮球、纯净水、CD。2017年价格10、1、14，数量100、100、200；2018年价格12、2、16，数量120、130、250。（1）计算该国GDP平减指数，以及物价总水平变动的百分比，以2018年为基年。（2）计算该国的CPI，并基于CPI计算物价变动的百分比，以2017年作为基年，而且固定的篮子是10个篮球、10瓶矿泉水、20张CD。',answer:`考察知识点：GDP平减指数、CPI、通货膨胀率。\n思路：以2018年为基年计算2017年平减指数；以2017年为基年计算2018年CPI。\n答案：（1）2017年GDP平减指数≈0.85；物价变动≈17.65%。（2）2018年CPI≈1.1795；物价变动≈17.95%。`},
+{id:'h5',special:'宏观·宏观经济学数据',qid:'A5 ★★★',question:'假设A国在2014年的真实GDP和名义GDP分别是2000亿和1600亿。其中A国的真实GDP以2013年为基准年份计算得出。A国2014年人口比2013年增长10%，原因是来自邻国的大规模的移民。（1）计算国内生产总值平减指数。（2）计算2013年到2014年间通货膨胀的百分比指数。（3）假定在2013到2014年人均名义GDP的增长率是40%，那么同时期人均实际GDP的增长率是多少？（4）计算2013年名义GDP的总值。',answer:`考察知识点：GDP平减指数、通货膨胀率、人均GDP增长率。\n思路：平减指数=名义/实际；通货膨胀率由平减指数变化求；利用增长率关系求2013年名义GDP。\n答案：（1）2014年GDP平减指数=0.8。（2）通货膨胀率=−20%。（3）人均实际GDP增长率≈77%。（4）2013年名义GDP≈1066.67。`},
+{id:'h6',special:'宏观·凯恩斯交叉及乘数',qid:'A1 ★★★',question:'考虑一个适用凯恩斯交叉分析的封闭经济。消费函数由方程 C=200+(2/3)(Y−T) 给出。计划投资、政府支出和税收都是300。（1）如果 Y 为1500，计划支出是多少？存货积累或者存货负积累是多少？均衡收入应该高于还是低于1500？（2）均衡收入是多少？（3）均衡的消费、私人储蓄、公共储蓄和国民储蓄是多少？（4）求投资乘数、政府支出乘数、税收乘数和平衡预算乘数。',answer:`考察知识点：凯恩斯交叉、计划支出、乘数。\n思路：计算计划支出 PE=C+I+G；均衡 Y=PE；求各乘数。\n答案：（1）PE=1600；存货负积累100；均衡收入高于1500。（2）Y*=1800。（3）C=1200；私人储蓄300；公共储蓄0；国民储蓄300。（4）投资乘数3；政府支出乘数3；税收乘数−2；平衡预算乘数1。`},
+{id:'h7',special:'宏观·凯恩斯交叉及乘数',qid:'A2 ★★★',question:'假设某经济的消费函数为 C=100+0.8YD，投资 I=50，政府购买性支出 G=200，政府转移支付 TR=62.5，税率 t=0.25。（1）求均衡收入；（2）试求：投资乘数、政府支出乘数、税收乘数、转移支付乘数和平衡预算乘数；（3）假设该社会达到充分就业所需要的国民收入为1200，试问用：①增加政府购买；②减少税收；③增加政府购买和税收同一数额实现充分就业，各需多少？（4）若将题中的比例税改为定量税 T0=250，结果有何不同？',answer:`考察知识点：比例税、乘数、充分就业缺口。\n思路：可支配收入 YD=Y−tY+TR；求均衡；按乘数求政策变动。\n答案：（1）Y=1000。（2）投资乘数2.5；政府支出乘数2.5；税收乘数−1.5；转移支付乘数2；平衡预算乘数1。（3）①增购80；②减税133.3；③增购200、增税200。（4）定量税下均衡收入仍1000；投资乘数5；政府支出乘数5；税收乘数−4；转移支付乘数4；平衡预算乘数1；①增购40；②减税50；③增购200、增税200。`},
+{id:'h8',special:'宏观·IS-LM具体函数',qid:'A1 ★★★',question:'在两部门经济中，消费函数：C=100+0.8Yd，投资函数：I=140−5r，实际货币需求函数：L=0.2Y−3r，实际货币供给：M=200。（1）求IS、LM方程的表达式并画图；（2）若 M 增加至220，LM曲线如何移动？求此时均衡的收入、利率和投资；（3）为什么LM曲线移动的距离不等于均衡收入的增加量？',answer:`考察知识点：IS-LM模型、货币政策、挤出效应。\n思路：产品市场均衡求IS；货币市场均衡求LM；联立求均衡；分析LM移动量与收入增加量差异。\n答案：（1）IS:Y=1200−25r；LM:Y=1000+15r。（2）LM右移；Y=1137.5，r=2.5，I=127.5。（3）因利率下降导致投机需求增加，收入增加量小于LM水平移动量。`},
+{id:'h9',special:'宏观·IS-LM具体函数',qid:'A2 ★★★',question:'假设一个经济有IS曲线 Y=3600+3G−2T−150r 和LM曲线 Y=2M/P+100r，投资方程为 I=1000−50r，消费方程为 C=200+(2/3)(Y−T)。长期均衡的总产出为4000，均衡价格为1。（1）假设政府购买为1200，政府想达到900的投资和4000的产出。那么利率 r 是多少？T 和 M 分别是多少？私人储蓄、公共储蓄以及国家储蓄分别为多少？（2）假设政府想减税到1000，在 G 为1200的水平上，当 Y=4000 时，利率 r 是多少？M 和 I 分别是多少？私人储蓄、公共储蓄和国家储蓄分别是多少？（3）求此时政府购买乘数、税收乘数和货币政策乘数。',answer:`考察知识点：IS-LM模型、财政政策、货币政策、储蓄。\n思路：代入目标值求变量；联立IS-LM求乘数。\n答案：（1）r=2；T=1450；M=1900；私人储蓄650；公共储蓄250；国民储蓄900。（2）r=8；M=1600；I=600；私人储蓄800；公共储蓄−200；国民储蓄600。（3）政府购买乘数1.2；税收乘数−0.8；货币政策乘数1.2。`},
+{id:'h10',special:'宏观·IS-LM具体函数',qid:'A3 ★★★',question:'假设某经济体的消费函数为 C=300+0.8Y，投资函数为 I=600−50r，政府购买为 G=100，货币需求函数为 L=150+0.5Y−125r，货币供给 M=1150，价格水平 P=1。（1）写出IS、LM方程，并计算均衡的国民收入和利率。（2）如果该国充分就业的国民收入是4000，若用增加政府购买实现充分就业，应该增加多少政府购买，此时政府购买乘数为多少，挤出效应多大，挤出了多少私人投资？（3）如果该国充分就业的国民收入是4000，若用增加货币供给实现充分就业，应该增加多少货币供给？（4）如果该国充分就业的国民收入是4000，若用增加政府购买实现充分就业的同时要求保持初始利率不变，此时政府购买和货币供给变动量分别为多少？',answer:`考察知识点：IS-LM、财政政策、货币政策、挤出效应。\n思路：求IS-LM；代入充分就业收入求政策变动；计算挤出效应。\n答案：（1）IS:Y=5000−250r；LM:Y=2000+250r；Y=3500，r=6。（2）ΔG=200；政府购买乘数2.5；挤出效应500；挤出私人投资100。（3）ΔM=500。（4）ΔG=100；ΔM=250。`},
+{id:'h11',special:'宏观·IS-LM具体函数',qid:'A4 ★★★',question:'考虑一个由以下方程描述的经济体：消费函数 C=300+0.8Yd，投资函数 I=200−1500r，净出口函数 NX=100−0.1Y−500r，货币需求函数 L=0.5Y+200−2000r，政府支出 G=200，税收 T=100+0.25Y，名义货币供给 MS=750，价格水平 P=1。（1）求IS和LM曲线的函数，在商品市场与货币市场达到均衡时利率与收入各为多少？（2）若政府支出增加100（即从200变为300），是否有挤出效应？若有，求挤出效应大小。（3）若政府减税100，是否可刺激产出，和增幅增加同样多的支出相比哪个效果更好？',answer:`考察知识点：IS-LM、挤出效应、财政政策比较。\n思路：求IS-LM；分别计算政府支出增加和减税的影响。\n答案：（1）IS:Y=1440−4000r；LM:Y=1100+4000r；r=0.0425，Y=1270。（2）有挤出效应；挤出效应100。（3）减税可刺激产出；增加政府支出效果更好。`},
+{id:'h12',special:'宏观·IS-LM具体函数',qid:'A5 ★★★',question:'下列等式描绘了一个经济体：C=0.8(1−t)Y，t=0.25；I=900−50i；G=500；L=0.25Y−62.5i；CU=150，RE=100；cu=0.2，re=0.1；P=2。（1）求IS曲线和LM曲线方程，并计算均衡收入和均衡利率。（2）计算财政政策乘数和货币政策乘数。（3）现在政府要改变需求的构成，减少消费100、增加投资100，从而保持当前的收入水平不变。请问：需要什么样的政策组合？用IS-LM曲线模型表示你的建议。并计算出需要调整的政策变量变化量是多少。（4）假设充分就业的收入水平为4000，政府准备采用扩张性政策以实现充分就业，请问：如果单独采用扩张性财政政策，需要增加多少政府购买支出？如果采用扩张性财政政策的同时，采用适应性货币政策，政府购买支出和名义货币供给的变化量分别是多少？',answer:`考察知识点：IS-LM、货币乘数、政策组合、乘数。\n思路：求货币供给；求IS-LM；计算乘数；分析政策组合。\n答案：（1）IS:Y=3500−125i；LM:Y=2000+250i；Y=3000，i=4。（2）财政政策乘数5/3；货币政策乘数4/3。（3）紧缩财政+扩张货币；税收增加125，实际货币供给增加125。（4）单独财政政策需增购600；组合政策增购400、名义货币供给增加500。`},
+{id:'h13',special:'宏观·变形IS-LM',qid:'A1 ★★',question:'在简单的IS-LM模型中，投资不仅仅是实际利率的函数，还受到实际产出的影响：I=Ī−ar+bY，a,b>0。（1）请计算在以上两种情况下的财政支出乘数和税收乘数。（2）请在以上两种情况下分析政府支出的挤出效应是否存在？（3）请用IS-LM模型画图说明，在哪种情况下货币政策更有效？',answer:`考察知识点：IS-LM、投资函数、财政乘数、货币政策效果。\n思路：分别求IS曲线；比较斜率；分析挤出效应和货币政策效果。\n答案：（1）第一种：财政支出乘数 1/(1−d)，税收乘数 −d/(1−d)；第二种：财政支出乘数 1/(1−d−b)，税收乘数 −d/(1−d−b)。（2）两种情况下都存在挤出效应。（3）第二种情况下货币政策更有效。`},
+{id:'h14',special:'宏观·AD-AS具体函数',qid:'A1 ★★★',question:'假定某经济存在以下关系：消费函数 C=1400+0.8YD，投资函数 I=200−50r，税收 T=0.25Y，政府购买支出 G=200，名义货币供给 M=900，价格水平 P=1，货币需求函数 L=0.4Y−100r。求：（1）总需求函数、均衡国民收入与利率；（2）假设该经济的充分就业收入为3800，如果用扩张性的财政政策实现充分就业，政府购买支出应增加多少？此时利率将变动到多少？（3）当总供给函数为 Y=3350+400P 时，求总供给与总需求均衡时的国民收入和价格水平。',answer:`考察知识点：AD-AS模型、IS-LM、财政政策。\n思路：求IS-LM；消去利率得AD；联立AS求均衡。\n答案：（1）AD:Y=3000+750/P；Y=3750，r=6。（2）ΔG=30；r=6.2。（3）Y=3750，P=1。`},
+{id:'h15',special:'宏观·AD-AS具体函数',qid:'A2 ★★★',question:'三部门组成的经济的消费函数 C=80+0.8Yd，投资函数 I=20−5r，货币需求函数 L=0.4Y−10r，政府购买支出 G=20，税收 T=0.25Y，名义货币供应量 M=90，充分就业的国民收入为285。其中 r 是利率，Yd 是可支配国民收入，Y 是国民收入。（1）若价格水平 P=2，则IS-LM决定的均衡国民收入与利率各为多少？（2）若总供给曲线为 Y=235+40P，总需求曲线与总供给曲线决定的均衡国民收入和价格各为多少？（3）若通过变动政府购买而实现充分就业，则求政府购买的变动量与价格水平？（4）若通过变动货币供应量而实现充分就业，则需要如何变动货币供应量？',answer:`考察知识点：AD-AS、IS-LM、财政/货币政策。\n思路：求IS-LM；得AD；联立AS；代入充分就业求政策。\n答案：（1）r=5，Y=237.5。（2）P=1，Y=275。（3）ΔG=15；P=1.25。（4）ΔM=37.5。`},
+{id:'h16',special:'宏观·AD-AS具体函数',qid:'A3 ★★★',question:'某经济由下列方程描述：消费函数 C=200+0.75(Y−T)，投资函数 I=250−20r，实际货币余额需求函数 (M/P)d=0.5Y−10r，政府购买 G=200，税收 T=200，货币供给 M=1000，价格水平为 P，社会总产出函数 Y=200√L，劳动供给函数 LS=16(W/P)²，W 是名义工资，r 是实际利率。价格和工资充分弹性。（1）求总需求曲线表达式；（2）求总供给曲线表达式；（3）求均衡产出、均衡价格和均衡工资。',answer:`考察知识点：AD-AS、劳动市场、总供给。\n思路：求IS-LM得AD；劳动市场均衡求AS；联立求均衡。\n答案：（1）AD:Y=400+1600/P。（2）AS:Y=4000。（3）P=4/9，Y=4000，W=20/9。`},
+{id:'h17',special:'宏观·AD-AS具体函数',qid:'A4 ★★★',question:'假设经济体附有理性预期的总供给函数为 Ys=Yf+200(P−Pe)，总需求函数为 Yd=1000+G+20Ms/P，充分就业的国民收入为 Yf=4000，Pe 和 P 分别为人们对物价的预期和实际的物价水平。（1）如果经济已处于充分就业状态，近期不会有政策变化的预期，名义货币供给 Ms=1000，政府购买 G=1000，实际的物价水平是多少？（2）如果中央银行宣布名义货币供给增加1000，且言行一致，产量水平和实际价格水平将为多少？（3）如果中央银行公开宣布增加名义货币供应1000，实际却增加了5000，产量水平和实际价格水平是多少？',answer:`考察知识点：理性预期、AD-AS、货币政策。\n思路：充分就业时 P=Pe；预期到的货币扩张只影响价格；未预期到的部分影响产出。\n答案：（1）P=10。（2）P=20，Y=4000。（3）P=30，Y=6000。`},
+{id:'h18',special:'宏观·AD-AS具体函数',qid:'A5 ★★★',question:'卢卡斯供给曲线：Y=2000(P−Pe)+Ye，其中，充分就业产出 Ye=4000；总需求曲线 Y=1000+3M/P，其中，货币供给 M=1000。（1）假设某一经济已经处于潜在产出水平，并且公众预期政策近期内不变，求价格水平；（2）假设中央银行宣布把货币供给增加到1500，公众预期到货币供给的增加，则当货币供给增加后，产出和价格水平的均衡值是多少？（3）假设当中央银行宣布把货币供给增加到1500，但是实际上却增加到2000，求新的产出水平和价格水平。（4）以上结论验证了理性预期理论的什么结论。',answer:`考察知识点：卢卡斯供给曲线、理性预期、货币政策。\n思路：预期到的货币变动中性；未预期到的货币变动影响产出。\n答案：（1）P=1。（2）P=1.5，Y=4000。（3）P≈1.732，Y≈4464。（4）预期到的货币供给只影响价格，未预期到的货币供给影响产出和价格。`},
+{id:'h19',special:'宏观·总供给曲线求解',qid:'A1 ★★★',question:'已知某宏观经济中的总量生产函数 Y=K^α L^β，α+β=1，K 和 L 分别为两个生产要素，它们相应的价格分别为 C 和 W，产出 Y 的价格为 P。（1）写出劳动需求函数；（2）写出总供给函数；（3）设 α=β=0.5，K=500，W=25，W/P=1，写出新凯恩斯学派的总供给函数和古典学派的总供给函数。',answer:`考察知识点：劳动需求、总供给函数、新凯恩斯与古典学派。\n思路：利润最大化求劳动需求；代入生产函数求AS。\n答案：（1）L=f(W/P)，劳动需求是实际工资的减函数。（2）Y=K(W/P)^(−(1−α)/α)(1−α)^((1−α)/α)。（3）新凯恩斯：Y=10P；古典：Y=250。`},
+{id:'h20',special:'宏观·总供给曲线求解',qid:'A2 ★★★',question:'假设生产函数和劳动供给函数分别由以下两个式子 F(N)=20N−N² 和 NS=W/(2P) 刻画，其中 N 为工人人数，W 为名义工资，P 为价格水平。（1）求解劳动力市场均衡工资水平和均衡雇佣人数。（2）假设价格水平外生给定，若政府推行最低名义工资水平 W=50，计算存在最低工资时的均衡价格水平和就业人数。（3）在最低名义工资水平为50时，推导总供给曲线。',answer:`考察知识点：劳动市场均衡、最低工资、总供给曲线。\n思路：求劳动需求与供给；分情况讨论最低工资下的均衡。\n答案：（1）W/P=10，N=5。（2）P=5，N=5。（3）总供给曲线分段：P<2.5 时 Y=0；2.5<P<5 时 Y=100−625/P²；P≥5 时 Y=500−625/P²。`},
+{id:'h21',special:'宏观·带有预期的AS',qid:'A1 ★★',question:'一个经济的总需求和总供给分别为：AD:m+v=p+y；AS:p=p*+λ(y−y*)。其中，p* 代表对价格水平的预期，y* 为充分就业产出水平，m 为货币总量。（1）若预期为完全预期，求出均衡的价格与产出水平。（2）若货币当局实行了一次意料外的并且是永久性的货币扩张，图解这次政策操作的短期和长期效应。',answer:`考察知识点：AD-AS、预期、货币政策短期与长期效应。\n思路：完全预期时 p=p*；未预期到的货币扩张短期影响产出，长期只影响价格。\n答案：（1）y=y*，p=m+v−y*。（2）短期产出增加、价格上升，长期产出回到充分就业、价格进一步上升。`},
+{id:'h22',special:'宏观·带有预期的AS',qid:'A2 ★★',question:'假设一个经济体中的总需求曲线为 y=m+v−p，总供给曲线为 y=y*+λ(p−E(p))。（1）上述形式总需求方程的理论基础是什么？为什么货币量对总需求有正面影响，而物价水平对总需求的影响是负面的。（2）在总供给曲线中为什么预期价格的失误会导致总供给偏离充分就业水平？（3）该经济中的均衡产量水平是什么？它受什么因素的影响？与预期价格有关吗？（4）如果人们对价格的预期是理性的，该经济中的均衡产量水平是什么？（5）在 v 是随机外在冲击的情况下，请问中央银行有没有必要采取货币政策以稳定经济于充分就业水平？',answer:`考察知识点：AD-AS、理性预期、货币政策有效性。\n思路：货币数量论；预期误差影响产出；理性预期下产出回到自然率。\n答案：（1）理论基础为货币数量论。（2）预期失误导致实际价格偏离预期价格，从而产出偏离充分就业。（3）y=y*/(1+λ)+λ(m+v−E(p))/(1+λ)；受货币量、流通速度、预期价格影响。（4）y=y*。（5）没有必要。`},
+{id:'h23',special:'宏观·带有预期的AS',qid:'B1 ★',question:'AD-AS模型由下式说明：AD:y=m−p；AS:p=pe+λ(y−y*)。（1）假如预期价格是外生变量，请计算均衡的GDP是多少？用经济学原理解释，当货币量增加时，GDP会如何变动？其内在机制是什么？（2）假如预期是完全预见，GDP是多少？货币量的增加对GDP的影响是什么？（3）什么是理性预期？利用模型说明，当公众使用理性预期时，预期价格是多少？实际价格是什么？均衡GDP是多少？（4）假如预期是理性预期，同时信息不完全，根据你对第（2）问的回答说明货币供给量增加对GDP的影响是什么？（5）在理性预期的条件下，讨论当货币量增加时有没有可能出现（1）和（2）的结果。如果有，各在什么情况下出现？（6）在理性预期条件下，政府想增加产量到潜在产量以上的做法会不会奏效？怎样才能奏效？从长远看结果怎样？',answer:`考察知识点：AD-AS、理性预期、信息不完全、政策有效性。\n思路：分别讨论预期外生、完全预见、理性预期、信息不完全下的均衡。\n答案：略。`},
+{id:'h24',special:'宏观·汇率相关计算',qid:'A1 ★★',question:'加拿大的名义利率是每年12%，而美国是每年8%。假定国际资本流动使得这两个国家实际利率相等，购买力平价成立。（1）利用费雪方程，关于加拿大和美国的预期通货膨胀，你能作出什么推断？（2）关于加拿大元和美元之间汇率的预期变动，你能作出什么推断？（3）从一家美国银行以8%的利率借钱，存入利率为12%的一家加拿大银行，就可以赚到4%的利润。该说法对吗？',answer:`考察知识点：费雪方程、购买力平价、利率平价。\n思路：费雪方程 i=r+πe；购买力平价下预期汇率变动等于预期通胀差；套利分析。\n答案：（1）加拿大预期通胀比美国高4个百分点。（2）预期加元贬值4%。（3）说法不正确，套利后无利润。`},
+{id:'h25',special:'宏观·短期开放经济',qid:'A1 ★★★',question:'在蒙代尔-弗莱明模型中，考虑一个由以下方程所描述的小型开放经济：LM曲线方程 Y=2M/P+100i；IS曲线方程 Y=1000+2G−T+NX−50i；净出口方程 NX=2500−100e。其中 Y 为收入水平，i 为利率，e 为汇率（外币/本币）；设货币供应量 M=1000，价格水平 P=1，世界利率 i*=10，政府支出 G=500，税收收入 T=800。求（1）短期内该经济体的均衡国民收入和均衡汇率；（2）假设让 T 减少到500，该国采取浮动汇率制度，则新的均衡国民收入和新的均衡汇率将会是多少？（3）如果该国采取的是固定汇率，且该国欲将固定汇率值维持在本题（1）问中的均衡汇率水平，那么保持 G 不变，而 T 减少到500，新的均衡国民收入将会是多少？其中央行将怎样设定货币供给的大小以维持这个固定汇率水平？',answer:`考察知识点：蒙代尔-弗莱明模型、浮动/固定汇率、财政政策。\n思路：资本完全流动下 i=i*；分别求IS-LM；固定汇率下货币供给内生。\n答案：（1）Y=3000，e=2。（2）Y=3000，e=5。（3）Y=3300；央行应设定 M=1150。`},
+{id:'h26',special:'宏观·短期开放经济',qid:'A2 ★★★',question:'在一个小国模型中不考虑价格变化（简化为1），假设货币需求是 L=0.2Y−10r，Y 和 r 分别是收入和利率，货币供给 M=200，消费 C=60+0.8Yd，Yd 为可支配收入，税收 T=100，投资 I=150−2r，政府支出 G=100。（1）封闭经济下均衡的国民收入、利率和投资；（2）如果该国资本完全流动，世界利率为1.5，则均衡的国民收入为多少；（3）在开放条件（资本完全流动）下，当政府支出由100增加到120，均衡的国民收入怎样变动？挤出效应是多少。',answer:`考察知识点：封闭与开放经济、蒙代尔-弗莱明、挤出效应。\n思路：封闭经济求IS-LM；开放经济利率等于世界利率；浮动/固定汇率下政策效果不同。\n答案：（1）r=2.5，Y=1125，I=145。（2）Y=1075。（3）浮动汇率下财政政策完全无效，挤出效应100；固定汇率下无挤出效应，收入增加100。`},
+{id:'h27',special:'宏观·短期开放经济',qid:'A3 ★★★',question:'假设大型开放经济在短期内可以用下列等式描述：C=0.5(Y−T)，T=1000，I=2500−250r，G=1500，NX=1000−250e，M/P=0.5Y−500r，M=1000，P=1，CF=500−250r，NX=CF。（1）求短期均衡的产出、利率、汇率、贸易余额和资本净流出。（2）假设经济体实行浮动汇率制，为实现贸易平衡，求政府税收变动量，以及新均衡的产出、利率和汇率水平。（3）假设经济体实行固定汇率制，当政府购买增加500，为保证经济的汇率处于（1）中水平，求此时货币供给变动量。',answer:`考察知识点：大型开放经济、浮动/固定汇率、财政政策。\n思路：产品市场均衡 Y=C+I+G+CF；货币市场均衡；外汇市场均衡 NX=CF。\n答案：（1）Y=5000，r=3，e=5，NX=−250，CF=−250。（2）ΔT=2000；Y=4000，r=2，e=4。（3）ΔM=500。`},
+{id:'h28',special:'宏观·长期开放经济',qid:'A1 ★★★',question:'考虑一个由下列方程所描述的资本完全流动的小型开放经济：Y=C+I+G+NX，Y=5000，G=1000，T=1000，C=250+0.75(Y−T)，I=1000−50r，NX=500−500e，r=r*=5。（1）求该经济的国民储蓄、投资、贸易差额及均衡汇率；（2）现在假定 G 增加到1250，求国民储蓄、投资、贸易差额及均衡汇率，并解释你的结果；（3）现在假定世界利率由5上升至10，求国民储蓄、投资、贸易差额及均衡汇率，并解释你的结果。',answer:`考察知识点：小型开放经济长期模型、储蓄、投资、贸易差额、汇率。\n思路：国民储蓄 S=Y−C−G；投资 I=I(r*)；贸易差额 NX=S−I；汇率由 NX(e)=S−I 决定。\n答案：（1）S=750，I=750，NX=0，e=1。（2）S=500，I=750，NX=−250，e=1.5。（3）S=750，I=500，NX=250，e=0.5。`},
+{id:'h29',special:'宏观·长期开放经济',qid:'A2 ★★',question:'假设下列方程描述了一个大型开放经济：Y=5000，C=0.5(Y−T)，I=2000−100r，NX=500−500e，CF=−100r，CF=NX，G=1500，T=1000。（1）求解均衡的产出与汇率，以及此时的消费量、净出口量与资本净流出量。（2）政府增税1000，求解新均衡的实际汇率与净出口量，并对这一均衡结果的变化给出经济学解释。（3）政府实施贸易限制政策，新的净出口曲线为 NX=1000−500e，求解新均衡的实际汇率与净出口量，并对这一均衡结果的变化给出经济学解释。',answer:`考察知识点：大型开放经济、可贷资金市场、外汇市场、贸易政策。\n思路：可贷资金市场均衡 S=I+CF；外汇市场均衡 CF=NX(e)。\n答案：（1）r=2.5，C=2000，CF=−250，e=1.5，NX=−250。（2）r=0，CF=0，e=1，NX=0。（3）r=2.5，CF=−250，e=2.5，NX=−250。`},
+{id:'h30',special:'宏观·数量论与通胀',qid:'A1 ★★',question:'假定一国的货币需求函数为 (M/P)d=kY，式中，k 为一个常数。货币供给每年增加12%，实际收入每年增长4%。（1）平均通货膨胀率是多少？（2）如果实际收入增长更快，通货膨胀将会有什么不同？请作出解释。（3）假定货币需求函数不再是不变的，相反，该经济的货币流通速度由于金融创新而稳定地上升。这将会如何影响通货膨胀率？请作出解释。',answer:`考察知识点：货币数量论、通货膨胀率、货币流通速度。\n思路：由 M/P=kY 得通胀率=货币增长率−实际收入增长率；货币流通速度上升增加通胀。\n答案：（1）8%。（2）实际收入增长更快会降低通胀率。（3）货币流通速度上升会提高通胀率。`},
+{id:'h31',special:'宏观·数量论与通胀',qid:'A2 ★★',question:'假定货币需求函数的形式为 (M/P)d=L(i,Y)=Y/(5i)。（1）如果产出增长速度为 g，实际货币余额需求将会以什么速度增长（假定名义利率恒定）？（2）这一经济的货币流通速度是多少？（3）如果通货膨胀和名义利率恒定，那么，货币流通速度将会以什么速度增长（如果有的话）？（4）利率水平的一个永恒的（一次性）增加将如何影响货币流通速度？它将如何影响随后的货币流通速度增长率？',answer:`考察知识点：货币需求、货币流通速度、利率。\n思路：求实际货币余额增长率；由 V=PY/M 求流通速度；分析利率影响。\n答案：（1）以速度 g 增长。（2）V=5i。（3）增长速度为0。（4）利率一次性增加使货币流通速度一次性增加，但增长率仍为0。`},
+{id:'h32',special:'宏观·菲利普斯曲线',qid:'A1 ★★★',question:'假设一国的菲利普斯曲线为 π=πe−3(u−un)，自然失业率为5%。对通货膨胀的预期为适应性预期，中央银行对下一年的通货膨胀目标为2%。（1）如果当前的通货膨胀率为5%，那么中央银行为实现下一年的通货膨胀目标，能够引起的失业率是多少？（2）如果中央银行在次年继续保持2%的通货膨胀目标，那么失业率将是多少？（3）根据奥肯定律，计算降低通货膨胀的产出牺牲率。（4）如果对通货膨胀的预期为理性预期，那么产出牺牲率为多少？',answer:`考察知识点：菲利普斯曲线、适应性预期、理性预期、牺牲率。\n思路：适应性预期下 πe=π−1；奥肯定律；理性预期下牺牲率为0。\n答案：（1）u=6%。（2）u=5%。（3）牺牲率≈0.67%。（4）牺牲率为0。`},
+{id:'h33',special:'宏观·菲利普斯曲线',qid:'A2 ★★★',question:'假设一个经济有以下菲利普斯曲线：π=π−1−0.5(u−0.06)。（1）自然失业率是多少？（2）画出通货膨胀与失业之间的短期与长期关系。（3）为了使通货膨胀减少5个百分点，必须有多少周期性失业？用奥肯定律计算牺牲率。（4）通货膨胀为10%，美联储想把它降到5%。给出两种能达到这个目标的方案。',answer:`考察知识点：菲利普斯曲线、自然失业率、牺牲率、奥肯定律。\n思路：自然失业率使 π=π−1；牺牲率由失业率变动和奥肯定律求；两种方案对应不同失业路径。\n答案：（1）6%。（2）短期向右下方倾斜，长期垂直。（3）周期性失业10个百分点；牺牲率4%。（4）方案一：一年高失业率；方案二：多年较低失业率。`},
+{id:'h34',special:'宏观·菲利普斯曲线',qid:'A3 ★★★',question:'假设一个经济体有如下的菲利普斯曲线：通货膨胀率=去年的通货膨胀率−0.5(失业率−0.05)。（1）这条菲利普斯曲线对于通胀的假设，是理性预期还是适应性预期？（2）这一经济体的自然失业率是多少？（3）假设初始时，失业率等于自然失业率。为了使通货膨胀率比去年降低0.02，需要周期失业率达到多少？（4）假设初始时，失业率等于自然失业率，通货膨胀等于0。如果使失业率降为0.03，之后一直保持不变，计算第一年、第二年和第十年的通货膨胀率？',answer:`考察知识点：菲利普斯曲线、适应性预期、自然失业率。\n思路：适应性预期下预期通胀等于去年通胀；代入不同失业率计算。\n答案：（1）适应性预期。（2）5%。（3）周期性失业率4%。（4）第一年0；第二年0.01；第十年0.09。`},
+{id:'h35',special:'宏观·菲利普斯曲线',qid:'A4 ★★',question:'假定经济的菲利普斯曲线是：π=π−1−0.5(u−u*)，而且自然失业率是过去两年失业的平均数：u*=0.5(u−1+u−2)。（1）为什么自然失业率会取决于最近的失业？（2）假设美联储遵循永久性地降低通货膨胀1%的政策。这种政策对一段时期中的失业率有什么影响？（3）这个经济中的牺牲率是多少？请解释。（4）这些方程式对通货膨胀与失业之间的短期和长期取舍关系意味着什么？',answer:`考察知识点：菲利普斯曲线、滞后效应、牺牲率。\n思路：滞后理论；失业率动态调整；牺牲率计算；短期与长期取舍关系。\n答案：（1）滞后理论，近期失业影响自然失业率。（2）第一年失业率高于自然失业率2个百分点，之后逐步调整。（3）牺牲率4%。（4）短期存在取舍，长期因滞后也存在取舍。`},
+{id:'h36',special:'宏观·宏观经济政策',qid:'A1 ★★',question:'假设政府的目标函数是 W(u,π)=−L(u,π)=−(u²+yπ²)，同时面对的非利普斯曲线为 π=πe−β(u−u*)，其中 πe 是居民的通货膨胀预期，u* 是自然失业率。首先由政府宣布自己的政策目标 π0，然后理性预期的居民在看到政府的宣布后形成自己的预期，政府观察到居民的预期后决定实际的货币政策 π。（1）请计算并比较在固定规则与相机制定规则下社会福利的大小，并给出相应的解释。（2）关于通货膨胀率，在相机制定规则下，政府能否做出零通货膨胀的承诺？为什么？如果不能，那么在相机制定规则政府能够做出的可信承诺是什么？',answer:`考察知识点：政策规则、相机抉择、理性预期、动态不一致。\n思路：固定规则下 π=πe；相机抉择下求最优通胀；比较社会福利。\n答案：（1）固定规则下通胀为0，失业率为自然失业率；相机抉择下通胀为正，失业率仍为自然失业率，社会福利更小。（2）不能；可信承诺为 πe=u*/(βy)。`},
+{id:'h37',special:'宏观·宏观经济政策',qid:'A2 ★★',question:'假设政府要把如下目标函数最小化：W(u,π)=u²+βπ²，其中 u 是实际失业率，π 是实际通货膨胀率。假设这个经济体的失业率和通货膨胀率之间存在如下关系：u=un−α(π−πe)，其中 un 是自然失业率，πe 是居民的预期通货膨胀率。α、β 均大于零。政府和居民的行动时间顺序如下：政府首先宣布一个通货膨胀率作为规则，记为 π0；然后居民形成预期 πe；政府看到 πe 之后再决定实际通货膨胀率 π。（1）政府决定按规则行事，居民也相信政府的承诺。那么请问政府会选怎么样的 π0，居民会选什么样的 πe，实际失业率是多少？（2）现在居民仍然相信政府的承诺，但是政府决定悄悄改变货币政策，实行相机抉择。那么政府会选怎么样的 π0 和 π？比较（1）和（2），说明政府为什么要相机抉择？（3）居民在实践中慢慢学会准确预期政府的实际通货膨胀率了。如果政府仍然贯彻上述相机抉择的货币政策，那么实际通货膨胀又会是多少？实际失业率是多少？比较（3）和（1），请问你会建议政府采用何种政策？',answer:`考察知识点：政策规则、相机抉择、理性预期、动态不一致。\n思路：分别求固定规则、居民相信下相机抉择、理性预期下相机抉择的均衡。\n答案：（1）π0=πe=0，u=un。（2）π0=−un/α，π=0；相机抉择下政府损失更小。（3）π=αun/β，u=un；建议采用固定规则政策。`},
+{id:'h38',special:'宏观·微观基础',qid:'A1 ★★',question:'生命周期假说。假设小张0岁开始工作，20岁退休，40岁离世。工作时年收入为常数10000元，初始财富 W0=0，利率也假设为常数0。（1）计算0岁时小张的财富边际消费倾向和收入边际消费倾向；（2）计算10岁时小张的财富边际消费倾向和收入边际消费倾向，其消费 C10 和财富 W10 各是多少？（3）20岁时，小张的平均消费倾向是否与10岁的平均消费倾向不同？它能解释库兹涅茨的消费之谜吗？',answer:`考察知识点：生命周期假说、消费函数、平均消费倾向。\n思路：生命周期消费 C=(W+RY)/T；财富边际消费倾向 1/T，收入边际消费倾向 R/T。\n答案：（1）财富边际消费倾向1/40；收入边际消费倾向0.5。（2）财富边际消费倾向1/30；收入边际消费倾向1/3；C10=5000，W10=50000。（3）20岁平均消费倾向1/2，与10岁相同；能解释消费之谜。`},
+{id:'h39',special:'宏观·稳态及黄金律',qid:'A1 ★★★',question:'一国宏观生产函数为 Y=(AN)^0.5 K^0.5，且 A=1，Y、A、N、K 分别为产出、技术、劳动数量、资本存量；储蓄率、人口增长率、折旧率分别为60%、4%、6%。（1）请计算经济实现稳态增长时的人均产出、人均资本和人均消费分别是多少？（2）请计算人均资本的黄金律水平是多少？其对应的人均产出、人均消费和储蓄率分别是多少？（3）当宏观生产函数变为 Y=N^0.6(AK)^0.4，且 A 按3%增长时，请计算人均产出和总产出的增长率分别是多少？（4）若原宏观生产函数中的 A=9K/N，则人均产出增长率是多少？',answer:`考察知识点：索洛模型、稳态、黄金律、技术进步。\n思路：稳态条件 sy=(δ+n)k；黄金律 f′(k)=δ+n；增长率分解。\n答案：（1）k*=36，y*=6，c*=2.4。（2）kgold=25，ygold=5，cgold=2.5，sgold=50%。（3）总产出增长率6%，人均产出增长率2%。（4）人均产出增长率170%。`},
+{id:'h40',special:'宏观·稳态及黄金律',qid:'A2 ★★★',question:'经济的产出函数为 Y=K^(1/3)(AL)^(2/3)，经济的技术进步率 g=0.03，储蓄率 s=0.2，折旧率为 δ=0.05，人口增长率 n=0.02。（1）求黄金律稳态的储蓄率，储蓄率 s=0.2 能否实现消费最大化？（2）画出 s 从0.2的稳态水平到0.25的稳态水平，有效人均消费 lnc 的变化图。（3）画出 s 从0.4的稳态水平到0.45的稳态水平，有效人均消费 lnc 的变化图。（4）根据（2）（3）问的结果，从有效人均消费的角度分析政府是否应该调整储蓄率；（5）计算总产出、人均产出、有效人均产出的稳态增长率。',answer:`考察知识点：索洛模型、黄金律、储蓄率调整、稳态增长率。\n思路：黄金律条件 f′(k)=δ+n+g；分析储蓄率变化对消费的动态影响；稳态增长率分解。\n答案：（1）sgold=1/3>0.2，不能实现消费最大化。（2）消费先降后升，最终高于原稳态。（3）消费先降后升，最终低于原稳态。（4）s<sgold 时应提高储蓄率；s>sgold 时应降低储蓄率。（5）有效人均产出增长率0；人均产出增长率 g；总产出增长率 n+g。`},
+{id:'h41',special:'宏观·稳态及黄金律',qid:'B1 ★★',question:'假设在Solow模型中，人均生产函数 y=k^0.5，储蓄率为 s，人口增长率 n=0.005，折旧率为 d=0.035。（1）计算在储蓄率 s=0.16 时的稳态人均资本存量。（2）计算在储蓄率提高到 s′=0.41 后的稳态人均资本存量。（3）计算稳态黄金律下的储蓄率。（4）以储蓄率 s=0.16 时的稳态为初期。这时人口为1000单位，如果储蓄率提高到 s′=0.41 后，计算下一期的总产出和人均资本。',answer:`考察知识点：索洛模型、稳态、黄金律、动态调整。\n思路：稳态 k*=(s/(n+d))²；黄金律 f′(k)=n+d；动态调整分析。\n答案：（1）k*=16。（2）k*≈105.1。（3）sgold=0.5。（4）下一期人均资本17；总产出 1005√17。`},
+{id:'h42',special:'宏观·稳态及黄金律',qid:'B2 ★★',question:'利用索洛模型。生产函数为 Y=F[K(t),A(t)L(t)]，资本动态 K̇=sY−δK。令 k=K/(AL)，y=Y/(AL)。Ȧ/A=g 指技术进步率，L̇/L=n 指人口增长率。（1）为何可以写成 Y/(AL)=f(k)，k=K/(AL)？（2）求 k 的动态方程。（3）说明稻田条件的作用。',answer:`考察知识点：索洛模型、规模报酬不变、稻田条件。\n思路：利用规模报酬不变化简；求 k 的动态方程；稻田条件保证稳态存在且稳定。\n答案：（1）规模报酬不变，令 c=1/(AL) 可得。（2）k̇=sf(k)−(δ+n+g)k。（3）稻田条件保证稳态存在且唯一、稳定。`},
+{id:'h43',special:'宏观·索洛模型证明',qid:'A1 ★★★',question:'经济体的生产函数为：Y=F(K,AL)，满足规模报酬不变假定，证明以下问题：（1）规模报酬不变时存在：∂F/∂K=f′(k̃)，∂F/∂L=A[f(k̃)−k̃f′(k̃)]，其中 k̃=K/(AL)。（2）稳态时资本的实际租赁价格是不变的，实际工资以技术进步率 g 增长；（3）稳态时人均资本和人均产出的增长率为 g，总资本与总产出的增长率为 (n+g)；（4）稳态时资本总收入和劳动总收入的增长率都等于人口增长率加技术进步率 (n+g)。进一步假定经济体的生产函数为：Y=K^a(AL)^(1−a)，证明或求解：（5）资本和劳动收入占总收入的份额分别为 α 和 1−α；（6）解稳态时人有效人均资本水平；（7）稳态时资本-产出比率是不变的；（8）资本黄金律水平的储蓄率为 α。',answer:`考察知识点：索洛模型、规模报酬不变、要素收入份额、黄金律。\n思路：分别求偏导；利用稳态条件；求黄金律储蓄率。\n答案：证明略；结论成立。`},
+{id:'h44',special:'宏观·索洛模型证明',qid:'A2 ★★★',question:'假设在某国，资本在GDP中的份额为30%左右；产出的平均增长为每年3%左右；折旧率为每年4%左右；资本-产出比率为2.5左右。假设生产函数是柯布-道格拉斯生产函数，而且该国已经处于稳定状态。（1）在初始稳定状态，储蓄率应该是多少？（2）在初始稳定状态，资本的边际产量是多少？（3）假设公共政策提高了储蓄率，从而使经济达到了资本的黄金律水平。在黄金律稳定状态，资本的边际产量将是多少？比较黄金律稳定状态的边际产量和初始稳定状态的边际产量，并解释。（4）在黄金律稳定状态，资本-产出比率将是多少？（5）要达到黄金律稳定状态，储蓄率必须是多少？',answer:`考察知识点：索洛模型、黄金律、储蓄率。\n思路：利用稳态条件 s=(δ+n+g)(K/Y)；黄金律 f′(k)=δ+n+g；C-D函数性质。\n答案：（1）s=0.175。（2）MPK=0.12。（3）黄金律 MPK=0.07；黄金律边际产量小于初始稳态。（4）K/Y=30/7。（5）sgold=0.3。`},
+{id:'h45',special:'宏观·索洛模型证明',qid:'A3 ★★★',question:'考虑带有技术进步的索洛模型。假设一国的生产函数为柯布-道格拉斯生产函数，且资本产出弹性0.36。假设当前经济已经处于稳态，此时产出(Y)的稳态增速为每年5%，折旧率为4%，资本产出比率 K/Y 等于3。（1）求初始稳态时的储蓄率；（2）求初始稳态时资本的边际产量；（3）初始稳态是否符合“黄金律”？若不符合是更低还是更高？应增加还是降低储蓄率？（4）求经济达到“黄金律”时的储蓄率。',answer:`考察知识点：索洛模型、技术进步、黄金律。\n思路：稳态增长率 n+g=5%；储蓄率 s=(δ+n+g)(K/Y)；黄金律储蓄率等于资本份额。\n答案：（1）s=27%。（2）MPK=0.12。（3）不符合；初始稳态资本低于黄金律，应增加储蓄率。（4）sgold=36%。`},
+{id:'h46',special:'宏观·索洛模型证明',qid:'B1 ★★',question:'假设劳动与资本均按其边际产品支付。令 w 表示 ∂F(K,AL)/∂L 且 r 表示 ∂F(K,AL)/∂K−δ。（1）证明劳动的边际产品 w 是 A[f(k)−kf′(k)]。（2）证明如果资本与劳动均按其边际产品支付，那么不变的规模报酬意味着生产要素的总支付量等于总的净产出，即证明 wL+rK=F(K,AL)−δK。（3）随着产出份额被支付给资本与劳动，资本报酬 r 大致也不随时间而变化。处在平衡增长路径上的索洛经济展现这些特征吗？处在均衡增长路径上的 w 与 r 的增长率是多少？（4）假设经济由一个数量为 k<k* 的水平开始。随着 k 移向 k*，w 是否以大于、小于或等于其处在平衡增长路径时的增长率的速度增长？r 会怎样呢？',answer:`考察知识点：索洛模型、边际产品、平衡增长路径。\n思路：利用规模报酬不变和欧拉定理；分析平衡增长路径上工资和资本报酬增长率。\n答案：证明略；结论成立。`},
+{id:'h47',special:'宏观·索洛模型证明',qid:'B2 ★★',question:'假设像上题中的一样，资本与劳动按其边际产品获得收益。另外，假定所有资本都被储蓄，所有劳动收入被消费。这样，k̇=[∂F(K,AL)/∂K]K−δK。（1）证明：这一经济收敛于一平衡增长路径。（2）处于该平衡增长路径上的 k 是大于、小于还是等于 k 的黄金率水平？如何直观地理解这一结果？',answer:`考察知识点：索洛模型、平衡增长路径、黄金律。\n思路：证明收敛性；分析平衡增长路径上的资本水平与黄金律关系。\n答案：证明略；k 等于黄金律水平。`},
+{id:'h48',special:'宏观·经济增长核算',qid:'A1 ★★',question:'假设总产出 Yt=At Kt^α Lt^(1−α)，其中 t 为时间，At 为全要素生产率，Kt 为资本，Lt 为劳动。（1）请将总产出的增长分解为全要素生产率、资本和劳动三部分的增长之和。（2）请将人均产出的增长分解为全要素生产率和人均资本两部分的增长之和。',answer:`考察知识点：增长核算、全要素生产率。\n思路：对生产函数取对数求导；分解总产出和人均产出增长。\n答案：（1）gY=gA+αgK+(1−α)gL。（2）gy=gA+αgk。`},
+{id:'h49',special:'宏观·经济增长核算',qid:'A2 ★★★',question:'索洛增长模型描述的一个经济有以下生产函数：Y(t)=A(t)K(t)^a L(t)^β。（1）对于上述生产函数，我们一般要求 0<a<1，0<β<1。为什么？除此之外，我们还会对它们做什么样的假设限制？（2）如果假设时间 t 是连续的，证明经济增长因素分解等式 gY=gA+agK+βgL 成立。（3）资本的演化方程式是：K̇=sY−δK，gA=g，gL=n。求稳态时人均资本 k 的增长率。',answer:`考察知识点：增长核算、规模报酬、稳态增长率。\n思路：分析参数限制；取对数求导；求稳态人均资本增长率。\n答案：（1）保证边际报酬递减；通常还假设 α+β=1。（2）证明略。（3）稳态时人均资本增长率 g/(1−α)。`},
+{id:'h50',special:'宏观·两部门模型',qid:'A1 ★★★',question:'假设两部门模型的生产函数为：Y=K^a[(1−u)LE]^(1−a)，研究性大学的生产函数为 ΔE=g(u)E，资本的积累为 ΔK=sY−δK。（1）写出有效工人的平均资本生产函数。（2）在这个经济中，收支相抵的投资是多少？求出稳态时有效工人的平均资本。（3）发生自然灾害导致经济中资本存量减半，求稳态变化。（4）影响短期增长率的措施和影响长期增长率的措施有哪些？（5）求出有效工人的平均资本 k 的黄金律稳态水平和有效工人的平均产出 y 的黄金律稳态水平。（6）求出黄金律稳态时对应的储蓄率为多少？是否与 u 有关？',answer:`考察知识点：两部门模型、有效工人、稳态、黄金律。\n思路：定义有效人均资本；求稳态条件；分析灾害影响；求黄金律。\n答案：（1）y=(1−u)^(1−α)k^α。（2）收支相抵投资 [δ+n+g(u)]k；k*=(1−u)[s/(δ+n+g(u))]^(1/(1−α))。（3）短期内资本减半，随后恢复至稳态。（4）短期措施：提高储蓄率等；长期措施：提高技术进步率等。（5）k*gold=(1−u)[α/(δ+n+g(u))]^(1/(1−α))；y*gold=(1−u)[α/(δ+n+g(u))]^(α/(1−α))。（6）sgold=α，与 u 无关。`},
+{id:'h51',special:'宏观·两部门模型',qid:'B1 ★★★',question:'一个封闭经济体包含制造业和教育两部门，其生产函数分别为：Y=AK^α(uEL)^(1−α)，ΔE=B(1−u)E。其中，Y、E 分别表示制造业的产出和教育部门的知识存量，A、B 为正的常数，u 表示制造业工人占劳动人数 L 的比率。储蓄率、折旧率、总劳动人数增长率为外生给定，分别用 s、δ、n 表示。（1）用 y 表示平均有效工人产出，k 表示平均有效工人资本存量，写 y 与 k 的关系式，并写出 Δk 的表达式。（2）总产出 Y 的稳态增长率是多少？s 和 u 分别对其有什么影响？（3）结合图形说明当 u 提高时，稳态时有效工人的人均资本存量将发生什么变化？（4）什么是储蓄的黄金率水平？写出黄金率水平时的资本存量 kgold 以及储蓄率 sgold。（5）甲、乙两国分别在 s>sgold 和 s<sgold 的情况下达到稳态，请问政府可以采取什么措施来提高或降低储蓄率？请从帕累托改进的角度分析，在甲、乙两国采取调整储蓄率的措施，哪一国政策更好？（6）索洛残差是什么？如何通过题目中已有的数据来估计？',answer:`考察知识点：两部门模型、稳态、黄金律、索洛残差。\n思路：求有效人均资本动态；分析稳态增长率；求黄金律；分析储蓄率调整。\n答案：略。`},
+{id:'h52',special:'宏观·变形的索洛模型',qid:'A1 ★★★',question:'已知：一国经济中的生产函数是：Y=K^(1/3)(AN)^(2/3)，人口年增长率为0.05，资本折旧率也是0.05。（1）如果储蓄率为10%，A=2，计算该国稳态条件下的人均资本、人均产出、人均投资和人均消费水平。（2）分析从增加人均消费角度看，该国是否应该调整储蓄率？（3）如果 A 以每年2%的比率增长，稳态的经济增长率是多少？（4）如果生产函数变为 Y=(AK)^(1/3)N^(2/3)，A 仍以每年2%的比率增长，其它各个参数不变，稳态经济增长率是多少？',answer:`考察知识点：索洛模型、技术进步、稳态、黄金律。\n思路：分别按无技术进步、劳动增强型技术进步、资本增强型技术进步求解。\n答案：（1）k=2，y=2，人均投资0.2，人均消费1.8。（2）应提高储蓄率。（3）总产出增长率7%；可通过提高技术进步率提高人均收入。（4）总产出增长率6%。`},
+{id:'h53',special:'宏观·变形的索洛模型',qid:'A2 ★★★',question:'假定产出是根据含有失业率的生产函数 Y=K^a[(1−u*)L]^(1−α) 来表示的。K 为资本，L 为劳动力，u* 为自然失业率。国民储蓄率为 s，劳动力增长率为 n，资本折旧率为 δ。（1）请把人均产出 y=Y/L 表示为人均资本 k=K/L 和自然失业率的函数。（2）计算该经济的稳态的人均资本和人均产出。（3）失业通过哪两种途径影响稳态的产出水平？（4）求出黄金律稳态时的储蓄率水平，自然失业率对它有影响吗？',answer:`考察知识点：索洛模型、失业率、稳态、黄金律。\n思路：求人均产出函数；稳态条件；黄金律。\n答案：（1）y=(1−u*)^(1−α)k^α。（2）k*=(1−u*)[s/(δ+n)]^(1/(1−α))，y*=(1−u*)[s/(δ+n)]^(α/(1−α))。（3）失业降低给定资本下的人均产出；失业降低稳态人均资本。（4）sgold=α，与自然失业率无关。`},
+{id:'h54',special:'宏观·变形的索洛模型',qid:'A3 ★★★',question:'假设某国的社会总生产函数为：Y=K^θ(aL×E)^(1−θ)，其中 0<a≤1，1/2<θ<1。只有 aL 人口是劳动力。储蓄率为 s，资本折旧率为 δ，人口的增长速度为 n，劳动生产率的增长率为 g。定义每个效率工人的资本为 k=K/(aL×E)。（1）计算稳态时的每个效率工人的资本表达式。（2）为了获得黄金规则下的每个效率工人的资本，对应的储蓄率应该为多少？',answer:`考察知识点：索洛模型、劳动参与率、黄金律。\n思路：定义有效人均资本；求稳态；黄金律储蓄率。\n答案：（1）k*=[s/(δ+n+g)]^(1/(1−θ))。（2）sgold=θ。`},
+{id:'h55',special:'宏观·变形的索洛模型',qid:'A4 ★★★',question:'假定生产函数为柯布道格拉斯形式：Y=(uK)^a L^(1−a)，其中 u 是资本利用率，0<a<1。人口按照速率 n 增大，资本折旧率为 δ，储蓄率为 s。（1）求出稳态时的人均资本存量、资本-产出比率。（2）求出黄金律水平的储蓄率、资本-产出比率。（3）分析资本利用率改变对人均产出的即刻影响和随着时间的推移的动态影响。',answer:`考察知识点：索洛模型、资本利用率、稳态、黄金律。\n思路：求人均生产函数；稳态条件；黄金律；动态分析。\n答案：（1）k=[su^a/(δ+n)]^(1/(1−a))，K/Y=s/(δ+n)。（2）sgold=a，K/Y=a/(δ+n)。（3）资本利用率提高即刻增加人均产出，随后资本积累增加，最终达到新稳态。`},
+{id:'h56',special:'宏观·变形的索洛模型',qid:'A5 ★★★',question:'考虑一个标准的索洛增长模型：Y=(1−t)K^a(AL)^(1−a)，0<a<1，储蓄率为 s，人口增长率为0，技术进步率为 g，t 是政府对产出征收的税收。（1）假设政府在收税之后，不用于生产产出和进行投资，计算稳态时人均有效产出和人均有效资本。（2）如果政府减税，稳态的人均有效产出如何变化？（3）求出黄金律稳态时的储蓄率水平，政府的税率对它有影响吗？（4）现在假设税收降低了人们研发的动力，技术进步率变为 g=b(1−t)^(1−a)，b>0。计算新的稳态人均有效产出。',answer:`考察知识点：索洛模型、税收、黄金律。\n思路：求稳态条件；分析减税影响；黄金律储蓄率；技术进步受税收影响。\n答案：（1）k=[s(1−t)/g]^(1/(1−a))，y=(1−t)^(1/(1−a))(s/g)^(a/(1−a))。（2）减税提高人均有效产出。（3）sgold=a，与税率无关。（4）y=(s/b)^(1/(1−a))(1−t)^((a²−a+1)/(1−a))；减税提高稳态产出。`},
+{id:'h57',special:'宏观·变形的索洛模型',qid:'B1 ★★',question:'考虑封闭经济中的索洛增长模型：储蓄率 s 外生给定，0<s<1；人均生产函数 y=f(k)=Ak^a，0<a<1；资本折旧率 σ 为0；技术 A 的进步速率为 g=0，人口增长率为 n>0。（1）假如政府通过一项移民法令使得人口增长率从 n 下降到 nnew，0<nnew<n。政策改革之前该国已处于稳态。请回答：这一政策改革对于稳态的人均资本存量 k、人均产出 y、工资率 w、资本价格 r 的影响？谁是受益者？（2）假设政府通过的移民法令并未改变人口增长率，但限制了高技术人员的移民门槛，这使得技术水平从 A 下降到 Anew，0<Anew<A。请绘图并回答：该国的人均资本存量 k 和人均产出 y 是如何随着时间而变化的？（3）假设我们把模型引入政府。政府消耗资源但不参与生产或资本积累。人均负担政府消费为 gt，唯一收入来源是对产出征税，税率为 τt。请推导出人均资本存量的积累方程，并求解稳态时人均资本存量。作图回答一项永久性的政府支出增加对于人均产出、人均资本存量、人均消费的影响。（4）假设生产函数为 yt=kt^α gt^β，α>0，β>0，0<α+β<1。请推导出人均资本存量的积累方程，并求解稳态时人均资本存量。定义最优税率为最大化人均资本存量的税率，求解这一最优税率水平。',answer:`考察知识点：索洛模型、移民、政府支出、税收。\n思路：分析人口增长率变化、技术水平变化、政府支出和税收对稳态的影响。\n答案：略。`},
+{id:'h58',special:'宏观·变形的索洛模型',qid:'B2 ★',question:'有一个经济增长模型：Y=A{a(bK)^θ+(1−a)[(1−b)L]^θ}^(1/θ)，其中 A 为常数。该经济的折旧率为 δ，劳动增长率为 n，储蓄率为 s，资本积累方程为：K̇=sY−δK。（1）令人均资本 k=K/L，人均产出 y=Y/L，求 y(k)；（2）s 满足什么条件时，人均资本可以持续增长？（3）在（2）的条件下，求人均资本增长率？（4）与传统索洛模型的生产函数有什么联系与区别？',answer:`考察知识点：CES生产函数、内生增长、索洛模型。\n思路：求人均产出函数；分析持续增长条件；求增长率；比较与传统索洛模型。\n答案：（1）y=A{a(bk)^θ+(1−a)[(1−b)L]^θ}^(1/θ)。（2）s>(δ+n)/(Aa^(1/θ)b)。（3）k̇/k=sAa^(1/θ)b−(δ+n)。（4）当 θ→0 时变为C-D函数；本题具有内生增长特征。`},
+{id:'h59',special:'宏观·离散时间索洛',qid:'A1 ★★★',question:'考虑离散时间的索罗模型。假定某国宏观生产函数为 Yt=F(Kt,Lt)=AKt^0.5 Lt^0.5。如果资本的变动方程为 Kt+1=It+(1−d)Kt，其中 d 为资本折旧率，It 为固定资产投资。假设该国的人口均为劳动力且零增长。用 a 表示边际消费倾向，不考虑政府部门。（1）请推导人均生产函数。（2）请推导稳态人均收入、人均资本和人均消费的具体表达式。（3）假若该国技术水平为2，边际消费倾向为0.9，d 为5%。请计算该国处于稳态时人均收入水平、人均资本水平和人均消费水平。',answer:`考察知识点：离散时间索洛模型、稳态。\n思路：推导人均生产函数；求稳态条件；代入数值。\n答案：（1）yt=Akt^0.5。（2）k*=[(1−a)A/d]²，y*=(1−a)A²/d，c*=a(1−a)A²/d。（3）k*=16，y*=8，c*=7.2。`},
+{id:'h60',special:'宏观·离散时间索洛',qid:'A2 ★★★',question:'设 Yt=F(Kt,AtLt)，其中 F(·) 具有不变的规模报酬，并且密集形式的生产函数满足稻田条件。也设 At+1=(1+g)At，Lt+1=(1+n)Lt，以及 Kt+1=Kt+sYt−δKt。（1）求出作为 kt 函数的 kt+1 的表达式。（2）画出作为 kt 函数的 kt+1。经济处在均衡增长路径上吗？如果 k 的初始水平不同于其在均衡增长路径上的值，经济会收敛于均衡增长路径吗？（3）求出作为 k 的均衡增长路径值函数的单位有效劳动的消费的表达式，当 k 最大化均衡增长路径上单位有效劳动的消费时，资本的边际产品 f′(k) 是什么？假设生产函数是柯布-道格拉斯式的：（4）作为 kt 函数的 kt+1 是什么？（5）k 在均衡增长路径上的值 k* 是什么？（6）在 kt=k* 附近线性化（4）中的表达式，并且求出 k 收敛于 k* 的速率。',answer:`考察知识点：离散时间索洛模型、收敛性、黄金律。\n思路：推导动态方程；分析收敛性；求黄金律；线性化。\n答案：略。`},
+{id:'h61',special:'宏观·新经济增长模型',qid:'B1 ★',question:'有的知识积累不是有意努力的结果，而是传统经济活动的副产品，这种知识积累被称为干中学或干中学模型问题。假定生产函数为：Y(t)=K(t)^a[A(t)L(t)]^(1−a)，L 为常数且等于1，K̇(t)=sY(t)，且知识积累作为产品生产的一个副产品出现：Ȧ(t)=BY(t)。（1）用 Ȧ(t)、K(t) 和各参数表示 gA(t) 和 gK(t)，其中，gA(t) 和 gK(t) 分别为 A(t) 和 K(t) 的增长率。（2）在 (gA,gK) 空间中画出 ġA=0 和 ġK=0 曲线。（3）该经济是否收敛于平衡增长路径？如果是这样，平衡增长路径上 K、A 和 Y 的增长率是多少？（4）s 的增加如何影响长期增长？',answer:`考察知识点：干中学模型、内生增长、平衡增长路径。\n思路：求增长率；画相位图；分析收敛性；求长期增长率。\n答案：（1）gK=sK^(a−1)A^(1−a)，gA=BK^aA^(−a)。（2）图略。（3）收敛；平衡增长路径上 gK=gA=g*=s^aB^(1−a)。（4）s 增加提高长期增长率。`},
+{id:'h62',special:'宏观·新经济增长模型',qid:'B2 ★',question:'考虑下面这个具有实物资本和人力资本的模型：Y(t)=[(1−aK)K(t)]^a[(1−aH)H(t)]^(1−a)，K̇(t)=sY(t)−δK K(t)，Ḣ(t)=B[aKK(t)]^γ[aHH(t)]^φ[A(t)L(t)]^(1−γ−φ)−δH H(t)，L̇(t)=nL(t)，Ȧ(t)=gA(t)。（1）定义 k=K/(AL)，h=H/(AL)，请推导 k̇ 和 ḣ 的方程。（2）求使得 k̇=0 的由 ḣ 和 k̇ 的组合构成的方程，在 (h,k) 空间中画出它。对 ḣ=0 进行同样的处理。（3）该经济是否具有一条均衡增长路径？如果是，它是否是唯一的？它是否稳定？均衡增长路径上人均实物资本、人均人力资本和人均产出增长率是多少？（4）假设经济最初处于均衡增长路径上，且 s 有一个持久性的增加。这一变动如何影响人均产出随时间变化的路径？',answer:`考察知识点：实物资本与人力资本、内生增长、平衡增长路径。\n思路：推导动态方程；画相位图；分析稳态和收敛性；储蓄率变化的影响。\n答案：略。`},
+{id:'h63',special:'宏观·周期理论抽象函数',qid:'A1 ★★',question:'考虑下述IS-LM模型。假设产品市场和货币市场的均衡条件分析如下：Y=C(Y−T)+I(i−π)+G，M/P=m(i,Y)。其中消费函数满足：0<C′(·)<1；投资函数满足：I′(·)<0；货币需求函数满足：mi<0，mY>0。（1）假定政府税收采取固定税的形式，通货膨胀率给定，求政府购买乘数、税收乘数、平衡预算乘数，并判断此时平衡预算乘数是小于1、等于1还是大于1。（2）在通货膨胀率给定的情况下，政府购买和税收的等量增加如何影响总需求曲线的位置？（3）现假定税收采取比例税的形式：T=tY，其中 0<t<1 表示边际税率。试分析在通货膨胀率给定的情况下，边际税率对于财政政策（政府购买变动）和货币政策影响的效果。',answer:`考察知识点：IS-LM、乘数、比例税、政策效果。\n思路：全微分求乘数；比较固定税和比例税下政策效果。\n答案：（1）政府购买乘数 1/[1−C′+I′(mY/mi)]；税收乘数 −C′/[1−C′+I′(mY/mi)]；平衡预算乘数小于1。（2）总需求曲线向右移动，但移动距离小于政府购买增加量。（3）比例税下财政政策效果减弱，货币政策效果也减弱。`},
+{id:'h64',special:'宏观·周期理论抽象函数',qid:'A2 ★★',question:'假设一个封闭经济体，请用IS-LM曲线分析下面两种不同假设：（A）消费同时被所得和利率所影响：C=C(Y,r)，CY>0，Cr<0；（B）消费只受所得的影响：C=C(Y)，CY>0。IS-LM曲线的公式如下：IS:Y=C+I(r)+G；LM:M/P=K(Y)+L(r)。（1）请分别计算IS曲线在这两种假设下的斜率，并说明IS曲线在哪种情况下更陡？（2）请分别计算在两种假设下，货币政策对均衡产出的边际影响，也就是 dY/d(M/P)。（3）请参考（1）的答案画出IS-LM曲线，并用图说明货币政策在哪种情况下更有效？',answer:`考察知识点：IS-LM、消费函数、货币政策效果。\n思路：求IS斜率；求货币政策乘数；比较政策效果。\n答案：（1）情况A斜率 (1−CY)/(Cr+I′)；情况B斜率 (1−CY)/I′；情况B更陡。（2）情况A货币政策乘数 (Cr+I′)/[K′(Cr+I′)+L′(1−CY)]；情况B货币政策乘数 I′/[K′I′+L′(1−CY)]。（3）情况A货币政策更有效。`},
+{id:'h65',special:'宏观·周期理论抽象函数',qid:'B1 ★',question:'我们考察中央银行控制真实利率的能力。假设经济由两个方程描述：第一个是IS方程 Y=Y(r)，Y′(r)<0；第二个方程是货币市场的均衡条件 m−p=L(r+πe,Y)，Lr+πe<0，LY>0。（1）假设 P=P̄，πe=0。求出 dr/dm 的表达式，并说明货币供给的增加会降低真实利率吗？（2）假设价格对货币供给增加做出局部反应，dp/dm 外生，0<dp/dm<1。仍假设 πe=0。求出 dr/dm，并说明货币供给的增加会降低真实利率吗？（3）假设货币增加也影响预期的通货膨胀。dπe/dm 外生，dπe/dm>0。仍旧假设 0<dp/dm<1。求出 dr/dm。（4）假设存在完全的和连续的价格调整：dp/dm=1，dπe/dm=0。求出 dr/dm。',answer:`考察知识点：IS-LM、货币市场、真实利率、货币政策。\n思路：全微分求 dr/dm；分别讨论不同假设下的结果。\n答案：（1）dr/dm=1/[Lr+LYY′(r)]<0；降低真实利率。（2）dr/dm=(1−dp/dm)/[Lr+LYY′(r)]<0。（3）dr/dm=[(1−dp/dm)−Lr+πe·dπe/dm]/[Lr+πe+LYY′(r)]<0。（4）dr/dm=0；不影响真实利率。`},
+{id:'h66',special:'宏观·动态AD-AS模型',qid:'A1 ★',question:'假定人们的通货膨胀预期受到随机冲击的影响。预期性机制为：时期 t−1 对时期 t 的通货膨胀的预期是 Et−1πt=πt−1+ηt−1，式中 ηt−1 是一个随机冲击。产品和服务的需求方程：Yt=Ȳt−α(rt−ρ)+εt；费雪方程：rt=it−Etπt+1；菲利普斯曲线：πt=Et−1πt+φ(Yt−Ȳt)+νt；货币政策规则：it=πt+ρ+θπ(πt−πt*)+θY(Yt−Ȳt)。（1）推导动态总需求方程和动态总供给方程。（2）假定经济经历了一场通货膨胀恐慌。在时期 t，由于某些原因人们相信时期 t+1 的通货膨胀会更高，因此 ηt 大于零。则时期 t、时期 t+1 以及以后的时期里的经济会发生什么变化？（3）在何种意义上通货膨胀恐慌自我实现了？',answer:`考察知识点：动态AD-AS模型、通货膨胀预期、货币政策。\n思路：推导DAD和DAS；分析通胀恐慌的短期和长期影响。\n答案：（1）DAS：πt=πt−1+ηt−1+φ(Yt−Ȳt)+νt；DAD：Yt=Ȳt−αθπ(πt−πt*)/(1+αθY)+αηt/(1+αθY)+εt/(1+αθY)。（2）短期产出和通胀上升，随后DAS左移，经济进入滞涨，最终回到初始均衡。（3）通胀恐慌自我实现，因为预期通胀上升导致实际通胀上升。`}
+];
+
+/* ============= 专项 / 细分映射 ============= */
+const filterTree = [
+  {group:'微观部分', items:[
+    {major:'微观专项一：消费者行为理论', subs:['细分（一）：消费者最优选择','细分（二）：替代/收入效应、补偿/等价变化','细分（三）：跨期消费','细分（四）：不确定性']},
+    {major:'微观专项二：生产者行为理论', subs:['细分（一）：要素需求函数与条件要素需求函数','细分（二）：一厂商多工厂问题','细分（三）：其他计算分析题']},
+    {major:'微观专项三：完全竞争市场', subs:['细分（一）：长短期均衡问题','细分（二）：市场均衡与政府干预','细分（三）：综合题']},
+    {major:'微观专项四：完全垄断市场', subs:['细分（一）：垄断均衡与政府干预','细分（二）：垄断行为']},
+    {major:'微观专项五：垄断竞争与寡头市场', subs:['细分（一）：垄断竞争市场','细分（二）：寡头垄断市场']},
+    {major:'微观专项六：博弈论', subs:['细分（一）：纳什均衡求解','细分（二）：博弈论与寡头模型结合']},
+    {major:'微观专项七：要素市场', subs:['细分（一）：要素的需求与供给','细分（二）：要素市场均衡与政府干预','细分（三）：上下游垄断']},
+    {major:'微观专项八：一般均衡和福利经济学', subs:['细分（一）：交换的一般均衡','细分（二）：交换和生产的一般均衡']},
+    {major:'微观专项九：市场失灵', subs:['细分（一）：外部性','细分（二）：公共资源','细分（三）：公共物品','细分（四）：信息不对称']}
+  ]},
+  {group:'宏观部分', items:[
+    {major:'宏观专项一：宏观经济学数据', subs:[]},
+    {major:'宏观专项二：封闭经济模型', subs:['细分（一）：凯恩斯交叉及乘数理论','细分（二）：IS-LM 模型具体函数','细分（三）：变形的 IS-LM 模型','细分（四）：AD-AS 模型具体函数','细分（五）：总供给曲线的求解','细分（六）：带有预期的 AS 曲线']},
+    {major:'宏观专项三：开放经济模型', subs:['细分（一）：汇率相关计算题','细分（二）：短期开放经济','细分（三）：长期开放经济']},
+    {major:'宏观专项四：通胀与失业', subs:['细分（一）：数量论与通胀','细分（二）：菲利普斯曲线']},
+    {major:'宏观专项五：宏观经济政策', subs:[]},
+    {major:'宏观专项六：微观基础', subs:[]},
+    {major:'宏观专项七：经济增长', subs:['细分（一）：稳态及黄金律稳态求解','细分（二）：索洛模型基本结论证明','细分（三）：经济增长核算','细分（四）：两部门模型']}
+  ]},
+  {group:'宏观拔高', items:[
+    {major:'宏观拔高专项一：变形的索洛模型', subs:['细分（一）：三种技术进步','细分（二）：引入失业率','细分（三）：引入资本利用率','细分（四）：引入政府部门','细分（五）：特殊产出函数']},
+    {major:'宏观拔高专项二：离散时间索洛模型', subs:[]},
+    {major:'宏观拔高专项三：新经济增长模型', subs:[]},
+    {major:'宏观拔高专项四：周期理论抽象函数计算题', subs:['细分（一）：基本的抽象 IS-LM 模型','细分（二）：变形的抽象 IS-LM 模型']},
+    {major:'宏观拔高专项五：动态 AD-AS 模型', subs:[]}
+  ]}
+];
+
+const specialMap = {
+  '微观·消费者最优选择':{major:'微观专项一：消费者行为理论',sub:'细分（一）：消费者最优选择'},
+  '微观·替代收入效应':{major:'微观专项一：消费者行为理论',sub:'细分（二）：替代/收入效应、补偿/等价变化'},
+  '微观·跨期消费':{major:'微观专项一：消费者行为理论',sub:'细分（三）：跨期消费'},
+  '微观·不确定性':{major:'微观专项一：消费者行为理论',sub:'细分（四）：不确定性'},
+  '微观·要素需求函数':{major:'微观专项二：生产者行为理论',sub:'细分（一）：要素需求函数与条件要素需求函数'},
+  '微观·一厂商多工厂':{major:'微观专项二：生产者行为理论',sub:'细分（二）：一厂商多工厂问题'},
+  '微观·生产者其他计算':{major:'微观专项二：生产者行为理论',sub:'细分（三）：其他计算分析题'},
+  '微观·长短期均衡':{major:'微观专项三：完全竞争市场',sub:'细分（一）：长短期均衡问题'},
+  '微观·市场均衡与政府干预':{major:'微观专项三：完全竞争市场',sub:'细分（二）：市场均衡与政府干预'},
+  '微观·综合题':{major:'微观专项三：完全竞争市场',sub:'细分（三）：综合题'},
+  '微观·垄断均衡与政府干预':{major:'微观专项四：完全垄断市场',sub:'细分（一）：垄断均衡与政府干预'},
+  '微观·垄断行为':{major:'微观专项四：完全垄断市场',sub:'细分（二）：垄断行为'},
+  '微观·垄断竞争市场':{major:'微观专项五：垄断竞争与寡头市场',sub:'细分（一）：垄断竞争市场'},
+  '微观·寡头垄断市场':{major:'微观专项五：垄断竞争与寡头市场',sub:'细分（二）：寡头垄断市场'},
+  '微观·纳什均衡求解':{major:'微观专项六：博弈论',sub:'细分（一）：纳什均衡求解'},
+  '微观·博弈论与寡头结合':{major:'微观专项六：博弈论',sub:'细分（二）：博弈论与寡头模型结合'},
+  '微观·要素需求与供给':{major:'微观专项七：要素市场',sub:'细分（一）：要素的需求与供给'},
+  '微观·要素市场均衡与干预':{major:'微观专项七：要素市场',sub:'细分（二）：要素市场均衡与政府干预'},
+  '微观·上下游垄断':{major:'微观专项七：要素市场',sub:'细分（三）：上下游垄断'},
+  '微观·交换的一般均衡':{major:'微观专项八：一般均衡和福利经济学',sub:'细分（一）：交换的一般均衡'},
+  '微观·交换和生产一般均衡':{major:'微观专项八：一般均衡和福利经济学',sub:'细分（二）：交换和生产的一般均衡'},
+  '微观·外部性':{major:'微观专项九：市场失灵',sub:'细分（一）：外部性'},
+  '微观·公共资源':{major:'微观专项九：市场失灵',sub:'细分（二）：公共资源'},
+  '微观·公共物品':{major:'微观专项九：市场失灵',sub:'细分（三）：公共物品'},
+  '微观·信息不对称':{major:'微观专项九：市场失灵',sub:'细分（四）：信息不对称'},
+  '宏观·宏观经济学数据':{major:'宏观专项一：宏观经济学数据',sub:''},
+  '宏观·凯恩斯交叉及乘数':{major:'宏观专项二：封闭经济模型',sub:'细分（一）：凯恩斯交叉及乘数理论'},
+  '宏观·IS-LM具体函数':{major:'宏观专项二：封闭经济模型',sub:'细分（二）：IS-LM 模型具体函数'},
+  '宏观·变形IS-LM':{major:'宏观专项二：封闭经济模型',sub:'细分（三）：变形的 IS-LM 模型'},
+  '宏观·AD-AS具体函数':{major:'宏观专项二：封闭经济模型',sub:'细分（四）：AD-AS 模型具体函数'},
+  '宏观·总供给曲线求解':{major:'宏观专项二：封闭经济模型',sub:'细分（五）：总供给曲线的求解'},
+  '宏观·带有预期的AS':{major:'宏观专项二：封闭经济模型',sub:'细分（六）：带有预期的 AS 曲线'},
+  '宏观·汇率相关计算':{major:'宏观专项三：开放经济模型',sub:'细分（一）：汇率相关计算题'},
+  '宏观·短期开放经济':{major:'宏观专项三：开放经济模型',sub:'细分（二）：短期开放经济'},
+  '宏观·长期开放经济':{major:'宏观专项三：开放经济模型',sub:'细分（三）：长期开放经济'},
+  '宏观·数量论与通胀':{major:'宏观专项四：通胀与失业',sub:'细分（一）：数量论与通胀'},
+  '宏观·菲利普斯曲线':{major:'宏观专项四：通胀与失业',sub:'细分（二）：菲利普斯曲线'},
+  '宏观·宏观经济政策':{major:'宏观专项五：宏观经济政策',sub:''},
+  '宏观·微观基础':{major:'宏观专项六：微观基础',sub:''},
+  '宏观·稳态及黄金律':{major:'宏观专项七：经济增长',sub:'细分（一）：稳态及黄金律稳态求解'},
+  '宏观·索洛模型证明':{major:'宏观专项七：经济增长',sub:'细分（二）：索洛模型基本结论证明'},
+  '宏观·经济增长核算':{major:'宏观专项七：经济增长',sub:'细分（三）：经济增长核算'},
+  '宏观·两部门模型':{major:'宏观专项七：经济增长',sub:'细分（四）：两部门模型'},
+  '宏观·变形的索洛模型':{major:'宏观拔高专项一：变形的索洛模型',sub:''},
+  '宏观·离散时间索洛':{major:'宏观拔高专项二：离散时间索洛模型',sub:''},
+  '宏观·新经济增长模型':{major:'宏观拔高专项三：新经济增长模型',sub:''},
+  '宏观·周期理论抽象函数':{major:'宏观拔高专项四：周期理论抽象函数计算题',sub:''},
+  '宏观·动态AD-AS模型':{major:'宏观拔高专项五：动态 AD-AS 模型',sub:''}
+};
+
+/* 为 cardData 添加 major / sub */
+cardData.forEach(d => {
+  const m = specialMap[d.special];
+  if(m){ d.major = m.major; d.sub = m.sub; }
+  else { d.major = d.special; d.sub = ''; }
+});
+
+/* ============= 状态管理 ============= */
+let currentData = [...cardData];
+let favorites = JSON.parse(localStorage.getItem('calc_special_favs') || '[]');
+let notes = JSON.parse(localStorage.getItem('calc_special_notes') || '{}');
+let edits = JSON.parse(localStorage.getItem('calc_special_edits') || '{}');
+let singleModeId = null;
+let history = [];
+let historyIndex = -1;
+
+const grid = document.getElementById('cardGrid');
+const totalSpan = document.getElementById('totalCards');
+const favSpan = document.getElementById('favCount');
+const filterMajor = document.getElementById('filterMajor');
+const filterSub = document.getElementById('filterSub');
+const filterFav = document.getElementById('filterFav');
+const filterSearch = document.getElementById('filterSearch');
+const clearBtn = document.getElementById('clearFilterBtn');
+const randomBtn = document.getElementById('randomBtn');
+const toast = document.getElementById('toast');
+const singleModeBar = document.getElementById('singleModeBar');
+const singleCardBadge = document.getElementById('singleCardBadge');
+const exitSingleBtn = document.getElementById('exitSingleBtn');
+const prevCardBtn = document.getElementById('prevCardBtn');
+const nextCardBtn = document.getElementById('nextCardBtn');
+const filterBar = document.getElementById('filterBar');
+let toastTimer = null;
+
+/* ============= 工具函数 ============= */
+function showToast(msg){clearTimeout(toastTimer);toast.textContent=msg;toast.classList.add('show');toastTimer=setTimeout(()=>toast.classList.remove('show'),2200);}
+function saveFavs(){localStorage.setItem('calc_special_favs',JSON.stringify(favorites));}
+function saveNotes(){localStorage.setItem('calc_special_notes',JSON.stringify(notes));}
+function saveEdits(){localStorage.setItem('calc_special_edits',JSON.stringify(edits));}
+
+/* HTML 转义 */
+function escapeHtml(text){
+  if(!text) return '';
+  return String(text)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+/* 小问自动换行 */
+function addSubBreaks(escaped){
+  if(!escaped) return '';
+  let s = escaped;
+  s = s.replace(/（(\d+)）/g, '<br>（$1）');
+  s = s.replace(/^<br>/, '');
+  return s;
+}
+function renderAnswerParagraphs(text){
+  if(!text) return '';
+  const paragraphs = text.split('\n');
+  const filtered = paragraphs.filter(p => p.trim() !== '');
+  if(filtered.length === 0) return '';
+  return filtered.map(p => {
+    const esc = escapeHtml(p.trim());
+    return `<p>${addSubBreaks(esc)}</p>`;
+  }).join('');
+}
+function renderQuestionText(text){
+  if(!text) return '';
+  return addSubBreaks(escapeHtml(text));
+}
+function getCardData(id){
+  const original = currentData.find(d => d.id === id);
+  if(!original) return null;
+  if(edits[id]) return {...original, question: edits[id].question || original.question, answer: edits[id].answer || original.answer};
+  return {...original};
+}
+
+/* ============= 筛选下拉初始化 ============= */
+function buildMajorOptions(){
+  let html = '<option value="all">全部专项</option>';
+  filterTree.forEach(g => {
+    html += `<optgroup label="${g.group}">`;
+    g.items.forEach(item => {
+      html += `<option value="${item.major}">${item.major}</option>`;
+    });
+    html += '</optgroup>';
+  });
+  filterMajor.innerHTML = html;
+}
+function buildSubOptions(major){
+  if(major === 'all'){
+    filterSub.innerHTML = '<option value="all">全部细分</option>';
+    filterSub.disabled = true;
+    return;
+  }
+  const group = filterTree.find(g => g.items.some(item => item.major === major));
+  if(!group){filterSub.innerHTML = '<option value="all">全部细分</option>';filterSub.disabled = true;return;}
+  const item = group.items.find(i => i.major === major);
+  if(!item || item.subs.length === 0){
+    filterSub.innerHTML = '<option value="all">全部细分</option>';
+    filterSub.disabled = true;
+    return;
+  }
+  filterSub.disabled = false;
+  let html = '<option value="all">全部细分</option>';
+  item.subs.forEach(sub => { html += `<option value="${sub}">${sub}</option>`; });
+  filterSub.innerHTML = html;
+}
+
+/* ============= 单卡模式 ============= */
+function exitSingleMode(){
+  if(singleModeId === null) return;
+  singleModeId = null; history = []; historyIndex = -1;
+  singleModeBar.classList.remove('show');
+  filterBar.classList.remove('disabled');
+  render();
+  showToast('📋 已退出抽查模式');
+}
+function enterSingleMode(id){
+  if(!id) return;
+  if(singleModeId !== null){
+    if(singleModeId === id) return;
+    exitSingleMode();
+    setTimeout(()=>{enterSingleMode(id);},100);
+    return;
+  }
+  const card = getCardData(id);
+  if(!card){showToast('😅 卡片不存在');return;}
+  singleModeId = id;
+  const existIdx = history.indexOf(id);
+  if(existIdx !== -1){historyIndex = existIdx;}
+  else{history.push(id);historyIndex = history.length - 1;}
+  singleModeBar.classList.add('show');
+  filterBar.classList.add('disabled');
+  updateSingleBadge(id);
+  updateNavButtons();
+  render(id);
+  showToast(`🎯 抽查: ${card.sub || card.major} · ${card.qid}`);
+}
+function updateSingleBadge(id){
+  const card = getCardData(id);
+  if(card) singleCardBadge.textContent = `${card.sub || card.major} · ${card.qid}`;
+  else singleCardBadge.textContent = id;
+}
+function updateNavButtons(){
+  prevCardBtn.classList.toggle('disabled', historyIndex <= 0);
+  const ids = getFilteredIds();
+  nextCardBtn.classList.toggle('disabled', ids.length <= 1);
+}
+function goPrevCard(){
+  if(singleModeId === null) return;
+  if(historyIndex <= 0){showToast('已经是第一张了');return;}
+  historyIndex--;
+  const id = history[historyIndex];
+  if(id){singleModeId = id;updateSingleBadge(id);updateNavButtons();render(id);}
+  else exitSingleMode();
+}
+function goNextCard(){
+  if(singleModeId === null) return;
+  const ids = getFilteredIds();
+  if(ids.length <= 1){showToast('😅 没有更多卡片可抽查');return;}
+  const available = ids.filter(id => id !== singleModeId);
+  if(available.length === 0){showToast('😅 没有更多卡片可抽查');return;}
+  const randomId = available[Math.floor(Math.random() * available.length)];
+  history = history.slice(0, historyIndex + 1);
+  history.push(randomId);
+  historyIndex = history.length - 1;
+  singleModeId = randomId;
+  updateSingleBadge(randomId);
+  updateNavButtons();
+  render(randomId);
+  const card = getCardData(randomId);
+  if(card) showToast(`▶ 下一张: ${card.sub || card.major} · ${card.qid}`);
+}
+function doRandom(){
+  const ids = getFilteredIds();
+  if(ids.length === 0){showToast('😅 当前没有卡片可抽查，请调整筛选条件');return;}
+  if(singleModeId !== null){exitSingleMode();setTimeout(()=>{doRandom();},150);return;}
+  const randomId = ids[Math.floor(Math.random() * ids.length)];
+  enterSingleMode(randomId);
+}
+
+/* ============= 编辑 ============= */
+const editBackups = {};
+function enterEditMode(id){
+  const card = getCardData(id);
+  if(!card) return;
+  const questionEl = document.querySelector(`.card-question[data-id="${id}"] .q-text`);
+  const answerInner = document.querySelector(`.card-answer[data-id="${id}"] .answer-inner`);
+  const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+  if(!questionEl || !answerInner || !editBtn) return;
+  if(editBtn.classList.contains('is-editing')) return;
+  const currentQ = questionEl.textContent.trim();
+  const pNodes = answerInner.querySelectorAll('p');
+  let currentA = '';
+  if(pNodes.length > 0) currentA = Array.from(pNodes).map(p => p.textContent.trim()).join('\n');
+  else currentA = answerInner.textContent.trim();
+  editBackups[id] = {question: currentQ, answer: currentA};
+  const editQ = document.createElement('div');
+  editQ.contentEditable = true;
+  editQ.className = 'q-text editable';
+  editQ.textContent = currentQ;
+  editQ.style.cssText = 'display:inline-block;min-width:60px;outline:none;border-bottom:2px solid #6a9e9e;padding:2px 4px;white-space:pre-wrap;';
+  questionEl.replaceWith(editQ);
+  const editA = document.createElement('div');
+  editA.className = 'answer-inner editable';
+  editA.contentEditable = true;
+  const paragraphs = currentA.split('\n').filter(p => p.trim() !== '');
+  if(paragraphs.length === 0) editA.innerHTML = '<p><br></p>';
+  else editA.innerHTML = paragraphs.map(p => `<p>${escapeHtml(p.trim())}</p>`).join('');
+  editA.style.cssText = 'background:transparent;border-left:none;padding:4px 6px;min-height:40px;outline:none;border:2px dashed #6a9e9e;border-radius:8px;';
+  answerInner.replaceWith(editA);
+  editBtn.classList.add('is-editing');
+  editBtn.textContent = '💾';
+  editBtn.title = '保存修改';
+  let cancelBtn = document.querySelector(`.btn-cancel-edit[data-id="${id}"]`);
+  if(!cancelBtn){
+    cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn-cancel-edit';
+    cancelBtn.dataset.id = id;
+    cancelBtn.textContent = '❌';
+    cancelBtn.title = '取消编辑';
+    cancelBtn.style.cssText = 'font-size:18px;padding:4px 6px;background:transparent;border:none;cursor:pointer;border-radius:10px;color:#8a4a4a;';
+    editBtn.parentNode.insertBefore(cancelBtn, editBtn.nextSibling);
+    cancelBtn.addEventListener('click', function(e){e.stopPropagation();cancelEdit(id);});
+  } else cancelBtn.style.display = 'inline-block';
+  editBtn.onclick = function(e){e.stopPropagation();saveEdit(id);};
+  showToast('✏️ 正在编辑，点击 💾 保存 或 ❌ 取消');
+}
+function saveEdit(id){
+  const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+  if(!editBtn || !editBtn.classList.contains('is-editing')) return;
+  const editQ = document.querySelector(`.card-question[data-id="${id}"] .q-text.editable`);
+  const editA = document.querySelector(`.card-answer[data-id="${id}"] .answer-inner.editable`);
+  if(!editQ || !editA){showToast('⚠️ 编辑内容不存在');return;}
+  const newQ = editQ.textContent.trim();
+  const pNodes = editA.querySelectorAll('p');
+  let newA = '';
+  if(pNodes.length > 0) newA = Array.from(pNodes).map(p => p.textContent.trim()).join('\n');
+  else newA = editA.textContent.trim();
+  if(!newQ || !newA){showToast('⚠️ 题目和答案不能为空');return;}
+  edits[id] = {question: newQ, answer: newA};
+  saveEdits();
+  exitEditMode(id, true);
+  showToast('✅ 修改已保存');
+}
+function cancelEdit(id){
+  const backup = editBackups[id];
+  if(!backup){exitEditMode(id, false);return;}
+  const editQ = document.querySelector(`.card-question[data-id="${id}"] .q-text.editable`);
+  const editA = document.querySelector(`.card-answer[data-id="${id}"] .answer-inner.editable`);
+  if(editQ){
+    const newSpan = document.createElement('span');
+    newSpan.className = 'q-text';
+    newSpan.textContent = backup.question;
+    editQ.replaceWith(newSpan);
+  }
+  if(editA){
+    const newDiv = document.createElement('div');
+    newDiv.className = 'answer-inner';
+    newDiv.innerHTML = renderAnswerParagraphs(backup.answer);
+    editA.replaceWith(newDiv);
+  }
+  delete editBackups[id];
+  exitEditMode(id, false);
+  showToast('↩️ 已取消编辑');
+}
+function exitEditMode(id, saved){
+  const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+  const cancelBtn = document.querySelector(`.btn-cancel-edit[data-id="${id}"]`);
+  if(editBtn){
+    editBtn.classList.remove('is-editing');
+    editBtn.textContent = '✏️';
+    editBtn.title = '编辑题目和答案';
+    editBtn.onclick = function(e){e.stopPropagation();enterEditMode(id);};
+  }
+  if(cancelBtn) cancelBtn.style.display = 'none';
+  if(saved) render(singleModeId || null);
+  delete editBackups[id];
+}
+
+/* ============= 筛选 ============= */
+function getFilteredIds(){
+  const majorVal = filterMajor.value;
+  const subVal = filterSub.value;
+  const favVal = filterFav.value;
+  const searchVal = filterSearch.value.trim().toLowerCase();
+  return currentData.filter(d => {
+    if(majorVal !== 'all' && d.major !== majorVal) return false;
+    if(subVal !== 'all' && d.sub !== subVal) return false;
+    if(favVal === 'fav' && !favorites.includes(d.id)) return false;
+    if(searchVal){
+      const q = d.question.toLowerCase();
+      const a = d.answer.toLowerCase();
+      if(!q.includes(searchVal) && !a.includes(searchVal)) return false;
+    }
+    return true;
+  }).map(d => d.id);
+}
+
+/* ============= 渲染 ============= */
+function render(singleId = null){
+  if(singleId !== null && singleModeId === null){
+    const ids = getFilteredIds();
+    if(ids.includes(singleId)){
+      singleModeId = singleId;
+      if(history.length === 0 || history[history.length - 1] !== singleId){
+        history.push(singleId);
+        historyIndex = history.length - 1;
+      }
+      singleModeBar.classList.add('show');
+      filterBar.classList.add('disabled');
+      updateSingleBadge(singleId);
+      updateNavButtons();
+    } else singleId = null;
+  }
+  if(singleId === null && singleModeId !== null){exitSingleMode();return;}
+
+  const isSingleMode = singleModeId !== null;
+  let filtered;
+  if(isSingleMode){
+    const card = getCardData(singleModeId);
+    filtered = card ? [card] : [];
+    if(filtered.length === 0){exitSingleMode();return;}
+    updateSingleBadge(singleModeId);
+  } else {
+    const majorVal = filterMajor.value;
+    const subVal = filterSub.value;
+    const favVal = filterFav.value;
+    const searchVal = filterSearch.value.trim().toLowerCase();
+    filtered = currentData.map(d => getCardData(d.id)).filter(d => {
+      if(!d) return false;
+      if(majorVal !== 'all' && d.major !== majorVal) return false;
+      if(subVal !== 'all' && d.sub !== subVal) return false;
+      if(favVal === 'fav' && !favorites.includes(d.id)) return false;
+      if(searchVal){
+        const q = d.question.toLowerCase();
+        const a = d.answer.toLowerCase();
+        if(!q.includes(searchVal) && !a.includes(searchVal)) return false;
+      }
+      return true;
+    });
+  }
+  totalSpan.textContent = currentData.length;
+  favSpan.textContent = favorites.length;
+  grid.classList.toggle('single-mode', isSingleMode);
+  if(filtered.length === 0){
+    grid.innerHTML = `<div class="no-result">🌿 没有找到匹配的卡片，试试调整筛选条件吧</div>`;
+    return;
+  }
+  let html = '';
+  filtered.forEach(d => {
+    const isFav = favorites.includes(d.id);
+    const note = notes[d.id] || '';
+    const qText = renderQuestionText(d.question);
+    const aHtml = renderAnswerParagraphs(d.answer);
+    const subLabel = d.sub || d.major;
+    html += `
+      <div class="card-item ${isFav ? 'favorited' : ''}" data-id="${d.id}">
+        <div class="card-header">
+          <div class="label">
+            <span class="tag">${escapeHtml(d.major)}</span>
+            ${d.sub ? `<span class="tag sub-tag">${escapeHtml(d.sub)}</span>` : ''}
+            <span class="qid">${d.qid}</span>
+          </div>
+          <div class="card-actions" data-id="${d.id}">
+            <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${d.id}" title="收藏">${isFav ? '⭐' : '☆'}</button>
+            <button class="btn-note ${note ? 'active' : ''}" data-id="${d.id}" title="笔记">📝</button>
+            <button class="btn-edit" data-id="${d.id}" title="编辑题目和答案">✏️</button>
+          </div>
+        </div>
+        <div class="card-question" data-id="${d.id}">
+          <span class="q-text">${qText}</span>
+          <span class="toggle-hint">(点击展开答案)</span>
+        </div>
+        <div class="card-answer" data-id="${d.id}">
+          <div class="answer-inner">${aHtml}</div>
+        </div>
+        <div class="card-note-area" data-id="${d.id}">
+          <div class="note-editor" contenteditable="true" data-id="${d.id}">${note}</div>
+          <div class="img-resize-control" data-id="${d.id}">
+            <span>📐 大小</span>
+            <input type="range" min="10" max="200" value="100" step="2" />
+            <span class="size-val">100%</span>
+            <button class="btn-reset-size" data-id="${d.id}">重置</button>
+          </div>
+          <div class="note-actions">
+            <button class="btn-insert-img" data-id="${d.id}">🖼️ 插入图片</button>
+            <button class="note-save" data-id="${d.id}">💾 保存笔记</button>
+            <button class="note-clear" data-id="${d.id}">🗑️ 清空</button>
+            <span class="note-size-hint">支持粘贴图片 · 点击图片调大小</span>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  grid.innerHTML = html;
+
+  document.querySelectorAll('.card-question').forEach(el => {
+    el.addEventListener('click', function(e){
+      if(this.classList.contains('editable')) return;
+      const id = this.dataset.id;
+      const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
+      const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+      const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+      if(!answerDiv) return;
+      if(answerDiv.classList.contains('open')){
+        answerDiv.classList.remove('open');
+        if(noteArea){noteArea.classList.remove('open');if(noteBtn) noteBtn.classList.remove('active');}
+      } else {
+        answerDiv.classList.add('open');
+        if(noteArea){
+          if(notes[id] && notes[id].trim().length > 0){
+            noteArea.classList.add('open');
+            if(noteBtn) noteBtn.classList.add('active');
+          }
+        }
+      }
+    });
+  });
+
+  document.querySelectorAll('.btn-fav').forEach(btn => {
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const id = this.dataset.id;
+      const idx = favorites.indexOf(id);
+      if(idx > -1){favorites.splice(idx,1);this.classList.remove('active');this.textContent = '☆';}
+      else{favorites.push(id);this.classList.add('active');this.textContent = '⭐';}
+      saveFavs();
+      const card = this.closest('.card-item');
+      if(card) card.classList.toggle('favorited', favorites.includes(id));
+      favSpan.textContent = favorites.length;
+    });
+  });
+
+  document.querySelectorAll('.btn-note').forEach(btn => {
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const id = this.dataset.id;
+      const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+      const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
+      if(!noteArea) return;
+      if(noteArea.classList.contains('open')){
+        noteArea.classList.remove('open');
+        this.classList.remove('active');
+      } else {
+        if(answerDiv && !answerDiv.classList.contains('open')) answerDiv.classList.add('open');
+        noteArea.classList.add('open');
+        this.classList.add('active');
+        const editor = noteArea.querySelector('.note-editor');
+        if(editor) setTimeout(()=>editor.focus(),100);
+      }
+    });
+  });
+
+  document.querySelectorAll('.btn-insert-img').forEach(btn => {
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const id = this.dataset.id;
+      const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+      if(!editor) return;
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.style.display = 'none';
+      document.body.appendChild(fileInput);
+      fileInput.onchange = function(){
+        const file = this.files[0];
+        if(!file){document.body.removeChild(fileInput);return;}
+        const reader = new FileReader();
+        reader.onload = function(ev){
+          const img = document.createElement('img');
+          img.src = ev.target.result;
+          img.alt = '笔记图片';
+          img.style.maxWidth = '100%';
+          img.style.maxHeight = '300px';
+          img.style.borderRadius = '10px';
+          img.style.margin = '6px 0';
+          img.style.display = 'block';
+          img.dataset.noteImg = 'true';
+          const sel = window.getSelection();
+          if(sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)){
+            const range = sel.getRangeAt(0);
+            range.insertNode(img);
+            range.setStartAfter(img);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          } else editor.appendChild(img);
+          showToast('🖼️ 图片已插入，点击图片可调大小');
+          document.body.removeChild(fileInput);
+          bindImgClick(editor);
+        };
+        reader.readAsDataURL(file);
+      };
+      fileInput.click();
+    });
+  });
+
+  document.querySelectorAll('.note-save').forEach(btn => {
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const id = this.dataset.id;
+      const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+      if(!editor) return;
+      let content = editor.innerHTML.trim();
+      if(content === '<br>' || content === '') content = '';
+      if(content) notes[id] = content;
+      else delete notes[id];
+      saveNotes();
+      const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+      if(noteBtn) noteBtn.classList.toggle('active', !!content);
+      if(content){
+        const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+        if(noteArea) noteArea.classList.add('open');
+      }
+      const orig = btn.textContent;
+      btn.textContent = '✅ 已保存';
+      setTimeout(()=>{btn.textContent = orig;},1200);
+    });
+  });
+
+  document.querySelectorAll('.note-clear').forEach(btn => {
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const id = this.dataset.id;
+      if(!confirm('⚠️ 确定要清空这条笔记吗？')) return;
+      const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+      if(editor){
+        editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+        delete notes[id];
+        saveNotes();
+        const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+        if(noteBtn) noteBtn.classList.remove('active');
+        const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+        if(noteArea) noteArea.classList.remove('open');
+        const rc = document.querySelector(`.img-resize-control[data-id="${id}"]`);
+        if(rc) rc.classList.remove('show');
+        showToast('🗑️ 笔记已清空');
+      }
+    });
+  });
+
+  document.querySelectorAll('.note-editor').forEach(editor => {
+    editor.addEventListener('paste', function(e){
+      const items = e.clipboardData && e.clipboardData.items;
+      if(!items) return;
+      for(let item of items){
+        if(item.type && item.type.startsWith('image/')){
+          e.preventDefault();
+          const file = item.getAsFile();
+          const reader = new FileReader();
+          reader.onload = function(ev){
+            const img = document.createElement('img');
+            img.src = ev.target.result;
+            img.alt = '粘贴图片';
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '300px';
+            img.style.borderRadius = '10px';
+            img.style.margin = '6px 0';
+            img.style.display = 'block';
+            img.dataset.noteImg = 'true';
+            const sel = window.getSelection();
+            if(sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)){
+              const range = sel.getRangeAt(0);
+              range.insertNode(img);
+              range.setStartAfter(img);
+              range.collapse(true);
+              sel.removeAllRanges();
+              sel.addRange(range);
+            } else editor.appendChild(img);
+            showToast('🖼️ 图片已粘贴，点击可调整大小');
+            bindImgClick(editor);
+          };
+          reader.readAsDataURL(file);
+          break;
+        }
+      }
+    });
+  });
+
+  document.querySelectorAll('.note-editor').forEach(editor => {
+    const id = editor.dataset.id;
+    const content = notes[id] || '';
+    if(!content || content.trim() === '') editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+    editor.addEventListener('focus', function(){
+      const placeholder = this.querySelector('.note-placeholder');
+      if(placeholder) this.innerHTML = '';
+    });
+    editor.addEventListener('blur', function(){
+      if(this.innerHTML.trim() === '' || this.innerHTML === '<br>') this.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+    });
+  });
+
+  document.querySelectorAll('.note-editor').forEach(editor => bindImgClick(editor));
+
+  document.querySelectorAll('.btn-reset-size').forEach(btn => {
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const id = this.dataset.id;
+      const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+      if(!editor) return;
+      editor.querySelectorAll('img').forEach(img => {
+        img.style.width = ''; img.style.maxWidth = '100%'; img.dataset.origWidth = '100';
+      });
+      const slider = document.querySelector(`.img-resize-control[data-id="${id}"] input[type="range"]`);
+      if(slider){
+        slider.value = 100;
+        const valSpan = slider.closest('.img-resize-control').querySelector('.size-val');
+        if(valSpan) valSpan.textContent = '100%';
+      }
+      showToast('📐 图片大小已重置');
+    });
+  });
+
+  document.querySelectorAll('.img-resize-control input[type="range"]').forEach(slider => {
+    slider.addEventListener('input', function(){
+      const id = this.closest('.img-resize-control').dataset.id;
+      const val = parseInt(this.value);
+      const valSpan = this.closest('.img-resize-control').querySelector('.size-val');
+      if(valSpan) valSpan.textContent = val + '%';
+      const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+      if(!editor) return;
+      editor.querySelectorAll('img').forEach(img => {
+        if(img.classList.contains('selected')){
+          img.style.width = val + '%';
+          img.style.maxWidth = val + '%';
+        }
+      });
+    });
+  });
+
+  document.querySelectorAll('.btn-edit').forEach(btn => {
+    btn.onclick = function(e){
+      e.stopPropagation();
+      const id = this.dataset.id;
+      if(this.classList.contains('is-editing')) return;
+      enterEditMode(id);
+    };
+  });
+
+  if(isSingleMode) window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function bindImgClick(editor){
+  editor.querySelectorAll('img').forEach(img => {
+    img.removeEventListener('click', imgClickHandler);
+    img.addEventListener('click', imgClickHandler);
+  });
+}
+function imgClickHandler(e){
+  e.stopPropagation();
+  const img = this;
+  const editor = img.closest('.note-editor');
+  if(!editor) return;
+  const id = editor.dataset.id;
+  editor.querySelectorAll('img').forEach(i => i.classList.remove('selected'));
+  img.classList.add('selected');
+  const rc = document.querySelector(`.img-resize-control[data-id="${id}"]`);
+  if(!rc) return;
+  rc.classList.add('show');
+  const slider = rc.querySelector('input[type="range"]');
+  const valSpan = rc.querySelector('.size-val');
+  if(!slider) return;
+  let currentPct = 100;
+  if(img.style.width){
+    const w = parseInt(img.style.width);
+    if(w > 0 && w <= 200) currentPct = w;
+  }
+  slider.value = currentPct;
+  if(valSpan) valSpan.textContent = currentPct + '%';
+  slider.oninput = function(){
+    const val = parseInt(slider.value);
+    if(valSpan) valSpan.textContent = val + '%';
+    img.style.width = val + '%';
+    img.style.maxWidth = val + '%';
+  };
+  const resetBtn = rc.querySelector('.btn-reset-size');
+  if(resetBtn){
+    resetBtn.onclick = function(e2){
+      e2.stopPropagation();
+      img.style.width = ''; img.style.maxWidth = '100%';
+      slider.value = 100;
+      if(valSpan) valSpan.textContent = '100%';
+      showToast('📐 已重置');
+    };
+  }
+}
+
+/* ============= 事件绑定 ============= */
+function onFilterChange(){
+  if(singleModeId !== null) exitSingleMode();
+  else render();
+}
+filterMajor.addEventListener('change', function(){
+  buildSubOptions(this.value);
+  onFilterChange();
+});
+filterSub.addEventListener('change', onFilterChange);
+filterFav.addEventListener('change', onFilterChange);
+filterSearch.addEventListener('input', onFilterChange);
+clearBtn.addEventListener('click', function(){
+  filterMajor.value = 'all';
+  buildSubOptions('all');
+  filterFav.value = 'all';
+  filterSearch.value = '';
+  if(singleModeId !== null) exitSingleMode();
+  else render();
+});
+exitSingleBtn.addEventListener('click', exitSingleMode);
+prevCardBtn.addEventListener('click', goPrevCard);
+nextCardBtn.addEventListener('click', goNextCard);
+randomBtn.addEventListener('click', doRandom);
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'r' || e.key === 'R'){
+    if(!e.ctrlKey && !e.metaKey && !e.altKey){
+      const t = e.target;
+      if(t.tagName !== 'INPUT' && t.tagName !== 'TEXTAREA' && t.contentEditable !== 'true'){
+        e.preventDefault();
+        doRandom();
+      }
+    }
+  }
+  if(e.key === 'Escape'){
+    if(singleModeId !== null){e.preventDefault();exitSingleMode();}
+  }
+  if(singleModeId !== null){
+    if(e.key === 'ArrowLeft'){e.preventDefault();goPrevCard();}
+    if(e.key === 'ArrowRight'){e.preventDefault();goNextCard();}
+  }
+});
+
+/* ============= 初始化 ============= */
+buildMajorOptions();
+buildSubOptions('all');
+render();
+setTimeout(() => {
+  document.querySelectorAll('.note-editor').forEach(editor => {
+    const id = editor.dataset.id;
+    const content = notes[id] || '';
+    if(!content || content.trim() === '') editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+    bindImgClick(editor);
+  });
+}, 100);
+</script>
+</body>
+</html>

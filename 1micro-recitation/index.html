@@ -1,0 +1,2696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>南开经济学 · 微观背诵手册记忆卡</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f7f0;
+            color: #1e3a2a;
+            padding: 20px;
+        }
+        .app-header {
+            max-width: 1200px; margin: 0 auto 20px auto;
+            background: #d9edd9; padding: 18px 28px; border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(60, 110, 60, 0.12);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .app-header h1 { font-size: 24px; font-weight: 600; color: #1e4a2a; letter-spacing: 0.5px; }
+        .app-header .stats {
+            display: flex; gap: 20px; font-size: 14px;
+            background: #c4e0c4; padding: 6px 18px; border-radius: 40px;
+        }
+        .app-header .stats span { font-weight: 500; }
+        .app-header .stats .num { color: #1f6b3a; font-weight: 700; }
+        .filter-bar {
+            max-width: 1200px; margin: 0 auto 20px auto;
+            display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+            background: #e6f3e6; padding: 12px 20px; border-radius: 14px;
+            transition: opacity 0.3s;
+        }
+        .filter-bar.disabled { opacity: 0.5; pointer-events: none; }
+        .filter-bar label { font-size: 14px; font-weight: 500; color: #1f4a2a; }
+        .filter-bar select, .filter-bar input {
+            padding: 6px 14px; border-radius: 30px; border: 1px solid #b3d9b3;
+            background: #fafffa; font-size: 14px; color: #1e3a2a; outline: none;
+        }
+        .filter-bar select:focus, .filter-bar input:focus {
+            border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.2);
+        }
+        .filter-bar select optgroup { font-style: normal; font-weight: 600; }
+        .filter-bar .btn-clear-filter {
+            background: #cfe2cf; border: none; padding: 6px 18px; border-radius: 30px;
+            font-size: 13px; cursor: pointer; color: #1e4a2a; font-weight: 500;
+            transition: background 0.2s;
+        }
+        .filter-bar .btn-clear-filter:hover { background: #b8d4b8; }
+        .filter-bar .btn-random {
+            background: #d4c49a; border: none; padding: 6px 22px; border-radius: 30px;
+            font-size: 14px; cursor: pointer; color: #3f3a1a; font-weight: 600;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .filter-bar .btn-random:hover { background: #c9b888; transform: scale(1.02); }
+        .filter-bar .btn-random:active { transform: scale(0.96); }
+        .single-mode-bar {
+            max-width: 1200px; margin: 0 auto 16px auto;
+            background: #f5efe0; border: 2px solid #d4a24e; border-radius: 14px;
+            padding: 8px 20px; display: none; align-items: center;
+            justify-content: space-between; flex-wrap: wrap; gap: 10px;
+            animation: fadeSlide 0.3s ease;
+        }
+        .single-mode-bar.show { display: flex; }
+        .single-mode-bar .mode-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .single-mode-bar .mode-left .btn-nav {
+            background: transparent; border: none; font-size: 22px; cursor: pointer;
+            padding: 2px 10px; border-radius: 8px; color: #7a5a2a;
+            transition: background 0.15s, transform 0.1s; line-height: 1;
+        }
+        .single-mode-bar .mode-left .btn-nav:hover { background: #e8ddd0; transform: scale(1.05); }
+        .single-mode-bar .mode-left .btn-nav:active { transform: scale(0.92); }
+        .single-mode-bar .mode-left .btn-nav.disabled { opacity: 0.35; pointer-events: none; }
+        .single-mode-bar .card-id-badge {
+            font-size: 15px; font-weight: 600; color: #5a4a2a;
+            background: #e8ddd0; padding: 4px 18px; border-radius: 30px; white-space: nowrap;
+        }
+        .single-mode-bar .mode-hint { font-size: 13px; color: #8a7a5a; margin-left: 4px; }
+        .single-mode-bar .btn-exit-single {
+            background: transparent; border: none; font-size: 20px; cursor: pointer;
+            padding: 2px 10px; border-radius: 8px; color: #8a5a4a;
+            transition: background 0.15s, transform 0.1s; line-height: 1;
+        }
+        .single-mode-bar .btn-exit-single:hover { background: #e8d5d0; transform: scale(1.05); }
+        .single-mode-bar .btn-exit-single:active { transform: scale(0.92); }
+        .card-grid {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: 1fr; gap: 18px;
+        }
+        .card-grid.single-mode { max-width: 820px; }
+        .card-grid.single-mode .card-item {
+            box-shadow: 0 8px 32px rgba(60, 100, 60, 0.18);
+            border-left-width: 8px;
+        }
+        .card-item {
+            background: #ffffff; border-radius: 18px;
+            box-shadow: 0 4px 14px rgba(60, 100, 60, 0.08);
+            border-left: 6px solid #8fbe8f;
+            transition: box-shadow 0.25s, transform 0.15s, border-color 0.3s;
+            overflow: hidden; position: relative;
+        }
+        .card-item:hover { box-shadow: 0 8px 24px rgba(50, 100, 50, 0.13); }
+        .card-item.favorited { border-left-color: #d4a24e; background: #fcf9f0; }
+        .card-item.highlight {
+            border-left-color: #e67e22;
+            box-shadow: 0 0 0 3px #e67e22, 0 8px 28px rgba(230, 126, 34, 0.25);
+            transform: scale(1.005);
+        }
+        .card-header {
+            padding: 16px 22px 8px 22px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            gap: 12px; flex-wrap: wrap;
+        }
+        .card-header .label { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .card-header .label .tag {
+            background: #dcebd9; padding: 2px 14px; border-radius: 40px;
+            font-size: 12px; font-weight: 600; color: #1a4a2a; white-space: nowrap;
+        }
+        .card-header .label .qid { font-weight: 600; font-size: 15px; color: #1f5a2f; }
+        .card-header .label .has-img {
+            background: #d9c8b0; color: #5a3f1a; padding: 0 12px; border-radius: 40px;
+            font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+        }
+        .card-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+        .card-actions button {
+            background: transparent; border: none; font-size: 20px; cursor: pointer;
+            padding: 4px 6px; border-radius: 10px;
+            transition: background 0.15s, transform 0.1s; line-height: 1; color: #3f6a3f;
+        }
+        .card-actions button:hover { background: #e6f0e6; transform: scale(1.05); }
+        .card-actions .btn-fav { color: #b8a06a; }
+        .card-actions .btn-fav.active { color: #d4a24e; }
+        .card-actions .btn-note { color: #4f7a4f; }
+        .card-actions .btn-note.active { color: #2b6b2b; }
+        .card-actions .btn-edit { color: #4f6a8f; }
+        .card-actions .btn-edit.is-editing { color: #2b6b2b; }
+        .card-actions .btn-save-edit { color: #2b7a2b; font-weight: 700; }
+        .card-actions .btn-cancel-edit { color: #8a4a4a; }
+        .card-actions .btn-edit-group { display: flex; gap: 4px; align-items: center; }
+        .card-actions .btn-edit-group .btn-edit { font-size: 18px; }
+        .card-actions .btn-edit-group .btn-save-edit,
+        .card-actions .btn-edit-group .btn-cancel-edit { font-size: 18px; }
+        .card-question {
+            padding: 6px 22px 12px 22px; font-size: 15.5px; line-height: 1.7;
+            color: #1c3322; cursor: pointer; user-select: none; position: relative;
+        }
+        .card-question .q-text { display: inline; white-space: pre-wrap; }
+        .card-question .q-text .math { font-family: 'Times New Roman', serif; font-style: italic; }
+        .card-question .toggle-hint {
+            font-size: 13px; color: #5f8a5f; margin-left: 10px; font-weight: 400;
+            opacity: 0.7; white-space: nowrap;
+        }
+        .card-question.editable {
+            cursor: text; user-select: text; border: 2px dashed #6a9e9e;
+            border-radius: 10px; padding: 10px 18px; background: #fafffe;
+        }
+        .card-question.editable:focus {
+            border-color: #2b6b6b; outline: none;
+            box-shadow: 0 0 0 3px rgba(60, 150, 150, 0.15);
+        }
+        .card-answer {
+            padding: 0 22px 6px 22px; display: none; animation: fadeSlide 0.3s ease;
+        }
+        .card-answer.open { display: block; }
+        .card-answer .answer-inner {
+            background: #f3faf3; padding: 18px 22px; border-radius: 14px;
+            font-size: 14.8px; line-height: 1.75; color: #1a3322; word-break: break-word;
+        }
+        .card-answer .answer-inner p {
+            text-indent: 2em; margin: 0 0 0.2em 0; padding: 0;
+            line-height: 1.75; white-space: pre-wrap; word-break: break-word;
+        }
+        .card-answer .answer-inner p:last-child { margin-bottom: 0; }
+        .card-answer .answer-inner .math { font-family: 'Times New Roman', serif; font-style: italic; }
+        .card-answer .answer-inner .img-placeholder {
+            display: inline-block; background: #dce8dc; padding: 4px 16px;
+            border-radius: 40px; font-size: 13px; color: #2a5a2a; margin: 6px 0; font-weight: 500;
+        }
+        .card-answer.editable {
+            cursor: text; user-select: text; border: 2px dashed #6a9e9e;
+            border-radius: 10px; padding: 8px 16px; background: #fafffe;
+        }
+        .card-answer.editable .answer-inner { background: transparent; padding: 4px 6px; }
+        .card-answer.editable .answer-inner p {
+            text-indent: 2em; margin: 0 0 0.2em 0; padding: 0;
+            white-space: pre-wrap; word-break: break-word;
+        }
+        .card-answer.editable .answer-inner p:last-child { margin-bottom: 0; }
+        .card-answer.editable:focus {
+            border-color: #2b6b6b; outline: none;
+            box-shadow: 0 0 0 3px rgba(60, 150, 150, 0.15);
+        }
+        .card-note-area { padding: 0 22px 18px 22px; display: none; animation: fadeSlide 0.3s ease; }
+        .card-note-area.open { display: block; }
+        .card-note-area .note-editor {
+            background: #f8fcf8; border: 1px solid #c2ddc2; border-radius: 14px;
+            padding: 12px 16px; min-height: 80px; max-height: 360px; overflow-y: auto;
+            font-size: 14px; line-height: 1.7; color: #1c3322; outline: none;
+            transition: border 0.2s, box-shadow 0.2s; word-break: break-word; position: relative;
+        }
+        .card-note-area .note-editor:focus {
+            border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.15);
+        }
+        .card-note-area .note-editor img {
+            max-width: 100%; max-height: 300px; border-radius: 10px; margin: 6px 0;
+            display: block; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            background: #f0f5f0; border: 2px solid transparent;
+            transition: border 0.2s, box-shadow 0.2s; cursor: pointer;
+        }
+        .card-note-area .note-editor img.selected {
+            border-color: #4f8a4f;
+            box-shadow: 0 0 0 3px rgba(79, 138, 79, 0.25), 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+        .card-note-area .note-editor .note-placeholder { color: #8aaa8a; font-style: italic; }
+        .card-note-area .img-resize-control {
+            display: none; align-items: center; gap: 12px; margin-top: 8px;
+            padding: 6px 14px; background: #edf5ed; border-radius: 30px;
+            border: 1px solid #c2ddc2; font-size: 13px; color: #2a5a2a; flex-wrap: wrap;
+        }
+        .card-note-area .img-resize-control.show { display: flex; }
+        .card-note-area .img-resize-control input[type="range"] {
+            flex: 1; min-width: 80px; accent-color: #4f8a4f; height: 4px; cursor: pointer;
+        }
+        .card-note-area .img-resize-control .size-val {
+            font-weight: 600; min-width: 44px; text-align: center;
+        }
+        .card-note-area .img-resize-control .btn-reset-size {
+            background: #dcebd9; border: none; padding: 2px 14px; border-radius: 30px;
+            font-size: 12px; cursor: pointer; color: #1e4a2a; transition: background 0.2s;
+        }
+        .card-note-area .img-resize-control .btn-reset-size:hover { background: #c2ddc2; }
+        .card-note-area .note-actions {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: center;
+        }
+        .card-note-area .note-actions button {
+            background: #dcebd9; border: none; padding: 4px 18px; border-radius: 30px;
+            font-size: 13px; cursor: pointer; color: #1e4a2a; font-weight: 500;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .card-note-area .note-actions button:hover { background: #c2ddc2; }
+        .card-note-area .note-actions button:active { transform: scale(0.96); }
+        .card-note-area .note-actions .btn-insert-img { background: #d4d9c4; color: #2f4a2f; }
+        .card-note-area .note-actions .btn-insert-img:hover { background: #c4cdb0; }
+        .card-note-area .note-actions .note-save { background: #a8c8a8; color: #1a3a1a; }
+        .card-note-area .note-actions .note-save:hover { background: #94b894; }
+        .card-note-area .note-actions .note-clear { background: #e6d6d6; color: #6a3a3a; }
+        .card-note-area .note-actions .note-clear:hover { background: #dcc4c4; }
+        .card-note-area .note-actions .note-size-hint {
+            font-size: 12px; color: #6f8f6f; margin-left: auto; opacity: 0.7;
+        }
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(-6px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .no-result {
+            text-align: center; padding: 50px 20px; color: #4f7a4f;
+            font-size: 17px; background: #e6f3e6; border-radius: 24px;
+        }
+        .footer-note {
+            max-width: 1200px; margin: 30px auto 10px auto; text-align: center;
+            font-size: 13px; color: #5f7f5f; border-top: 1px solid #cce0cc; padding-top: 18px;
+        }
+        .footer-note kbd {
+            background: #dce8dc; padding: 0 8px; border-radius: 4px; font-size: 12px;
+        }
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: #2a4a2a; color: #f0faf0; padding: 10px 28px; border-radius: 40px;
+            font-size: 14px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+            z-index: 999; opacity: 0; transition: opacity 0.4s, transform 0.4s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        @media (max-width: 640px) {
+            .app-header { flex-direction: column; align-items: stretch; padding: 14px 18px; }
+            .app-header h1 { font-size: 20px; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .single-mode-bar { flex-direction: column; align-items: stretch; text-align: center; padding: 10px 14px; }
+            .single-mode-bar .mode-left { justify-content: center; }
+            .card-header { padding: 14px 16px 4px 16px; }
+            .card-question { padding: 4px 16px 10px 16px; font-size: 14.5px; }
+            .card-answer { padding: 0 16px 6px 16px; }
+            .card-answer .answer-inner { padding: 14px 16px; font-size: 14px; }
+            .card-note-area { padding: 0 16px 14px 16px; }
+            .card-note-area .note-editor { min-height: 60px; max-height: 260px; }
+            .card-grid.single-mode { max-width: 100%; }
+            .card-note-area .img-resize-control { flex-wrap: wrap; gap: 6px; }
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #dce8dc; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #8fbe8f; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6f9e6f; }
+/* ================= 返回主页按钮 ================= */
+.app-header .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 15px 7px 11px;
+    border-radius: 30px;
+    background: #c4e0c4;
+    color: #1e4a2a;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(60, 110, 60, 0.10);
+    transition: background .2s, transform .2s, box-shadow .2s;
+}
+.back-home:hover {
+    background: #a8d0a8;
+    transform: translateX(-2px);
+    box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+}
+.back-home .arrow {
+    font-size: 15px;
+    line-height: 1;
+    transition: transform .2s;
+}
+.back-home:hover .arrow {
+    transform: translateX(-3px);
+}
+
+/* 移动端微调 */
+@media (max-width: 640px) {
+    .app-header .header-left { gap: 10px; }
+    .back-home { padding: 6px 13px 6px 10px; font-size: 12.5px; }
+}
+    </style>
+</head>
+<body>
+
+    <div class="app-header">
+        <div class="header-left">
+    <a href="../index.html" class="back-home" title="返回主页">
+        <span class="arrow">⬅</span><span>主页</span>
+    </a>
+    <h1>📗 南开经济学 · 微观背诵手册记忆卡</h1>
+</div>
+        <div class="stats">
+            <span>📚 总卡 <span class="num" id="totalCards">0</span></span>
+            <span>⭐ 收藏 <span class="num" id="favCount">0</span></span>
+        </div>
+    </div>
+
+    <div class="filter-bar" id="filterBar">
+        <label for="filterSpecial">章节</label>
+         <select id="filterSpecial">
+            <option value="all">全部</option>
+            <option value="一、消费者行为理论|all" style="font-weight:600;">一、消费者行为理论</option>
+            <option value="一、消费者行为理论|概念">　　重要概念</option>
+            <option value="一、消费者行为理论|简答">　　简答/论述题</option>
+            <option value="二、生产者行为理论|all" style="font-weight:600;">二、生产者行为理论</option>
+            <option value="二、生产者行为理论|概念">　　重要概念</option>
+            <option value="二、生产者行为理论|简答">　　简答/论述题</option>
+            <option value="三、市场理论|all" style="font-weight:600;">三、市场理论</option>
+            <option value="三、市场理论|概念">　　重要概念</option>
+            <option value="三、市场理论|简答">　　简答/论述题</option>
+            <option value="四、博弈论|all" style="font-weight:600;">四、博弈论</option>
+            <option value="四、博弈论|概念">　　重要概念</option>
+            <option value="四、博弈论|简答">　　简答/论述题</option>
+            <option value="五、要素理论|all" style="font-weight:600;">五、要素理论</option>
+            <option value="五、要素理论|概念">　　重要概念</option>
+            <option value="五、要素理论|简答">　　简答/论述题</option>
+            <option value="六、一般均衡与福利|all" style="font-weight:600;">六、一般均衡与福利</option>
+            <option value="六、一般均衡与福利|概念">　　重要概念</option>
+            <option value="六、一般均衡与福利|简答">　　简答/论述题</option>
+            <option value="七、市场失灵|all" style="font-weight:600;">七、市场失灵</option>
+            <option value="七、市场失灵|概念">　　重要概念</option>
+            <option value="七、市场失灵|简答">　　简答/论述题</option>
+        </select>
+        <label for="filterFav">⭐ 收藏</label>
+        <select id="filterFav">
+            <option value="all">全部</option>
+            <option value="fav">仅收藏</option>
+        </select>
+        <input type="text" id="filterSearch" placeholder="搜索题目关键词…" style="flex:1; min-width:140px;" />
+        <button class="btn-clear-filter" id="clearFilterBtn">重置筛选</button>
+        <button class="btn-random" id="randomBtn">🎲 随机抽查</button>
+    </div>
+
+    <div class="single-mode-bar" id="singleModeBar">
+        <div class="mode-left">
+            <button class="btn-nav" id="prevCardBtn" title="上一张">◀</button>
+            <span class="card-id-badge" id="singleCardBadge">卡片 #1</span>
+            <button class="btn-nav" id="nextCardBtn" title="下一张">▶</button>
+            <span class="mode-hint">抽查中</span>
+        </div>
+        <button class="btn-exit-single" id="exitSingleBtn" title="退出抽查模式">✕</button>
+    </div>
+
+    <div class="card-grid" id="cardGrid"></div>
+
+    <div class="footer-note">
+        点击题目区域可展开/收起答案 · 点击 ⭐ 收藏 · 点击 📝 添加笔记 · 点击 ✏️ 编辑题目/答案
+        <span style="display:block;font-size:12px;color:#8aaa8a;margin-top:4px;">
+            按 <kbd>R</kbd> 键快速随机抽查 · 抽查模式中 ◀ ▶ 切换卡片 · 点击笔记图片可调大小
+        </span>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============================================================
+        // 数据（微观背诵手册：7章，含重要概念与简答/论述题）
+        // ============================================================
+        const cardData = [
+            /* ===================== 一、消费者行为理论 ===================== */
+            /* --- 重要概念 --- */
+            { id: 'c1c1', special: '一、消费者行为理论', type: '重要概念', qid: '概念1',
+                question: '消费者偏好三公理（偏好的三个假设）',
+                answer: `（1）偏好的假设：
+① 完备性公理：我们假定任何两个消费束都是可以比较的。也就是说，假定有任一X消费束和任一Y消费束，假定 (x₁,x₂) ≥ (y₁,y₂)，或者 (y₁,y₂) ≥ (x₁,x₂)，或者两种情况都有，在最后这种情况下，消费者对这两个消费束是无差异的。
+② 反身性公理：任何消费束至少与本身是一样好的，即 (x₁,x₂) ≥ (x₁,x₂)。
+③ 传递性公理：假如 (x₁,x₂) ≥ (y₁,y₂)，并且 (y₁,y₂) ≥ (z₁,z₂)，那么我们就可以假定 (x₁,x₂) ≥ (z₁,z₂)。换句话说，假如消费者认为X至少与Y一样好，Y至少和Z一样好，那么消费者就认为X至少与Z一样好。
+（2）偏好假设的意义：
+① 完备性假设使消费者能够在任意两个消费束之中进行比较，从而作出消费选择，是作消费选择的基础。
+② 反身性假设对于消费者的消费选择而言意味着其消费行为至少使得自身状况和当下一样好。
+③ 传递性假设意味着通过个人对消费束的偏好传递，总能够找到消费者最偏好的消费束，作出最佳的消费选择。
+【提示】关于偏好的假设，不同教材说法不同，以上是范里安教材的描述，建议大家答题时也以范里安教材的说法为准。`,
+                hasImage: false },
+
+            { id: 'c1c2', special: '一、消费者行为理论', type: '重要概念', qid: '概念2',
+                question: '偏好的单调性',
+                answer: `（1）偏好的单调性是指，如果 (x₁,x₂) 是一个由正常商品组成的消费束，(y₁,y₂) 是一个至少包含相同数量的这两种商品，并且其中一种商品数量多一些的消费束，那么 (y₁,y₂) > (x₁,x₂)。也就是说，至少一种商品数量较多的组合是一个较好的消费束，至少一种商品数量较少的组合表示较差的消费束。
+（2）单调性的含义：无差异曲线斜率为负。因为从 (x₁,x₂) 出发，向右上方任何一点移动，肯定会达到一个更受偏好的位置；向左下方任何一点移动，肯定会达到一个较差的位置。因此，如果要移动一条无差异曲线上点的位置，必须不是向左上方移动就是向右下方移动。
+【提示】利用偏好的单调性证明"无差异曲线不能相交"的思路也需要大家进行掌握。`,
+                hasImage: true },
+
+            { id: 'c1c3', special: '一、消费者行为理论', type: '重要概念', qid: '概念3',
+                question: '凸偏好',
+                answer: `凸偏好是指，在同一条无差异曲线上任取两个消费束 (x₁,x₂) 和 (y₁,y₂)，如果对于任意的 t（0≤t≤1）来说，满足 (tx₁+(1−t)y₁, tx₂+(1−t)y₂) ≥ (x₁,x₂)，则称该无差异曲线所代表的偏好为凸偏好。
+经济学含义：消费者希望最终可以一起消费各种商品，而不是专门消费某一种商品。
+【提示】良态偏好是满足偏好单调性的凸偏好，因此其无差异曲线向右下方倾斜，同时满足边际替代率递减。`,
+                hasImage: true },
+
+            { id: 'c1c4', special: '一、消费者行为理论', type: '重要概念', qid: '概念4',
+                question: '餍足点',
+                answer: `餍足是指对于消费者来说有一个最佳的消费束，对该消费者而言越接近这个消费束越好。例如消费者有最偏好的消费束 (x̄₁, x̄₂)，离这个消费束越远，该消费者的情况越糟，(x̄₁, x̄₂) 被称为餍足点或最佳点，无差异曲线就围绕着这个点。`,
+                hasImage: true },
+
+            { id: 'c1c5', special: '一、消费者行为理论', type: '重要概念', qid: '概念5',
+                question: '收入提供曲线与恩格尔曲线',
+                answer: `（1）收入提供曲线指在消费者偏好和商品价格不变的条件下，与消费者不同收入水平相联系的消费者效用最大化的均衡点的轨迹。此时两种商品均为正常品。
+（2）恩格尔曲线指在商品价格不变的条件下，与消费者不同收入水平相联系的消费者效用最大化时某种商品消费量的轨迹。正常品的恩格尔曲线向右上方倾斜。`,
+                hasImage: true },
+
+            { id: 'c1c6', special: '一、消费者行为理论', type: '重要概念', qid: '概念6',
+                question: '正常商品与低档商品（劣等品）',
+                answer: `（1）正常商品：其他条件不变的情况下，需求变化与收入变化方向相同的商品，即 Δx₁/Δm > 0。
+（2）低档商品：其他条件不变的情况下，需求变化与收入变化方向相反的商品，即 Δx₁/Δm < 0。`,
+                hasImage: false },
+
+            { id: 'c1c7', special: '一、消费者行为理论', type: '重要概念', qid: '概念7',
+                question: '价格提供曲线与需求曲线',
+                answer: `（1）价格提供曲线指在消费者偏好、收入、其他商品价格不变的条件下，与某种商品不同价格水平相联系的消费者效用最大化均衡点的轨迹。
+（2）需求曲线是指在消费者偏好、收入、其他商品价格不变的条件下，与某种商品不同价格水平相联系的消费者效用最大化时该商品消费量的轨迹。
+【提示】范里安教材中完全替代、完全互补、柯布-道格拉斯、相似偏好、拟线性偏好的收入提供曲线和恩格尔曲线，完全替代、完全互补的价格提供曲线和需求曲线，需要大家熟练掌握其推导思路、文字分析和画图。（23年应用经济学考过）`,
+                hasImage: true },
+
+            { id: 'c1c8', special: '一、消费者行为理论', type: '重要概念', qid: '概念8',
+                question: '普通商品和吉芬商品',
+                answer: `（1）普通商品：其他条件不变的情况下，需求变化与商品价格变化方向相反的商品，即 Δx₁/Δp₁ < 0。
+（2）吉芬商品：其他条件不变的情况下，需求变化与商品价格变化方向相同的商品，即 Δx₁/Δp₁ > 0。`,
+                hasImage: false },
+
+            { id: 'c1c9', special: '一、消费者行为理论', type: '重要概念', qid: '概念9',
+                question: '相似偏好',
+                answer: `（1）如果消费者对 (x₁,x₂) 的偏好胜过 (y₁,y₂)，并且对于任意的正值 t，消费者都会偏好 (tx₁,tx₂)，而不是 (ty₁,ty₂)，具有这种性质的偏好称作相似偏好。
+（2）完全替代、完全互补、柯布-道格拉斯偏好都是相似偏好。以柯布-道格拉斯偏好 u(x₁,x₂)=x₁ᵅx₂ᵝ 为例，证明过程如下：
+由于效用函数 u=x₁ᵅx₂ᵝ，所以：u(tx₁,tx₂)=(tx₁)ᵅ(tx₂)ᵝ=tᵅ⁺ᵝx₁ᵅx₂ᵝ=tᵅ⁺ᵝu(x₁,x₂)。
+消费者对 (x₁,x₂) 的偏好基于 (y₁,y₂)，则存在 u(x₁,x₂)>u(y₁,y₂)，那么对于任何正值 t 就一定有：u(tx₁,tx₂)=tᵅ⁺ᵝu(x₁,x₂)>tᵅ⁺ᵝu(y₁,y₂)=u(ty₁,ty₂)，即 u(tx₁,tx₂)>u(ty₁,ty₂)，所以此时消费者对 (tx₁,tx₂) 的偏好基于 (ty₁,ty₂)。
+（3）性质：如果消费者具有相似偏好，那么其收入提供曲线是一条过原点的直线，并且对应的需求收入弹性为1。`,
+                hasImage: false },
+
+            { id: 'c1c10', special: '一、消费者行为理论', type: '重要概念', qid: '概念10',
+                question: '显示偏好、直接显示偏好和间接显示偏好',
+                answer: `（1）显示偏好是指直接通过消费者的行为来获得有关消费者偏好信息的方法，显示偏好分为直接显示偏好和间接显示偏好。
+（2）直接显示偏好：设 (x₁,x₂) 是消费者在收入为 m，价格为 (p₁,p₂) 时选择的消费束。又设另一不同消费束 (y₁,y₂) 是在收入为 m，价格为 (p₁,p₂) 下能够购买的，即此时满足 p₁x₁+p₂x₂ ≥ p₁y₁+p₂y₂。此时消费者没有选择消费束 (y₁,y₂)，这意味着 (x₁,x₂) 被直接显示偏好于 (y₁,y₂)。
+（3）间接显示偏好：设在收入为 m′，价格为 (q₁,q₂) 下，消费者选择了 (y₁,y₂)，而没有选择同样能够负担得起的 (z₁,z₂)，即 (y₁,y₂) 被直接显示偏好于 (z₁,z₂)。故可得，(x₁,x₂) 被间接显示偏好于 (z₁,z₂)。`,
+                hasImage: false },
+
+            { id: 'c1c11', special: '一、消费者行为理论', type: '重要概念', qid: '概念11',
+                question: '显示偏好原理',
+                answer: `设 (x₁,x₂) 是按价格 (p₁,p₂) 选择的消费束，(y₁,y₂) 是使得 p₁x₁+p₂x₂ ≥ p₁y₁+p₂y₂ 的另一个消费束。在这种情况下，如果消费者总是在他能够购买的消费束中选择他最偏好的消费束，那么一定有 (x₁,x₂) > (y₁,y₂)。`,
+                hasImage: false },
+
+            { id: 'c1c12', special: '一、消费者行为理论', type: '重要概念', qid: '概念12',
+                question: '显示偏好弱公理',
+                answer: `如果 (x₁,x₂) 被直接显示偏好于 (y₁,y₂) 且 (x₁,x₂) 和 (y₁,y₂) 不同，那么，(y₁,y₂) 就不可能被直接显示偏好于 (x₁,x₂)。
+换言之，若消费者在价格 (p₁,p₂) 下选择了 (x₁,x₂)，在价格 (q₁,q₂) 下选择了 (y₁,y₂)。只要有 p₁x₁+p₂x₂ ≥ p₁y₁+p₂y₂ 就不可能再有 q₁y₁+q₂y₂ ≥ q₁x₁+q₂x₂，这也意味着不等式 q₁y₁+q₂y₂ < q₁x₁+q₂x₂ 成立，即在价格 (q₁,q₂) 下消费者选择 (y₁,y₂) 是因为买不起 (x₁,x₂)。
+用文字表述就是：如果消费者在购买消费束 X 时，有能力购买消费束 Y，那么在购买消费束 Y 时，X 就一定是无力购买的消费束。`,
+                hasImage: true },
+
+            { id: 'c1c13', special: '一、消费者行为理论', type: '重要概念', qid: '概念13',
+                question: '显示偏好强公理',
+                answer: `假设偏好是稳定的，则消费者行为必须满足不同情况下一致的性质。如果能从消费者的行为中推断出 (x₁,x₂) 直接或间接显示偏好于 (y₁,y₂)，且 (x₁,x₂) 不同于 (y₁,y₂)，那么无论在何种情况下，消费者的行为中都不可能出现 (y₁,y₂) 直接或间接显示偏好于 (x₁,x₂) 的情况。`,
+                hasImage: false },
+
+            { id: 'c1c14', special: '一、消费者行为理论', type: '重要概念', qid: '概念14',
+                question: '替代效应和收入效应',
+                answer: `（1）由商品的价格变动所引起的商品相对价格的变动，进而由商品的相对价格变动所引起的商品需求量的变动，称为替代效应，即是指在消费者的实际收入保持不变的前提下，由于商品价格的相对变化所引起的商品需求量的变化。
+（2）收入效应是由商品价格变动引起实际收入水平变动，进而由实际收入水平变动所引起的商品需求量的变动。`,
+                hasImage: true },
+
+            { id: 'c1c15', special: '一、消费者行为理论', type: '重要概念', qid: '概念15',
+                question: '斯勒茨基方程',
+                answer: `（1）斯勒茨基方程表明需求的总变动等于替代效应和收入效应的和，其一般形式为：Δx₁ = Δx₁ˢ + Δx₁ᵐ。
+（2）用变化率形式表示的斯勒茨基方程为：Δx₁/Δp₁ = Δx₁ˢ/Δp₁ − x₁·Δx₁ᵐ/Δm，其中 Δx₁ˢ/Δp₁ 为替代效应，−x₁·Δx₁ᵐ/Δm 为收入效应。替代效应总是为负，收入效应的正负取决于商品是正常品还是劣等品（低档商品），正常品的收入效应为负，劣等品的收入效应为正。
+【提示1】用变化率表示的斯勒茨基方程其具体推导等的可能性不大，但是需要大家能够熟练写出方程，同时也要能够利用变化率形式的斯勒茨基方程分析不同商品的替代效应与收入效应。
+商品类别与效应关系：
+正常品：替代效应负，收入效应负，总效应负，∂x/∂m>0, ∂x/∂p<0；
+普通劣等品：替代效应负，收入效应正，总效应负，∂x/∂m<0, ∂x/∂p<0；
+吉芬品（特殊劣等品）：替代效应负，收入效应正，总效应正，∂x/∂m<0, ∂x/∂p>0。
+【提示2】修正的斯勒茨基方程：dx₁/dp₁ = dx₁ˢ/dp₁ + (w₁−x₁)·dx₁ᵐ/dm，其主要用于分析劳动供给问题、跨期消费问题等。`,
+                hasImage: false },
+
+            { id: 'c1c16', special: '一、消费者行为理论', type: '重要概念', qid: '概念16',
+                question: '需求法则',
+                answer: `如果一种商品的需求随着收入增加而增加，那么这种商品的需求一定随着价格上升而下降。
+需求法则的核心意思：正常商品一定是普通品。
+【提示】需求定理与供给定理：
+（1）需求定理：在其他因素保持不变的条件下，一种商品的价格上升，则对该商品的需求量减少；一种商品的价格下降，则对该商品的需求量增加。简言之，商品的价格和需求量呈反方向变动。
+（2）供给定理：在其他因素保持不变的条件下，一种商品的价格上升，则该商品的供给量增加；一种商品的价格下降，则该商品的供给量减少。简言之，商品的价格和供给量呈同方向变动。`,
+                hasImage: false },
+
+            { id: 'c1c17', special: '一、消费者行为理论', type: '重要概念', qid: '概念17',
+                question: '消费者剩余',
+                answer: `（1）消费者剩余是指消费者在购买一定数量的某种商品时愿意支付的最高总价格和实际支付的总价格之间的差额。
+（2）在一定条件下（利用需求曲线图），消费者剩余可以用需求曲线以下、价格线以上的面积来衡量，此时消费者剩余为：CS = ∫₀^{Q₀} f(Q)dQ − P₀Q₀。`,
+                hasImage: true },
+
+            { id: 'c1c18', special: '一、消费者行为理论', type: '重要概念', qid: '概念18',
+                question: '补偿变化（CV）与等价变化（EV）',
+                answer: `（1）补偿变化指近似描绘消费者剩余变化的方法。当价格变化，在新的价格水平下改变消费者的收入可以使其恢复初始效用，改变的收入量即是补偿变化 CV。
+（2）等价变化指近似描述消费者剩余变化的方法。价格变化使消费者效用发生变化，在初始价格下使消费者收入变化一定量就可以使消费者效用产生同样的变化，这个收入变化量即为 EV。
+（3）CS、CV 和 EV 都是用货币衡量消费者效用的变化，或者说三者都是消费者效用变化的货币衡量指标。拟线性偏好下三者等价的数理证明和图形分析需要大家掌握，22年全院考过数理推导、24年经院理论和应用经济学真题同时考到 CV 和 EV 相等或不相等的图形分析，大家务必再去仔细看一下上面几道真题。`,
+                hasImage: true },
+
+            { id: 'c1c19', special: '一、消费者行为理论', type: '重要概念', qid: '概念19',
+                question: '需求价格弹性',
+                answer: `（1）需求价格弹性表示在一定时期内一种商品的需求量变动对于该商品的价格变动的反应程度。或者说，表示在一定时期内当一种商品的价格变化百分之一时所引起的该商品的需求量变化的百分比。其公式为：e_d = −(∂x/∂p)·(p/x)。
+（2）需求价格弹性与商品销售总收益的关系：
+① 如果 |e_d|>1，即商品 x 富有弹性，其销售总收益与价格是反方向变动的，即销售总收益随价格的提高而减少，随价格的降低而增加；
+② 如果 |e_d|<1，即商品 x 是缺乏弹性的，该商品销售总收益与价格是同方向变动的，即销售总收益随价格的提高而增加，随价格的降低而减少；
+③ 如果 |e_d|=1，即商品 x 是单位弹性，降低价格或提高价格对厂商的销售总收益都没有影响。
+（3）需求价格弹性的影响因素：
+① 商品的可替代性。一般说来，一种商品的可替代品越多，相近程度越高，则该商品的需求的价格弹性往往就越大；相反，该商品的需求的价格弹性往往就越小。
+② 商品用途的广泛性。一般说来，一种商品的用途越是广泛，它的需求的价格弹性就可能越大；相反，用途越是狭窄，它的需求的价格弹性就可能越小。
+③ 商品对消费者生活的重要程度。一般说来，生活必需品的需求的价格弹性较小，非必需品的需求的价格弹性较大。
+④ 商品的消费支出在消费者预算总支出中所占的比重。消费者在某商品上的消费支出在预算总支出中所占的比重越大，该商品的需求的价格弹性可能越大；反之，则越小。
+⑤ 所考察的消费者调节需求量的时间。一般说来，所考察的调节时间越长，则需求的价格弹性就可能越大；反之，则越小。
+【提示1】厂商收益与需求价格弹性关系（厂商定价策略与弹性关系）：
+dTR/dP = d[P·Q(P)]/dP = Q(P) + P·dQ(P)/dP = Q[1 + (dQ(P)/dP)·(P/Q(P))] = Q(1−|E_d|)。
+【提示2】厂商边际收益与需求价格弹性关系：
+dTR/dQ = d[P(Q)·Q]/dQ = P(Q) + Q·dP(Q)/dQ = P[1 + (dP(Q)/dQ)·(Q/P(Q))] = P(1−1/|E_d|)。
+利用上式可以得到如下结论：
+① 当 |e_d|=∞（完全竞争），MR=P，此时厂商的边际收益曲线与面临的需求曲线重合；
+② 当 |e_d|<∞（非完全竞争），MR&lt;P，此时厂商的边际收益曲线位于面临的需求曲线下方；
+③ 当 0<|e_d|<1，MR<0，由于厂商利润最大化时 MR=MC，并且 MC≥0，所以厂商利润最大化的点不可能位于需求缺乏弹性的区间。`,
+                hasImage: false },
+
+            { id: 'c1c20', special: '一、消费者行为理论', type: '重要概念', qid: '概念20',
+                question: '需求交叉价格弹性',
+                answer: `（1）需求交叉价格弹性表示在一定时期内一种商品的需求量的变动对于它的相关商品的价格的变动的反应程度。或者说，表示在一定时期内当一种商品的价格变化百分之一时所引起的另一种商品的需求量变化的百分比。
+（2）需求交叉价格弹性的分类：
+当 e_xy>0 时，x 与 y 两种产品间有替代关系；当 e_xy<0 时，x 与 y 两种产品间有互补关系；当 e_xy=0 时，x 与 y 两种产品间无关系。
+（3）替代品与互补品：
+如果两种商品之间可以互相代替以满足消费者的某一种欲望，则称这两种商品之间存在着替代关系，这两种商品互为替代品。替代品需求交叉价格弹性为正。
+如果两种商品必须同时使用才能满足消费者的某一种欲望，则称这两种商品之间存在着互补关系，这两种商品互为互补品。互补品需求交叉价格弹性为负。`,
+                hasImage: false },
+
+            { id: 'c1c21', special: '一、消费者行为理论', type: '重要概念', qid: '概念21',
+                question: '需求收入弹性',
+                answer: `（1）需求收入弹性表示在一定时期内消费者对某种商品的需求量的变动对于消费者收入量变动的反应程度。或者说，表示在一定时期内当消费者的收入变化百分之一时所引起的商品需求量变化的百分比。
+（2）需求收入弹性与商品分类：e_M>1 为奢侈品；0&lt;e_M&lt;1 为必需品；e_M&lt;0 为低档品。`,
+                hasImage: false },
+
+            /* --- 简答/论述题 --- */
+            { id: 'c1s1', special: '一、消费者行为理论', type: '简答/论述题', qid: '简答1',
+                question: '试述基数效用论与序数效用论的区别与联系。',
+                answer: `效用是指消费者在消费商品时所感受到的满足程度，并且这种满足程度纯粹是一种消费者主观心理感觉，效用有基数效用和序数效用之分。
+基数效用论认为，效用的大小可以用设想的数字来表示，并加以计算和比较。序数效用论认为，效用仅仅是次序概念，而不是数量概念，因此在分析商品效用时，无法用具体数字来描述商品效用，只能用第一、第二等序数来说明各种商品效用谁大谁小或相等。
+（1）联系：
+① 都是从市场的需求一方着手，通过推导需求曲线，说明需求曲线上的任一点都表示消费者获得了效用最大化。
+② 都是一种消费者行为理论，都把消费者的行为看作是在既定的收入限制条件下追求效用最大化的过程。
+③ 都以边际效用理论为基础，认为商品的价值或价格是由商品带给消费者的边际效用的大小来决定的。
+④ 它们推导的曲线具有相同的趋势，都符合需求规律。
+（2）区别：
+① 假设不同。基数效用论假设消费者消费商品所获得的效用是可以度量的，可以用基数表示。每个消费者都可以准确地说出自己所获得的效用值，边际效用具有递减规律。序数效用论则认为消费所获得的效用只可以进行排序，只可以用序数来表示，效用的大小及特征表现在无差异曲线中。
+② 使用的分析方法不同。基数效用论使用 MU 即在预算约束下求效用值的最大化作为工具。而序数效用论则使用无差异曲线、预算线作为分析工具。
+③ 均衡条件的表达不同。基数效用论使用表达式为 MU_i/P_i = λ，序数效用论则表达为 MRS_xy = MU_x/MU_y = P_x/P_y。`,
+                hasImage: false },
+
+            { id: 'c1s2', special: '一、消费者行为理论', type: '简答/论述题', qid: '简答2',
+                question: '简述边际效用递减规律、边际替代率递减规律的区别和联系。',
+                answer: `（1）边际效用递减规律是指在一定时间内，在其他商品的消费数量保持不变的条件下，随着消费者对某种商品消费量的增加，消费者从该商品连续增加的每一消费单位中所得到的效用增量即边际效用是递减的。
+边际替代率递减规律：在同一条无差异曲线上，即总效用保持不变的前提下，随着一种商品消费数量的连续增加，消费者为得到额外一单位商品所需要放弃的另一种商品的消费数量是递减的。
+（2）两者的联系：两者都是建立在讨论消费者效用的基础之上的，边际替代率递减规律的存在是典型的无差异曲线凸向原点的根本原因。从数值的意义上，边际效用递减是导致边际替代率递减的重要原因。
+（3）两者的区别：
+① 边际效用递减规律中改变的只是一种商品的消费数量，因而效用是改变的。边际替代率递减规律中改变的是两种商品，但保持了效用的不变。
+② 边际效用递减规律在效用函数正单调变换下可能会发生改变，即它是基数性质，而不是序数性质（边际效用函数发生改变）。边际替代率递减规律具有正单调变换不变性，即具有序数性质（边际效用函数不变）。`,
+                hasImage: false },
+
+            { id: 'c1s3', special: '一、消费者行为理论', type: '简答/论述题', qid: '简答3',
+                question: '分析正常商品、劣等商品和吉芬商品的替代效应和收入效应，并进一步说明这三类物品的需求曲线的特征。',
+                answer: `（1）正常商品的情形
+① 替代效应和收入效应：商品 X 为正常商品，初始最优选择点为 E₁，商品 X 消费量为 X₁，效用水平为 U₁。商品 X 价格下降后，预算线 AB 移至 AC，无差异曲线移至 U₂（U₂>U₁），E₂ 为 U₂ 对应的消费者均衡点，此时商品 X 的消费量为 X₂。
+作与 AC 平行并且过初始最优选择点 E₁ 点的辅助预算线 EF，新的无差异曲线与 EF 相切于点 E₃。由图可知，在相同的实际收入水平下，需求量由 X₁ 增加到 X₃ 为替代效应，与价格反向变动；需求量由 X₃ 增加到 X₂，是由于消费者的实际收入变动引起的，此时收入效应与价格反方向变动。
+② 需求曲线的特征：正常商品的总效应为负，即商品需求量与价格反向变动，其需求曲线是向右下方倾斜的。【正常商品一定是普通品】
+（2）劣等品的情形
+① 替代效应和收入效应：X 为劣等品，初始最优选择点为 E₁，商品 X 消费量为 X₁，效用水平为 U₁。商品 X 价格下降后，预算线 AB 移至 AC，无差异曲线移至 U₂（U₂>U₁），E₂ 为 U₂ 对应的消费者均衡点，此时商品 X 的消费量为 X₂。
+作与 AC 平行并且过初始最优选择点 E₁ 点的辅助预算线 EF，新的无差异曲线与 EF 相切于点 E₃。由图可知，在相同实际收入水平下，需求量由 X₁ 增加到 X₃ 为替代效应，与价格反方向变动；需求量由 X₃ 减少到 X₂，是由于消费者的实际收入变动引起的，收入效应与价格同向变动。
+② 需求曲线的特征：在大多数情况下，劣等品的收入效应小于替代效应，所以其总效应与价格成反方向的变动，相应的需求曲线是向右下方倾斜的。
+（3）吉芬商品的情形
+① 替代效应和收入效应：X 为吉芬品，初始最优选择点为 E₁，商品 X 消费量为 X₁，效用水平为 U₁。商品 X 价格下降后，预算线 AB 移至 AC，无差异曲线移至 U₂（U₂>U₁），E₂ 为 U₂ 对应的消费者均衡点，此时商品 X 的消费量为 X₂。
+作与 AC 平行并且过初始最优选择点 E₁ 点的辅助预算线 EF，新的无差异曲线与 EF 相切于点 E₃。由图可知，在相同实际收入水平下，需求量由 X₁ 增加到 X₃ 为替代效应，与价格反方向变动；需求量由 X₃ 减少到 X₂，是由于消费者的实际收入变动引起的，收入效应与价格同向变动。此时收入效应大于替代效应，总效应为正。
+② 需求曲线的特征：由于吉芬品的收入效应大于替代效应，从而使得总效应与价格成同方向的变动，即商品需求量与价格同方向变动，因此对应的需求曲线向右上方倾斜。【吉芬品是特殊的劣等品，作为劣等品，其替代效应与价格成反方向的变动，收入效应与价格成同方向的变动，其特殊性在于收入效应超过了替代效应的作用，从而使得总效应与价格同方向的变动】
+【提示1】本题属于不同商品替代效应和收入效应简答题的母题，大家务必重点掌握。在本题的基础上还有很多子题目，如：
+（1）吉芬品和劣等品有何异同；为什么说吉芬品是特殊的劣等品；（2）正常商品和普通劣等品有何异同；（3）为什么正常商品一定是普通品：利用替代效应和收入效应解释需求法则；（4）画出不同偏好的替代和收入效应，如完全互补品、完全替代品和拟线性偏好；（5）请举例说明什么偏好的替代效应为零（完全互补偏好），什么偏好的收入效应为零（拟线性偏好）等。
+【提示2】除图形分析以外，大家还需要学会利用变化率形式的斯勒茨基方程进行分析。
+【提示3】在进行画图分析商品的替代效应和收入效应时，如果题目没有特殊说明则默认使用斯勒茨基分解法。
+【提示4】各种商品的关系：
+正常品：替代效应负，收入效应负，总效应负，∂x/∂m>0, ∂x/∂p<0；
+普通劣等品：替代效应负，收入效应正，总效应负，∂x/∂m<0, ∂x/∂p<0；
+吉芬品（特殊劣等品）：替代效应负，收入效应正，总效应正，∂x/∂m<0, ∂x/∂p>0。`,
+                hasImage: true },
+
+            { id: 'c1s4', special: '一、消费者行为理论', type: '简答/论述题', qid: '简答4',
+                question: '解释劳动供给曲线向后弯曲的原因。',
+                answer: `（1）劳动供给曲线是人们提供的劳动和对劳动所支付的报酬之间关系的表现形式。劳动供给曲线先为正斜率，后为负斜率，是一条向后弯曲的曲线。
+（2）劳动供给曲线向后弯曲的原因可以用收入效应和替代效应来分析：工资是闲暇的价格，由于工资上涨，闲暇变得更加"昂贵"，消费者会减少对它的"购买"，从而提供的劳动数量增加，此为替代效应。替代效应导致劳动供给量与工资同向变动；由于工资上涨，意味着实际收入上升，同时由于闲暇是特殊的正常商品，所以随着实际收入上升，消费者会增加对闲暇需求，从而提供的劳动数量减少，此为收入效应。收入效应导致劳动供给量与工资反向变动。
+① 当收入效应小于替代效应时，劳动供给则会随着工资率的提高而增加，劳动供给曲线向右上方倾斜，即曲线斜率为正值。当工资率较低时，替代效应大于收入效应，此时劳动供给量与工资率同向变动。
+② 当收入效应大于替代效应时，劳动供给量则可能随着工资率的提高而减少，劳动供给曲线向左上方倾斜，即曲线斜率为负值。
+工资率较低时，替代效应大于收入效应。当工资率很高时，收入效应大于替代效应，此时劳动供给量与工资率反向变动。因此，随着工资率的提高，劳动供给曲线会从向右上方倾斜转为向左上方倾斜。
+【提示】用修正的斯勒茨基方程解释劳动供给曲线向后弯曲：
+修正后的斯勒茨基方程为：ΔR/Δw = ΔRˢ/Δw + (R̄−R)·ΔR/Δm，其中 R 表示闲暇，为正常品，R̄ 为初始禀赋。此时替代效应为负，ΔRˢ/Δw<0 恒成立，(R̄−R)>0，并且 ΔR/Δm>0，收入效应为正，所以整体式子的符号不确定，符号正负取决于替代效应与收入效应的力量对比。
+当工资率较低时，闲暇的成本低，消费者更愿意选择闲暇，此时 (R̄−R) 较小，因此收入效应小于替代效应，总效应为负，即提高工资率会减少对闲暇的消费，增加劳动供给，劳动供给曲线斜率为正。
+当工资率较高时，闲暇的成本高，消费者更愿意选择工作，此时 (R̄−R) 较大，因此收入效应大于替代效应，总效应为正，即提高工资率会增加对闲暇的消费，减少劳动供给，劳动供给曲线斜率为负。
+【思考】若闲暇是低档品，那么此时劳动供给曲线的斜率是怎么样的？`,
+                hasImage: true },
+
+            { id: 'c1s5', special: '一、消费者行为理论', type: '简答/论述题', qid: '简答5',
+                question: '分别利用图形和斯勒茨基方程解释"当消费者初始是借款者，利率下降以后，消费者仍然是借款者"。',
+                answer: `该说法是正确的，解释如下：
+（1）图形解释
+原有的跨期预算约束线为 AB，利率的下降会使得预算约束线围绕初始禀赋点 M 逆时针旋转到 A′B′，变得更平缓。随着利率的下降，最优消费组合由 E₀ 点移动到 E₁ 点，消费者仍然是借款者。
+当消费者面临初始预算集时，新预算线上禀赋点 M 左边的 MA′ 段消费束也是可以选择的，但是消费者最终选择了消费束 E₀，根据显示偏好原理，此时 E₀ 点所带来的效用水平要大于 MA′ 段消费束所带来的效用水平。
+在新的预算线下，初始的最优消费束 E₀ 和 MA′ 段消费束都是可获得的，同时 E₀ 位于新的预算线内部，所以此时消费者一定不会选择 MA′ 段消费束，新的最优消费束一定位于禀赋点的右边，并且它是初始预算集 MB 段外的一点。
+因此，当利率下降时，消费者一定还是借款者。
+（2）斯勒茨基方程解释
+考虑终值预算约束方程 (1+r)c₁+c₂=(1+r)m₁+m₂，在终值预算约束下，利率下降意味着当期消费 c₁ 的价格下降。由修正的斯勒茨基方程可得：dc₁/dp₁ = dc₁ˢ/dp₁ + (m₁−c₁)·dc₁ᵐ/dm，其中 p₁=1+r。
+替代效应总是与价格反向变动，即 dc₁ˢ/dp₁<0；由于第一期消费为正常商品，因此 dc₁ᵐ/dm>0，当消费者初始是借款者时，m₁−c₁<0，收入效应 (m₁−c₁)·dc₁ᵐ/dm<0，此时替代效应和收入效应都为负，总效应为负，即 dc₁/dp₁<0。
+因此，利率下降，第一期消费价格下降，消费者第一期消费增加，即此时消费者仍然是借款者。
+【提示1】跨期消费类题目的分析方法与净需求者净供给者类题目的分析思路完全一致，相关题目都是考虑禀赋的比较静态分析，此类题目主要有两种提问方式：
+（1）给出价格（利率）变化方向和消费者初始情况，判断消费者选择的变化；（如本题）（2）给出价格（利率）变化前后消费者的选择情况，判断消费者的福利。（如下题）`,
+                hasImage: true },
+
+            { id: 'c1s6', special: '一、消费者行为理论', type: '简答/论述题', qid: '简答6',
+                question: '如果消费者一开始是商品的净供给者，当该商品价格降低时，该消费者继续充当供给者，那么该消费者的福利会怎样变化？',
+                answer: `（1）该消费者的福利必然下降。
+（2）如图所示，消费者初始是商品的供给者，那么其初始消费束必然位于禀赋点的左边，预算线和无差异曲线的切点代表了消费者的最优消费束。当商品1价格下降时，此时预算线会绕着禀赋点转动，预算线变得更加平坦，由于消费者仍然是商品的供给者，那么消费者的消费束仍然位于禀赋点的左边，新预算线和无差异曲线的切点代表了最优消费束。由于此时新的最优消费束位于初始最优消费束的下方，根据显示偏好原理此时消费者的福利劣于原先的水平，消费者福利下降。
+【提示1】此类题目相关结论（以下结论需要大家能结合图形进行分析）：
+净需求者（借款者），商品1价格下降（利率下降），最终仍为净需求者（借款者），福利变好；
+净需求者（借款者），商品1价格上升（利率上升），最终仍为净需求者（借款者），福利变差；
+净供给者（贷款者），商品1价格上升（利率上升），最终仍为净供给者（贷款者），福利变好；
+净供给者（贷款者），商品1价格下降（利率下降），最终仍为净供给者（贷款者），福利变差；
+净供给者（贷款者），商品1价格上升（利率上升），最终变为净需求者（借款者），福利不确定；
+净需求者（借款者），商品1价格下降（利率下降），最终变为净供给者（贷款者），福利不确定。
+【提示2】本题在分析时利用了显示偏好原理，本讲显示偏好原理的其他应用（以下问题的图形和分析思路需要大家自行回顾和总结）：
+（1）食品券计划下消费者福利分析；
+（2）根据不同时期消费者的选择判断消费者是否是理性的；
+（3）征税与退税的福利分析；
+（4）加班工资与劳动供给等。`,
+                hasImage: true },
+
+            { id: 'c1s7', special: '一、消费者行为理论', type: '简答/论述题', qid: '简答7',
+                question: '证明恩格尔加总等式，并说明其结论。',
+                answer: `（1）恩格尔加总等式的证明
+在消费者消费两种商品，并且总是花光所有收入的情况下，预算约束等式必定成立，将预算约束等式 p₁x₁+p₂x₂=m 两边同时对 m 求导，有：p₁·dx₁/dm + p₂·dx₂/dm = 1，即 (p₁x₁/m)·(dx₁/dm)·(m/x₁) + (p₂x₂/m)·(dx₂/dm)·(m/x₂) = 1。
+进一步整理得：s₁e_M1 + s₂e_M2 = 1，其中 e_M1 和 e_M2 分别表示商品1和商品2的需求收入弹性，s_i 表示对商品 i 的支出占总收入的份额。
+（2）由恩格尔加总等式可以得出如下结论：
+① 如果两种商品都是低档品：e_M1<0，e_M2<0，此时 s₁e_M1+s₂e_M2<0，恩格尔加总等式不成立，所以两种商品不可能都是低档品。
+② 如果两种商品都是生活必需品，e_M1<1，e_M2<1，此时 s₁e_M1+s₂e_M2<s₁+s₂=1，恩格尔加总等式不成立，所以两种商品不可能都是生活必需品。
+③ 如果两种商品都是奢侈品，e_M1>1，e_M2>1，s₁e_M1+s₂e_M2>s₁+s₂=1，恩格尔加总等式不成立，所以两种商品不可能都是奢侈品。
+④ 如果商品1为低档商品，则 e_M1<0，从而有 e_M2=(1−s₁e_M1)/s₂>1，商品2一定是正常商品，并且是正常商品中的奢侈品。`,
+                hasImage: false },
+
+            /* ===================== 二、生产者行为理论 ===================== */
+            /* --- 重要概念 --- */
+            { id: 'c2c1', special: '二、生产者行为理论', type: '重要概念', qid: '概念1',
+                question: '边际报酬和边际报酬递减规律',
+                answer: `（1）边际报酬是指在其他可变要素投入量不变的条件下，增加一单位某种生产要素所增加的产量。通常情况下，边际报酬会呈现出递减的趋势。
+（2）在技术水平不变的条件下，在连续等量地把某一种可变生产要素增加到其他一种或几种数量不变的生产要素上去的过程中，当这种可变生产要素的投入量小于某一特定值时，增加该要素投入所带来的边际产量是递增的；当这种可变要素的投入量连续增加并超过这个特定值时，增加该要素投入所带来的边际产量是递减的。这就是边际报酬递减规律。
+边际报酬递减规律强调的是：在任何一种产品的短期生产中，随着一种可变要素投入量的增加，边际产量最终必然会出现递减的特征。
+（3）边际报酬递减的原因：对于任何产品的短期生产来说，可变要素投入和固定要素投入之间都存在着一个最佳的数量组合比例。一旦生产要素的投入量达到最佳的组合比例时，可变要素的边际产量达到最大值。在这一点之后，随着可变要素投入量的继续增加，生产要素的投入量越来越偏离最佳的组合比例，相应的可变要素的边际产量便呈现出递减的趋势了。
+【提示】边际报酬递减规律是边际产量曲线呈倒U形的原因，也是短期平均成本曲线呈U形的原因。`,
+                hasImage: false },
+
+            { id: 'c2c2', special: '二、生产者行为理论', type: '重要概念', qid: '概念2',
+                question: '规模报酬',
+                answer: `（1）规模报酬是指在其他条件不变的情况下，企业内部各种生产要素按相同比例变化时所带来的产量变化。
+（2）规模报酬分析的是企业的生产规模变化与所引起的产量变化之间的关系。企业只有在长期内才可能变动全部生产要素，进而变动生产规模，因此，企业的规模报酬分析属于长期生产理论问题。
+（3）企业的规模报酬变化可以分为三种情况：
+① 产量增加的比例大于各种生产要素增加的比例，称之为规模报酬递增。原因：生产专业化程度提高；管理更合理。
+② 产量增加的比例等于各种生产要素增加的比例，称之为规模报酬不变。原因：规模报酬递增的因素吸收完毕，某种生产组合的调整受到了技术上的限制。
+③ 产量增加的比例小于各种生产要素增加的比例，称之为规模报酬递减。原因：主要是规模过大造成管理效率的下降。
+（4）规模报酬变动的原因：
+① 规模报酬递增的原因：第一，生产规模扩大以后，企业能够利用更先进的技术和机器设备；第二，随着对较多的人力和机器的使用，企业内部的生产分工更加合理和专业化；第三，人数较多的技术培训和具有一定规模的生产经营管理也可以提高效率。
+② 规模报酬不变的原因：规模报酬不变的原因是规模报酬递增的因素吸收完毕，生产要素组合的调整受技术的限制，厂商只有靠"复制"正在进行的生产方式来增加产量。
+③ 规模报酬递减的原因：过大的生产规模可能破坏了企业内部的合理分工与协作，庞大的经营管理机构导致了低效率，以及获取生产决策所需的各种信息愈加不易。
+（5）在长期生产过程中，企业的规模报酬的变化呈现出如下的规律：
+当企业从最初的很小的生产规模开始逐步扩大的时候，企业面临的是规模报酬递增的阶段。在企业得到了由生产规模扩大所带来的产量递增的全部好处以后，一般会继续扩大生产规模，将生产保持在规模报酬不变的阶段，这个阶段有可能比较长。在这以后，企业若继续扩大生产规模，就会进入一个规模报酬递减的阶段。
+【提示】规模报酬与几个重要概念关系的总结：
+1、规模报酬与边际报酬：
+（1）前者是长期分析，后者是短期分析。
+（2）前者研究要素等比例变动所引起的产量变动情况，后者研究一种要素增加一单位所引起的产量变动情况。
+（3）规模报酬递增（不变）与边际报酬递减可以相容。
+2、规模报酬与规模经济：
+（1）二者都是长期分析。
+（2）前者研究要素等比例变动所引起的产量变动情况，后者研究产量变动所引起的成本变动情况。
+（3）规模报酬先递增后递减是厂商长期生产过程中先处于规模经济阶段后处于规模不经济阶段的重要原因，规模经济的这一变化又是长期平均成本曲线呈U形的原因。
+（4）规模经济不意味着规模报酬一定是递增的。
+3、规模报酬与经济利润：
+（1）如果厂商长期最大经济利润大于零，那么厂商此时一定是规模报酬递减的；
+（2）如果厂商长期利润最大化的点位于规模报酬不变阶段，那么厂商最大利润为零。`,
+                hasImage: false },
+
+            { id: 'c2c3', special: '二、生产者行为理论', type: '重要概念', qid: '概念3',
+                question: '欧拉方程（欧拉定理）',
+                answer: `（1）欧拉方程指如果生产函数具有规模报酬不变的性质，并且每种要素得到的支付为其边际产量，那么这些要素报酬的总和等于总产出，即 F(K,L) = MP_K·K + MP_L·L。
+（2）其推导如下：由规模报酬不变的性质可知，存在 zY=F(zK,zL)，对 z 求导可得：Y=F₁(zK,zL)·K + F₂(zK,zL)·L，式中，F₁ 和 F₂ 为函数对第一个和第二个自变量的偏导数，同时也是边际产量。令 z=1，即可得到 F(K,L)=F₁(K,L)·K + F₂(K,L)·L，欧拉方程得证。`,
+                hasImage: false },
+
+            { id: 'c2c4', special: '二、生产者行为理论', type: '重要概念', qid: '概念4',
+                question: '机会成本',
+                answer: `机会成本是指将一种资源用于某种用途，而未用于其他更有利的用途时所放弃的最大预期收益。机会成本的概念是以资源的稀缺性为前提提出的。
+机会成本的存在需要三个前提条件：① 资源是稀缺的；② 资源具有多种生产用途；③ 资源的投向不受限制。
+从机会成本的角度来考察生产过程时，厂商需要将生产要素投向收益最大的项目，从而避免带来生产的浪费，达到资源配置的最优化。`,
+                hasImage: false },
+
+            { id: 'c2c5', special: '二、生产者行为理论', type: '重要概念', qid: '概念5',
+                question: '显成本与隐成本',
+                answer: `（1）显成本指厂商在要素市场上购买或租用他人所拥有的生产要素的实际支出。
+举例：某厂商雇用一定数量的工人、从银行获得一定数量的贷款，并租用一定数量的土地。为此，这个厂商就需要向工人支付工资、向银行支付利息、向土地所有者支付地租。
+（2）隐成本是相对于显性成本而言的，是指厂商本身所拥有的且被用于该企业生产过程中的那些生产要素的总价格。隐性成本与厂商所使用的自有生产要素相联系，反映着这些要素在别处同样能被使用的事实。
+举例：某厂商在生产过程中，不仅会从劳动市场上雇用一定数量的工人，从银行取得一定数量的贷款或租用一定数量的土地，而且有时还会动用自己的土地和资金，并亲自管理企业。当厂商使用自有生产要素时，也要向自己支付利息、地租和薪金，所以这笔价值也应该计入成本之中。由于这笔成本支出不如显性成本那么明显，故被称为隐性成本。`,
+                hasImage: false },
+
+            { id: 'c2c6', special: '二、生产者行为理论', type: '重要概念', qid: '概念6',
+                question: '固定成本和沉没成本',
+                answer: `固定成本指成本总额在一定期间和一定业务量范围内，不受业务量增减变动的影响而保持相对稳定的成本。
+沉没成本是指已经发生而无法收回的支出。沉没成本通常是可见的，但一旦发生以后，在做出经济决策之时经常被人们忽视。由于它是无法收回的，因而不会影响企业的决策。`,
+                hasImage: false },
+
+            { id: 'c2c7', special: '二、生产者行为理论', type: '重要概念', qid: '概念7',
+                question: '经济利润和会计利润',
+                answer: `经济利润是指属于企业所有者的、超过生产过程中所运用的所有要素的机会成本的一种收益。
+企业的会计利润是厂商的总收益与会计成本的差，也就是厂商在申报应缴纳所得税时的账面利润。`,
+                hasImage: false },
+
+            { id: 'c2c8', special: '二、生产者行为理论', type: '重要概念', qid: '概念8',
+                question: '规模经济和规模不经济',
+                answer: `（1）规模经济
+① 概念：规模经济也被称作为内在经济，即在企业生产扩张的开始阶段，厂商由于扩大生产规模而使经济效益得到提高。或者说，厂商产量增加的倍数大于成本增加的倍数，为规模经济。
+② 产生原因：（5）
+第一，规模扩大有利于专业化分工。
+第二，规模扩大有利于更加充分地发挥已有技术的作用。
+第三，随着规模扩大，企业更便于开展多级生产，也可以更充分地开发和利用副产品。
+第四，规模扩大可以降低营销和研发支出。
+第五，大规模生产的企业可以在生产要素购买、融资和产品销售等方面获得更多优势。
+③ 对LAC曲线的影响：规模经济可以表示为厂商成本增加的倍数小于产量增加的倍数，因而长期平均成本下降。
+（2）规模不经济
+① 概念：规模不经济也被称作为内在不经济，即当生产扩张到一定的规模以后，厂商继续扩大生产规模，就会使经济效益下降。或者说，厂商产量增加的倍数小于成本增加的倍数，为规模不经济。
+② 产生原因：（3）
+第一，随着企业生产规模的扩大，组织系统越来越复杂，信息交流范围扩大，层次增多。
+第二，企业生产技术工艺上的相互依赖性随着企业规模的扩大而增加，这就导致局部意外事件影响的范围扩大，造成的损失也更大。
+第三，企业规模越大，专业分工就越细致，但过细的分工会导致劳动者因工作单调而降低生产效率，从而增加成本。
+③ 对LAC曲线的影响：规模不经济可以表示为厂商成本增加的倍数大于产量增加的倍数，因而长期平均成本上升。
+（3）由于规模经济和规模不经济的作用，决定了长期平均成本曲线表现出U形特征。长期平均成本曲线在产出较低时随着产出的增加而递减，表现为规模经济，而在产出较高时表现为规模不经济。`,
+                hasImage: true },
+
+            { id: 'c2c9', special: '二、生产者行为理论', type: '重要概念', qid: '概念9',
+                question: '外在经济',
+                answer: `（1）外在经济也称为外在规模经济，指整个行业规模和产量扩大，使得个别厂商平均成本下降或收益增加。当一个行业拥有众多厂商时，只要整个行业的规模和产量发生变化，必然引起与企业有关的某些外部条件的改变。即使个别企业内部的生产方式可能没有任何变化，但外部条件的变化也会直接影响企业的生产成本和收益。如果这些外部条件的变化使个别厂商的平均成本下降或收益增加，这种现象就称为外在经济。
+（2）外在规模经济和内在规模经济一样，都会改变厂商的成本和收益，但它们的前提条件、影响方式完全不同：
+① 外在经济的前提条件是行业规模的扩大，而内在经济的前提条件是厂商自身规模的扩大；
+② 外在经济是行业中其他方面的便利因素为个别厂商提供了效益，内在经济则是厂商经营的个别企业内部因素的变化所致。
+因此，外在规模经济表现在平均成本曲线上，是厂商整个平均成本曲线向下的移动；而内在规模经济则体现了一个厂商的平均成本曲线随厂商生产规模的扩大而向右下方倾斜。
+【提示】厂商长期成本下降的原因总结：
+（1）长期的生产成本通常总是低于短期的生产成本。因为厂商在长期可以选择最优的生产规模进行生产，而在短期会受到既定生产规模的限制。
+（2）厂商利用规模经济，也能降低长期生产成本，这表现为LAC曲线的下降部分。
+（3）干中学和学习效应。在现实的生产活动中，人们往往能从生产实践中获得知识和技能，从而提高生产效率，降低生产成本。`,
+                hasImage: true },
+
+            { id: 'c2c10', special: '二、生产者行为理论', type: '重要概念', qid: '概念10',
+                question: '范围经济与范围不经济',
+                answer: `（1）范围经济是指一个厂商生产两种产品的产出超过两个厂商各生产一种产品的总产出时的情形。
+（2）范围不经济是指一个厂商生产两种产品的产出低于两个独立的专业化厂商所能生产的总产量时的情形。
+（3）规模经济与范围经济之间并无直接联系。一个生产两种产品的厂商可以在其生产过程涉及规模不经济时获得范围经济。例如，联合生产长笛和短笛要比各自生产相对便宜。然而，该生产过程涉及高度熟练的劳动，并且以小规模生产是最富有效率的。`,
+                hasImage: false },
+
+            { id: 'c2c11', special: '二、生产者行为理论', type: '重要概念', qid: '概念11',
+                question: '利润最大化弱公理',
+                answer: `利润最大化弱公理指厂商追求利润最大化的行为应该满足行为的一致性。当生产者 q 在 (pᵗ,w₁ᵗ,w₂ᵗ) 下选择了 (yᵗ,x₁ᵗ,x₂ᵗ)，在 (pˢ,w₁ˢ,w₂ˢ) 下选择了 (yˢ,x₁ˢ,x₂ˢ)，则在其他条件不变下，利润最大化意味着有：
+pᵗyᵗ − w₁ᵗx₁ᵗ − w₂ᵗx₂ᵗ ≥ pᵗyˢ − w₁ᵗx₁ˢ − w₂ᵗx₂ˢ
+pˢyˢ − w₁ˢx₁ˢ − w₂ˢx₂ˢ ≥ pˢyᵗ − w₁ˢx₁ᵗ − w₂ˢx₂ᵗ
+根据利润最大化条件最后可得 dp·dy − dw₁·dx₁ − dw₂·dx₂ ≥ 0，由此推出竞争性厂商的供给量是产品价格的增函数，每种要素的需求函数是该要素价格的减函数。`,
+                hasImage: false },
+
+            { id: 'c2c12', special: '二、生产者行为理论', type: '重要概念', qid: '概念12',
+                question: '成本最小化弱公理',
+                answer: `设生产既定产量 y，在 (w₁ᵗ,w₂ᵗ) 下选择了 (x₁ᵗ,x₂ᵗ)，在 (w₁ˢ,w₂ˢ) 下选择了 (x₁ˢ,x₂ˢ)，则在成本最小化下有：
+w₁ᵗx₁ᵗ + w₂ᵗx₂ᵗ ≤ w₁ᵗx₁ˢ + w₂ᵗx₂ˢ
+w₁ˢx₁ˢ + w₂ˢx₂ˢ ≤ w₁ˢx₁ᵗ + w₂ˢx₂ᵗ
+如果厂商总是选择成本最小化的方法生产 y 单位的产量，那么，他在 t 期和 s 期的选择必须满足上述不等式。我们把这些不等式称作成本最小化弱公理。
+由成本最小化弱公理可以得出 dw₁·dx₁ + dw₂·dx₂ ≤ 0，即其他要素价格固定的情况下，某要素价格与该要素需求呈反向变化关系。`,
+                hasImage: false },
+
+            /* --- 简答/论述题 --- */
+            { id: 'c2s1', special: '二、生产者行为理论', type: '简答/论述题', qid: '简答1',
+                question: '生产的三个阶段是如何划分的？为什么生产者通常会选择在第二阶段生产？',
+                answer: `（1）生产的三个阶段是在假定生产技术水平和其他要素投入量不变，只有劳动投入可变的条件下，以劳动投入多少来划分的生产不同阶段。
+具体而言，生产的三个阶段是根据总产量曲线、平均产量曲线和边际产量曲线的形状及其相互之间的关系来划分的。
+① 第Ⅰ阶段，平均产量递增阶段，即平均产量从0增加到平均产量最高的阶段，这一阶段是从原点到 AP_L 和 MP_L 曲线的交点，即劳动投入量由0到 L₂ 的区间。
+② 第Ⅱ阶段，平均产量的递减阶段，边际产量仍然大于0，所以总产量仍然是递增的，直到总产量达到最高点。这一阶段是从 AP_L、MP_L 两曲线的交点到 MP_L 曲线与横轴的交点，即劳动投入量由 L₂ 到 L₃ 的区间。
+③ 第Ⅲ阶段，边际产量为负，总的产量也是递减的，这一阶段是 MP_L 曲线和横轴的交点以后的阶段，即劳动投入量 L₃ 以后的区间。
+（2）首先，厂商肯定不会在第Ⅲ阶段进行生产，因为这个阶段的边际产量为负值，生产不会带来任何的好处。
+其次，厂商也不会在第Ⅰ阶段进行生产。因为平均产量在增加，投入的这种生产要素还没有发挥最大的作用，厂商没有获得预期的好处，继续扩大可变要素的使用量从而使产量扩大是有利可图的，至少使平均产量达到最高点时为止。
+因此厂商可以在第Ⅱ阶段进行生产，此时平均产量和边际产量都下降，但是总产量还在不断增加，收入也增加，只是增加的速度逐渐减慢，直到停止增加时为止。
+【提示1】从利润的角度解释厂商应该在第Ⅱ阶段生产：
+第Ⅰ阶段：π = P·Q − wL − TFC = P·AP_L·L − wL − TFC = L(P·AP_L − w) − TFC
+完全竞争市场 P 不变，在第Ⅰ阶段 AP_L 始终递增，此时增加 L 的投入，(P·AP_L−w)↑ 所以利润不断增加，厂商会一直增加劳动投入，此时生产进入第Ⅱ阶段；
+第Ⅱ阶段：π = P·Q − wL − TFC，在第Ⅱ阶段 MP_L<0，此时增加劳动投入，由于 MP_L<0，总产量下降，所以总收益下降，同时由于劳动投入增加，可变成本不断增加，此时利润不断下降，因此理性的厂商会退回到第Ⅱ阶段进行生产。
+最终，追求利润最大化的厂商会在第Ⅱ阶段进行生产。
+【提示2】MP 与 AP 的关系：
+dAP_L/dL = d(Q/L)/dL = (L·dQ/dL − Q)/L² = (1/L)(MP_L − AP_L)
+MP_L&gt;AP_L 时，AP_L 递增；MP_L&lt;AP_L 时，AP_L 递减；MP_L=AP_L 时，AP_L 达到极值点。
+由于边际报酬递减规律，MP_L 为先递增后递减的倒U形曲线，所以 AP_L 也为先递增后递减的倒U形曲线，同时 MP_L 相交于 AP_L 曲线的最高点。`,
+                hasImage: true },
+
+            { id: 'c2s2', special: '二、生产者行为理论', type: '简答/论述题', qid: '简答2',
+                question: '为什么 MC 过 AC 和 AVC 曲线最低点（为什么短期 AC、AVC 曲线为 U 形）？',
+                answer: `对任何一对边际量和平均量而言，只要边际量小于平均量，边际量就会使平均量降低；只要边际量大于平均量，边际量就会使平均量升高；当边际量等于平均量时，平均量必须达到本身的极值点。
+将这种关系具体到 AC 曲线和 MC 曲线的相互关系上，可以推知，由于在边际报酬递减规律的作用下的 MC 曲线有先降后升的 U 形特征，所以，AC、AVC 曲线必定也是先降后升的 U 形特征。而且，MC 曲线必定会与 AC 曲线相交于 AC 曲线的最低点。
+① 当 MC 曲线低于 AC 曲线时，AC 曲线处于下降阶段；当 MC 曲线高于 AC 曲线时，AC 曲线处于上升阶段，即 MC 曲线与 AC 曲线相交于 AC 曲线的最低点。
+② 类似的，当 MC 曲线低于 AVC 曲线时，AVC 曲线处于下降阶段；当 MC 曲线高于 AVC 曲线时，AVC 曲线处于上升阶段，即 MC 曲线与 AVC 曲线相交于 AVC 曲线的最低点。
+【提示1】MC 与 AC、AVC 关系的数学推导（用于证明 AC、AVC 曲线也为 U 形，或证明 MC 相交于 AC、AVC 最低点）：
+首先，由于 dAC/dQ = d(TC/Q)/dQ = (dTC/dQ·Q − TC)/Q² = (1/Q)(dTC/dQ − TC/Q) = (1/Q)(MC − AC)，所以，当 MC&lt;AC 时，dAC/dQ&lt;0，AC 曲线递减；当 MC&gt;AC 时，dAC/dQ&gt;0，AC 曲线递增；当 MC=AC 时，dAC/dQ=0，此时 AC 为极值点。
+其次，由于在边际报酬递减规律的作用下 MC 曲线有先降后升的 U 形特征，所以 AC 曲线也为 U 形曲线，并且 MC 曲线交于 AC 曲线的最低点。
+MC 与 AVC 关系的数理推导同理。
+【提示2】在证明 MC 与 AC 和 AVC 关系，或证明 AC、AVC 曲线为 U 形曲线时，一定要先利用关系式 MC=W/MP 证明出 MC 曲线为 U 形曲线，否则单用关系式 dAC/dQ=(1/Q)(MC−AC) 得不到 AC 曲线也为 U 形，且 MC 曲线过 AC 曲线最低点的结论。`,
+                hasImage: true },
+
+            { id: 'c2s3', special: '二、生产者行为理论', type: '简答/论述题', qid: '简答3',
+                question: '为什么说边际报酬递减规律是短期成本变动的决定因素？',
+                answer: `（1）边际报酬递减规律是指在技术水平不变的条件下，当把一种可变的生产要素同其他一种或几种不变的生产要素投入到生产过程中，随着这种可变生产要素投入量的增加，最初每增加一单位生产要素所带来的产量增加量是递增的，但当这种可变要素的投入量增加到一定程度之后，增加一单位生产要素所带来的产量增加量是递减的。由于边际报酬递减，所以边际产量曲线呈倒U形形状。
+（2）由于 MC=w/MP_L，所以边际成本曲线 MC 和边际产量曲线 MP_L 两者的变动方向是相反的。在边际报酬递减规律作用下，边际产量曲线呈倒U形形状，因此边际成本曲线表现出先降后升的 U 形特征。
+（3）由于在每一产量水平的 MC 值是相应的 TC 曲线和 TVC 曲线的斜率，因此 TC 曲线和 TVC 曲线的斜率由递减变为递增。
+同时，结合边际成本曲线与平均成本曲线、平均可变成本曲线的关系，可得出边际成本曲线呈 U 形形状，对应的平均成本曲线和平均可变成本曲线也呈 U 形形状。
+所以说，边际报酬递减规律决定了边际成本曲线的形状，进而决定了短期其他成本曲线的形状。
+【提示】本题的分析逻辑：
+边际报酬递减规律 ⇒ MP_L 曲线先上升后下降 ⇒ AP_L 曲线形状 ⇒ TP_L 曲线形状。`,
+                hasImage: false },
+
+            { id: 'c2s4', special: '二、生产者行为理论', type: '简答/论述题', qid: '简答4',
+                question: '为什么 AC 曲线的最低点位于 AVC 曲线最低点的右上方？',
+                answer: `（1）由于在边际报酬递减规律的作用下的 MC 曲线有先降后升的 U 形特征。而 MC 与 AC 曲线的关系为 dAC/dQ = (1/Q)(MC−AC)，所以 AC 曲线也是先降后升的 U 形曲线，并且 MC 曲线过 AC 曲线的最低点。同理可知，AVC 曲线也为 U 形曲线，并且 MC 曲线过 AVC 曲线的最低点。
+（2）总成本是固定成本与可变成本之和，相应地，平均成本是平均固定成本与平均可变成本之和。AC 曲线高于 AVC 曲线，二者之间的差是平均固定成本。
+（3）因为 AC 曲线的最低点满足 MC=AC，AVC 曲线的最低点满足 MC=AVC。由于 MC 曲线在与 AVC 曲线最低点相交以前已经随着产出的增加而递增，并且平均可变成本曲线低于平均成本曲线，所以，平均成本曲线必然比平均可变成本曲线在较高的产量水平上达到其最低点。
+综上，AC 曲线的最低点位于 AVC 曲线最低点的右上方。`,
+                hasImage: true },
+
+            { id: 'c2s5', special: '二、生产者行为理论', type: '简答/论述题', qid: '简答5',
+                question: '解释单个生产要素的边际报酬递减与规模报酬不变并不矛盾的原因。',
+                answer: `（1）边际报酬递减规律是指，在技术水平不变的条件下，在连续等量地把某一种可变生产要素增加到其他一种或几种数量不变的生产要素上去的过程中，当这种可变要素的投入量连续增加并超过这个特定值时，增加该要素投入所带来的边际产量是递减的。
+规模报酬不变指在所有要素同时等量变动时，产量的变动幅度等于生产要素变动幅度。
+（2）单个生产要素的报酬递减与规模报酬不变并不矛盾。
+边际报酬递减是一个短期的概念，而规模报酬分析属于长期生产理论，即研究的是长期。事实上，规模报酬不变的同时，随着可变要素投入增加到足以使固定要素得到最有效的利用后，继续增加可变要素，总产量的增加同样将会出现递减现象。
+例如，假设某生产函数为柯布-道格拉斯生产函数，即 Q=AK^{0.5}L^{0.5}，根据柯布-道格拉斯生产函数的性质，可知该生产函数为规模报酬不变，且劳动的边际报酬是递减的。因此，可以看出规模报酬不变和单个要素的边际报酬递减是可以不矛盾的。
+【提示1】本题等价问法（回答思路与本题一致）：
+（1）边际报酬递减和规模报酬不变是否是不相容的；（2）边际报酬递减和规模报酬递增能否同时存在/是否矛盾/是否相容。
+【提示2】边际报酬和规模报酬的区别：
+生产要素的规模报酬是针对长期生产行为而言的，是在所有要素同比例发生变动情况下，研究产量的变化形式。而边际产量是针对短期行为而言的，是在其他要素固定不变的情况下，研究一种可变要素发生变化时产量变动的形式。`,
+                hasImage: false },
+
+            { id: 'c2s6', special: '二、生产者行为理论', type: '简答/论述题', qid: '简答6',
+                question: '对于一个追求利润最大化的竞争性厂商，如果它在长期均衡条件下获得正的利润，那么它一定拥有规模报酬递减的技术，请说明理由。',
+                answer: `假设利润最大化时的产量为 Q*，最大利润为：π* = P·Q* − (wL*+rK*)，π*>0。如果生产规模扩大为 λ 倍，令 λ>1。
+（1）厂商不可能拥有规模报酬递增的技术，理由如下：
+当利润最大化的产量 Q* 位于规模报酬递增阶段时，存在 f(λK*,λL*) > λf(K*,L*)。
+产量扩大为 λ 倍时的利润：
+π = P·f(λK*,λL*) − (w·λL*+r·λK*) > P·λf(K*,L*) − λ(wL*+rK*) = λπ*。
+此时扩大规模后的利润 π>λπ*>π*，由于厂商扩大规模可以获得更多的经济利润，所以此时与产量 Q* 是利润最大化的解矛盾，因此追求利润最大化的厂商在规模报酬递增阶段不可能实现正的利润。
+（2）厂商不可能拥有规模报酬不变的技术，理由如下：
+当利润最大化的产量 Q* 位于规模报酬不变阶段时，存在 f(λK*,λL*) = λf(K*,L*)。
+产量扩大为 λ 倍时的利润：
+π = P·f(λK*,λL*) − (w·λL*+r·λK*) = P·λf(K*,L*) − λ(wL*+rK*) = λπ*。
+此时扩大规模后的利润 π=λπ*>π*，由于厂商扩大规模可以获得更多的经济利润，所以与产量 Q* 是利润最大化的解矛盾，因此追求利润最大化的厂商在规模报酬不变阶段不可能实现正的利润。
+（3）综上所述，如果追求利润最大化的厂商在长期均衡条件下获得正的利润，那么它一定拥有规模报酬递减的技术。
+【提示1】上面给出的是反证法，本题也可以直接进行证明，证明如下：
+当厂商拥有规模报酬递减的技术，规模报酬递减意味着长期平均成本曲线递增，由边际成本曲线与平均成本曲线的关系可知，此时边际成本曲线也递增，同时边际成本曲线位于长期平均成本曲线上方。
+构造利润函数 π=PQ−C(Q)，利润最大化的一阶条件为：P−C′(Q)=0，为保证 Q 为利润最大的解，还需满足二阶导小于零，即 −C″(Q)<0。
+通过上面的分析可知，当规模报酬递减时满足利润最大化的二阶条件 −C″(Q)<0，同时由于边际成本曲线位于长期平均成本曲线的上方，所以利润最大化的点经济利润大于零。
+因此追求利润最大化的竞争性厂商，如果它在长期均衡条件下获得正的利润，那么它一定拥有规模报酬递减的技术。
+【提示2】此题有多个问法：
+（1）如果厂商在规模报酬不变的阶段实现利润最大化，那么此时厂商的最大利润为零；
+证明：假设利润最大化时的产量为 Q*，最大利润为：π*=PQ*−(wL*+rK*)，如果生产规模扩大为 λ 倍，令 λ>1。
+规模扩大为 λ 倍时的利润 π = P·Q − λ(wL+rK) = λP·Q* − λ(wL+rK) = λπ*。
+由于 π=λπ*，因此，如果 π*>0 厂商扩大规模可以获得更多的经济利润，这与产量 Q* 是利润最大化的解矛盾。
+因此，如果要满足厂商利润最大化的产量为 Q*，那么 π*=0。
+（2）完全竞争厂商长期利润最大化的点不可能位于规模报酬递增阶段；
+（3）对于一个追求利润最大化的竞争性厂商，如果它在长期均衡条件下最大经济利润为正，那么它不可能拥有规模报酬递增/规模报酬不变的技术，证明过程分别为本题答案的（1）（2）两点。`,
+                hasImage: false },
+
+            { id: 'c2s7', special: '二、生产者行为理论', type: '简答/论述题', qid: '简答7',
+                question: '解释短期平均成本曲线与长期平均成本曲线都呈现出 U 形特征的原因。',
+                answer: `（1）短期平均成本（SAC）曲线之所以呈 U 形，即最初阶段递减后又转入递增阶段，是由可变要素的边际报酬先递增后递减导致的。
+在短期生产中，由于 MC=W/MP_L，所以边际产量的递增阶段对应边际成本的递减阶段，边际产量的递减阶段对应边际成本的递增阶段，与边际产量最大值相对应的是边际成本的最小值。由于边际产量曲线呈倒U形，因此短期边际成本曲线呈 U 形。同时，由于 SAC 与 SMC 之间存在：dSAC/dQ=(1/Q)(SMC−SAC)，因此 SMC 小于 SAC 时，SAC 曲线递减；SMC 大于 SAC 时，SAC 曲线递增。所以，短期平均成本曲线也有先降后升的 U 形特征。
+（2）长期平均成本（LAC）曲线之所以呈 U 形，是由规模的经济或不经济决定的。随着产量的扩大，使用的厂房设备的规模增大，因而产品的生产经历规模报酬递增的阶段，这表现为产品的单位成本随产量增加而递减，即出现规模经济，长期平均成本曲线递减。长期平均成本经历一段递减阶段以后，最好的资本设备和专业化的利益已全被利用，这时可能进入报酬不变，即平均成本固定不变阶段。而由于企业的管理这个生产要素不能像其他要素那样增加，因而随着企业规模的扩大，管理的困难和成本越来越大，再增加产量，长期平均成本将最终转入递增。`,
+                hasImage: false },
+
+            { id: 'c2s8', special: '二、生产者行为理论', type: '简答/论述题', qid: '简答8',
+                question: '长期总成本曲线与短期总成本曲线之间的联系与区别。',
+                answer: `（1）联系：
+厂商在长期内对全部生产要素投入量的调整意味着对企业生产规模的调整，即从长期看，厂商总是可以在每一个产量水平上选择最优的生产规模进行生产。
+长期总成本曲线是无数条短期总成本曲线的包络线。在这条包络线上，在连续变化的每一个产量水平上都存在着 LTC 曲线和一条 STC 曲线相切的点，该 STC 曲线所代表的生产规模就是生产该产量的最优生产规模，该切点所对应的总成本就是长期生产该产量的最低总成本，因而 LTC 曲线表示长期内厂商在每一产量水平上由最优生产规模所能带来的最小成本。
+（2）区别：
+① 长期总成本曲线从原点出发，而短期总成本曲线的出发点则高于原点。这是因为，在长期内不存在固定成本，因此当产量为零时，长期总成本也为零，故它从原点出发。
+② 短期总成本曲线的形状是由于可变投入要素的边际报酬先递增后递减所决定的（边际报酬递减规律决定 SMC 曲线的形状，SMC 的形状决定 STC 曲线的形状），而长期总成本曲线的形状是由规模报酬先递增后递减所决定的，因为在长期，所有投入要素都是可变的，所以这里对应的不是要素的边际报酬问题而是要素的规模报酬问题。`,
+                hasImage: true },
+
+            { id: 'c2s9', special: '二、生产者行为理论', type: '简答/论述题', qid: '简答9',
+                question: '长期平均成本曲线和短期平均成本曲线的联系和区别。',
+                answer: `（1）联系：LAC 曲线可以由短期平均成本曲线推导而来，长期平均成本曲线是无数条短期平均成本曲线的包络线。
+在这条包络线上，在连续变化的每一个产量水平，都存在 LAC 曲线和一条 SAC 曲线相切的点，该 SAC 曲线所代表的生产规模就是生产该产量的最优生产规模。该切点所对应的平均成本就是生产该产量的最低平均成本。
+（2）区别：两者形成 U 形的原因并不相同。
+① 短期平均成本曲线呈 U 形的原因是短期的边际报酬递减规律的作用。
+② 长期平均成本曲线的 U 形特征主要是由长期生产中的规模经济和规模不经济所决定，而规模经济的变动主要由规模报酬的变动规律所决定。
+【提示】长期平均成本曲线与短期平均成本曲线不相切及相切的情况，以及两条曲线相切的位置：
+长期平均成本曲线 LAC 总是与既定产量下代表最优生产规模的短期平均成本曲线 SAC₁、SAC₂ 相切，这些切点连接起来便形成 LAC 曲线。而 LAC 曲线总是与既定产量下代表非最优生产规模的短期平均成本曲线相离。
+LAC 曲线与各条 SAC 曲线的切点，并不都在各 SAC 线的最低点。当 LAC 线处于下降的递减阶段，相切于各 SAC 线最低点的左边；当 LAC 线处于上升的递增阶段，相切于各 SAC 线最低点的右边。只有在 LAC 线处于最低点时才相切于 SAC 线的最低点。`,
+                hasImage: true },
+
+            { id: 'c2s10', special: '二、生产者行为理论', type: '简答/论述题', qid: '简答10',
+                question: '厂商长期边际成本曲线与短期边际成本曲线的关系。',
+                answer: `（1）长期边际成本曲线与短期边际成本曲线的关系：
+长期总成本曲线是无数条短期总成本曲线的包络线，即在长期的每一个产量水平，LTC 曲线都与一条代表最优生产规模的 STC 曲线相切，这说明在切点上这两条曲线的斜率是相等的。由于 LTC 曲线的斜率是相应的 LMC 值，STC 曲线的斜率是相应的 SMC 值，因此可以推知，在长期内的每一个产量水平上，LMC 值都与代表最优生产规模的 SMC 值相等。但是，与长期总成本曲线和长期平均成本曲线的推导不同，长期边际成本曲线不是短期边际成本曲线的包络线。
+（2）长期边际成本曲线的推导：
+在 Q₁ 产量上的最优生产规模由 SAC₁ 曲线和 SMC₁ 曲线所代表，且短期边际成本 SMC 值由 P 点给出。考虑到长期内每一个产量水平上的 LMC 值都与代表最优生产规模的 SMC 值相等，所以，在 Q₁ 的产量上，PQ₁ 既是最优的短期边际成本，又是长期边际成本，即有 LMC=SMC₁=PQ₁。同理，在 Q₂ 的产量上，有 LMC=SMC₂=RQ₂。在 Q₃ 的产量上，有 LMC=SMC₃=SQ₃。在生产规模可以无限细分的条件下，可以得到无数个类似于 P、R 和 S 的点，将这些点连接起来便得到一条平滑的长期边际成本 LMC 曲线。`,
+                hasImage: true },
+
+            /* ===================== 三、市场理论 ===================== */
+            /* --- 重要概念 --- */
+            { id: 'c3c1', special: '三、市场理论', type: '重要概念', qid: '概念1',
+                question: '完全竞争市场',
+                answer: `完全竞争市场必须具备以下四个条件：
+① 市场上有大量的买者和卖者，买者和卖者都是价格的接受者；
+② 市场上每一个厂商提供的商品都是完全同质的，即厂商之间提供的商品是完全无差别的；
+③ 所有的资源具有完全的流动性，意味着厂商进入或退出一个行业是完全自由和毫无困难的；
+④ 信息是完全的。`,
+                hasImage: false },
+
+            { id: 'c3c2', special: '三、市场理论', type: '重要概念', qid: '概念2',
+                question: '垄断竞争市场',
+                answer: `（1）垄断竞争市场指市场中有许多厂商生产和销售有差别的同种产品的市场组织。
+（2）垄断竞争市场特征：
+① 同一行业中的每个厂商生产的产品既具有一定的同质性，又具有一定的差异性。因而，一方面，产品具有一定的垄断性；另一方面，产品又具有一定的替代性。
+② 一个生产集团中的企业数量非常多，以致每个厂商都认为自己的行为影响很小，不会引起竞争对手的注意和反应，因而自己也不会受到竞争对手的任何报复措施的影响。
+③ 生产规模比较小，进入和退出一个行业比较容易，因此单个厂商长期经济利润为零。`,
+                hasImage: false },
+
+            { id: 'c3c3', special: '三、市场理论', type: '重要概念', qid: '概念3',
+                question: '寡头市场',
+                answer: `寡头市场又称为寡头垄断市场，是指少数几家厂商控制整个市场产品生产和销售的这样一种市场组织。这少数几家厂商的产量在该行业供给中占有很大比重，由此控制了整个行业的供给，对市场价格也有一定的控制。`,
+                hasImage: false },
+
+            { id: 'c3c4', special: '三、市场理论', type: '重要概念', qid: '概念4',
+                question: '停止营业点',
+                answer: `（1）概念：停止营业点是指一个已经投入生产的企业，在生产中总有这样一点，当根据利润最大化原则确定的产量大于这一点所代表的产量时，仍可以继续生产，小于这一点所代表的产量时，就只好关闭。该点就是企业的停止营业点。
+一个已经投入生产的企业是否必须关闭的条件不在于它是否盈利，而在于它关闭后的利润与生产时的利润哪个更大。如果生产时的利润大于关闭后的利润，则应继续生产；如果生产时的利润小于关闭后的利润，则必须关闭。
+（2）在短期，假设市场价格为 p，厂商利润最大化时的产量为 q*，固定成本为 TFC，总可变成本为 TVC，厂商利润最大化时的利润水平为 π*=pq*−TVC(q*)−TFC，停产时的利润为 −TFC。
+当 −TFC = pq*−TVC(q*)−TFC 时，即利润最大化的点满足 p=AVC(q*) 时，厂商生产与不生产无差别，结合短期竞争厂商利润最大化条件 p=MC 以及 MC 和 AVC 关系可知，短期停止营业点位于 AVC 曲线最低点。
+（3）在长期，当 pq*−LTC=0 时，即长期利润最大化的点满足 p=LAC(q*) 时，厂商生产与不生产无差别，结合竞争厂商利润最大化的条件 p=LMC 以及 LMC 和 LAC 的关系可知，长期完全竞争厂商停止营业点为 LAC 最低点。
+【提示】关于停止营业点可以单独作为一道简答题出现，一般都需要分长短期进行讨论，常见设问方式：
+（1）虽然很高的固定成本会是厂商亏损的原因，但永远不会是厂商停业的原因；
+（2）当厂商经济利润为零时，厂商便会停止生产，这种说法对吗。
+（3）如果完全竞争行业实现均衡时每个厂商经济利润均为零，此时产品价格下降，则没有厂商可以生存。该说法是否正确，请说明原因。`,
+                hasImage: true },
+
+            { id: 'c3c5', special: '三、市场理论', type: '重要概念', qid: '概念5',
+                question: '生产者剩余',
+                answer: `生产者剩余指厂商在提供一定数量的某种产品时实际接受的总支付和愿意接受的最小总支付之间的差额。它通常用市场价格线以下、SMC 曲线以上的面积来表示。
+【提示1】真题中曾考过生产者剩余与经济利润的概念辨析，关于二者的关系，总结如下：
+短期：PS = P₀Q₀ − ∫₀^{Q₀} SMC(Q)dQ = TR − TVC = π + TFC，即 PS = π + TFC；
+长期：PS = P₀Q₀ − ∫₀^{Q₀} LMC(Q)dQ = TR − TVC = π，即 PS = π。
+【提示2】由以上关系，可以得到如下结论：
+（1）无论长期还是短期，生产者剩余最大化和利润最大化方向是一致的。即厂商实现经济利润最大化时，也实现了生产者剩余最大化；反之亦然。
+（2）只要厂商生产者剩余大于0，厂商就会选择继续生产。`,
+                hasImage: true },
+
+            { id: 'c3c6', special: '三、市场理论', type: '重要概念', qid: '概念6',
+                question: '最高限价与最低限价',
+                answer: `（1）最高限价也被称为限制价格，它是政府所规定的某种商品的最高价格，即防止商品价格上升到限价水平之上。最高限价总是低于市场的均衡价格。最高限价的价格水平一般低于市场均衡价格，此时市场产品供不应求。
+① 最高限价的目的：第一，抑制某些产品的价格上涨，尤其是为了应对通货膨胀；第二，限制一些垄断性很强的公用事业的价格。
+② 最高限价的后果：最高限价会引起商品短缺，从而出现黑市交易。由于长期内产品的供给和需求更有弹性，因此，相对于短期来说，长期短缺更加严重。
+（2）最低限价也被称为支持价格，它是政府所规定的某种商品的最低价，即防止商品价格下跌到此限价水平之下。最低限价总是高于市场的均衡价格。此时市场产品供过于求，因此最低限价下一般需要政府对过剩产量进行收购。
+【提示】完全竞争市场中政府干预对均衡的影响需要大家熟练掌握画图和分析，包括：
+（1）从量税和从量补贴对福利的影响，以及不同情形下税收转嫁的情况（24、25年应用经济学连续考到）；
+（2）最高限价与最低限价的福利分析，注意最低限价下的三种情况：不存在生产过剩；存在生产过剩但政府不收购；存在生产过剩且政府收购；
+（3）关税与配额的福利分析。`,
+                hasImage: true },
+
+            { id: 'c3c7', special: '三、市场理论', type: '重要概念', qid: '概念7',
+                question: '勒纳指数',
+                answer: `（1）勒纳指数是用于测定垄断企业在价格方面所拥有的垄断势力程度的指标。以 L 表示勒纳指数，P 表示产品价格，MC 表示生产该产品的边际成本，ε 表示该企业产品的需求价格弹性，则计算公式为：L = (P−MC)/P = 1/|ε|。
+上式表明勒纳指数为产品价格减边际成本，再除以价格所得的比率，勒纳指数还等于垄断企业产品的需求价格弹性的绝对值的倒数。
+这个比率是垄断企业的加价率。勒纳指数的值在0-1之间。勒纳指数越大，表明垄断势力越大。勒纳指数为0时，为完全竞争市场。
+（2）垄断势力的来源：
+① 市场需求弹性。厂商的需求至少与市场需求有同样的弹性，因此市场需求弹性限制了垄断势力的潜力。
+② 市场中厂商的数目。如果市场中有许多厂商，则任意一个厂商都不大可能对价格有显著的影响。
+③ 厂商间的互动。即使市场中只有两个或三个厂商，只要它们之间竞争激烈，即各厂商都试图取得尽可能大的市场份额，则各个厂商都无法通过大幅度提价获利。
+【提示1】厂商利润最大化的条件为 MR=MC，因此利润最大化的点满足：P(1−1/|E_d|)=MC，其中 E_d 为厂商面临的需求曲线的价格弹性。由该条件可以得到一系列结论：
+（1）由于完全竞争厂商面临的需求曲线为水平线，|E_d|=∞，所以其利润最大化的条件为 P=MC；
+（2）非完全竞争厂商面临的需求曲线向右下方倾斜，所以其均衡的价格 P>MC，资源配置无效率；
+（3）由于 MC>0，因此厂商不会在需求缺乏弹性的部分生产。
+【提示2】成本加成定价（23年金院、24年理论经济学考到）：
+与完全竞争市场 P=MC 的定价方式不同，垄断厂商为获取高额利润采取边际成本加成的方式定价，即 P = MC/(1−1/|ε|) > MC，因为垄断厂商对于市场具有一定的垄断力量，因此可以采取提高价格的方式。
+【提示3】成本加成定价法公式可能与政府征税结合进行考察（经院19年考到），问大家不同情况下对垄断厂商征税如何影响市场均衡价格，大家要学会用数理推导进行证明。相关结论：
+① 在需求曲线是线性的且厂商边际成本为常数条件下，征收从量税后，价格上涨幅度是税率的一半；
+② 在需求曲线弹性不变且厂商边际成本为常数条件下，征收从量税后，价格变动会大于税额；
+③ 当征收利润税时，利润税不会对产量和价格产生影响。`,
+                hasImage: false },
+
+            { id: 'c3c8', special: '三、市场理论', type: '重要概念', qid: '概念8',
+                question: '价格歧视',
+                answer: `（1）价格歧视是指由于垄断者具有某种垄断力量，因此，垄断者可以对自己所出售的同类产品索取不同的价格，以使自己所获利润达到最大值。
+（2）垄断厂商实行价格歧视，必须具备以下两点基本条件：
+① 市场的消费者具有不同的偏好，且这些不同的偏好可以被区分开。这样厂商才有可能对不同的消费者或消费群体收取不同的价格。
+② 不同的消费者群体或不同的销售市场是相互隔离的。这样就排除了中间商在低价处买进商品，转手又在高价处出售商品而从中获利的情况。
+（3）分类：价格歧视可分为一级价格歧视、二级价格歧视和三级价格歧视：
+① 一级价格歧视又称完全价格歧视，是指厂商按照不同的价格出售不同数量的商品，即垄断厂商对每一单位商品都按照消费者愿意接受的最高价格出售。
+由于一级价格歧视下每一单位商品的售价都为对应产量下需求曲线上的价格水平，因此，只要价格大于边际成本，厂商就能通过出售一单位商品来使得利润增加，所以一级价格歧视下厂商利润最大化的条件 P=MC。一级价格歧视下的产量为 Q*，此时 A 为生产者剩余，消费者剩余为零，社会总福利为 A。一级价格歧视实现的均衡是帕累托有效率的，但却是不公平的，因为生产者攫取了所有的生产者剩余和消费者剩余。
+② 二级价格歧视也即非线性定价，厂商以不同的价格出售不同单位的商品，但购买相同数量商品的消费者支付的价格相同。
+此时厂商在实现均衡的同时只转移了部分而不是全部的消费者剩余，厂商会把价格定在稍高于边际成本处生产，生产不是最有效率的。
+③ 三级价格歧视是指垄断厂商对同一种产品在不同的市场上（或对不同的消费群）收取不同的价格。
+三级价格歧视得以实现的前提是：第一，两个市场相互隔离，不存在跨市场套利；第二，不同市场的消费者对于商品的需求的价格弹性不同。
+在三级价格歧视中，垄断者将市场进行划分，对不同的人群索取不同的价格，均衡时满足 p₁(1−1/|e_{d1}|)=p₂(1−1/|e_{d2}|)=MC。
+【提示1】关于价格歧视的总结：
+（1）一级价格歧视的均衡结果是有效率的，此时没有福利损失，但对消费者是不公平的，因为厂商提取了所有的消费者剩余。（25年应用经济学考到）
+（2）二级和三级价格歧视的均衡结果是无效率的。
+（3）三级价格歧视与统一定价的比较：
+① 与统一定价相比，三级价格歧视也可能带来社会总福利的增加。例如：如果统一定价时只在高需求市场有销量，低需求市场没有销量。此时实施三级价格歧视，在低需求市场制定低价格，而高需求市场的价格还与统一定价时相同，此时两个都有需求量，并且高需求市场福利不变，社会总福利增加。
+② 与统一定价相比，三级价格歧视对不同市场消费者的福利影响是不同的，例如：如果统一定价时两个市场都有销量，实施三级价格歧视后，需求价格弹性小的市场价格将高于统一定价时的价格，需求价格弹性大的市场价格将低于统一定价时的价格，此时三级价格歧视对弹性小的市场消费者不利，而对弹性大的市场消费者有利。
+【提示2】这里给大家一个普遍适用的结论：只要均衡时满足 P=MC，此时资源配置就是有效率的，因为此时消费者愿意支付的最高价格等于厂商愿意获得的最低支付，不存在帕累托改进。只要均衡时 P≠MC，资源配置就无效率。`,
+                hasImage: true },
+
+            { id: 'c3c9', special: '三、市场理论', type: '重要概念', qid: '概念9',
+                question: '伯特兰模型',
+                answer: `（1）伯特兰模型是一种寡头垄断模型，每个厂商生产同质产品，各厂商都把其余竞争者的价格视为给定的，并且所有厂商同时决定价格。
+（2）当伯特兰寡头厂商平均成本为常数且相等时，均衡结果也是帕累托有效率的，因为此时均衡条件满足 p=MC=c。
+（3）伯特兰悖论
+当伯特兰寡头厂商平均成本为常数且相等时，伯特兰均衡结果与完全竞争均衡相同：产品价格等于边际成本，厂商利润为零，行业总产量是社会福利最优的产量。而在现实中，寡头市场的价格通常会高于边际成本，寡头厂商一般总是能获得利润。伯特兰模型的结论不符合真实世界寡头市场的基本特征，这被称为"伯特兰悖论"。
+（4）伯特兰模型与古诺模型的比较
+① 相同之处：
+第一，两者都是关于企业相互竞争的寡头模型，而且在模型中两个厂商生产同质的商品。
+第二，在两个模型中，每个厂商在做出自己的决策时，都将其竞争对手的行为的某些方面（产量或价格）视为固定的，从而古诺和伯特兰竞争中的厂商都是在给定竞争对手选择的情况下选择了自己的最优策略，所以达到的均衡都是纳什均衡。
+② 区别：
+第一，竞争方式不同。古诺模型中厂商进行产量竞争；伯特兰模型中厂商进行价格竞争。
+第二，竞争的结果不同。在古诺模型中，厂商最终的产量高于垄断产量，但是低于竞争产量；而在伯特兰模型中，如果厂商平均成本为常数且相等，厂商最终在价格等于边际成本的水平上进行生产。`,
+                hasImage: false },
+
+            { id: 'c3c10', special: '三、市场理论', type: '重要概念', qid: '概念10',
+                question: '价格领导模型',
+                answer: `（1）价格领导模型是指市场上的一个厂商定期宣布价格变化，其他厂商跟随这一价格的一种定价类型。
+（2）价格领导模型的定价机制：
+领导厂商1依靠自己在市场上的支配地位，根据自身利润最大化条件 MR=MC 来决定市场价格，追随厂商2只能接受该价格，以 p=MC 来确定产量。
+价格领袖在制定价格时知道追随者将根据 p=MC 提供产量，所以价格领袖将按照它所面临的剩余需求曲线和自身的边际成本确定自身利润最大化的产量和价格。`,
+                hasImage: true },
+
+            /* --- 简答/论述题 --- */
+            { id: 'c3s1', special: '三、市场理论', type: '简答/论述题', qid: '简答1',
+                question: '什么是零利润定理？解释完全竞争厂商长期经济利润为零的原因，并说明此时厂商是否会选择继续生产？为什么？',
+                answer: `（1）零利润定理是用于描述竞争市场企业长期利润变化趋势的一个定理，其具体内容是：在完全竞争市场上，由于企业可以完全自由进入和退出，因此，长期均衡时，不可能有企业获得超额利润，也不可能有企业亏损，即长期均衡时，每个企业都只能获得零利润。
+（2）完全竞争厂商长期均衡时经济利润为零的原因（完全竞争厂商实现长期均衡的过程）：
+在长期内，完全竞争市场企业可以自由进入或退出。如果完全竞争厂商能够获得正的长期经济利润（P>LAC），将有厂商进入市场，此时市场供给增加，价格水平下降，直到厂商经济利润为零（P=LAC）；如果长期经济利润为负（P&lt;LAC），则会有厂商退出市场，市场供给减少，价格水平上升，直到厂商经济利润为零。
+（3）完全竞争长期均衡时厂商经济利润为零说明厂商通过投资获得了正常回报。正常回报是资本使用者成本的一部分，是指厂商购买资本而没有投资于其他用途的机会成本。因此，长期获得零经济利润的厂商将其资金用于购买资本和投到其他用途是一样好的，资本获得了竞争性回报。此时厂商已经表现得足够好，应该继续经营。
+【提示】完全竞争行业长期经济利润为零。但厂商依然选择进入或退出该行业的原因：
+（1）实现长期均衡需要很长时间，在达到长期均衡之前，厂商可能获得正的经济利润，并且先进入某一有利可图行业的厂商可能比后进入的厂商赚取更多利润，而先退出某一无利润可赚的行业的厂商可以节省很多资金。
+（2）长期均衡时的零经济利润代表厂商的金融资本投资能赚取竞争性报酬。在零经济利润下，厂商没有进入其他行业的激励，因为这样做并不能改善经济收益。`,
+                hasImage: true },
+
+            { id: 'c3s2', special: '三、市场理论', type: '简答/论述题', qid: '简答2',
+                question: '请简述垄断的定义以及垄断形成的原因。',
+                answer: `（1）垄断是指一家厂商控制一个行业的全部供给的市场结构。特征：第一，厂商就是行业。完全垄断市场只有一个厂商，它提供整个行业的产销量；第二，产品不能替代，其需求交叉弹性为零；第三，独自决定价格。厂商是价格的制定者；第四，实行差别价格。
+（2）形成垄断的原因及其作用方式主要有：
+① 独家厂商控制了生产某种商品的全部资源或基本资源的供给。这种对生产资源的独占，排除了经济中的其他厂商生产同种商品的可能性。
+② 独家厂商拥有某种商品的专利。这使独家厂商可以在一定时期内垄断该产品的生产。
+③ 政府的特许。政府往往在某些行业实行垄断的政策，如铁路运输部门、供电供水部门等，于是，独家企业就成了这些行业的垄断者。
+④ 自然垄断。有些行业的生产具有这样的特点：一方面，从企业生产的角度看，企业的生产需要在一个很高的产量水平上才能充分实现规模经济，以至整个行业的产量只有由一个企业来生产时才有可能达到这样的生产规模。另一方面，从市场需求的角度看，只要发挥这一企业在这一生产规模上的生产能力，就可以满足整个市场对该种产品的需求。于是，在这类产品的生产中，行业内总会有某个厂商凭借雄厚的经济实力和其他优势，最先达到这一生产规模，从而垄断整个行业的生产和销售。这就是自然垄断。自然垄断也是形成垄断的主要原因之一。`,
+                hasImage: false },
+
+            { id: 'c3s3', special: '三、市场理论', type: '简答/论述题', qid: '简答3',
+                question: '请简述政府反垄断的原因（垄断的成本），以及垄断的管制方法。',
+                answer: `（1）反垄断的原因：
+① 垄断常常导致资源配置缺乏效率。追求利润最大化的垄断厂商最优产量为 Q₂，价格为 P₂，P₂ 高于边际成本，说明此时消费者愿意支付的最高价格大于厂商愿意接受的最低支付，存在帕累托改进，没有达到帕累托最优，资源配置是低效率的。
+② 垄断会造成整个社会的无谓损失，垄断利润是不公平的。完全竞争条件下的产量 Q₁ 和价格 P₁，消费者剩余是三角形 FP₁H 的面积，而当垄断者把价格提高到 P₂ 时，消费者剩余只有 FP₂G 的面积，所减少的消费者剩余的一部分（图 P₁P₂GI 所代表的面积）转化为垄断者的利润，另一部分（GIH 所代表的面积）就是由垄断所引起的社会福利的纯损失，它代表由于垄断造成的低效率带来的损失。
+③ 垄断造成的损失还有寻租。寻租的形式：第一，通过游说行为以得到令潜在竞争者进入市场更困难的政府管制。第二，广告和避免反托拉斯法律调查的行为。第三，配备多余生产能力（但不使用），以让潜在竞争者确信无法通过进入市场而获得有价值的市场份额。
+在实践中，垄断势力的社会成本可能超过无谓损失 GH。寻租的成本包括：第一，寻租造成经济资源配置的扭曲，阻止了更有效的生产方式的实施。第二，寻租本身白白耗费社会的经济资源，使本来可以用于生产性活动的资源浪费在这些于社会无益的活动上。第三，导致其他层次的寻租活动的发生。
+（2）政府管制垄断的方法：
+① 政府可以采取反垄断政策。针对不同形式的垄断，政府可以根据反垄断政策，分别或同时采取行业的重新组合和处罚等手段。行业的重新组合的基本思路是把一个垄断的行业重新组合成包含多个厂商的行业，采取的手段是分解原有的厂商，或扫除进入行业的障碍。制止垄断行为可以借助于行政命令、经济处罚或者法律制裁等手段。
+② 行业的管制主要是对那些不适合过度竞争的垄断行业，如航空航天、供水等行业所采取的补救措施。政府往往在保留垄断的条件下，对于垄断行业实行价格控制，或价格和产量的双重控制、税收或津贴以及国家直接经营等管制措施。由于政府的目的不在于最大利润，所以可以按照边际成本或者平均成本决定价格，以便部分地解决垄断所产生的产量低和价格高的低效率问题。
+③ 管制自然垄断的方法还可以采用为垄断厂商规定一个接近于"竞争的"或"公正的"资本回报率，它相当于等量的资本在相似技术、相似风险条件下所能得到的平均市场报酬。由于资本回报率被控制在平均水平，也在一定程度上控制住了垄断厂商的价格和利润。
+【提示1】资本回报率管制存在的问题：
+（1）"公正的"资本回报率难以定义，其客观标准难以确定。
+（2）作为资本回报率决定因素的厂商的未折旧资本量往往难以估计。不仅如此，在关于资本量和生产成本方面，被管制企业和管制机构各自掌握的信息是不对称的，被管制企业总是处于信息优势的地位。
+（3）管制滞后的存在使得资本回报率管制的效果受到影响。
+【提示2】与本题相关的子问题：
+（1）请画图说明为什么说垄断是低效率的；（2）请画图分析垄断的福利损失；（3）为什么垄断会造成市场失灵；（4）为什么说完全竞争是比完全垄断更有效率的市场结构等。
+【提示3】垄断的低效率也可以直接用成本加成定价公式进行分析：
+垄断均衡时满足 MR=MC，由于 MR=P(1−1/|e_d|)，所以垄断均衡的价格 P = MC/(1−1/|e_d|)。
+由于垄断厂商面临的市场需求曲线向右下方倾斜，所以均衡时的价格 P>MC，此时消费者愿意支付的最高价格等于厂商愿意接受的最低支付，存在帕累托改进，所以资源配置是低效率的。`,
+                hasImage: true },
+
+            { id: 'c3s4', special: '三、市场理论', type: '简答/论述题', qid: '简答4',
+                question: '垄断的低效率是否可以依靠市场力量自发解决？请解释。',
+                answer: `（1）在理论上，存在消费者补偿垄断者从而克服这种"无效率"的可能。一种可能的方法是，垄断厂商同意生产产量 Q₁，并在等于边际成本的价格 P₁ 上出售该商品，这样做的结果是垄断厂商的利润下降了 (P₂−P₁)Q₂（P₂P₁IG 所代表的面积）。为了弥补其损失，消费者之间达成一项协议，共同给予垄断厂商至少等于该损失的一揽子支付。在给予这一揽子支付以后，消费者福利与垄断情况下相比仍然有所改善，因为垄断厂商将价格从 P₂ 下降到 P₁ 使得消费者剩余增加 P₂P₁HG，消费者剩余的增加额超过了垄断厂商的利润损失部分 P₂P₁IG，超过的部分为区域 GIH 的面积，这一部分收益可以在垄断厂商和消费者之间进行适当的分配，从而使双方都得到好处。
+（2）在实践中，这种方案不可行，原因在于，垄断厂商和消费者之间以及消费者和消费者之间难以达成相互满意的一致条件：
+① 垄断厂商和消费者之间在如何分配增加产出所得到的收益问题上可能存在很大分歧，以至于无法达成一致意见；
+② 消费者和消费者之间在如何分摊弥补厂商利润损失的一揽子支付问题上不能达成一致意见；
+③ 无法防止某些消费者不负担一揽子支付而享受低价的好处，即无法阻止"免费乘车者"。
+由于上述这些困难，实际上得到得便是无效率的垄断情况。`,
+                hasImage: true },
+
+            { id: 'c3s5', special: '三、市场理论', type: '简答/论述题', qid: '简答5',
+                question: '什么是自然垄断？政府为什么要对自然垄断进行管制？画图分析对自然垄断企业的价格限制和限制的结果。',
+                answer: `（1）自然垄断是指一个厂商能以低于存在许多厂商时的生产成本生产整个市场全部产量的情形。
+自然垄断的特点：① 从企业生产的角度看，企业的生产需要在一个很高的产量水平上才能充分实现规模经济，以至整个行业的产量只有由一个企业来生产时才有可能达到这样的生产规模。② 从市场需求的角度看，只要发挥这一企业在这一生产规模上的生产能力，就可以满足整个市场对该产品的需求。
+（2）对自然垄断行业进行管制的原因：
+① 自然垄断存在定价悖论：一方面，自然垄断产业的平均成本最低，生产效率最优；另一方面，在单一企业生产条件下，自然垄断有可能凭借其垄断势力制定垄断价格（P>MC，低效率），消费者由此受害。为此，需要由政府介入实施价格管制。
+② 自然垄断存在效率悖论：在自然垄断产业，既定的市场容量只能容纳一家最有效率的厂商存在，如果任由厂商自由竞争，则存在巨额重复投资，尤其是网络的重复建设，多家厂商的平等竞争使得彼此都无法生存。在这种情况下，只能由政府出面进行管制，通过政府管制，阻止其他厂商进入，保证一家最有效率的厂商独家生产经营，以此来维护自然垄断的产业特性，促进资源配置最优化。
+③ 信息不对称：信息不对称在自然垄断产业中非常明显，相对于生产者而言，消费者具有明显的信息劣势，以致消费者在购买和消费过程中根本无自由选择。在这种情况下，也需要政府实施管制，以使消费者得到安全可靠和公平合理的服务。
+（3）自然垄断厂商的平均成本在很高的产量水平上仍随着产量的增加而递减，即存在规模经济，所以其经济效果肯定要比几家厂商同时经营时高。但另一方面，自然垄断作为垄断的一种形式，同样存在着由于缺乏竞争所造成的垄断厂商的高价格、高利润以及低产出水平等经济效率的损失。所以，对一些具有自然垄断特征的企业进行价格限制就是十分必要的，常见的价格限制有以下几种：
+① 边际成本定价法
+垄断厂商索取的价格一般都高于边际成本，在无管制的情况下，垄断厂商根据 MR=MC 的原则确定的价格为 P_m，产量为 Q_m，价格显然高于边际成本。
+在政府管制的情况下，按边际成本定价法即 P=MC，厂商的价格下降为 P₁，产量增加为 Q₁。但随之而来的问题是，由于自然垄断厂商是在 AC 曲线下降的规模经济段进行生产，所以，MC 曲线必定位于 AC 曲线的下方。也就是说，按边际成本 MC 所决定的价格 P₁ 一定小于平均成本 AC。因此，在管制价格下，厂商是亏损的，厂商会退出生产。这样一来，管制机构陷入了困境，要么放弃边际成本定价法，要么政府资助被管制的企业。
+② 平均成本定价法
+平均成本定价法是使管制价格等于平均成本。根据平均成本定价法即 P=AC，管制价格将确定为 P₂，相应的产量为 Q₂。此时，由于 P₂=AC，厂商不再亏损，厂商会继续经营，但利润为零。
+③ 双重定价法
+双重定价法类似于价格歧视的做法。具体地说，允许厂商对一部分购买欲望较强的消费者收取较高的价格，且 P>AC，从而厂商获得利润。同时，厂商对一部分购买欲望较弱的消费者仍按边际成本定价法收取较低的价格，由于 P&lt;AC，从而厂商是亏损的。此外，双重定价法还要求制定的价格计划应该使得厂商由于收取较高价格所获得的利润能补偿由于收取较低价格所遭受的亏损。这样，从整体上看厂商利润为零，厂商还是愿意继续经营的。
+【提示】自然垄断条件下，政府对自然垄断的价格管制往往采用平均成本定价而非边际成本定价，因为此时政府不需要补贴垄断厂商，厂商也可以获得正常利润。
+解决自然垄断的另一方法是由政府经营，此时理想的解决方案是政府在价格等于边际成本处生产，同时提供一次性总付补贴以维持经营。此时存在的问题：第一，政府确定自己的成本和确定受管制自然垄断企业的成本一样困难；第二，经营垄断工厂的政府可能比受管制的自然垄断厂商更不愿意对公众负责。`,
+                hasImage: true },
+
+            { id: 'c3s6', special: '三、市场理论', type: '简答/论述题', qid: '简答6',
+                question: '分析垄断可以从哪些方面提高经济效率。',
+                answer: `（1）垄断可以通过规模经济促进经济效率。规模经济是指由于生产规模的扩大导致长期平均成本下降的情况。产生规模经济的原因为劳动分工与专业化以及技术因素。企业规模扩大后使得劳动分工更细，专业化程度更高，这将大大提高劳动生产率，降低企业的长期平均成本。技术因素是指规模扩大后可以使得生产要素得到充分的利用。
+（2）范围经济，即垄断企业有条件进行多样化产品组合，把在生产上有相互关联的产品放在一个企业内生产经营，使投入的生产要素（尤其是原材料）多次使用以生产不同产品，如共同享用商标、包装和销售渠道等，从而降低成本。
+（3）垄断可以通过技术进步来促进经济效率。
+① 垄断厂商利用高额利润形成雄厚的经济实力，有条件进行各种科研和技术创新，并将成果用于生产过程。
+② 垄断厂商可以利用自己的垄断地位，在长期内保持由于技术进步而带来的更高的利润从而促进经济效率。`,
+                hasImage: false },
+
+            { id: 'c3s7', special: '三、市场理论', type: '简答/论述题', qid: '简答7',
+                question: '请作图分析垄断竞争厂商长期均衡的实现过程，并分析垄断竞争长期均衡时的效率。',
+                answer: `（1）垄断竞争市场是指一个市场中有许多厂商生产和销售有差别的同种产品的市场组织。在垄断竞争市场中，进入和退出一个行业比较容易，因此单个厂商长期经济利润为零。
+（2）垄断竞争厂商长期均衡实现的过程：
+由于垄断竞争市场在长期厂商可以自由进入和退出，此时在位厂商的需求曲线将发生两方面变化：第一，厂商面临的需求曲线向内移动，此时厂商的进入使得在位厂商在每一价格水平上所能出售的商品减少；第二，在位厂商面临的需求曲线将更有弹性。因此，新厂商的进入使得在位厂商面临的需求曲线向左移动，并变得更为平坦。
+垄断竞争厂商长期均衡时需要满足三个条件：① 每个厂商都按照其面临的需求曲线上的价格和产量组合出售商品；② 给定厂商面临的需求曲线，厂商追求自身利润最大化；③ 新厂商的进入使得每家厂商均衡的经济利润为零。
+条件①和条件③意味着长期均衡点一定同时位于厂商面临的需求曲线和其长期平均成本曲线上的某一点。而在长期均衡时厂商面临的需求曲线与长期平均成本曲线不是相交，因为如果相交，就必然存在位于平均成本曲线以上的点，此时经济利润大于零，不符合长期经济利润为零的条件。
+因此，长期均衡时，厂商面临的需求曲线与长期平均成本曲线相切。同时，由于垄断竞争厂商面临的需求曲线向右下方倾斜，所以切点一定位于 LAC 递减阶段，即厂商面临的需求曲线与长期平均成本曲线相切于 LAC 最低点左侧。
+（3）垄断竞争厂商长期均衡的效率分析：
+① 垄断竞争条件下的长期均衡价格大于边际成本，因为厂商面临的需求曲线与平均成本曲线相切于平均成本曲线递减阶段，此时 AC>MC，又由于长期均衡时 p=AC，所以此时 p>MC，存在帕累托改进，资源配置是缺乏效率的。
+② 垄断竞争厂商长期均衡时存在过剩的生产力。一般把完全竞争企业在长期平均成本 LAC 曲线最低点上的产量称作理想的产量，把实际产量与理想产量之间的差额称作过剩的生产能力。垄断竞争厂商的长期均衡产量小于理想的产量，存在多余的生产能力。`,
+                hasImage: true },
+
+            { id: 'c3s8', special: '三、市场理论', type: '简答/论述题', qid: '简答8',
+                question: '对比分析垄断竞争和完全竞争、完全垄断的经济效率。',
+                answer: `（1）与完全竞争市场相比，垄断竞争的市场是缺乏效率的，主要表现在两个方面：
+① 从资源配置的效率上讲，垄断竞争市场在达到长期均衡时，价格高于边际成本，此时存在帕累托改进，而不像完全竞争均衡时那样价格等于边际成本；
+② 从生产力利用角度讲，垄断竞争长期均衡时没有把生产推进到平均成本最低点，说明垄断竞争厂商存在一部分闲置的生产力。
+由于这两方面的原因，垄断竞争市场的价格高于完全竞争市场的价格，垄断竞争市场的产量低于完全竞争市场的产量。
+（2）即使与完全竞争市场相比，垄断竞争市场也不是没有一点长处：
+① 完全竞争市场的产品是同质的，不能满足消费者的多样化需求，而垄断竞争厂商的产品存在差别，可以满足消费者的多样化需求。
+② 从长期看，垄断竞争市场比完全竞争市场具有动态的效率。因为垄断竞争市场上无论是价格竞争还是非价格竞争，激烈的竞争都会有利于长期的技术进步，从而降低厂商的生产成本，降低产品价格，提高产品产量，增进社会福利。而在完全竞争市场上，产品的同质性决定了厂商间不存在有效的竞争，因而难以促进长期的技术进步。
+（3）垄断竞争市场的效率要高于完全垄断市场的效率。
+由于垄断竞争市场上各个厂商之间的产品都是非常相近的替代品，因此，每一个厂商所面临的需求曲线的需求价格弹性很大。这说明垄断竞争市场产品的价格低于完全垄断市场产品的价格，垄断竞争市场产品的产出水平高于完全垄断市场产品的产出水平。
+因此，垄断竞争市场资源配置效率高于完全垄断市场的资源配置效率；垄断竞争市场条件下厂商生产能力利用程度高于完全垄断市场条件下厂商生产能力利用程度。
+【提示1】垄断竞争与完全竞争长期均衡时资源配置、价格、产量和福利等方面的比较可能单独以一道简答题的形式出现，大家需要会画图比较。
+【提示2】非价格竞争
+（1）非完全竞争厂商进行非价格竞争的主要方式有：产品差异化、广告和售后服务。
+（2）非价格竞争的优点：①非价格竞争作为厂商之间相互竞争的一种形式，强化了市场的竞争程度，并且，非价格竞争的一些具体做法客观上满足了消费者的某些需要。②非价格竞争增强了消费者对某些产品的依赖程度，从而使得厂商加强了对自己产品的垄断程度。`,
+                hasImage: false },
+
+            { id: 'c3s9', special: '三、市场理论', type: '简答/论述题', qid: '简答9',
+                question: '在斯塔克尔伯格模型中，先决定产量的厂商有一种优势。解释为什么？',
+                answer: `（1）古诺模型一种寡头垄断模型，其中厂商生产同质商品，各厂商将其竞争者的产出当作给定的，所有厂商同时决定各自的产量。
+斯塔克伯格模型是一种寡头垄断模型，其中一个厂商比另一个厂商先决定产出。
+（2）厂商1和厂商2的反应曲线以及厂商1的等利润线，厂商1的等利润线越靠近横轴所代表的利润水平越大。
+① 假设最开始厂商1和厂商2进行古诺竞争，两厂商反应曲线的交点就是古诺均衡解。
+② 假设厂商1变为斯塔克尔伯格模型中的领导者，用最优反应函数图形说明了斯塔克尔伯格均衡。领导者意识到跟随者总会根据自己生产的产量做出最优反应，所以斯塔克尔伯格均衡结果一定会在追随者的反应曲线上。领导者将有效地在追随者的反应曲线上挑选一点使得自身实现利润最大化。由于当等利润线朝着水平轴向下移动时，利润水平提高，因此当领导者厂商1的等利润线和追随者厂商2的反应曲线相切时，此时厂商1的利润水平最高，这就是斯塔克尔伯格均衡。与古诺均衡点相比，斯塔克尔伯格均衡中厂商1的产出更多，利润更大。厂商1利润更大的原因在于，厂商1承诺了高产出水平，厂商2只得被迫以削减产量作为回应。
+（3）综上所述，斯塔克尔伯格领导者的利润不会低于古诺均衡时的利润，此时先决定产量的领导厂商具有先发优势，因为追随厂商必须接受领导厂商大的产量并生产小的产量。此时对于斯塔尔伯格领导者而言，它不仅可以通过选择与古诺博弈中相同的产量，从而获得古诺均衡下的利润。还可以利用作为领导者的先发优势，生产出高于古诺均衡的产量，从而获得更多利润。
+【提示1】本题等价问法：
+（1）请简述为什么斯塔克尔伯格模型中领导者的利润不会小于其古诺均衡时的利润；（2）请简述为什么斯塔克尔伯格模型中领导者的产量不会低于其古诺均衡时的产量；（3）和古诺博弈相比，为什么领导厂商更青睐斯塔克尔伯格博弈。
+【提示2】斯塔克尔伯格模型中领导者先发优势的数理证明见冲刺班。
+【提示3】古诺模型其他相关证明题：
+（1）n 家相同厂商实现古诺均衡时，市场需求曲线的价格弹性大于 1/n；
+（2）当 n→∞ 时，n 家相同厂商的古诺均衡结果趋近于完全竞争均衡结果。`,
+                hasImage: true },
+
+            { id: 'c3s10', special: '三、市场理论', type: '简答/论述题', qid: '简答10',
+                question: '简述古诺均衡稳定的原因，以及古诺厂商不愿意共谋的原因。',
+                answer: `（1）古诺模型一种寡头垄断模型，其中厂商生产同质商品，各厂商将其竞争者的产出当作给定的，所有厂商同时决定各自的产量。
+（2）古诺均衡稳定的原因：
+古诺均衡的条件（古诺均衡的性质）为：第一，市场供求相等；第二，在古诺竞争均衡中，每个厂商都根据自己对其他厂商的产量预测选择了使自己利润最大化的产量，同时每个厂商对其他厂商的产量预测就等于这些厂商的实际产量。因此，古诺均衡时双方都处在了给定竞争对手的条件下，自己所能做的最好的行为的情况，所以双方都没有改变其产量的冲动，此时达到的均衡为纳什均衡。
+（3）如果双方能够共谋，厂商不将产量定在共同利润最大化水平的原因（卡特尔不稳定的博弈论分析）：
+由于寡头双方都面临着"囚徒困境"，任何一方都不愿意冒先降低产量的风险。因此，双方都很难将产量调整到共谋时的均衡水平。
+这一现象可以用收益矩阵来分析。两厂商进行古诺竞争时的产量分别为20和20，共谋时利润最大化的产量是15和15，由于生产20的产量是两个厂商的占优策略，因此（20,20）是占优策略均衡。即使最开始两厂商通过协议组成卡特尔组织进行卡特尔定价，但这种均衡是不稳定的，每个厂商都有生产更多产量增加自己利润的违约动机。`,
+                hasImage: false },
+
+            { id: 'c3s11', special: '三、市场理论', type: '简答/论述题', qid: '简答11',
+                question: '卡特尔成功的条件及其不稳定的原因',
+                answer: `（1）卡特尔是一种正式的串谋行为，它能使各个竞争性市场变成一个垄断市场，属于寡头市场的一个特例。卡特尔以扩大整体利益作为它的主要目标，为了达到这一目的，在卡特尔内部将订立一系列的协议，来确定整个卡特尔的产量、产品价格，指定各企业的销售额及销售区域等。
+（2）保证卡特尔成功需要满足的条件：
+① 一个稳定的卡特尔组织必须要在其成员对价格和产量达成一致协定并遵守该协定的基础上形成。
+② 垄断势力的潜在可能，这是卡特尔成功的最重要的条件，因为如果合作的潜在利益是很大的，卡特尔组织将有更大的解决他们组织上问题的意愿。要想具有垄断势力，需要满足：第一，产品需求价格弹性很小。第二，卡特尔必须几乎控制所有世界供给，或者非卡特尔生产商的供给价格弹性很小。
+（3）卡特尔不稳定的原因有：
+① 潜在进入者的威胁：一旦卡特尔把价格维持得较高水平，那么就会吸引新企业进入这个市场，而新企业进入后，可以通过降价扩大市场份额，此时卡特尔要想继续维持原来的高价就很不容易了。
+② 卡特尔内部成员所具有的欺骗动机：这是一个典型的"囚徒困境"，给定其他企业的生产数量和价格都不变，那么一个成员企业偷偷地增加产量将会获得额外的巨大好处，这会激励成员企业偷偷增加产量，如果每个成员企业都偷偷增加产量，显然市场总供给大量增加，市场价格必然下降，卡特尔限产提价的努力将瓦解。如果卡特尔不能有效解决这个问题，最终将导致卡特尔的解体。
+【提示1】卡特尔成员欺骗动机的数理证明：
+考虑只有两个厂商的卡特尔组织，构造卡特尔组织的利润函数：
+max p(y₁+y₂)·[y₁+y₂] − c₁(y₁) − c₂(y₂)
+则卡特尔组织实现利润最大化时的产量满足：
+p(y₁*+y₂*) + (dp/dY)(y₁*+y₂*) = MC₁(y₁*)
+p(y₁*+y₂*) + (dp/dY)(y₁*+y₂*) = MC₂(y₂*)
+其中，厂商1和厂商2的最优产量分别为 y₁* 和 y₂*，Y=y₁*+y₂*。
+此时厂商1的利润为：π₁ = p(y₁*+y₂*)·y₁* − c(y₁*)。
+假设厂商1考虑增加产量 Δy₁，则厂商1增加的边际利润为：
+dπ₁/dy₁ = p(y₁*+y₂*) + (dp/dY)·y₁* − MC₁(y₁*)。
+由上可知，卡特尔组织利润最大化时满足以下条件：
+p(y₁*+y₂*) + (dp/dY)(y₁*+y₂*) − MC₁(y₁*) = 0。
+整理上述两式可得：dπ₁/dy₁ = −(dp/dY)·y₂* > 0。
+因为 dp/dY 取负值，即市场需求曲线的斜率为负值。
+通过上面的分析可知，如果厂商1认为厂商2的产量将保持不变，那么厂商1就可以相信它能通过增加自己的产量而获得更多的利润。
+【提示2】也可以从卡特尔成功的两个条件分析卡特尔不稳定的原因：
+① 从卡特尔成功的第一个条件看，由于不同的成员有不同的成本，有不同的市场需求，甚至有不同的目标，因而他们可能想要不同的价格水平。或者各成员可能受到通过略微降价即夺取比分配给它的更大的市场份额来欺骗其他厂商的诱惑，从而造成卡特尔组织的解体。只有长期回到竞争价格的威胁才能阻止这种欺骗，如果卡特尔的利润足够大，这种威胁是有效的。
+② 从卡特尔成功的第二个条件看，即使一个卡特尔能够解决组织上的问题，但如果它面临的是一条具有高度弹性的需求曲线，它就只有很小的提价的余地，因而组成卡特尔的利益就是很小的，此时卡特尔成员就没有动力去解决它们组织问题。`,
+                hasImage: false },
+
+            { id: 'c3s12', special: '三、市场理论', type: '简答/论述题', qid: '简答12',
+                question: '请比较分析不同市场的效率。',
+                answer: `（1）静态效率
+从静态的角度看，完全竞争市场是有效率的，不完全竞争市场则缺乏效率，而且在不完全竞争市场中，垄断的程度越高就越缺乏效率。
+① 成本的比较
+完全竞争厂商的长期均衡出现在长期平均成本曲线最低点，不完全竞争厂商的长期均衡通常出现在长期平均成本曲线最低点之前的下降阶段。
+② 价格的比较
+在完全竞争厂商的长期均衡中，价格等于最低的长期平均成本，而在不完全竞争厂商的长期均衡中，价格高于最低的长期平均成本。
+③ 产量的比较
+从整个行业的角度而言，完全竞争行业的产量一定大于不完全竞争行业的产量，因为不完全竞争市场的价格常常高于完全竞争时的情况。
+④ 利润的比较
+在完全竞争和垄断竞争厂商的长期均衡中，由于价格总是等于长期平均成本，故只存在正常利润而没有经济利润。在垄断和寡头厂商的长期均衡中，由于价格通常大于长期平均成本，故不仅有正常利润，而且有经济利润。
+⑤ 价格与边际成本关系的比较（资源配置效率）
+在完全竞争厂商的短期和长期均衡中，价格总是等于边际成本，而在不完全竞争厂商的短期和长期均衡中，价格总是大于边际成本。前者意味着效率，而后者意味着缺乏效率。
+⑥ 其他方面
+第一，规模经济，对不少行业的生产来说，只有大规模的生产才能获得规模经济的好处，而这往往只有在寡头市场和垄断市场条件下才能做到。
+第二，产品的差别。在完全竞争市场条件下，所有厂商的产品都是完全相同的，这无法满足消费者的各种偏好。在垄断竞争市场条件下，众多厂商之间的产品是有差别的。但是，产品的一些虚假的非真实性的差别，也会给消费者带来损失。
+第三，广告支出。垄断竞争市场和产品差别寡头市场的大量广告，它们可以为消费者提供有关商品信息。但是，过于庞大的广告支出会造成资源的浪费和抬高销售价格，再加上某些广告内容过于夸张和具有太大的诱导性，这些对消费者不利的。
+⑦ 结论
+完全竞争厂商与非完全竞争厂商之所以在以上方面存在不同，根本原因在于厂商面临的需求曲线不同，而厂商面临的需求曲线代表的是厂商的垄断势力。其中，完全竞争厂商面临的需求曲线为水平线，意味着厂商是价格的接受者，此时厂商不存在垄断势力。非完全竞争厂商面临的需求曲线是向右下方倾斜的，意味着厂商具有垄断势力，能够影响价格，其中垄断厂商面临的需求曲线就是市场的需求曲线，垄断势力最大。
+（2）动态效率
+静态效率没有考虑技术进步。动态效率需要考虑技术进步的因素，此时结果会有所不同：一方面，相对于完全竞争企业，不完全竞争企业的技术进步可能要更快一些。另一方面，不完全竞争企业的更快的技术进步可能会抵消掉其静态的低效率还有余，从而使得它的综合的（同时包括静态效率和技术进步在内的）效率超过完全竞争企业。
+① 不完全竞争企业的技术进步可能要比完全竞争企业更快的原因：
+第一，就创新的成本而言，许多创新都需要投入巨额的资金，而这种巨额的资金通常很难由那些规模较小的、利润也很少的完全竞争企业来提供。与此不同，大企业通过利用对市场的垄断力量，获得大量的超额垄断利润。这些超额垄断利润为创新的研究和实施提供了资金的保障。
+第二，就创新的收益而言，尽管创新的成功可以带来巨大的收益，但这些收益却不一定能够完全被进行创新的企业所得到。在完全竞争经济中，任何企业都无法控制市场，也无法防止别的企业对其创新成果的模仿和利用。因此，即使一个完全竞争企业能够通过自己的努力进行创新，创新的好处也会很快地被众多的模仿者所瓜分。
+② 垄断厂商对技术进步的影响
+一方面，在一些情况下，垄断厂商会阻碍技术进步。垄断厂商只要依靠自己的垄断力量就可以长期获得利润，所以，垄断厂商往往缺乏技术创新的动力，甚至为了防止潜在竞争对手的新技术和新产品对其垄断地位造成的威胁，还有可能通过各种方式阻碍技术进步。另一方面，在不少情况下，垄断又是有利于技术进步的。这是因为，垄断厂商利用高额利润所形成的雄厚经济实力，有条件进行各种科学研究和重大的技术创新，并将成果运用于实际生产过程；而且，垄断厂商还可以利用自己的垄断地位，在长期内保持由于技术进步而带来的更高的利润。`,
+                hasImage: false },
+
+            /* ===================== 四、博弈论 ===================== */
+            /* --- 重要概念 --- */
+            { id: 'c4c1', special: '四、博弈论', type: '重要概念', qid: '概念1',
+                question: '纳什均衡',
+                answer: `（1）纳什均衡是指这样一种策略集，在这一策略集中，每一个博弈者都确信，在给定竞争对手策略的情况下，他选择了最好的策略。
+（2）纳什均衡是由所有参与人的最优战略所组成的一个战略组合，也就是说，给定其他人的战略，任何个人都没有积极性去选择其他战略，从而没有人有积极性去打破这个均衡，因此纳什均衡是稳定的。
+【提示】纯策略与混合策略纳什均衡的关系：
+第一，即使纯策略纳什均衡不存在，相应的混合策略纳什均衡也总会存在。
+第二，纯策略纳什均衡往往作为特例被包括在混合策略纳什均衡中。
+第三，在每个参与人都只有有限多个纯策略的博弈中至少存在一个混合策略纳什均衡。`,
+                hasImage: false },
+
+            { id: 'c4c2', special: '四、博弈论', type: '重要概念', qid: '概念2',
+                question: '占优策略均衡',
+                answer: `（1）占优策略指不管其对手采取什么策略，该竞争者采取的策略都是最优策略，也就是说无论其他人采取什么策略，该参与人的最优策略是唯一的。
+（2）占优策略均衡是指博弈方都采用占优策略所达到的均衡。
+（3）举例：如果A、B两厂商都是理性的，则这个博弈的结果是两厂商都做广告，即不管一个厂商如何决定，另外一个厂商都会选择做广告。这种策略均衡称之为占优策略均衡。
+（4）占优策略均衡的典型例子：囚徒困境问题、卡特尔违约动机问题、公共物品的供给问题。`,
+                hasImage: false },
+
+            { id: 'c4c3', special: '四、博弈论', type: '重要概念', qid: '概念3',
+                question: '囚徒困境',
+                answer: `（1）囚徒困境指在博弈中，明明合作能带来最大的收益，但博弈的纳什均衡却是不合作，以致得到了不好的结果。
+（2）囚徒困境的根源在于个人理性和群体理性在博弈中发生了冲突。
+（3）囚徒困境的解决方法：
+① 增加新的选择以扩展原先的博弈；
+② 增加缔结合约的可能性（参与人双方签署合同，表示将恪守合作性策略）；
+③ 无限次重复博弈。`,
+                hasImage: false },
+
+            { id: 'c4c4', special: '四、博弈论', type: '重要概念', qid: '概念4',
+                question: '以牙还牙策略',
+                answer: `（1）以牙还牙策略是指在一个重复博弈中，博弈一方以前一轮对手所选行动进行回应的一种策略。他将与合作的对手保持合作，而报复不合作者。
+（2）在无限次重复博弈中实施以牙还牙策略能够走出囚徒困境，原因如下：
+在有限次重复博弈中，博弈的结果取决于重复的次数与博弈者的理性程度。如果博弈重复的次数很少，博弈者具有完全的理性，则博弈只会出现竞争的解而不是合作的解。
+如果是无限次重复博弈，对于任何一个参与者的欺骗和违约行为，其他参与者总会有机会给予报复，即实施以牙还牙策略。此时，每一个参与者都不会采取违约或欺骗的行为，囚徒困境中"合作"的均衡解是存在的。所以当博弈方认为他们将在未来的时期无限重复他们的博弈时，来自合作的长期收入将超过不合作的短期的收获，"以牙还牙"策略在无限重复的博弈中鼓励合作，它是合理的。`,
+                hasImage: false },
+
+            /* --- 简答/论述题 --- */
+            { id: 'c4s1', special: '四、博弈论', type: '简答/论述题', qid: '简答1',
+                question: '纳什均衡和占优策略均衡的联系与区别。',
+                answer: `（1）占优策略指不管其对手采取什么策略，该竞争者采取的策略都是最优策略，也就是说无论其他人采取什么策略，该参与人的最优策略是唯一的。占优策略均衡是指博弈方都采用占优策略所达到的均衡。
+（2）纳什均衡是指这样一种策略集，在这一策略集中，每一个博弈者都确信，在给定竞争对手策略的情况下，他选择了最好的策略。纳什均衡是由所有参与人的最优战略所组成的一个战略组合，也就是说，给定其他人的战略，任何个人都没有积极性去选择其他战略，从而没有人有积极性去打破这个均衡，因此纳什均衡是稳定的。
+（3）二者的关系：占优策略是比纳什均衡更强的一个博弈均衡概念。占优策略均衡要求任何一个参与者对于其他参与者的任何策略选择来说，其最优策略都是唯一的。而纳什均衡只要求任何一个参与者在其他参与者的策略选择给定的条件下，其选择的策略是最优的。所以，占优策略均衡一定是纳什均衡，而纳什均衡不一定就是占优策略均衡。
+（4）纳什均衡和占优策略均衡的不同：
+① 占优策略的均衡是纳什均衡的一种特例，但纳什均衡却不一定是占优均衡。
+② 两者最主要的区别在于：参与人最优的策略选择相对于其他参与人的行动的独立性。纳什均衡依赖各博弈方的理性，即在给定其他参与人的行动前提下选择最优的策略。而占优策略的选择与其他参与人的选择无关，即不管其他博弈方如何做，占优策略总是最优的。`,
+                hasImage: false },
+
+            /* ===================== 五、要素理论 ===================== */
+            /* --- 重要概念 --- */
+            { id: 'c5c1', special: '五、要素理论', type: '重要概念', qid: '概念1',
+                question: '边际产品价值和边际产品收益',
+                answer: `（1）边际产品价值（VMP）指在完全竞争条件下，厂商在生产中增加一单位某种生产要素投入所增加的产品价值，它等于边际产品与价格的乘积，即：VMP = P·MP。
+VMP 曲线的形状：因为存在边际报酬递减规律，随着这种可变要素投入量的增多，其边际产品递减，从而边际产品价值也逐渐下降，所以边际产品价值曲线为一条向右下方倾斜的曲线。
+（2）边际产品收益（MRP）是指在其他生产要素的投入量固定不变增加一单位某种投入所增加的产出带来的收益。它等于边际产品与边际收益的乘积，即 MRP = MR·MP。
+MRP 曲线的形状：边际产品收益是以收益表示的边际生产力，它受边际产品和边际收益两个因素的影响。由于边际产品和边际收益都是递减的，因而边际产品收益也是递减的，边际产品收益曲线向右下方倾斜。
+（3）二者相同点：
+二者都表示厂商增加一单位要素投入所带来的额外产品价值或收益，均可以用来衡量投入产出的大小。
+（4）二者不同点：
+① 计算方法不同，VMP = P·MP，MRP = MR·MP。
+② 曲线的形状不同。在完全竞争市场中，P=MR，因此 VMP=MRP，此时两条曲线重合。但是，在不完全竞争市场中，P>MR，因此 VMP>MRP，此时 MRP 曲线位于 VMP 曲线下方；MRP 曲线比 VMP 曲线更加陡峭。
+【提示】边际产品收益与边际产品价值关系的数理推导：
+MRP = MR·MP = p[1−1/|e|]·MP ≤ p·MP = VMP，其中 e 为厂商在产品市场上面临的产品需求价格弹性，由此得出以下结论：
+（1）MRP 曲线位于 VMP 曲线下方。特别的，当产品市场为完全竞争市场时，厂商面临的产品需求曲线为水平线，|e|=∞，所以此时 MRP=VMP。
+（2）完全竞争和卖方垄断厂商在要素市场上均为要素价格的接受者，因此完全竞争厂商的要素需求曲线与 VMP 曲线重合，卖方垄断厂商的要素需求曲线与 MRP 曲线重合。进而，由于 MRP 曲线位于 VMP 曲线下方，所以可知卖方垄断厂商要素需求曲线弹性更小。
+（3）更为一般性的结论：如果厂商在要素市场是完全竞争的，那么其在产品市场的垄断势力越大，其要素需求曲线越陡峭，对应的要素需求的弹性越小。`,
+                hasImage: true },
+
+            { id: 'c5c2', special: '五、要素理论', type: '重要概念', qid: '概念2',
+                question: '买方垄断和卖方垄断',
+                answer: `（1）买方垄断是指厂商在要素市场上（作为要素的买方）是垄断者，但在产品市场上（作为产品的卖方）是完全竞争者的厂商。
+买方垄断厂商面临的是向右上倾斜的要素供给曲线，即厂商想要使用的要素越多，它所需要支付的要素价格就越高，此时厂商是要素价格的制定者。
+（2）卖方垄断是指厂商在要素市场上（作为要素的买方）是完全竞争者，但在产品市场上（作为产品的卖方）是垄断者。
+卖方垄断厂商面临的是水平的要素供给曲线，表明此时厂商是要素价格的接受者。
+【提示】厂商的边际要素成本 MFC 与厂商面临的要素供给曲线 w≡w(x) 的关系：
+MFC = d[w(x)x]/dx = w + x·dw(x)/dx = w[1 + (dw(x)/dx)·(x/w)] = w[1 + 1/η] ≥ w，其中 η 为厂商面临的要素供给的价格弹性，由此得出结论：
+（1）要素市场不完全竞争时，厂商面临的要素供给曲线向右上方倾斜，此时 0<η<+∞，所以 MFC>w(L)，即边际要素成本曲线 MFC 位于厂商面临的要素供给曲线上方。
+（2）要素市场完全竞争时，厂商面临的要素供给曲线为水平线，此时 η=+∞，所以 MFC=w，即厂商面临的要素供给曲线和边际要素成本曲线 MFC 重合。
+（3）更为一般性的结论：如果厂商在要素市场面临的要素供给曲线向右上方倾斜，那么厂商就不存在要素需求曲线。（类比非完全竞争厂商不存在产品供给曲线）`,
+                hasImage: true },
+
+            { id: 'c5c3', special: '五、要素理论', type: '重要概念', qid: '概念3',
+                question: '双重加成定价',
+                answer: `（1）在上游-下游这样一对垄断厂商生产决策中，上游垄断厂商为获得最大利润会将价格提高到边际成本之上，然后下游垄断厂商再把其产品价格提高到已经加价的成本之上，此即为双重加成定价。
+（2）假设上游厂商以不变的成本 c 生产产品 x，下游垄断厂商用 x 生产产品 y 并卖给消费者，对应的生产函数为 y=x。
+下游垄断厂商面临的需求曲线 D，与这条需求曲线相对应的边际收益曲线是 MR_D(y)。MR_D(y) 本身又是上游垄断厂商面临的需求曲线，与此相对应的边际收益曲线是 MR_U(y)。此时市场最终均衡的产品数量为 y_m。`,
+                hasImage: true },
+
+            { id: 'c5c4', special: '五、要素理论', type: '重要概念', qid: '概念4',
+                question: '准租金',
+                answer: `（1）准租金是对供给量暂时固定的生产要素的支付，即固定生产要素的收益。因此，准租金属于短期分析。
+（2）可变成本为面积 OGBQ₀，它代表了厂商对为生产 Q₀ 所需的可变生产要素量而必须做出的支付。固定要素得到的则是剩余部分 GP₀CB，这就是准租金，等于总收益减去总可变成本。
+（3）准租金与经济利润的关系：如果从准租金 GP₀CB 中减去总固定成本 GDEB，则得到经济利润 DP₀CE。可见，准租金为总固定成本与经济利润之和。当经济利润为0时，准租金便等于总固定成本。当厂商有经济亏损时，准租金也可能小于总固定成本。
+准租金可表示为：准租金 = TR − TVC = TFC + 经济利润。`,
+                hasImage: true },
+
+            { id: 'c5c5', special: '五、要素理论', type: '重要概念', qid: '概念5',
+                question: '经济租金',
+                answer: `（1）概念：许多要素的收入尽管从整体上看不同于租金，但其收入的一部分却类似于租金，如果从该要素的全部收入中减去这部分收入并不影响要素的供给，则将这一部分要素收入称为经济租金。或者说，经济租金是指为生产要素所支付的金额与为得到该要素所必须支付的最小金额之间的差额。
+（2）几何解释：考虑竞争性劳动要素市场，劳动供给曲线 S_L 以上、要素均衡价格 w* 以下的区域 Aw*E 为经济租金。劳动要素的全部收入为 OL*Ew*，雇佣 L* 单位劳动所需要的最小支出为 OALL*，二者的差额即为经济租金。
+（3）经济租金的大小：经济租金的大小取决于要素供给曲线形状。要素供给曲线越陡峭，经济租金部分就越大。当供给曲线垂直时，全部要素收入均变为经济租金，它恰好等于租金或地租。由此可见，租金实际上是经济租金的一种特例，即当要素供给曲线垂直时的经济租金，而经济租金则是更为一般的概念，它不仅适用于供给曲线垂直的情况，也适用于不垂直的一般情况。在另一个极端上，如果供给曲线成为水平的，则经济租金便完全消失。
+（4）经济学含义：经济租金是要素收入（或价格）的一部分，该部分并非为获得该要素于当前使用中所必须，它代表着要素收入中超过其在其他场所可能得到的收入部分。
+【提示】经济租金与生产者剩余的区别与联系：
+经济租金和生产者剩余从本质上来讲是相同的，都是市场供给一方在市场交易中得到的额外收益，所不同的是前者提供的是要素，后者提供的是产品。`,
+                hasImage: true },
+
+            { id: 'c5c6', special: '五、要素理论', type: '重要概念', qid: '概念6',
+                question: '最低工资法',
+                answer: `最低工资立法是各国政府保护劳动者的一项重要法律，其中心目的是以法律形式来保证工薪劳动者通过劳动所获得的最低工资能够满足其自身及其家庭成员的基本生存需要。政府通过实施最低工资立法，规定雇主向员工支付一个高于市场均衡工资的工资。
+【提示】关于最低工资法，大家可以类比在市场理论中学到的最低限价。`,
+                hasImage: false },
+
+            /* --- 简答/论述题 --- */
+            { id: 'c5s1', special: '五、要素理论', type: '简答/论述题', qid: '简答1',
+                question: '请说明厂商分别在完全竞争、买方垄断和卖方垄断的条件下，厂商要素需求的不同。',
+                answer: `（1）在完全竞争市场的条件下：
+完全竞争厂商使用要素的原则为 VMP=w。给定任意一个要素价格 w₀，就有一条水平的厂商面临的要素供给曲线 S₀ 与 VMP 曲线相交确定最优条件下的要素量 L₀，因此完全竞争市场条件下厂商要素需求曲线不仅是向右下方倾斜的，而且与 VMP 曲线完全重合。
+（2）在卖方垄断市场的条件下：
+厂商在产品市场上是垄断者，此时厂商的要素使用原则是 MRP=w。给定任意一个要素价格 w₀，就有一条水平的厂商面临的要素供给曲线 S₀ 与 MRP 曲线相交确定最优条件下的要素量 L₀，因此卖方垄断市场下厂商要素需求曲线不仅是向右下方倾斜的，而且与 MRP 曲线完全重合。
+（3）在买方垄断市场的条件下：
+厂商在产品市场上是完全竞争者，在要素市场上是垄断者，面临的要素供给曲线向右上方倾斜，边际要素成本曲线 MFC 位于要素供给曲线上方，要素使用原则是 VMP=MFC。
+与完全竞争厂商和卖方垄断的厂商相比，买方垄断厂商的边际要素成本 MFC 不再等于要素价格 w。由于买方垄断市场下厂商可以决定要素价格，要素价格和要素需求量并不是一一对应的，因此买方垄断厂商的要素需求曲线不存在。
+（4）完全竞争和卖方垄断厂商要素需求曲线的比较：
+由于边际收益 MR = P(1−1/|e_d|)，其中 e_d 为厂商在产品市场面临的需求曲线的价格弹性。所以边际产品收益 MRP = MR·MP = P(1−1/|e_d|)·MP ≤ P·MP = VMP，所以前者的要素需求曲线位于后者的上方，即完全竞争厂商的要素需求曲线更加平坦。`,
+                hasImage: true },
+
+            { id: 'c5s2', special: '五、要素理论', type: '简答/论述题', qid: '简答2',
+                question: '请画图说明在下述的市场结构中，最低工资法对失业的影响。（1）劳动力市场是完全竞争的；（2）劳动力市场是买方垄断。',
+                answer: `（1）当劳动力市场是完全竞争时，政府规定的最低工资高于现行的均衡工资。在没有最低工资法的情况下，均衡工资处供求相等，此时的均衡劳动为 L*；在较高的最低工资水平上，劳动供给会超过劳动需求，此时的均衡劳动为 L_d。由于 L_d<L*，此时失业会增加。
+（2）当劳动市场是买方垄断的市场结构，实施最低工资标准时买方垄断厂商将按照不变的最低工资 w_min 雇用工人。若所规定的最低工资 w_min 高于原本的均衡工资 w*：
+只要政府规定的最低工资介于 w* 和 w** 之间，均衡的劳动量由劳动供给方决定，此时就可以增加就业，并且不存在失业；当政府规定的最低工资介于 w** 和更高的水平之间时也会带来就业的增加，但此时存在失业；当政府规定的最低工资高于某一临界值时，会导致就业量的减少，同时也存在失业。`,
+                hasImage: true },
+
+            { id: 'c5s3', special: '五、要素理论', type: '简答/论述题', qid: '简答3',
+                question: '为什么说租金或地租是经济租金的一种特例？',
+                answer: `（1）租金是指供给数量固定不变的一般资源的服务价格，地租是当土地供给固定时的土地服务价格，即当所考虑的资源为土地时的租金。
+经济租金是要素收入中超过其在其他场所可能获得的收入部分，等于要素收入与其机会成本之差，在几何上可用要素供给曲线以上，要素价格以下的面积来表示。
+（2）当要素供给固定不变，即要素供给曲线垂直时，全部要素收入均为经济租金，它恰好等于租金或地租。由此可见，租金实际上是经济租金的一种特例，即当要素供给曲线垂直时的经济租金，而经济租金则是更为一般的概念，它不仅适用于供给曲线垂直的情况，也适用于不垂直的一般情况。`,
+                hasImage: false },
+
+            /* ===================== 六、一般均衡与福利 ===================== */
+            /* --- 重要概念 --- */
+            { id: 'c6c1', special: '六、一般均衡与福利', type: '重要概念', qid: '概念1',
+                question: '帕累托标准与帕累托改进',
+                answer: `（1）如果至少有一人认为A优于B，而没有人认为A劣于B，则从社会的观点看也有A优于B，这就是帕累托标准。
+（2）利用帕累托最优状态标准，可以对资源配置状态的变化做出"好"与"坏"的判断：如果对既定资源配置的状态予以改变，而这种改变使得至少有一个人的境况变好，同时其他任何人的境况没有因此变坏，则认为这种变化增加了社会福利，或称帕累托改进。`,
+                hasImage: false },
+
+            { id: 'c6c2', special: '六、一般均衡与福利', type: '重要概念', qid: '概念2',
+                question: '帕累托最优状态',
+                answer: `（1）如果对于既定的资源配置状态，所有的帕累托改进都不存在，即在该状态下，任意改变都不可能使至少有一个人的状况变好而又不使其他任何人的状况变坏，则这种资源配置状态为帕累托最优状态。
+（2）帕累托最优状态包括三个条件：
+① 交换的最优状态：人们持有的既定收入所购买的各种商品的边际替代率，等于这些商品的价格比率。
+② 生产的最优状态：厂商在进行生产时，所有生产要素中任意两种生产要素的边际技术替代率都相等，且等于要素价格之比。
+③ 交换和生产的最优状态：所有产品中任意两种产品的边际替代率等于这两种产品在生产中的边际转换率。
+（3）如果所有的市场（产品市场和生产要素市场）均是完全竞争的，则市场机制的最终作用将会使生产资源达到最优配置。在帕累托最优这种理想的状态下，有限的生产资源得到最有效率的配置。`,
+                hasImage: false },
+
+            { id: 'c6c3', special: '六、一般均衡与福利', type: '重要概念', qid: '概念3',
+                question: '契约曲线',
+                answer: `（1）契约曲线是指埃奇沃思方框图内所有帕累托有效率点的集合。
+（2）契约曲线可分为交换的契约曲线和生产的契约曲线。
+① 交换的契约曲线是指在埃奇渥斯盒状图中，不同消费者的无差异曲线切点的轨迹。在此曲线上的任何一点都满足交换的帕累托最优条件，即 MRS_xy^A = MRS_xy^B。此曲线表示两种产品在两个消费者之间所有最优分配的集合。
+② 生产的契约曲线是指在埃奇渥斯盒状图中，不同生产者的等产量线切点的轨迹。在此曲线上，任何一点都满足生产的帕累托最优条件，即 MRTS_LK^X = MRTS_LK^Y。此曲线表明两种要素在两个生产者之间所有最优分配状态的集合。
+（3）交换的契约曲线的性质：
+第一，在交换契约线上的任意一点都实现交换的帕累托最优，此时两个参与者的无差异曲线是相切的，即二者的边际替代率相等。
+第二，若沿着契约线进行交换，一方效用的增加以另一方效用减少为代价；若离开契约线进行交换，则可能双方的效用都减少。
+第三，根据帕累托标准，我们不能说交换契约曲线上的任何点比曲线上的其他点都要更好一些。
+第四，契约曲线上的所有点都是有效率的，但是从社会的观点来看它们并不都是公平的。
+第五，即使知道交换的契约曲线，也无法确定最终的瓦尔拉斯均衡点，瓦尔拉斯均衡点还与消费者的初始禀赋有关。
+【提示】契约曲线、生产可能性曲线、效用可能性曲线之间的关系：
+（1）生产契约曲线 ⇒ 生产可能性曲线 ⇒ 与无差异曲线结合，研究生产与交换的帕累托最优。
+（2）交换契约曲线 ⇒ 效用可能性曲线 ⇒ 与社会福利函数结合，研究社会福利最大化。`,
+                hasImage: true },
+
+            { id: 'c6c4', special: '六、一般均衡与福利', type: '重要概念', qid: '概念4',
+                question: '瓦尔拉斯定律（法则）',
+                answer: `（1）定义：瓦尔拉斯定律也称为瓦尔拉斯法则，是说在完全竞争的纯交换经济中，社会对所有商品超额需求的总价值在任何价格水平下都等于零。恒为零是说不仅对均衡价格，对于非均衡价格也成立。
+在一个只有两种商品的市场中，瓦尔拉斯法则表示为 p₁z₁(p₁,p₂) + p₂z₂(p₁,p₂) ≡ 0。
+（2）证明：假设消费者A和B都消费商品1和商品2。
+交易者A预算约束满足：p₁x₁^A(p₁,p₂) + p₂x₂^A(p₁,p₂) = p₁w₁^A + p₂w₂^A，
+整理可得：p₁[x₁^A(p₁,p₂) − w₁^A] + p₂[x₂^A(p₁,p₂) − w₂^A] ≡ 0，
+或者写为：p₁e₁^A(p₁,p₂) + p₂e₂^A(p₁,p₂) ≡ 0。
+同理交易者B预算约束满足：p₁e₁^B(p₁,p₂) + p₂e₂^B(p₁,p₂) ≡ 0。
+交易者A的方程式和交易者B的方程式相加：
+p₁[e₁^A(p₁,p₂) + e₁^B(p₁,p₂)] + p₂[e₂^A(p₁,p₂) + e₂^B(p₁,p₂)] ≡ 0，
+整理可得：p₁z₁(p₁,p₂) + p₂z₂(p₁,p₂) ≡ 0，瓦尔拉斯法则得证。
+（3）结论：如果有 k 种商品的市场，只需找到一组使 (k−1) 种商品的市场处于均衡的价格，那么瓦尔拉斯法则就意味着在商品 k 的市场中需求与供给将自动地相等。`,
+                hasImage: false },
+
+            { id: 'c6c5', special: '六、一般均衡与福利', type: '重要概念', qid: '概念5',
+                question: '瓦尔拉斯均衡（竞争性均衡）',
+                answer: `（1）瓦尔拉斯均衡是指存在一组价格，使得经济中所有主体做出自己在既定禀赋下的最优选择时，结果所有商品市场的供求都处于均衡的状态，即所有市场的超额需求在这一组价格下都为零。
+（2）瓦尔拉斯均衡的代数表示：存在一组价格水平 (p₁*,p₂*)，在该价格水平下，每种商品的总超额需求均为零，即：z₁(p₁*,p₂*)=0，z₂(p₁*,p₂*)=0。
+【提示1】瓦尔拉斯均衡与瓦尔拉斯法则的区别：
+瓦尔拉斯法则推导的出发点是预算约束方程，其说明的是超额需求的总价值在任何价格水平下都为零。
+瓦尔拉斯均衡说的是存在一组价格水平使得每个市场的总超额需求均为零，其只在特定的一组价格水平下成立。
+【提示2】瓦尔拉斯均衡（竞争性均衡）与帕累托最优的区别和联系：
+（1）二者的区别：
+帕累托最优需要满足的条件：不存在帕累托改进。判断一点是否是帕累托最优或有效率的，就看该点是否在契约曲线上，因为契约曲线表示的是帕累托最优点的集合。
+瓦尔拉斯均衡需要满足的条件：第一，消费者都实现效用最大化；第二，市场出清。判断一点是否是瓦尔拉斯均衡，就看消费者实现效用最大化时超额需求是否为零。
+（2）二者的联系：
+从以上可以看到，这是两个独立的概念，但是在完全竞争条件下，每个消费者都是价格的接受者，因此每个消费者效用最大化时对于两种商品的边际替代率相等，所以完全竞争条件下达到的一般均衡（即瓦尔拉斯均衡/竞争性均衡）也是帕累托最优的。（这就是福利经济学第一定理所要叙述的内容）`,
+                hasImage: false },
+
+            { id: 'c6c6', special: '六、一般均衡与福利', type: '重要概念', qid: '概念6',
+                question: '阿罗不可能性定理',
+                answer: `（1）阿罗不可能定理是阿罗分析市场一般均衡时得出的一个定理。阿罗认为：用投票的方式不可能把个人的偏好集中起来，形成合乎理性的社会偏好。即在非独裁的情况下，不可能存在有适用于所有个人偏好类型的社会福利函数。
+（2）阿罗不可能定理认为，如果一个社会决策机制满足以下三个性质，那么它必然是一个独裁统治，即所有的社会偏好顺序就是一个人的偏好顺序。
+① 当任何一组完全的、反身的和传递的个人偏好集给定时，社会决策机制将产生具有相同性质的社会偏好。
+② 如果每个人偏好选择 x 超过选择 y，那么社会偏好就应该把 x 排在 y 的前面。
+③ x 和 y 之间的偏好唯一地取决于人们如何排列 x 和 y 的顺序，而不是人们如何排列其他选择的顺序。`,
+                hasImage: false },
+
+            /* --- 简答/论述题 --- */
+            { id: 'c6s1', special: '六、一般均衡与福利', type: '简答/论述题', qid: '简答1',
+                question: '为什么完全竞争的市场机制可以导致帕累托最优状态？',
+                answer: `（1）完全竞争市场之所以是有效率的，可以从满足帕累托最优状态的三个条件分别加以说明。
+① 从交换的最优条件来看：
+在完全竞争市场中，每个消费者都是产品价格的接受者，面临相同的产品价格水平，任何一个消费者实现效用最大化时的边际替代率都为 MRS_XY = P_X/P_Y，因此完全竞争市场实现了交换的帕累托最优。
+② 从生产的最优条件来看：
+在完全竞争市场中，每个生产者都是要素价格接受者，面临相同的要素价格水平，任何一个厂商实现利润最大化时的边际技术替代率都为 MRTS_LK = W/r，因此完全竞争市场实现了生产的帕累托最优。
+③ 从生产和交换的最优条件来看：
+完全竞争厂商利润最大化条件为产品价格等于边际成本，即：P_X=MC_X，P_Y=MC_Y，所以此时满足 MRT_XY = MC_X/MC_Y = P_X/P_Y = MRS_XY，因此完全竞争市场实现了交换和生产的帕累托最优。
+（2）综上，在完全竞争条件下，帕累托最优的三个必要条件都可以得到满足。换而言之，在完全竞争的市场机制作用下，整个经济可以达到帕累托最优状态，这样的经济必定是最优效率的经济。`,
+                hasImage: false },
+
+            { id: 'c6s2', special: '六、一般均衡与福利', type: '简答/论述题', qid: '简答2',
+                question: '证明福利经济学第一定理（证明竞争市场中的一般均衡结果是帕累托有效率的）。',
+                answer: `证明：假设社会既定的产量是 (X₀,Y₀)，消费者A和B的初始禀赋分别是 (X_A,Y_A) 和 (X_B,Y_B)，用 (X_A*,Y_A*) 和 (X_B*,Y_B*) 来表示交换实现的一般均衡配置，假设另外存在一种可行而且帕累托最优配置 (X_A',Y_A') 和 (X_B',Y_B')，即对于消费者A和B来说：
+(X_A',Y_A') > (X_A*,Y_A*)
+(X_B',Y_B') > (X_B*,Y_B*)
+而且，这个帕累托最优配置 (X_A',Y_A') 和 (X_B',Y_B') 必须满足资源约束条件，即：
+X_A' + X_B' = X_A* + X_B*
+Y_A' + Y_B' = Y_A* + Y_B*
+前两个式子表示另外存在的帕累托配置优于一般均衡配置，而后两个式子表示新的配置是供求均衡的。
+给定均衡价格 (P_X*,P_Y*)，消费者A选择 (X_A*,Y_A*) 而不是更好的 (X_A',Y_A')，根据显示偏好原理，那一定是因为在既定的该价格下，消费者A无力购买 (X_A',Y_A')，即：
+P_X*·X_A' + P_Y*·Y_A' > P_X*·X_A* + P_Y*·Y_A* = P_X*·X_A* + P_Y*·Y_A*
+同样，对于消费者B来说，也有：
+P_X*·X_B' + P_Y*·Y_B' > P_X*·X_B* + P_Y*·Y_B* = P_X*·X_B* + P_Y*·Y_B*
+将以上两个不等式相加，可得：
+P_X*(X_A'+X_B') + P_Y*(Y_A'+Y_B') > P_X*(X_A*+X_B*) + P_Y*(Y_A*+Y_B*)
+再将供求平衡条件代入以上不等式，可得：
+P_X*(X_A*+X_B*) + P_Y*(Y_A*+Y_B*) > P_X*(X_A*+X_B*) + P_Y*(Y_A*+Y_B*)
+上式显然是矛盾的。
+因此，在帕累托意义上优于一般均衡的配置是不存在的。`,
+                hasImage: false },
+
+            { id: 'c6s3', special: '六、一般均衡与福利', type: '简答/论述题', qid: '简答3',
+                question: '简述福利经济学第一定理和第二定理。',
+                answer: `（1）福利经济学第一定理：给定性状良好（连续的、凸的、严格单调的）的消费者偏好，在一个充分竞争市场中（生产或消费都不存在外部性），所有竞争均衡（瓦尔拉斯均衡）都是帕累托最优的资源配置（位于契约曲线上）。
+含义：任何竞争性市场均衡都是帕累托有效的，即不管初始资源配置怎样，分散化的竞争市场可以通过个人自利的交易行为达到瓦尔拉斯均衡，而这个均衡一定是帕累托有效的配置。但是，这并没有表明这种均衡配置是公平的。
+（2）福利经济学第二定理：给定性状良好（连续的、凸的、严格单调的）的消费者偏好，任何一个帕累托最优配置都可以从适当的初始配置出发，通过完全竞争市场来实现，即效率与公平问题可以分开考虑。
+含义：在一定条件下，每一个帕累托有效配置均能通过竞争均衡来实现，即任何帕累托有效配置都能得到市场机制的支持。如果社会将某种帕累托有效配置作为追求目标，那么这一目标可以通过适当改变初始禀赋，然后利用市场机制来实现。福利经济学第二定理表明分配与效率的问题可以分开考虑，通过税收等分配手段，在不影响价格体系的前提下，不会影响有效均衡的实现。
+（3）二者的区别：第一定理仅仅涉及效率层面的问题，讲的是完全竞争市场可以实现资源的有效率配置；而第二定理涉及到收入分配和公平问题，讲的是在实现效率的前提下，通过相应的措施，完全竞争市场还可以实现公平。
+【提示】在纯交换经济中要实现福利经济学第一定理需要的假设：
+① 消费者偏好是良态偏好，即满足偏好的单调性与凸性。
+② 交易者只关心其本人的商品消费而不顾他人的消费。如果一名交易者关心另一名交易者的消费，我们就称之为消费的外部效应。当存在消费的外部效应时，竞争均衡就不一定是帕累托有效率配置。
+③ 市场是完全竞争的，即每个交易者都是市场价格的接受者。如果交易者拥有一定的市场力量，那么交易者会利用这个市场力量来改善自己的境况。
+④ 竞争性均衡确实是存在的。`,
+                hasImage: false },
+
+            { id: 'c6s4', special: '六、一般均衡与福利', type: '简答/论述题', qid: '简答4',
+                question: '简述社会福利函数的基本内容。',
+                answer: `（1）社会福利函数是社会所有个人的效用水平的函数，在两个人的社会中，社会福利函数可以表示为：W = W(u₁,u₂)，式中 W 表示社会福利，u₁,u₂ 表示两个人的效用水平指标。
+上式表明社会福利取决于 u₁,u₂ 的大小，利用该上式可以得到等福利线，它是指能够带来相同福利水平的两种效用组合。等福利线也具有无限个，它们表示社会福利水平的高低。
+效用可能性集合，指在只有两个行为人情况下，可能的效用组成的集合。其边界为效用可能性边界，表示帕累托有效率配置所对应的效用水平的集合。
+最大的社会福利只会出现在等福利线与效用可能性边界的切点上，这一点叫做"限制社会下的最大满足点"。这是能导致最大社会福利的生产、交换和分配的唯一一点。之所以叫做限制条件下的最大满足点，是因为最大社会福利并不允许为任何可能值，而要受到既定的生产资源、生产技术条件等的限制。
+（2）社会福利函数的类型：
+① 古典效用主义或边沁福利函数
+其一般形式为：W(u₁,…,uₙ) = Σuᵢ。加权形式为：W(u₁,…,uₙ) = Σaᵢuᵢ，权数满足 Σaᵢ=1，其中权数为表明每一经济行为人的效用在整个社会福利中重要性的数字。
+② 罗尔斯社会福利函数
+该福利函数的形式为：W(u₁,…,uₙ) = min{u₁,…,uₙ}，该福利函数说明社会福利唯一地由境况最差的经济行为人的福利决定。`,
+                hasImage: true },
+
+            /* ===================== 七、市场失灵 ===================== */
+            /* --- 重要概念 --- */
+            { id: 'c7c1', special: '七、市场失灵', type: '重要概念', qid: '概念1',
+                question: '市场失灵',
+                answer: `（1）市场失灵是指由于完全竞争市场以及其他一系列理想化假定条件在现实中并不存在，导致现实的市场机制在很多场合下不能实现资源的有效配置，不能达到帕累托最优状态的情形。
+（2）垄断、外部性、公共物品和公共资源、不完全信息都是导致市场失灵的重要原因和主要表现。`,
+                hasImage: false },
+
+            { id: 'c7c2', special: '七、市场失灵', type: '重要概念', qid: '概念2',
+                question: '公共物品与搭便车',
+                answer: `（1）公共物品是这样的物品，增加一个人享用的成本很小或没有成本，而要排除任何人享用都要花费很大的成本。
+公共物品具有两个特性：① 非排他性。当某个人使用或消费一种产品和服务时，无法排除与阻止其他人使用或消费该种产品和服务。② 非竞争性。当某个人使用或消费一种产品和服务时，不会减少其他人使用或消费该种产品和服务的机会。
+（2）搭便车是指消费者和生产者使用非排他性商品但并没有支付费用，因为他们期望其余的人会支付相应的费用。
+（3）公共物品导致市场失灵的原因：
+公共物品的非排他性使得通过市场交换获得公共物品消费权力的机制失灵。对于追求最大利润的私人企业而言，生产者必须把那些不付钱的人排斥在消费商品之外，否则它就很难弥补生产成本。
+由于公共物品具有非排他性，所以每个消费者都可以无偿使用公共物品，最后每个消费者都会选择少付钱甚至不付钱，这导致消费者支付的价格不足以弥补私人提供公共物品的生产成本，造成公共物品的供给不足，即公共物品的均衡数量无法达到帕累托最优的数量，出现市场失灵。它反映了个体自利的经济理性与集体理性之间的冲突给人类共同生活所造成的困境。
+（4）解决办法：公共物品要想有效率地生产就必须由政府对提供公共物品的个人进行补助或者直接由政府提供公共物品。`,
+                hasImage: false },
+
+            { id: 'c7c3', special: '七、市场失灵', type: '重要概念', qid: '概念3',
+                question: '公共资源和公地的悲剧',
+                answer: `（1）公共资源是指不具有排他性但具有竞争性的商品。公共资源的所有权是大家的、公共的，但使用权、收益权的归属却比较模糊。
+公共资源与公共物品不同，它在消费上没有排他性，但具有竞争性，不具有排他性说明某人对公共资源的消费不能阻止别人对于该资源的消费，具有竞争性说明任何人对资源的使用会减少他人消费的数量，尤其当使用者人数足够多时，公共资源的竞争性很大。
+（2）公地的悲剧是指，由于公共资源具有竞争性但没有排他性，因此如果公共资源可以自由使用，每个人出于自身利益的考虑，都会尽可能多的去利用这种物品，使它很快被过度使用，从而产生无效率的结果。
+（3）公共资源导致市场失灵的原因：
+① 当放牧的土地为公有时，只要在公地上放牧的经济利润大于零，村民就会不断进入，放牧的母牛数会一直增加，直到经济利润下降到零为止，最终均衡的母牛数为 q_c，此时每头母牛带来的平均收益等于每头母牛的平均成本。
+② 当放牧的土地为私有时，私人出于自身利润最大化考虑，最终均衡的母牛数为 q^n，q^n 也为社会最优的母牛数，此时每头母牛带来的边际收益等于每头母牛的边际成本。
+因此当放牧的土地公有时，实际的母牛数要大于社会的最优数量，土地会被过度使用，出现无效率的结果，即出现"公地的悲剧"。
+（4）解决措施：
+第一，管制，即对公共资源的使用按照集体决策规定最优使用数量。
+第二，征收庇古税，公共资源问题本质上是负外部性问题，是每一个体增加自己产量对其他个体产出的单位价值带来的负外部性，因此可以通过政府征税进行解决。
+第三，界定产权，即对公共资源的各类权利明确界定给各主体，如将公共资源划归为私人所有。`,
+                hasImage: true },
+
+            { id: 'c7c4', special: '七、市场失灵', type: '重要概念', qid: '概念4',
+                question: '不对称信息',
+                answer: `（1）不对称信息是指市场上买卖双方所掌握的信息是不对称的，一方掌握的信息多些，一方掌握的信息少些。
+（2）信息不对称导致市场失灵的原因：
+在很多情况下，市场的价格机制并不能够解决或者至少是不能够有效地解决信息不对称问题，由于买卖双方缺乏足够的信息，交易价格既不能反映买者的边际收益也不能反映卖者的边际成本，市场主体并不能总是做出理性的选择，从而导致市场失灵。
+以柠檬市场为例，即使一个市场在其他方面都是完全竞争的，当买方和卖方之间对商品存在着不对称信息时，即当不同质量的产品的购买者或出售者买卖时没有充分的信息来确定产品的质量时，不同质量的产品会以单一价格出售，此时出现了逆向选择问题，结果是市场有太多的低质量产品和太少的高质量产品出售，低质量产品把高质量的产品逐出了市场，导致市场失灵。
+（3）市场机制本身可以解决一部分的信息不对称问题，例如追求利润最大化的生产者必须根据消费者的偏好进行生产，虽然由于信息不对称导致生产者很难全部了解消费者的偏好，但生产者依然可以根据产品的市场价格确定利润最大化的产量。
+但是，市场机制不能解决所有的信息不对称问题，此时就需要政府的干预。有效的信息披露是解决信息不对称的有效方法，如果政府的干预能够有效缓解市场中信息披露不足的问题，那么就需要政府干预，如：政府积极完善信息披露制度，加强产品或服务的质量监督管理工作，严防各种虚假广告和仿冒标志对信息市场的污染，为市场交易主体创造良好的信息环境等。反之，如果政府的干预不能缓解交易主体之间的信息不对称，或者政府的干预加剧了这一问题，则不需要政府进行干预。`,
+                hasImage: false },
+
+            { id: 'c7c5', special: '七、市场失灵', type: '重要概念', qid: '概念5',
+                question: '逆向选择（事前隐藏信息）和道德风险（事后隐藏行动）',
+                answer: `（1）逆向选择指在买卖双方信息非对称的情况下，差的商品总是将好的商品驱逐出市场；或者说拥有信息优势的一方，在交易中总是趋向于做出尽可能地有利于自己而不利于别人的选择。
+逆向选择使得市场价格不能真实地反映市场供求关系，导致市场资源配置的低效率。
+（2）解决逆向选择问题的方法主要有：
+① 声誉。声誉是指消费者对企业行为的一种主观评价。声誉在解决不对称问题上所起的最重要的作用就是"区分市场"，声誉好的产品意味着质量高，声誉差的产品意味着质量低。同时，声誉也提高了企业诚信的收益和欺骗的成本。
+② 市场的信号传递。市场信号传递是指卖方传递给买方关于产品质量信息的过程。通过信号传递机制，买卖双方能够应对不对称信息问题。常见的市场信号传递例子：求职时提交学位证书、耐用品卖方提供保修单等。
+③ 政府干预。第一，政府为所有年龄段的老人提供医疗保险。第二，政府进行信息调控，信息调控的目的是保证消费者和生产者能够得到充分和正确的市场信息。例如，政府强制规定发行新股票和新债券的公司必须公布公司的有关情况，产品广告上不得有不符合实际的夸大之辞，某些产品必须有详细的使用说明书等。
+（3）道德风险指交易双方在签订交易合约后，信息占优势的一方为了最大化自己的收益而损坏另一方，同时也不承担后果的一种行为，即是市场的一方不能查知另一方的行动一种情形，又称作隐藏行动问题。
+道德风险的存在不仅使得处于信息劣势的一方受到损失，而且会破坏原有的市场均衡，导致资源配置的低效率。
+（4）解决道德风险问题的方法主要有：
+第一，区别对待。对于情况不同的投保人收取不同的保费。例如：在人寿保险中，让抽烟者交纳更高的保费。在汽车保险中，一定时期内违反交通规则的人交纳更高的保费，没有违反过交通规则的人则交纳较低的低费。
+第二，风险共担。保险公司不提供全额保险，事故发生以后，保险公司只对损失提供部分赔偿，使投保人承担一定的损失，即投保人要承担部分风险。
+（5）二者的区别：逆向选择发生于交易合同订立之前，交易一方故意隐瞒一些情况导致交易另一方做出了错误选择进而利益受到了损害的情况，属于事前隐藏信息；而道德风险则发生于交易合同订立之后，交易一方由于可推卸责任而导致损害交易另一方利益的不谨慎、不适当或故意的行为，属于事后隐藏行动。
+（6）由于二者有所区别，则有可能出现当不存在逆向选择时出现道德风险，或当不存在道德风险时出现逆向选择的情形。
+（7）举例：
+① 逆向选择：一个经常生病的人故意隐瞒病情而到保险公司要求参加医疗保险，导致参保的人中不健康的人占比增加，这迫使保险的价格上升，此时较健康的人由于知道自己的低风险，会作出不投保的决定，最终，几乎所有买保险的人都是不健康的人。
+② 道德风险：病人一旦参加了保险就会认为反正医疗费由保险公司支付，因而更不注意自己身体，进而造成保险公司更多地支付医疗费用。`,
+                hasImage: false },
+
+            { id: 'c7c6', special: '七、市场失灵', type: '重要概念', qid: '概念6',
+                question: '委托-代理问题',
+                answer: `（1）委托代理问题是指所有者（委托人）与经营者（代理人）的预期目标不一致，从而导致两者的行为准则、价值取向不和谐甚至相互冲突。由于信息的不完全性，委托人往往不知道代理人要采取什么行动或者即使知道代理人采取某种行动，也不能观察和测度代理人从事这一行动时的努力程度，同时两者之间存在的利益分割关系，通常会使得代理人不完全按照委托人的意图行事。
+（2）委托-代理问题的解决措施：
+解决委托-代理问题不能通过政府干预，因为政府和企业所有者一样无法对经营者和工人进行观察和监督。而且，政府干预也有成本，政府获取信息同样要支付代价。
+第一，解决委托-代理问题最有效的办法是实施一种最优合约，即委托人花费最低限度的成本而使得代理人采取有效率的行动实现委托人目标的合约。如企业所有者对经理可采取根据企业盈利情况发奖金或者让经理参加固定的利润分享等，这些措施都可以将经理人的报酬与企业的长期表现联系起来。
+第二，支付高于市场出清水平的效率工资。如果厂商付给工人市场出清工资，那么工人有足够的动机偷懒，因为被解雇的工人仍然可以在同样的工资水平下重新找到工作。因此，作为对不偷懒的激励，厂商必须向工人提供较高的效率工资，这样能够减少道德风险。`,
+                hasImage: false },
+
+            /* --- 简答/论述题 --- */
+            { id: 'c7s1', special: '七、市场失灵', type: '简答/论述题', qid: '简答1',
+                question: '什么是外部性？为什么外部性会导致市场失灵？',
+                answer: `（1）外部性指一个经济活动的主体对他所处的经济环境的影响。外部性的影响会造成私人成本和社会成本之间，或私人收益和社会收益之间的不一致，这种成本和收益差别虽然会相互影响，却没有得到相应的补偿，因此容易造成市场失灵。
+（2）以负的外部性为例，当存在负的外部性时，D 曲线为完全竞争厂商所面临的需求曲线，MC 为边际私人成本曲线，在存在生产负外部性的情况下，生产的社会成本大于私人成本，因此边际社会成本曲线 MSC 曲线位于 MC 曲线上方。
+完全竞争厂商利润最大化条件为 P=MC，因此厂商出于自身利益最大化考虑所生产的产量为 q₁，但由于负外部性的存在，社会有效率的产量应为 q*，其小于私人生产的产量。
+【提示】正外部性导致市场失灵的图形分析：
+当存在正的外部性时，一项经济活动所带来的私人边际成本与社会边际成本相等，但边际社会收益 MSB 大于边际私人收益 D，差额就是边际外部收益 MEB。边际社会收益是通过把每个产出水平上的边际私人收益和边际外部收益相加得到的，即 MSB = D + MEB。
+当存在正的外部性时，MEB 为边际外部收益，MSB 为边际社会收益。私人最优产量为 q₂，但社会有效产量为 q*，由于正外部性的存在导致经济的无效率。`,
+                hasImage: true },
+
+            { id: 'c7s2', special: '七、市场失灵', type: '简答/论述题', qid: '简答2',
+                question: '政府为矫正外部性导致的市场失灵可以采取的措施有哪些？',
+                answer: `为矫正因外部性而导致的市场失灵，政府应采取的措施：
+（1）行政命令与控制
+主要是指政府对产生外部成本的情况加以管制，政府可以通过规定或禁止某些行为来解决外部性。例如，规定工厂可以排放的最高污染水平，要求企业采用某项减少排污的技术等。
+① 实施条件：无论在哪种情况下，为了制定出良好的规则，政府管制者都需要了解有关某些特定行业以及这些行业可以采用的各种技术的详细信息。
+② 优点：管理的权威性、指令的严格性和迅速有效性。
+③ 缺点：第一，造成了效率上的损失。管制手段对生产和消费过程中所涉及污染活动进行直接干预，没有考虑企业之间成本与收益的差别，对所有企业采取"一刀切"式的做法，妨碍了企业对污染治理方法的自由选择，造成资源配置的低效率。第二，管制手段缺乏对企业技术革新的刺激。污染者如果达到了政府规定的污染量标准，一般情况下不会再努力治理污染，因为这样做只会增加企业本身的成本，却不能给企业带来任何好处。
+（2）征税与补贴
+政府通过征税或补贴措施使得私人成本等于社会成本、私人收益等于社会收益，从而个人基于自身利益最大化做出的决策就等于社会最优水平，即资源配置达到帕累托最优状态。
+① 实施条件：为了确定合理的税率，且不被逃税，政府管制者需要尽可能了解企业排污情况和污染治理成本。
+② 优点：征税使得税收成为产品价格的组成部分，对产生负外部性的企业征税增加其生产成本，以致降低其在市场上的竞争力。所以，征税可以持续不断的刺激企业进行技术革新，以便减少纳税，增加盈利。
+③ 缺点：第一，税率或补贴率难以测度，错误的税率或补贴率会造成新的扭曲。第二，如果污染物或污染超标的企业对价格不敏感，则不适合作为环境税的征税对象。第三，税收在一定程度上造成价格扭曲，影响价格信号的正确性，使价格信号失真。
+（3）企业合并
+企业合并的目的就在于使外部性问题内部化。如果厂商1对厂商2施加了外部性，其导致资源配置扭曲的原因是厂商1进行生产决策时不考虑其行为对厂商2所产生的成本或者收益。因而，解决这一问题的思路是将这两家企业合并在一起，合并后的企业将以整体利润最大化为目标，这将导致社会资源的有效配置。
+实施条件：企业合并需要企业有合并意愿，且要求合并后企业不会成为垄断集团。
+（4）科斯定理（明确产权）
+根据科斯定理，只要产权明晰，且没有交易成本，无论初始产权配置是怎样的，有关各方总是能够达成有效率的协议。
+实施条件：第一，该方案要求不存在交易成本。当交易成本高于解决外部性能所带来的收益时，有关各方就无法解决外部性。第二，该方案还要求谈判不破裂。第三，该方案还要求利益各方人数不会过多，因为当利益各方人数众多时，达成有效率的协议就尤其困难，因为协调每个人的代价过于高昂。
+（5）可交易的污染许可证（针对生产的负外部性）
+若政府允许污染许可权交易，实际上就创造了一种新的稀缺资源：污染许可证。交易这种许可证的市场将最终形成，而且，这种市场将为供求力量所支配。那些能以低成本减少污染的企业将出售它们得到的所有许可证，而那些只能以高成本减少污染的企业将购买它们需要的所有许可证。最终市场结果是有效率的，实现了污染的外部性内在化。
+① 实施条件：该方案对政府管理水平和经济市场化程度要求较高（要求具备完善的污染权交易市场）。
+② 优点：第一，它能降低政府管理成本。排污标准与排污收费二者最大的缺陷是环境管理机构的信息成本费用高昂。而排污权交易的价格仅在最初发售许可证时，需要政府制定或拍卖决定。在许可证交易的过程中，价值规律会自发调节其价格，环境管理机构还可以通过发放或购进排污权等公开市场操作来控制排污权的价格和供给量。第二，有利于调动企业治理污染的积极性。对于那些污染成本低于许可证价格的企业，出售剩余的排污指标可以获利，因而会积极治理污染以获得更大利益。非污染者如环境保护组织如果希望降低污染水平，可以进入市场购买污染权，然后把排污权控制在自己手中，不再卖出，这样也可以使污染水平降低。`,
+                hasImage: false },
+
+            { id: 'c7s3', special: '七、市场失灵', type: '简答/论述题', qid: '简答3',
+                question: '简述科斯定理的内容，科斯定理解决外部性的经济学原理，科斯定理与税收或补贴政策的区别，以及科斯定理可能存在的问题。',
+                answer: `（1）科斯定理的内容：只要财产权是明确的，并且其交易成本为零或者很小，则无论在开始时将财产权赋予谁，市场均衡的最终结果都是有效率的。其中，产权界定是基础，产权交易是实现最优配置的关键。
+科斯定理扩大了"看不见的手"的作用。按照这个定理，只要产权明确并且交易成本为零的条件成立，则外部影响就不可能导致资源配置不当。或者以另一角度来说，在给定的条件下，市场力量足够强大，总能够使外部性以最经济的办法来解决，使得私人成本（或利益）与社会成本（或利益）趋于一致，从而可以实现帕累托最优状态，此时解决外部性问题上不一定要政府干预。
+（2）科斯定理解决外部性的经济学原理：明确的财产权及其转让可以使得私人成本（或利益）与社会成本（或利益）趋于一致。将财产权明确赋予某人，并假定该权利可以自由买卖，则财产权对所有者来说就是一件有价值的特殊"商品"。以生产的负外部性为例，此时产生外部性的厂商无论购买还是自己使用财产权（如不被污染权或污染权）这一"商品"，都存在成本，前者是购买财产权所付出的直接成本，后者是自己使用存在的机会成本。此时厂商的总成本是生产产品的成本和财产权带来的成本或机会成本。在完全竞争条件下的理想均衡状态中，加入使用财产权的边际成本之后所得到的总的边际私人成本与边际社会成本相一致，从而私人最优产量与社会最优产量相一致。
+（3）科斯定理与税收或补贴政策的对比：本质上，科斯定理是从法律上事先（不管是否有经济活动发生）强制规定私人成本与社会成本的统一；而税收或补贴政策政府在事后（经济活动发生，不发生就没有这个政策）通过法律使得个人成本和社会成本统一。
+（4）但是，科斯定理解决外部性问题在实际中并不一定真的有效（科斯定理在现实应用中存在的问题）。这是因为：
+① 产权不一定能够明确地加以规定。有的资源，例如空气，在历史上就是大家均可使用的共同财产，很难将其财产权具体分派给谁；有些资源的产权即使在原则上可以明确，但由于不公平问题、法律程序的成本问题等等也变得实际上不可行。
+② 已经明确的产权不一定总是能够转让，即自发谈判不一定促使交易的达成。这就涉及到信息是否充分及买卖双方不能达成一致意见的各种原因，如谈判的人太多、交易成本过高、谈判双方都能使用策略性行为等，具体如下：
+a. 第一，存在巨大的交易费用，以生产的外部不经济如污染问题为例，如果污染涉及面较小，即污染者只对少数其他人的福利造成影响，则此时污染者和这少数受害者可能在如何分配"重新安排生产计划"所得到的好处问题上不能达成协议；如果污染涉及面较大，即污染的受害者众多，则此时污染者和受害者以及受害者之间要达成协议就更加困难。
+b. 第二，很难避免"免费搭便车"的现象，减排可以让所有人受益，此时不参与谈判的个体能够免费享受谈判协议达成给自己带来的好处。
+c. 第三，势力的不对称性。即使污染者与受害者有可能达成协议，但由于通常是一个污染者面对众多受害者，因而污染者在改变污染水平上的行为就像一个垄断者。在这种情况下，由外部影响产生的垄断行为也会破坏资源的最优配置。
+③ 明确的产权转让并不总能实现资源的最优配置。运用科斯定理完全有可能得到这样的结果：它与原来的状态相比有所改善，但并不一定恰好为帕累托最优状态。
+④ 产权分配会影响收入分配，而收入分配的变动可能会造成社会不公平，引起社会动乱。在社会动乱的情况下，就谈不上解决外部影响的问题了。`,
+                hasImage: false },
+
+            { id: 'c7s4', special: '七、市场失灵', type: '简答/论述题', qid: '简答4',
+                question: '什么时候外部性需要政府的干预？什么时候这种干预没有必要？',
+                answer: `（1）外部性需要政府干预的情况：
+① 当外部性影响的方面相对较多并且产权不能很好地界定时，经济效率无法在没有政府干预的情况下实现，这时候就需要政府的干预。
+② 当存在巨大的交易费用时，即使产权是明确的，产权的交易仍然会导致私人成本（或利益）与社会成本（或利益）的偏离，市场参与者进行交易的结果仍然是无效率的：或者由于交易费用昂贵，市场参与者不愿意就相关产权进行交易或达成协议。
+（2）政府没必要干预的情况：
+当外部性影响的方面相对较少，并且产权很好地界定和交易时，经济效率可以在没有政府干预的情况下实现，这时候政府的干预就没有必要了。
+根据科斯定理，只要财产权是明确的，并且其交易成本为零或者很小，则无论在开始时财产权的配置是怎么样的，市场均衡的最终结果都是有效率的。在科斯定理的条件得到满足的情况下，明确的财产权及其转让可以使得私人成本（或利益）与社会成本（或利益）趋于一致，市场力量能够使外部影响以最经济的办法来解决，从而仍然可以实现帕累托最优状态，此时政府没有干预的必要。`,
+                hasImage: false },
+
+            { id: 'c7s5', special: '七、市场失灵', type: '简答/论述题', qid: '简答5',
+                question: '什么是网络外部性？当存在网络外部性时，市场需求曲线是怎样的？此时对市场均衡和市场结构有何影响？',
+                answer: `（1）网络外部性是外部效应的一种特殊形式，即一个人得自某种商品的效用取决于消费这种商品的其他消费者的数量。
+（2）当存在网络外部性时，消费者对网络产品的需求曲线是拱形曲线。
+如果具有网络外部性的产品的消费量较少，那么边际个人的支付意愿也较低，这是因为此时产品带给消费者的效用是较低的，表现在图形中就是在最高点左右侧需求曲线向右上方倾斜。随着产品消费数量的增加，由于此时对产品评价较高的消费者都已经参与进来，所以新加入消费者的边际支付意愿还是较低，表现在图形中就是在最高点左右侧需求曲线向右下方倾斜。
+（3）对市场均衡和市场结构的影响：
+为简化分析，假设具有网络外部性的产品的供给曲线为水平线，该供给曲线靠近横轴，代表厂商的边际成本是较低的。
+需求曲线与供给曲线有3个可能的交点A、B和C：在A点，n*=0，此时没有消费者愿意为产品进行任何支付；B点有较小规模的消费者 n_L，此时人们并不认为网络规模将会变得很大，因此消费者不愿意进行更多支付；C点拥有较多数量的消费者 n_H。
+① 首先考虑均衡点B：当消费者愿意支付的最高价格大于厂商愿意接受的最低支付时，市场规模将扩大；消费者愿意支付的最高价格小于厂商愿意接受的最低支付时，市场规模将缩小。即需求曲线位于供给曲线上方时，市场规模将扩大；需求曲线位于供给曲线下方时，市场规模将缩小。因此B点所代表的均衡是不稳定的，市场均衡将位于A点或C点。
+② 下面考虑均衡点A：如果厂商在产品销售初期采取折扣或其他促销措施，这一扰动可以使得网络规模大于0，同时跨越不稳定的均衡点B，进入消费者数量较多的C点。
+综上所述，对于存在网络外部性的产品，厂商一般可以在消费者数量较多的均衡点处进行销售，此时厂商所占据的市场份额是较大的，因此具有网络外部性的产品一般是寡头垄断市场。`,
+                hasImage: true },
+
+            { id: 'c7s6', special: '七、市场失灵', type: '简答/论述题', qid: '简答6',
+                question: '请比较说明对一个经济体而言，私人物品与公共物品在定价上的区别。并解释消费者不愿意按照该价格进行支付的原因。',
+                answer: `（1）私人物品与公共物品定价的区别：
+假设社会上只有A和B两个消费者，他们对商品的需求曲线分别由 D_A 和 D_B 表示。商品的市场供给曲线为 S。
+① 私人物品时，将消费者A和B的需求曲线 D_A 和 D_B 水平相加得到某市场需求曲线 D。市场需求曲线 D 和供给曲线 S 的交点处的价格就是私人物品的定价。
+② 公共物品时，由于公共物品消费上的非竞争性特点，每个消费者消费的都是同一个商品总量，因而每一个消费者的消费量都与总消费量相等；另一方面，对这个总需求量所支付的全部价格，却是所有消费者支付的价格总和。因此，公共物品的市场需求曲线不是个人需求曲线的水平相加，而是它们的垂直相加。市场需求曲线 D 和供给曲线 S 的交点处的价格就是公共物品的定价。
+（2）消费者不会愿意按照该价格来进行支付，因为：
+首先，单个消费者通常并不清楚自己对公共物品的需求价格，更不用说去准确地陈述他对公共物品的需求与价格的关系，因此无法根据单个消费者对公共物品的需求曲线得到市场需求曲线；
+其次，即使单个消费者了解自己对公共物品的偏好程度，他们也不会如实说出来，为了少支付价格或不支付价格，消费者会低报或隐瞒自己对公共物品的偏好，他们在享用公共物品时都想当"免费乘车者"，使得自己能够不支付成本就得到利益。
+由于单个消费者对公共物品的需求曲线不会自动显示出来，故我们无法将它们加总得到公共物品的市场需求曲线进而确定公共物品的最优数量。
+【提示】公共物品导致的市场失灵，是由于公共物品的非排他性容易出现搭便车者，消费者对公共物品的支付不足以弥补公共物品的生产成本，从而导致有效供给不足，因此本题答案（2）也可以用于回答为什么公共物品会导致市场失灵，即为什么公共物品的有效供给是不足的。`,
+                hasImage: true },
+
+            { id: 'c7s7', special: '七、市场失灵', type: '简答/论述题', qid: '简答7',
+                question: '当一个市场在其他方面都是完全竞争的时候，为什么买方和卖方之间的不对称信息会导致市场失灵？',
+                answer: `（1）信息不对称是指市场上买卖双方所掌握的信息是不对称的，一方掌握的信息多些，一方掌握的信息少些。
+（2）以柠檬市场为例，即使一个市场在其他方面都是完全竞争的，当买方和卖方之间对商品存在着不对称信息时，即当不同质量产品的购买者或出售者买卖时没有充分的信息来确定产品的质量时，不同质量的产品会以单一价格出售，此时出现了逆向选择问题，结果是市场有太多的低质量产品和太少的高质量产品出售，低质量产品把高质量的产品逐出了市场，导致市场失灵。
+（3）图形分析：
+假定在旧车市场上，有两种类型的轿车，高质量轿车的供给曲线 S_H，低质量轿车的供给为 S_L。再假定卖方知道轿车的质量，但买方不知道这一点，因而 S_H 高于 S_L。
+如果信息是完全的，那么对应于需求曲线 D_n 将分别决定两个不同的价格 P_H 和 P_L，即高质量的轿车按较高的价格成交，低质量的轿车按低价格成交。
+但是由于信息不完全，买者并不知道轿车的质量，因而他会以一定的可能性（比如50%）来推断轿车的质量，从而按平均质量决定供给曲线 S_A，即买者接受的价格是 P_A。结果，高质量的轿车因不愿意接受 D_n 而退出市场。因此，在这一市场上只有低质量的汽车才能成交，此时出现市场失灵。
+【提示1】柠檬问题：当市场出现信息不对称时，低质量商品会将高质量商品逐出市场。
+【提示2】此处可以结合概念部分的逆向选择、道德风险、委托代理问题及其解决方法进行记忆。`,
+                hasImage: true },
+
+            { id: 'c7s8', special: '七、市场失灵', type: '简答/论述题', qid: '简答8',
+                question: '简述效率工资的概念，并解释当工人对他们的生产率比厂商有更多的信息时，支付效率工资对厂商更有利的原因。',
+                answer: `（1）效率工资的含义：
+效率工资指的是企业支付给员工比市场平均水平高得多的工资，促使员工努力工作的一种激励与薪酬制度。它的主要作用是吸引和留住优秀人才。
+① 效率工资是一种相互交换行为
+效率工资理论中，有一个基本假定：企业的效率工资是用来交换员工加倍工作的，而员工的加倍工作也是用来获取企业的高工资。社会关系中的互惠原则是效率工资起作用的基本条件。
+② 一旦发现偷懒行为立即严惩偷懒者是企业理想的做法
+效率工资理论中，效率工资要起激励、约束作用，必须按照游戏规则，严惩偷懒者。这是保证效率工资起作用的重要前提。只有这样，员工才会努力工作。因此，能否保证凡被发现有违纪者一律严惩，是效率工资能否奏效的重要因素。
+③ 效率工资水平的确定具有主观性
+员工对企业的认同感如何，员工关系的亲密程度以及对外部失业情况和经济景气状况的判断都影响效率工资水平以及效率工资的实际效用。从这一意义上说，企业是否主动支付员工工资、是否拥有良好的信誉和名声，尤其是在劳动关系上的名声如何及企业文化的建设水平都会影响员工对效率工资的判断，进而影响效率工资的有效性。
+（2）当工人对其生产率比厂商有更多的信息时支付效率工资对厂商有利的原因：
+由于监督成本很高或根本不可能，厂商对于工人的生产率具有不完全的信息，因此厂商不能有效地监督工人的生产效率，从而工人就可能偷懒，这样就会影响到厂商的产出和利润。如果厂商向工人提供高于市场出清的工资，工人就可能因偷懒而被解雇，再次就业的工人会面临市场出清这样一个较低的工资。因此支付效率工资会降低工人偷懒的动机，对厂商是有利的。
+另一方面，所有厂商都面临偷懒问题，这意味着所有厂商都提供高于市场出清的工资，因而对劳动的需求就小于市场出清的数量，从而就存在失业。这就是说，被一家企业解雇的工人就面临一段时间的失业，工人被解雇的成本越高，偷懒所冒的风险越大。为了避免失业，工人将会进行有效率的工作。所以，支付效率工资对厂商是有利的。`,
+                hasImage: false }
+        ];
+
+        // ============================================================
+        // 应用状态
+        // ============================================================
+        let currentData = [...cardData];
+        let favorites = JSON.parse(localStorage.getItem('micro_recite_favs') || '[]');
+        let notes = JSON.parse(localStorage.getItem('micro_recite_notes') || '{}');
+        let edits = JSON.parse(localStorage.getItem('micro_recite_edits') || '{}');
+
+        let singleModeId = null;
+        let history = [];
+        let historyIndex = -1;
+
+        const grid = document.getElementById('cardGrid');
+        const totalSpan = document.getElementById('totalCards');
+        const favSpan = document.getElementById('favCount');
+        const filterSpecial = document.getElementById('filterSpecial');
+        const filterFav = document.getElementById('filterFav');
+        const filterSearch = document.getElementById('filterSearch');
+        const clearBtn = document.getElementById('clearFilterBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        const toast = document.getElementById('toast');
+        const singleModeBar = document.getElementById('singleModeBar');
+        const singleCardBadge = document.getElementById('singleCardBadge');
+        const exitSingleBtn = document.getElementById('exitSingleBtn');
+        const prevCardBtn = document.getElementById('prevCardBtn');
+        const nextCardBtn = document.getElementById('nextCardBtn');
+        const filterBar = document.getElementById('filterBar');
+
+        let toastTimer = null;
+
+        function showToast(msg) {
+            clearTimeout(toastTimer);
+            toast.textContent = msg;
+            toast.classList.add('show');
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        function saveFavs() {
+            localStorage.setItem('micro_recite_favs', JSON.stringify(favorites));
+        }
+
+        function saveNotes() {
+            localStorage.setItem('micro_recite_notes', JSON.stringify(notes));
+        }
+
+        function saveEdits() {
+            localStorage.setItem('micro_recite_edits', JSON.stringify(edits));
+        }
+
+        function renderAnswerParagraphs(text) {
+            if (!text) return '';
+            const paragraphs = text.split('\n');
+            const filtered = paragraphs.filter(p => p.trim() !== '');
+            if (filtered.length === 0) return '';
+            return filtered.map(p => `<p>${p.trim()}</p>`).join('');
+        }
+
+        function getCardData(id) {
+            const original = currentData.find(d => d.id === id);
+            if (!original) return null;
+            if (edits[id]) {
+                return {
+                    ...original,
+                    question: edits[id].question || original.question,
+                    answer: edits[id].answer || original.answer,
+                };
+            }
+            return { ...original };
+        }
+
+        function exitSingleMode() {
+            if (singleModeId === null) return;
+            singleModeId = null;
+            history = [];
+            historyIndex = -1;
+            singleModeBar.classList.remove('show');
+            filterBar.classList.remove('disabled');
+            render();
+            showToast('📋 已退出抽查模式');
+        }
+
+        function enterSingleMode(id) {
+            if (!id) return;
+            if (singleModeId !== null) {
+                if (singleModeId === id) return;
+                exitSingleMode();
+                setTimeout(() => { enterSingleMode(id); }, 100);
+                return;
+            }
+            const card = getCardData(id);
+            if (!card) {
+                showToast('😅 卡片不存在');
+                return;
+            }
+            singleModeId = id;
+            const existIdx = history.indexOf(id);
+            if (existIdx !== -1) {
+                historyIndex = existIdx;
+            } else {
+                history.push(id);
+                historyIndex = history.length - 1;
+            }
+            singleModeBar.classList.add('show');
+            filterBar.classList.add('disabled');
+            updateSingleBadge(id);
+            updateNavButtons();
+            render(id);
+            showToast(`🎯 抽查: ${card.special} · ${card.qid}`);
+        }
+
+        function updateSingleBadge(id) {
+            const card = getCardData(id);
+            if (card) {
+                singleCardBadge.textContent = `${card.special} · ${card.qid}`;
+            } else {
+                singleCardBadge.textContent = id;
+            }
+        }
+
+        function updateNavButtons() {
+            prevCardBtn.classList.toggle('disabled', historyIndex <= 0);
+            const ids = getFilteredIds();
+            nextCardBtn.classList.toggle('disabled', ids.length <= 1);
+        }
+
+        function goPrevCard() {
+            if (singleModeId === null) return;
+            if (historyIndex <= 0) {
+                showToast('已经是第一张了');
+                return;
+            }
+            historyIndex--;
+            const id = history[historyIndex];
+            if (id) {
+                singleModeId = id;
+                updateSingleBadge(id);
+                updateNavButtons();
+                render(id);
+            } else {
+                exitSingleMode();
+            }
+        }
+
+        function goNextCard() {
+            if (singleModeId === null) return;
+            const ids = getFilteredIds();
+            if (ids.length <= 1) {
+                showToast('😅 没有更多卡片可抽查');
+                return;
+            }
+            const available = ids.filter(id => id !== singleModeId);
+            if (available.length === 0) {
+                showToast('😅 没有更多卡片可抽查');
+                return;
+            }
+            const randomId = available[Math.floor(Math.random() * available.length)];
+            history = history.slice(0, historyIndex + 1);
+            history.push(randomId);
+            historyIndex = history.length - 1;
+            singleModeId = randomId;
+            updateSingleBadge(randomId);
+            updateNavButtons();
+            render(randomId);
+            const card = getCardData(randomId);
+            if (card) {
+                showToast(`▶ 下一张: ${card.special} · ${card.qid}`);
+            }
+        }
+
+        function doRandom() {
+            const ids = getFilteredIds();
+            if (ids.length === 0) {
+                showToast('😅 当前没有卡片可抽查，请调整筛选条件');
+                return;
+            }
+            if (singleModeId !== null) {
+                exitSingleMode();
+                setTimeout(() => { doRandom(); }, 150);
+                return;
+            }
+            const randomId = ids[Math.floor(Math.random() * ids.length)];
+            enterSingleMode(randomId);
+        }
+
+        const editBackups = {};
+
+        function enterEditMode(id) {
+            const card = getCardData(id);
+            if (!card) return;
+
+            const questionEl = document.querySelector(`.card-question[data-id="${id}"] .q-text`);
+            const answerInner = document.querySelector(`.card-answer[data-id="${id}"] .answer-inner`);
+            const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+
+            if (!questionEl || !answerInner || !editBtn) return;
+            if (editBtn.classList.contains('is-editing')) return;
+
+            const currentQ = questionEl.textContent.trim();
+            const pNodes = answerInner.querySelectorAll('p');
+            let currentA = '';
+            if (pNodes.length > 0) {
+                currentA = Array.from(pNodes).map(p => p.textContent.trim()).join('\n');
+            } else {
+                currentA = answerInner.textContent.trim();
+            }
+            editBackups[id] = { question: currentQ, answer: currentA };
+
+            const editQ = document.createElement('div');
+            editQ.contentEditable = true;
+            editQ.className = 'q-text editable';
+            editQ.textContent = currentQ;
+            editQ.style.cssText =
+                'display:inline-block;min-width:60px;outline:none;border-bottom:2px solid #6a9e9e;padding:2px 4px;white-space:pre-wrap;';
+            questionEl.replaceWith(editQ);
+
+            const editA = document.createElement('div');
+            editA.className = 'answer-inner editable';
+            editA.contentEditable = true;
+            const paragraphs = currentA.split('\n').filter(p => p.trim() !== '');
+            if (paragraphs.length === 0) {
+                editA.innerHTML = '<p><br></p>';
+            } else {
+                editA.innerHTML = paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+            }
+            editA.style.cssText =
+                'background:transparent;border-left:none;padding:4px 6px;min-height:40px;outline:none;border:2px dashed #6a9e9e;border-radius:8px;';
+            answerInner.replaceWith(editA);
+
+            editBtn.classList.add('is-editing');
+            editBtn.textContent = '💾';
+            editBtn.title = '保存修改';
+
+            let cancelBtn = document.querySelector(`.btn-cancel-edit[data-id="${id}"]`);
+            if (!cancelBtn) {
+                cancelBtn = document.createElement('button');
+                cancelBtn.className = 'btn-cancel-edit';
+                cancelBtn.dataset.id = id;
+                cancelBtn.textContent = '❌';
+                cancelBtn.title = '取消编辑';
+                cancelBtn.style.cssText =
+                    'font-size:18px;padding:4px 6px;background:transparent;border:none;cursor:pointer;border-radius:10px;color:#8a4a4a;transition:background 0.15s,transform 0.1s;';
+                editBtn.parentNode.insertBefore(cancelBtn, editBtn.nextSibling);
+                cancelBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    cancelEdit(id);
+                });
+                cancelBtn.addEventListener('mouseenter', function() {
+                    this.style.background = '#f0e0e0';
+                });
+                cancelBtn.addEventListener('mouseleave', function() {
+                    this.style.background = 'transparent';
+                });
+            } else {
+                cancelBtn.style.display = 'inline-block';
+            }
+
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                saveEdit(id);
+            };
+
+            showToast('✏️ 正在编辑，点击 💾 保存 或 ❌ 取消');
+        }
+
+        function saveEdit(id) {
+            const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+            if (!editBtn || !editBtn.classList.contains('is-editing')) return;
+
+            const editQ = document.querySelector(`.card-question[data-id="${id}"] .q-text.editable`);
+            const editA = document.querySelector(`.card-answer[data-id="${id}"] .answer-inner.editable`);
+
+            if (!editQ || !editA) {
+                showToast('⚠️ 编辑内容不存在');
+                return;
+            }
+
+            const newQ = editQ.textContent.trim();
+            const pNodes = editA.querySelectorAll('p');
+            let newA = '';
+            if (pNodes.length > 0) {
+                newA = Array.from(pNodes).map(p => p.textContent.trim()).join('\n');
+            } else {
+                newA = editA.textContent.trim();
+            }
+
+            if (!newQ || !newA) {
+                showToast('⚠️ 题目和答案不能为空');
+                return;
+            }
+
+            edits[id] = { question: newQ, answer: newA };
+            saveEdits();
+
+            exitEditMode(id, true);
+            showToast('✅ 修改已保存');
+        }
+
+        function cancelEdit(id) {
+            const backup = editBackups[id];
+            if (!backup) {
+                exitEditMode(id, false);
+                return;
+            }
+
+            const editQ = document.querySelector(`.card-question[data-id="${id}"] .q-text.editable`);
+            const editA = document.querySelector(`.card-answer[data-id="${id}"] .answer-inner.editable`);
+
+            if (editQ) {
+                const newSpan = document.createElement('span');
+                newSpan.className = 'q-text';
+                newSpan.textContent = backup.question;
+                editQ.replaceWith(newSpan);
+            }
+
+            if (editA) {
+                const newDiv = document.createElement('div');
+                newDiv.className = 'answer-inner';
+                newDiv.innerHTML = renderAnswerParagraphs(backup.answer);
+                editA.replaceWith(newDiv);
+            }
+
+            delete editBackups[id];
+            exitEditMode(id, false);
+            showToast('↩️ 已取消编辑');
+        }
+
+        function exitEditMode(id, saved) {
+            const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+            const cancelBtn = document.querySelector(`.btn-cancel-edit[data-id="${id}"]`);
+
+            if (editBtn) {
+                editBtn.classList.remove('is-editing');
+                editBtn.textContent = '✏️';
+                editBtn.title = '编辑题目和答案';
+                editBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    enterEditMode(id);
+                };
+            }
+
+            if (cancelBtn) {
+                cancelBtn.style.display = 'none';
+            }
+
+            if (saved) {
+                render(singleModeId || null);
+            }
+
+            delete editBackups[id];
+        }
+
+        function getFilteredIds() {
+            const specialVal = filterSpecial.value;
+            const favVal = filterFav.value;
+            const searchVal = filterSearch.value.trim().toLowerCase();
+
+            return currentData
+                .filter(d => {
+                    if (specialVal !== 'all') {
+                        const parts = specialVal.split('|');
+                        const chap = parts[0];
+                        const typ = parts[1];
+                        if (d.special !== chap) return false;
+                        if (typ === '概念' && d.type !== '重要概念') return false;
+                        if (typ === '简答' && d.type !== '简答/论述题') return false;
+                    }
+                    if (favVal === 'fav' && !favorites.includes(d.id)) return false;
+                    if (searchVal) {
+                        const q = d.question.toLowerCase();
+                        const a = d.answer.toLowerCase();
+                        if (!q.includes(searchVal) && !a.includes(searchVal)) return false;
+                    }
+                    return true;
+                })
+                .map(d => d.id);
+        }
+
+        function render(singleId = null) {
+            if (singleId !== null && singleModeId === null) {
+                const ids = getFilteredIds();
+                if (ids.includes(singleId)) {
+                    singleModeId = singleId;
+                    if (history.length === 0 || history[history.length - 1] !== singleId) {
+                        history.push(singleId);
+                        historyIndex = history.length - 1;
+                    }
+                    singleModeBar.classList.add('show');
+                    filterBar.classList.add('disabled');
+                    updateSingleBadge(singleId);
+                    updateNavButtons();
+                } else {
+                    singleId = null;
+                }
+            }
+            if (singleId === null && singleModeId !== null) {
+                exitSingleMode();
+                return;
+            }
+
+            const isSingleMode = singleModeId !== null;
+            let filtered;
+
+            if (isSingleMode) {
+                const card = getCardData(singleModeId);
+                filtered = card ? [card] : [];
+                if (filtered.length === 0) {
+                    exitSingleMode();
+                    return;
+                }
+                updateSingleBadge(singleModeId);
+            } else {
+                const specialVal = filterSpecial.value;
+                const favVal = filterFav.value;
+                const searchVal = filterSearch.value.trim().toLowerCase();
+
+                filtered = currentData
+                    .map(d => getCardData(d.id))
+                    .filter(d => {
+                        if (!d) return false;
+                        if (specialVal !== 'all') {
+                            const parts = specialVal.split('|');
+                            const chap = parts[0];
+                            const typ = parts[1];
+                            if (d.special !== chap) return false;
+                            if (typ === '概念' && d.type !== '重要概念') return false;
+                            if (typ === '简答' && d.type !== '简答/论述题') return false;
+                        }
+                        if (favVal === 'fav' && !favorites.includes(d.id)) return false;
+                        if (searchVal) {
+                            const q = d.question.toLowerCase();
+                            const a = d.answer.toLowerCase();
+                            if (!q.includes(searchVal) && !a.includes(searchVal)) return false;
+                        }
+                        return true;
+                    });
+            }
+
+            totalSpan.textContent = currentData.length;
+            favSpan.textContent = favorites.length;
+
+            grid.classList.toggle('single-mode', isSingleMode);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="no-result">🌿 没有找到匹配的卡片，试试调整筛选条件吧</div>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(d => {
+                const isFav = favorites.includes(d.id);
+                const note = notes[d.id] || '';
+                const noteHtml = note || '';
+                const qText = d.question;
+                const aHtml = renderAnswerParagraphs(d.answer);
+
+                html += `
+                    <div class="card-item ${isFav ? 'favorited' : ''}" data-id="${d.id}">
+                        <div class="card-header">
+                            <div class="label">
+                                <span class="tag">${d.special}</span>
+                                <span class="qid">${d.qid}</span>
+                                ${d.hasImage ? '<span class="has-img">📐 有图示</span>' : ''}
+                            </div>
+                            <div class="card-actions" data-id="${d.id}">
+                                <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${d.id}" title="收藏">${isFav ? '⭐' : '☆'}</button>
+                                <button class="btn-note ${note ? 'active' : ''}" data-id="${d.id}" title="笔记">📝</button>
+                                <button class="btn-edit" data-id="${d.id}" title="编辑题目和答案">✏️</button>
+                            </div>
+                        </div>
+                        <div class="card-question" data-id="${d.id}">
+                            <span class="q-text">${qText}</span>
+                            <span class="toggle-hint">(点击展开答案)</span>
+                        </div>
+                        <div class="card-answer" data-id="${d.id}">
+                            <div class="answer-inner">${aHtml}</div>
+                        </div>
+                        <div class="card-note-area" data-id="${d.id}">
+                            <div class="note-editor" contenteditable="true" data-id="${d.id}">${noteHtml}</div>
+                            <div class="img-resize-control" data-id="${d.id}">
+                                <span>📐 大小</span>
+                                <input type="range" min="10" max="200" value="100" step="2" />
+                                <span class="size-val">100%</span>
+                                <button class="btn-reset-size" data-id="${d.id}">重置</button>
+                            </div>
+                            <div class="note-actions">
+                                <button class="btn-insert-img" data-id="${d.id}">🖼️ 插入图片</button>
+                                <button class="note-save" data-id="${d.id}">💾 保存笔记</button>
+                                <button class="note-clear" data-id="${d.id}">🗑️ 清空</button>
+                                <span class="note-size-hint">支持粘贴图片 · 点击图片调大小</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+
+            // 事件绑定
+            document.querySelectorAll('.card-question').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    if (this.classList.contains('editable')) return;
+                    const id = this.dataset.id;
+                    const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
+                    const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                    const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+
+                    if (!answerDiv) return;
+
+                    const isOpen = answerDiv.classList.contains('open');
+                    if (isOpen) {
+                        answerDiv.classList.remove('open');
+                        if (noteArea) {
+                            noteArea.classList.remove('open');
+                            if (noteBtn) noteBtn.classList.remove('active');
+                        }
+                    } else {
+                        answerDiv.classList.add('open');
+                        if (noteArea) {
+                            const hasContent = notes[id] && notes[id].trim().length > 0;
+                            if (hasContent) {
+                                noteArea.classList.add('open');
+                                if (noteBtn) noteBtn.classList.add('active');
+                            }
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('.btn-fav').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const idx = favorites.indexOf(id);
+                    if (idx > -1) {
+                        favorites.splice(idx, 1);
+                        this.classList.remove('active');
+                        this.textContent = '☆';
+                    } else {
+                        favorites.push(id);
+                        this.classList.add('active');
+                        this.textContent = '⭐';
+                    }
+                    saveFavs();
+                    const card = this.closest('.card-item');
+                    if (card) {
+                        if (favorites.includes(id)) {
+                            card.classList.add('favorited');
+                        } else {
+                            card.classList.remove('favorited');
+                        }
+                    }
+                    favSpan.textContent = favorites.length;
+                });
+            });
+
+            document.querySelectorAll('.btn-note').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                    const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
+
+                    if (!noteArea) return;
+
+                    const isOpen = noteArea.classList.contains('open');
+                    if (isOpen) {
+                        noteArea.classList.remove('open');
+                        this.classList.remove('active');
+                    } else {
+                        if (answerDiv && !answerDiv.classList.contains('open')) {
+                            answerDiv.classList.add('open');
+                        }
+                        noteArea.classList.add('open');
+                        this.classList.add('active');
+                        const editor = noteArea.querySelector('.note-editor');
+                        if (editor) setTimeout(() => editor.focus(), 100);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.btn-insert-img').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (!editor) return;
+
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'image/*';
+                    fileInput.style.display = 'none';
+                    document.body.appendChild(fileInput);
+
+                    fileInput.onchange = function() {
+                        const file = this.files[0];
+                        if (!file) { document.body.removeChild(fileInput); return; }
+                        const reader = new FileReader();
+                        reader.onload = function(ev) {
+                            const img = document.createElement('img');
+                            img.src = ev.target.result;
+                            img.alt = '笔记图片';
+                            img.style.maxWidth = '100%';
+                            img.style.maxHeight = '300px';
+                            img.style.borderRadius = '10px';
+                            img.style.margin = '6px 0';
+                            img.style.display = 'block';
+                            img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                            img.dataset.noteImg = 'true';
+                            const sel = window.getSelection();
+                            if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+                                const range = sel.getRangeAt(0);
+                                range.insertNode(img);
+                                range.setStartAfter(img);
+                                range.collapse(true);
+                                sel.removeAllRanges();
+                                sel.addRange(range);
+                            } else {
+                                editor.appendChild(img);
+                            }
+                            showToast('🖼️ 图片已插入，点击图片可调大小');
+                            document.body.removeChild(fileInput);
+                            bindImgClick(editor);
+                        };
+                        reader.readAsDataURL(file);
+                    };
+                    fileInput.click();
+                });
+            });
+
+            document.querySelectorAll('.note-save').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (!editor) return;
+
+                    let content = editor.innerHTML.trim();
+                    if (content === '<br>' || content === '') {
+                        content = '';
+                    }
+                    if (content) {
+                        notes[id] = content;
+                    } else {
+                        delete notes[id];
+                    }
+                    saveNotes();
+                    const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+                    if (noteBtn) {
+                        if (content) {
+                            noteBtn.classList.add('active');
+                        } else {
+                            noteBtn.classList.remove('active');
+                        }
+                    }
+                    if (content) {
+                        const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                        if (noteArea) noteArea.classList.add('open');
+                    }
+                    const orig = btn.textContent;
+                    btn.textContent = '✅ 已保存';
+                    setTimeout(() => { btn.textContent = orig; }, 1200);
+                });
+            });
+
+            document.querySelectorAll('.note-clear').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    if (!confirm('⚠️ 确定要清空这条笔记吗？')) return;
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (editor) {
+                        editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                        delete notes[id];
+                        saveNotes();
+                        const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+                        if (noteBtn) noteBtn.classList.remove('active');
+                        const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                        if (noteArea) noteArea.classList.remove('open');
+                        const rc = document.querySelector(`.img-resize-control[data-id="${id}"]`);
+                        if (rc) rc.classList.remove('show');
+                        showToast('🗑️ 笔记已清空');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.note-editor').forEach(editor => {
+                editor.addEventListener('paste', function(e) {
+                    const items = e.clipboardData && e.clipboardData.items;
+                    if (!items) return;
+                    for (let item of items) {
+                        if (item.type && item.type.startsWith('image/')) {
+                            e.preventDefault();
+                            const file = item.getAsFile();
+                            const reader = new FileReader();
+                            reader.onload = function(ev) {
+                                const img = document.createElement('img');
+                                img.src = ev.target.result;
+                                img.alt = '粘贴图片';
+                                img.style.maxWidth = '100%';
+                                img.style.maxHeight = '300px';
+                                img.style.borderRadius = '10px';
+                                img.style.margin = '6px 0';
+                                img.style.display = 'block';
+                                img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                                img.dataset.noteImg = 'true';
+                                const sel = window.getSelection();
+                                if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+                                    const range = sel.getRangeAt(0);
+                                    range.insertNode(img);
+                                    range.setStartAfter(img);
+                                    range.collapse(true);
+                                    sel.removeAllRanges();
+                                    sel.addRange(range);
+                                } else {
+                                    editor.appendChild(img);
+                                }
+                                showToast('🖼️ 图片已粘贴，点击可调整大小');
+                                bindImgClick(editor);
+                            };
+                            reader.readAsDataURL(file);
+                            break;
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('.note-editor').forEach(editor => {
+                const id = editor.dataset.id;
+                const content = notes[id] || '';
+                if (!content || content.trim() === '') {
+                    editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                }
+                editor.addEventListener('focus', function() {
+                    const placeholder = this.querySelector('.note-placeholder');
+                    if (placeholder) {
+                        this.innerHTML = '';
+                    }
+                });
+                editor.addEventListener('blur', function() {
+                    if (this.innerHTML.trim() === '' || this.innerHTML === '<br>') {
+                        this.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.note-editor').forEach(editor => {
+                bindImgClick(editor);
+            });
+
+            document.querySelectorAll('.btn-reset-size').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (!editor) return;
+                    const imgs = editor.querySelectorAll('img');
+                    imgs.forEach(img => {
+                        img.style.width = '';
+                        img.style.maxWidth = '100%';
+                        img.dataset.origWidth = '100';
+                    });
+                    const slider = document.querySelector(
+                        `.img-resize-control[data-id="${id}"] input[type="range"]`);
+                    if (slider) {
+                        slider.value = 100;
+                        const valSpan = slider.closest('.img-resize-control').querySelector('.size-val');
+                        if (valSpan) valSpan.textContent = '100%';
+                    }
+                    showToast('📐 图片大小已重置');
+                });
+            });
+
+            document.querySelectorAll('.img-resize-control input[type="range"]').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const id = this.closest('.img-resize-control').dataset.id;
+                    const val = parseInt(this.value);
+                    const valSpan = this.closest('.img-resize-control').querySelector('.size-val');
+                    if (valSpan) valSpan.textContent = val + '%';
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (!editor) return;
+                    const imgs = editor.querySelectorAll('img');
+                    imgs.forEach(img => {
+                        if (img.classList.contains('selected')) {
+                            img.style.width = val + '%';
+                            img.style.maxWidth = val + '%';
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.onclick = function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    if (this.classList.contains('is-editing')) return;
+                    enterEditMode(id);
+                };
+            });
+
+            document.querySelectorAll('.card-note-area').forEach(area => {
+                const id = area.dataset.id;
+                const hasContent = notes[id] && notes[id].trim().length > 0;
+                if (hasContent) {
+                    const btn = document.querySelector(`.btn-note[data-id="${id}"]`);
+                    if (btn && btn.classList.contains('active')) {
+                        area.classList.add('open');
+                    }
+                }
+            });
+
+            if (isSingleMode) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function bindImgClick(editor) {
+            const imgs = editor.querySelectorAll('img');
+            imgs.forEach(img => {
+                img.removeEventListener('click', imgClickHandler);
+                img.addEventListener('click', imgClickHandler);
+            });
+        }
+
+        function imgClickHandler(e) {
+            e.stopPropagation();
+            const img = this;
+            const editor = img.closest('.note-editor');
+            if (!editor) return;
+            const id = editor.dataset.id;
+
+            const allImgs = editor.querySelectorAll('img');
+            allImgs.forEach(i => i.classList.remove('selected'));
+            img.classList.add('selected');
+
+            const rc = document.querySelector(`.img-resize-control[data-id="${id}"]`);
+            if (!rc) return;
+            rc.classList.add('show');
+
+            const slider = rc.querySelector('input[type="range"]');
+            const valSpan = rc.querySelector('.size-val');
+            if (!slider) return;
+
+            let currentPct = 100;
+            if (img.style.width) {
+                const w = parseInt(img.style.width);
+                if (w > 0 && w <= 200) currentPct = w;
+            }
+            slider.value = currentPct;
+            if (valSpan) valSpan.textContent = currentPct + '%';
+
+            slider.oninput = function() {
+                const val = parseInt(slider.value);
+                if (valSpan) valSpan.textContent = val + '%';
+                img.style.width = val + '%';
+                img.style.maxWidth = val + '%';
+                img.dataset.origWidth = val;
+            };
+
+            const resetBtn = rc.querySelector('.btn-reset-size');
+            if (resetBtn) {
+                resetBtn.onclick = function(e2) {
+                    e2.stopPropagation();
+                    img.style.width = '';
+                    img.style.maxWidth = '100%';
+                    img.dataset.origWidth = '100';
+                    slider.value = 100;
+                    if (valSpan) valSpan.textContent = '100%';
+                    showToast('📐 已重置');
+                };
+            }
+        }
+
+        function onFilterChange() {
+            if (singleModeId !== null) {
+                exitSingleMode();
+            } else {
+                render();
+            }
+        }
+
+        filterSpecial.addEventListener('change', onFilterChange);
+        filterFav.addEventListener('change', onFilterChange);
+        filterSearch.addEventListener('input', onFilterChange);
+
+        clearBtn.addEventListener('click', function() {
+            filterSpecial.value = 'all';
+            filterFav.value = 'all';
+            filterSearch.value = '';
+            if (singleModeId !== null) {
+                exitSingleMode();
+            } else {
+                render();
+            }
+        });
+
+        exitSingleBtn.addEventListener('click', exitSingleMode);
+        prevCardBtn.addEventListener('click', goPrevCard);
+        nextCardBtn.addEventListener('click', goNextCard);
+        randomBtn.addEventListener('click', doRandom);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'r' || e.key === 'R') {
+                if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+                    const target = e.target;
+                    if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA' && target.contentEditable !== 'true') {
+                        e.preventDefault();
+                        doRandom();
+                    }
+                }
+            }
+            if (e.key === 'Escape') {
+                if (singleModeId !== null) {
+                    e.preventDefault();
+                    exitSingleMode();
+                }
+            }
+            if (singleModeId !== null) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    goPrevCard();
+                }
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    goNextCard();
+                }
+            }
+        });
+
+        render();
+
+        setTimeout(() => {
+            document.querySelectorAll('.note-editor').forEach(editor => {
+                const id = editor.dataset.id;
+                const content = notes[id] || '';
+                if (!content || content.trim() === '') {
+                    editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                }
+                bindImgClick(editor);
+            });
+        }, 100);
+    </script>
+</body>
+</html>

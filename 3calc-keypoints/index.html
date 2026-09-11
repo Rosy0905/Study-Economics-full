@@ -1,0 +1,4851 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>南开经济学 · 计算要点记忆卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f7f0;
+            color: #1e3a2a;
+            padding: 20px;
+        }
+        .app-header {
+            max-width: 1200px;
+            margin: 0 auto 20px auto;
+            background: #d9edd9;
+            padding: 18px 28px;
+            border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(60, 110, 60, 0.12);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .app-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e4a2a;
+            letter-spacing: 0.5px;
+        }
+        .app-header .stats {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            background: #c4e0c4;
+            padding: 6px 18px;
+            border-radius: 40px;
+        }
+        .app-header .stats span {
+            font-weight: 500;
+        }
+        .app-header .stats .num {
+            color: #1f6b3a;
+            font-weight: 700;
+        }
+        .filter-bar {
+            max-width: 1200px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            background: #e6f3e6;
+            padding: 12px 20px;
+            border-radius: 14px;
+            transition: opacity 0.3s;
+        }
+        .filter-bar.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .filter-bar label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f4a2a;
+        }
+        .filter-bar select,
+        .filter-bar input {
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid #b3d9b3;
+            background: #fafffa;
+            font-size: 14px;
+            color: #1e3a2a;
+            outline: none;
+        }
+        .filter-bar select:focus,
+        .filter-bar input:focus {
+            border-color: #6a9e6a;
+            box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.2);
+        }
+
+/* 新增：去掉 optgroup（微观部分 / 宏观部分）的斜体 */
+.filter-bar select optgroup {
+    font-style: normal;
+    font-weight: 600;
+}
+        .filter-bar .btn-clear-filter {
+            background: #cfe2cf;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #1e4a2a;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .filter-bar .btn-clear-filter:hover {
+            background: #b8d4b8;
+        }
+        .filter-bar .btn-random {
+            background: #d4c49a;
+            border: none;
+            padding: 6px 22px;
+            border-radius: 30px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #3f3a1a;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .filter-bar .btn-random:hover {
+            background: #c9b888;
+            transform: scale(1.02);
+        }
+        .filter-bar .btn-random:active {
+            transform: scale(0.96);
+        }
+
+        /* ---- 抽查模式提示条 ---- */
+        .single-mode-bar {
+            max-width: 1200px;
+            margin: 0 auto 16px auto;
+            background: #f5efe0;
+            border: 2px solid #d4a24e;
+            border-radius: 14px;
+            padding: 8px 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            animation: fadeSlide 0.3s ease;
+        }
+        .single-mode-bar.show {
+            display: flex;
+        }
+        .single-mode-bar .mode-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .single-mode-bar .mode-left .btn-nav {
+            background: transparent;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 2px 10px;
+            border-radius: 8px;
+            color: #7a5a2a;
+            transition: background 0.15s, transform 0.1s;
+            line-height: 1;
+        }
+        .single-mode-bar .mode-left .btn-nav:hover {
+            background: #e8ddd0;
+            transform: scale(1.05);
+        }
+        .single-mode-bar .mode-left .btn-nav:active {
+            transform: scale(0.92);
+        }
+        .single-mode-bar .mode-left .btn-nav.disabled {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        .single-mode-bar .card-id-badge {
+            font-size: 15px;
+            font-weight: 600;
+            color: #5a4a2a;
+            background: #e8ddd0;
+            padding: 4px 18px;
+            border-radius: 30px;
+            white-space: nowrap;
+        }
+        .single-mode-bar .mode-hint {
+            font-size: 13px;
+            color: #8a7a5a;
+            margin-left: 4px;
+        }
+        .single-mode-bar .btn-exit-single {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 2px 10px;
+            border-radius: 8px;
+            color: #8a5a4a;
+            transition: background 0.15s, transform 0.1s;
+            line-height: 1;
+        }
+        .single-mode-bar .btn-exit-single:hover {
+            background: #e8d5d0;
+            transform: scale(1.05);
+        }
+        .single-mode-bar .btn-exit-single:active {
+            transform: scale(0.92);
+        }
+
+        .card-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+        .card-grid.single-mode {
+            max-width: 820px;
+        }
+        .card-grid.single-mode .card-item {
+            box-shadow: 0 8px 32px rgba(60, 100, 60, 0.18);
+            border-left-width: 8px;
+        }
+
+        .card-item {
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 4px 14px rgba(60, 100, 60, 0.08);
+            border-left: 6px solid #8fbe8f;
+            transition: box-shadow 0.25s, transform 0.15s, border-color 0.3s;
+            overflow: hidden;
+            position: relative;
+        }
+        .card-item:hover {
+            box-shadow: 0 8px 24px rgba(50, 100, 50, 0.13);
+        }
+        .card-item.favorited {
+            border-left-color: #d4a24e;
+            background: #fcf9f0;
+        }
+        .card-item.highlight {
+            border-left-color: #e67e22;
+            box-shadow: 0 0 0 3px #e67e22, 0 8px 28px rgba(230, 126, 34, 0.25);
+            transform: scale(1.005);
+        }
+        /* 知识要点卡片特殊配色 */
+        .card-item.knowledge {
+            border-left-color: #4f8a9e;
+            background: #f7fbfd;
+        }
+        .card-item.knowledge .card-header .label .tag {
+            background: #d6e8f0;
+            color: #14405a;
+        }
+        .card-item.knowledge .card-question {
+            color: #14384a;
+        }
+        .card-item.knowledge.favorited {
+            background: #fdf9ee;
+        }
+        .card-header {
+            padding: 16px 22px 8px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .card-header .label {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header .label .tag {
+            background: #dcebd9;
+            padding: 2px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a4a2a;
+            white-space: nowrap;
+        }
+        .card-header .label .qid {
+            font-weight: 600;
+            font-size: 15px;
+            color: #1f5a2f;
+        }
+        .card-header .label .has-img {
+            background: #d9c8b0;
+            color: #5a3f1a;
+            padding: 0 12px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .card-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .card-actions button {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 10px;
+            transition: background 0.15s, transform 0.1s;
+            line-height: 1;
+            color: #3f6a3f;
+        }
+        .card-actions button:hover {
+            background: #e6f0e6;
+            transform: scale(1.05);
+        }
+        .card-actions .btn-fav {
+            color: #b8a06a;
+        }
+        .card-actions .btn-fav.active {
+            color: #d4a24e;
+        }
+        .card-actions .btn-note {
+            color: #4f7a4f;
+        }
+        .card-actions .btn-note.active {
+            color: #2b6b2b;
+        }
+        .card-actions .btn-edit {
+            color: #4f6a8f;
+        }
+        .card-actions .btn-edit.is-editing {
+            color: #2b6b2b;
+        }
+        .card-actions .btn-save-edit {
+            color: #2b7a2b;
+            font-weight: 700;
+        }
+        .card-actions .btn-cancel-edit {
+            color: #8a4a4a;
+        }
+        .card-actions .btn-edit-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .card-actions .btn-edit-group .btn-edit {
+            font-size: 18px;
+        }
+        .card-actions .btn-edit-group .btn-save-edit,
+        .card-actions .btn-edit-group .btn-cancel-edit {
+            font-size: 18px;
+        }
+
+        .card-question {
+            padding: 6px 22px 12px 22px;
+            font-size: 15.5px;
+            line-height: 1.7;
+            color: #1c3322;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+        .card-question .q-text {
+            display: inline;
+            white-space: pre-wrap;
+        }
+        .card-question .q-text .math {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+        .card-question .toggle-hint {
+            font-size: 13px;
+            color: #5f8a5f;
+            margin-left: 10px;
+            font-weight: 400;
+            opacity: 0.7;
+            white-space: nowrap;
+        }
+        .card-question.editable {
+            cursor: text;
+            user-select: text;
+            border: 2px dashed #6a9e9e;
+            border-radius: 10px;
+            padding: 10px 18px;
+            background: #fafffe;
+        }
+        .card-question.editable:focus {
+            border-color: #2b6b6b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(60, 150, 150, 0.15);
+        }
+        .card-answer {
+            padding: 0 22px 6px 22px;
+            display: none;
+            animation: fadeSlide 0.3s ease;
+        }
+        .card-answer.open {
+            display: block;
+        }
+        .card-answer .answer-inner {
+            background: #f3faf3;
+            padding: 18px 22px;
+            border-radius: 14px;
+            font-size: 14.8px;
+            line-height: 1.75;
+            color: #1a3322;
+            word-break: break-word;
+        }
+        /* ---- 答案段落缩进核心样式 ---- */
+        .card-answer .answer-inner p {
+            text-indent: 2em;
+            margin: 0 0 0.2em 0;
+            padding: 0;
+            line-height: 1.75;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .card-answer .answer-inner p:last-child {
+            margin-bottom: 0;
+        }
+        /* ---- 公式行：不缩进、居中偏左 ---- */
+        .card-answer .answer-inner p.formula {
+            text-indent: 0;
+            margin-left: 2em;
+            font-family: 'Times New Roman', 'Cambria Math', serif;
+            color: #1c4a3a;
+            background: #eaf5ea;
+            border-radius: 6px;
+            padding: 2px 10px;
+            display: block;
+            width: fit-content;
+            max-width: 100%;
+        }
+        .card-answer .answer-inner strong {
+            color: #0f3d1f;
+            font-weight: 700;
+        }
+        .card-answer .answer-inner .math {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+        .card-answer .answer-inner .img-placeholder {
+            display: inline-block;
+            background: #dce8dc;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 13px;
+            color: #2a5a2a;
+            margin: 6px 0;
+            font-weight: 500;
+        }
+        .card-answer.editable {
+            cursor: text;
+            user-select: text;
+            border: 2px dashed #6a9e9e;
+            border-radius: 10px;
+            padding: 8px 16px;
+            background: #fafffe;
+        }
+        .card-answer.editable .answer-inner {
+            background: transparent;
+            padding: 4px 6px;
+        }
+        .card-answer.editable .answer-inner p {
+            text-indent: 2em;
+            margin: 0 0 0.2em 0;
+            padding: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .card-answer.editable .answer-inner p:last-child {
+            margin-bottom: 0;
+        }
+        .card-answer.editable:focus {
+            border-color: #2b6b6b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(60, 150, 150, 0.15);
+        }
+        .card-note-area {
+            padding: 0 22px 18px 22px;
+            display: none;
+            animation: fadeSlide 0.3s ease;
+        }
+        .card-note-area.open {
+            display: block;
+        }
+        .card-note-area .note-editor {
+            background: #f8fcf8;
+            border: 1px solid #c2ddc2;
+            border-radius: 14px;
+            padding: 12px 16px;
+            min-height: 80px;
+            max-height: 360px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #1c3322;
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s;
+            word-break: break-word;
+            position: relative;
+        }
+        .card-note-area .note-editor:focus {
+            border-color: #6a9e6a;
+            box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.15);
+        }
+        .card-note-area .note-editor img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            margin: 6px 0;
+            display: block;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            background: #f0f5f0;
+            border: 2px solid transparent;
+            transition: border 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .card-note-area .note-editor img.selected {
+            border-color: #4f8a4f;
+            box-shadow: 0 0 0 3px rgba(79, 138, 79, 0.25), 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+        .card-note-area .note-editor .note-placeholder {
+            color: #8aaa8a;
+            font-style: italic;
+        }
+
+        /* ---- 图片滑块控制 ---- */
+        .card-note-area .img-resize-control {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+            padding: 6px 14px;
+            background: #edf5ed;
+            border-radius: 30px;
+            border: 1px solid #c2ddc2;
+            font-size: 13px;
+            color: #2a5a2a;
+            flex-wrap: wrap;
+        }
+        .card-note-area .img-resize-control.show {
+            display: flex;
+        }
+        .card-note-area .img-resize-control input[type="range"] {
+            flex: 1;
+            min-width: 80px;
+            accent-color: #4f8a4f;
+            height: 4px;
+            cursor: pointer;
+        }
+        .card-note-area .img-resize-control .size-val {
+            font-weight: 600;
+            min-width: 44px;
+            text-align: center;
+        }
+        .card-note-area .img-resize-control .btn-reset-size {
+            background: #dcebd9;
+            border: none;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #1e4a2a;
+            transition: background 0.2s;
+        }
+        .card-note-area .img-resize-control .btn-reset-size:hover {
+            background: #c2ddc2;
+        }
+
+        .card-note-area .note-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            align-items: center;
+        }
+        .card-note-area .note-actions button {
+            background: #dcebd9;
+            border: none;
+            padding: 4px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #1e4a2a;
+            font-weight: 500;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .card-note-area .note-actions button:hover {
+            background: #c2ddc2;
+        }
+        .card-note-area .note-actions button:active {
+            transform: scale(0.96);
+        }
+        .card-note-area .note-actions .btn-insert-img {
+            background: #d4d9c4;
+            color: #2f4a2f;
+        }
+        .card-note-area .note-actions .btn-insert-img:hover {
+            background: #c4cdb0;
+        }
+        .card-note-area .note-actions .note-save {
+            background: #a8c8a8;
+            color: #1a3a1a;
+        }
+        .card-note-area .note-actions .note-save:hover {
+            background: #94b894;
+        }
+        .card-note-area .note-actions .note-clear {
+            background: #e6d6d6;
+            color: #6a3a3a;
+        }
+        .card-note-area .note-actions .note-clear:hover {
+            background: #dcc4c4;
+        }
+        .card-note-area .note-actions .note-size-hint {
+            font-size: 12px;
+            color: #6f8f6f;
+            margin-left: auto;
+            opacity: 0.7;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .no-result {
+            text-align: center;
+            padding: 50px 20px;
+            color: #4f7a4f;
+            font-size: 17px;
+            background: #e6f3e6;
+            border-radius: 24px;
+        }
+        .footer-note {
+            max-width: 1200px;
+            margin: 30px auto 10px auto;
+            text-align: center;
+            font-size: 13px;
+            color: #5f7f5f;
+            border-top: 1px solid #cce0cc;
+            padding-top: 18px;
+        }
+        .footer-note kbd {
+            background: #dce8dc;
+            padding: 0 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2a4a2a;
+            color: #f0faf0;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-size: 14px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.4s, transform 0.4s;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 640px) {
+            .app-header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 14px 18px;
+            }
+            .app-header h1 {
+                font-size: 20px;
+            }
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .single-mode-bar {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                padding: 10px 14px;
+            }
+            .single-mode-bar .mode-left {
+                justify-content: center;
+            }
+            .card-header {
+                padding: 14px 16px 4px 16px;
+            }
+            .card-question {
+                padding: 4px 16px 10px 16px;
+                font-size: 14.5px;
+            }
+            .card-answer {
+                padding: 0 16px 6px 16px;
+            }
+            .card-answer .answer-inner {
+                padding: 14px 16px;
+                font-size: 14px;
+            }
+            .card-answer .answer-inner p.formula {
+                margin-left: 0.8em;
+                font-size: 13.5px;
+            }
+            .card-note-area {
+                padding: 0 16px 14px 16px;
+            }
+            .card-note-area .note-editor {
+                min-height: 60px;
+                max-height: 260px;
+            }
+            .card-grid.single-mode {
+                max-width: 100%;
+            }
+            .card-note-area .img-resize-control {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #dce8dc;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8fbe8f;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6f9e6f;
+        }
+/* ================= 返回主页按钮 ================= */
+.app-header .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 15px 7px 11px;
+    border-radius: 30px;
+    background: #c4e0c4;
+    color: #1e4a2a;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(60, 110, 60, 0.10);
+    transition: background .2s, transform .2s, box-shadow .2s;
+}
+.back-home:hover {
+    background: #a8d0a8;
+    transform: translateX(-2px);
+    box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+}
+.back-home .arrow {
+    font-size: 15px;
+    line-height: 1;
+    transition: transform .2s;
+}
+.back-home:hover .arrow {
+    transform: translateX(-3px);
+}
+
+/* 移动端微调 */
+@media (max-width: 640px) {
+    .app-header .header-left { gap: 10px; }
+    .back-home { padding: 6px 13px 6px 10px; font-size: 12.5px; }
+}
+    </style>
+</head>
+<body>
+
+    <div class="app-header">
+        <div class="header-left">
+    <a href="../index.html" class="back-home" title="返回主页">
+        <span class="arrow">⬅</span><span>主页</span>
+    </a>
+    <h1>🧮 南开经济学 · 计算要点记忆卡</h1>
+</div>
+        <div class="stats">
+            <span>📚 总卡 <span class="num" id="totalCards">0</span></span>
+            <span>⭐ 收藏 <span class="num" id="favCount">0</span></span>
+        </div>
+    </div>
+
+    <div class="filter-bar" id="filterBar">
+        <label for="filterSpecial">专题</label>
+        <select id="filterSpecial">
+            <option value="all">全部</option>
+            <optgroup label="微观部分（专题一 ~ 专题十二）">
+                <option value="专题一">专题一 · 消费者最优选择</option>
+                <option value="专题二">专题二 · 柯布-道格拉斯函数</option>
+                <option value="专题三">专题三 · 替代效应与收入效应</option>
+                <option value="专题四">专题四 · 补偿变化与等价变化</option>
+                <option value="专题五">专题五 · 跨期消费问题</option>
+                <option value="专题六">专题六 · 要素需求与产品供给函数</option>
+                <option value="专题七">专题七 · 条件要素需求与成本函数</option>
+                <option value="专题八">专题八 · 一厂商多工厂与等边际法则</option>
+                <option value="专题九">专题九 · 完全竞争市场政府征税</option>
+                <option value="专题十">专题十 · 三级价格歧视</option>
+                <option value="专题十一">专题十一 · 寡头模型均衡</option>
+                <option value="专题十二">专题十二 · 契约曲线与瓦尔拉斯均衡</option>
+            </optgroup>
+            <optgroup label="宏观部分（专题十三 ~ 专题十五）">
+                <option value="专题十三">专题十三 · 经济波动理论计算</option>
+                <option value="专题十四">专题十四 · 经济增长（一）稳态与黄金律</option>
+                <option value="专题十五">专题十五 · 经济增长（二）增长率</option>
+            </optgroup>
+        </select>
+        <label for="filterFav">⭐ 收藏</label>
+        <select id="filterFav">
+            <option value="all">全部</option>
+            <option value="fav">仅收藏</option>
+        </select>
+        <input type="text" id="filterSearch" placeholder="搜索题目关键词…" style="flex:1; min-width:140px;" />
+        <button class="btn-clear-filter" id="clearFilterBtn">重置筛选</button>
+        <button class="btn-random" id="randomBtn">🎲 随机抽查</button>
+    </div>
+
+    <!-- 抽查模式提示条 -->
+    <div class="single-mode-bar" id="singleModeBar">
+        <div class="mode-left">
+            <button class="btn-nav" id="prevCardBtn" title="上一张">◀</button>
+            <span class="card-id-badge" id="singleCardBadge">卡片 #1</span>
+            <button class="btn-nav" id="nextCardBtn" title="下一张">▶</button>
+            <span class="mode-hint">抽查中</span>
+        </div>
+        <button class="btn-exit-single" id="exitSingleBtn" title="退出抽查模式">✕</button>
+    </div>
+
+    <div class="card-grid" id="cardGrid"></div>
+
+    <div class="footer-note">
+        点击题目区域可展开/收起答案 · 点击 ⭐ 收藏 · 点击 📝 添加笔记 · 点击 ✏️ 编辑题目/答案
+        <span style="display:block;font-size:12px;color:#8aaa8a;margin-top:4px;">
+            按 <kbd>R</kbd> 键快速随机抽查 · 抽查模式中 ◀ ▶ 切换卡片 · 点击笔记图片可调大小
+        </span>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============================================================
+        // 数据（专题一 ~ 专题十五：每章首张为知识要点，其后为练习题）
+        // 排版约定：**加粗**；以 $$ 开头的行渲染为公式行（不缩进）
+        // ============================================================
+        const cardData = [
+
+        /* ==================== 专题一 · 消费者最优选择 ==================== */
+        { id: 't1k', special: '专题一', qid: '知识要点',
+          question: '专题一 · 消费者最优选择｜全部知识点总结',
+          answer: `**一、凸偏好**
+
+即无差异曲线凸向原点或满足边际替代率递减规律的偏好类型。常见的凸偏好效用函数为柯布-道格拉斯效用函数和拟线性偏好。因此柯布-道格拉斯效用函数和拟线性偏好的最优选择问题可以利用下面两种方法求得。
+
+**【法一】拉格朗日法**
+
+第一步，写出消费者此时面临的问题：
+$$max U(x₁, x₂)   s.t.  p₁x₁ + p₂x₂ = m
+
+第二步，构造拉格朗日函数：
+$$L = U(x₁, x₂) − λ(p₁x₁ + p₂x₂ − m)
+
+第三步，求出一阶条件：
+$$∂L/∂x₁ = ∂U/∂x₁ − λp₁ = 0
+$$∂L/∂x₂ = ∂U/∂x₂ − λp₂ = 0
+$$∂L/∂λ = m − p₁x₁ − p₂x₂ = 0
+
+第四步，求出消费者最优选择：由前两式可得 MU₁/MU₂ = p₁/p₂，整理可得 x₂ = f(x₁)；将 x₂ = f(x₁) 代入第三式可得 p₁x₁ + p₂f(x₁) = m，由此解得 x₁ = x₁(p₁,p₂,m)，进而解得 x₂ = x₂(p₁,p₂,m)。
+
+【提示】如果题目给出了 p₁、p₂、m 的具体值，那么此时求出来的是消费者最优选择点；如果未给出具体数值，求出来的则是消费者的马歇尔需求函数。
+
+**【法二】直接利用消费者效用最大化的条件 MU₁/MU₂ = p₁/p₂**
+
+第一步，求出消费者不同商品的边际效用 MU₁、MU₂；
+第二步，利用效用最大化的一阶条件 MU₁/MU₂ = p₁/p₂，由此解得 x₂ = f(x₁)；
+第三步，将 x₂ = f(x₁) 代入约束方程 p₁x₁ + p₂x₂ = m，解得 x₁ = x₁(p₁,p₂,m)，进而解得 x₂ = x₂(p₁,p₂,m)。
+
+**二、完全替代品**
+
+完全替代品的效用函数一般形式为 U(x,y) = ax + by，其边际替代率 MRSxy = MUx/MUy = a/b，边际替代率为常数，不满足边际替代率递减规律，因此效用最大化的条件 MUx/MUy = px/py 或拉格朗日法不再适用，此时最优解为角点解。
+
+对于完全替代品，求最优选择最本质的方法：固定预算线，通过不断向外平移无差异曲线来找到其最优选择点。
+
+**三、完全互补品**
+
+完全互补品效用函数的形式为 U = min{ax, by}，相应的无差异曲线为直角形状，其最优消费点为拐点。完全互补品的效用最大化问题可以表述为：
+$$max min{ax, by}   s.t.  p_x·x + p_y·y = m
+
+最优选择处满足 ax = by，因此商品 x 和商品 y 的最优选择为：
+$$x = bm/(b·p_x + a·p_y)
+$$y = am/(b·p_x + a·p_y)
+
+**四、凹偏好**
+
+凹偏好是指两种商品的边际替代率递增，如效用函数 U(x,y) = √(ax² + by²)。当消费者的偏好为凹偏好时，消费者的最优选择永远是边界选择，即存在角点解。最优选择是处在边界上的点，而不是内部切点。实际上，内部切点对应的效用水平不是最大值，而是最小值。
+
+【提示】凹偏好和完全替代品的最优选择均为角点解，对于凹偏好和完全替代品，选择横轴还是纵轴上的点，往往要根据价格之比与无差异曲线横纵轴截距连线斜率的大小关系进行讨论。如果是让我们求解需求函数，那么这部分讨论是避免不了的。但如果题目中已经给出 (p_x, p_y, m) 让求解某个确定的最优选择点，我们可以直接将横纵两轴截距点代表的商品组合代入效用函数中，直接比较两个截距点效用的大小来确定消费者的最优组合是横轴截距还是纵轴截距。
+
+【本题有图示】`,
+          hasImage: true },
+
+        { id: 't1q1', special: '专题一', qid: '练习1',
+          question: `1、某消费者的效用函数 U(X₁,X₂) = min(X₁, 3X₂)，X₁ 和 X₂ 的价格分别为 P₁ 和 P₂，消费者的收入为 M。
+（1）请画出该消费者的无差异曲线。
+（2）画出相应的收入消费曲线（ICC）、价格消费曲线（PCC）和恩格尔曲线（EC）。
+（3）求商品 X₂ 的需求函数 X₂(P₁,P₂,M)。
+（4）已知 M = 100，P₁ = 1，P₂ = 2，求效用最大化的商品组合。（贺大2014年考题）`,
+          answer: `解：（1）由效用函数可知，X₁ 和 X₂ 是完全互补品，均衡时 X₁ = 3X₂，对应的无差异曲线是直角形状。
+【本题有图示】
+
+（2）收入-消费曲线（ICC）是在消费者的偏好和商品的价格不变的条件下，与消费者的不同收入水平相联系的消费者效用最大化的均衡点的轨迹。对于完全互补品而言，只有在无差异曲线的直角点上，两种互补商品刚好按固定比例被消费，所以收入消费曲线就是连接各直角点的直线。
+价格-消费曲线（PCC）是在消费者偏好、收入以及其他商品价格不变的条件下，与某一种商品的不同价格水平相联系的消费者效用最大化的均衡点的轨迹。两种商品互为完全互补品，所以无论价格是多少，消费者都必须按固定比例购买两种商品。
+恩格尔曲线（EC）表示消费者在每一收入水平对某种商品的需求量。消费者实现效用最大化的条件是 X₁ = 3X₂，结合预算方程 P₁X₁ + P₂X₂ = M，可得 X₁ 的需求为 X₁ = M/(P₁ + P₂/3)，因此 X₁ 的恩格尔曲线是一条斜率为 P₁ + P₂/3 的直线。
+【本题有图示】
+
+（3）消费者实现效用最大化的条件是 X₁ = 3X₂，结合预算方程 P₁X₁ + P₂X₂ = M，可得 X₂ 的需求为：
+$$X₂ = M/(3P₁ + P₂)
+
+（4）消费者实现效用最大化的条件是 X₁ = 3X₂，结合预算方程 X₁ + 2X₂ = 100，可得效用最大化的商品组合为：
+$$X₁ = 60，  X₂ = 20`,
+          hasImage: true },
+
+        { id: 't1q2', special: '专题一', qid: '练习2',
+          question: `2、某消费者仅消费两种商品 x、y，且具有拟线性偏好，即其效用函数为 U(x,y) = ln x + y，其中 U 为效用，x、y 分别为两种商品数量。假定其收入为 M，商品 x、y 的价格分别为 p_x、p_y。
+（1）画出反映该消费者偏好的无差异曲线，并说明各无差异曲线之间具有什么关系？
+（2）推导消费者对商品 x 和 y 的需求函数。（贾大2019年考题）`,
+          answer: `解：（1）对效用函数进行变形可得 y = U − ln x，因此可知各无差异曲线是通过垂直移动得到的，不同无差异曲线上横坐标相同的点具有相同的边际替代率，即各无差异曲线之间相互平行（形状完全相同，只是位置高低不同）。
+【本题有图示】
+
+（2）此时消费者效用最大化问题为：
+$$max  ln x + y   s.t.  p_x·x + p_y·y = M
+
+构造拉格朗日函数：
+$$L = ln x + y − λ(p_x·x + p_y·y − M)
+
+由一阶条件可得：
+$$∂L/∂x = 1/x − λp_x = 0
+$$∂L/∂y = 1 − λp_y = 0
+$$∂L/∂λ = M − p_x·x − p_y·y = 0
+
+解得：
+$$当 0 < M < p_y 时，x = M/p_x， y = 0
+$$当 M ≥ p_y 时，x = p_y/p_x， y = (M − p_y)/p_y`,
+          hasImage: true },
+
+        { id: 't1q3', special: '专题一', qid: '练习3',
+          question: `3、假设消费者效用函数为 U(x,y) = ax + by，商品的价格分别为 p_x、p_y，收入为 m，求商品的最优消费组合。`,
+          answer: `解：【法一】利用图形求解
+
+由于无差异曲线是直线，这时有角点解。边际替代率 MRSxy = MUx/MUy = a/b，价格之比为 p_x/p_y。
+
+① 当 a/b > p_x/p_y 时，即无差异曲线比预算线更加陡峭时，最优选择点是预算线与横轴的交点。此时 y = 0，由预算方程得 x = m/p_x，故最优商品组合为 (m/p_x, 0)。
+【本题有图示】
+
+② 当 a/b < p_x/p_y 时，即无差异曲线比预算线更加平缓时，最优选择点是预算线与纵轴的交点。此时 x = 0，由预算方程得 y = m/p_y，故最优商品组合为 (0, m/p_y)。
+【本题有图示】
+
+③ 当 a/b = p_x/p_y 时，预算线上各点都是最优商品组合点。
+
+【法二】利用方程将多元函数有约束的极值问题转化为一元函数无约束的极值问题
+
+此时消费者效用最大化问题为：
+$$max ax + by   s.t.  p_x·x + p_y·y = m
+
+该问题可以转化为：
+$$max ax + b·(m − p_x·x)/p_y
+整理可得：
+$$max (a − b·p_x/p_y)x + b·m/p_y
+
+当 a > b·p_x/p_y，即 p_x/p_y < a/b 时，x = m/p_x，y = 0；
+当 a < b·p_x/p_y，即 p_x/p_y > a/b 时，x = 0，y = m/p_y；
+当 a = b·p_x/p_y，即 p_x/p_y = a/b 时，预算线上各点都是最优商品组合点。`,
+          hasImage: true },
+
+        { id: 't1q4', special: '专题一', qid: '练习4',
+          question: `4、设有两个消费者，其效用函数分别为 u = 2ln x + 2ln y 和 u = x²y²。他们面临相同的约束，收入相同，价格也相同。
+（1）请利用相关原理回答，他们两人的消费购买行为是否一样？
+（2）请利用代数的方法计算出他们各自对两个商品的消费量。这个结果和你对第一个问题的答案一致吗？
+（3）如果第三个消费者的效用函数为 u = x² + y²，请问其消费行为和前面两人的消费行为是否相同？为什么？
+（4）计算出上面问题（3）的答案。（提示：对（3）和（4）两问，注意其呈现出来的无差异曲线的形状，或者注意最优化问题的一阶条件和二阶条件）（武汉大学考题）
+【范里安《微观经济学》中的正单调变换，第九版35页】`,
+          answer: `解：（1）两人的消费购买行为是一样的。因为 u = x²y² 是 u = 2ln x + 2ln y 的正单调变换。一个效用函数的正单调变换还是一个效用函数，这个效用函数代表的偏好与原效用函数代表的偏好相同。
+
+（2）对于第一个消费者来说，满足效用最大化的条件是 MUx/MUy = Px/Py，也就是 y/x = Px/Py。
+对于第二个消费者来说，满足其效用最大化的条件是 2xy²/(2x²y) = Px/Py，化简即可得 y/x = Px/Py。
+又因为两个消费者面临的消费约束均为 Px·x + Py·y = m。
+联立方程组可得：
+$$x = m/(2Px)， y = m/(2Py)
+他们对两个商品的消费量是相同的，这个结果与第一问的答案一致。
+
+（3）（4）其消费行为与前面两人的消费行为不同。
+效用函数 u = x² + y² 为凹函数，根据凹函数的性质可知，消费最优点落在无差异曲线和预算约束线以及横轴或纵轴的交点上。
+$$当 Px < Py 时，消费者全部消费 x，即 x = m/Px， y = 0
+$$当 Px > Py 时，消费者全部消费 y，即 x = 0， y = m/Py
+$$当 Px = Py 时，消费者选择两个端点的效用是无差异的`,
+          hasImage: false },
+
+        /* ==================== 专题二 · 柯布-道格拉斯函数 ==================== */
+        { id: 't2k', special: '专题二', qid: '知识要点',
+          question: '专题二 · 柯布-道格拉斯函数相关结论｜全部知识点总结',
+          answer: `柯布-道格拉斯函数不但多年常考，且是经济学中一个非常典型和有用处的函数形式，也是一重要的分析运用工具（常常作为效用函数、生产函数、经济增长函数等的代表形式出现和考查）。
+
+**一、柯布-道格拉斯效用函数求最优化问题及其基本结论**
+
+柯布-道格拉斯效用函数：u(x₁,x₂) = x₁^c · x₂^d。
+由于任何效用函数的单调变换都保持原来的偏好关系，因此出于计算方便的考虑，可将上式取对数变成对数形式：
+$$ln u(x₁,x₂) = c·ln x₁ + d·ln x₂
+
+下面求解该效用函数中商品1和商品2的需求函数。最大化问题是：
+$$max c·ln x₁ + d·ln x₂   s.t.  p₁x₁ + p₂x₂ = m
+
+【法一】分别写出 MRS 条件和预算约束条件，消费者效用最大化的均衡条件是边际效用之比等于价格比：
+$$MRS₁₂ = MU₁/MU₂ = (c·x₂)/(d·x₁) = p₁/p₂
+$$p₁x₁ + p₂x₂ = m
+联立解得：
+$$x₁ = [c/(c+d)]·(m/p₁)，  x₂ = [d/(c+d)]·(m/p₂)
+
+【法二】一开始就将预算约束代入目标函数（化为一元函数求极值问题）：
+$$max c·ln x₁ + d·ln[(m − p₁x₁)/p₂]
+一阶条件为：
+$$c/x₁ − d·[p₂/(m − p₁x₁)]·(p₁/p₂) = 0
+解出 x₁ = [c/(c+d)]·(m/p₁)，x₂ = [d/(c+d)]·(m/p₂)。
+
+【法三】使用拉格朗日方法（建议平时做题时也使用此方法）：
+$$L = c·ln x₁ + d·ln x₂ − λ(p₁x₁ + p₂x₂ − m)
+$$∂L/∂x₁ = c/x₁ − λp₁ = 0
+$$∂L/∂x₂ = d/x₂ − λp₂ = 0
+$$∂L/∂λ = m − p₁x₁ − p₂x₂ = 0
+重新整理前两式可得 x₂ = (p₁/p₂)(d/c)x₁，将其代入第三式解得 x₁、x₂。
+
+于是得到关于柯布-道格拉斯效用函数的两个结论：
+**结论1**：消费者花费在每种商品上的支出占收入的比例是固定的，两种商品支出占收入的比例分别为 p₁x₁/m = c/(c+d)、p₂x₂/m = d/(c+d)，这一比例的大小取决于柯布-道格拉斯函数中变量的指数。
+**结论2**：消费者对每种商品的需求仅与自身收入和自身商品的价格有关，而与其他商品价格无关，因此每种商品需求的交叉价格弹性为零。
+
+**二、柯布-道格拉斯效用函数关于弹性的三个结论**
+
+如果 u(x,y) = x^a · y^(1−a)，商品 x、y 的价格分别为 p_x、p_y，消费者收入为 m，则如下三个弹性结论成立：
+$$e(x, p_x) = −1   （需求价格弹性）
+$$e(x, p_y) = 0    （交叉价格弹性）
+$$e(x, m) = 1      （收入弹性）
+
+证明：从效用函数中得到的需求函数为 x = a·m/p_x，y = (1−a)·m/p_y，代入弹性定义即可验证。
+（1）x 的需求弹性 e(x,p_x) = (∂x/∂p_x)·(p_x/x) = (−am/p_x²)·(p_x/(am/p_x)) = −1；
+（2）x 的替代弹性 e(x,p_y) = (∂x/∂p_y)·(p_y/x) = 0；
+（3）x 的收入弹性 e(x,m) = (∂x/∂m)·(m/x) = (a/p_x)·(m/(am/p_x)) = 1。
+
+**三、常用结论速记**
+
+若 u(x,y) = x^c·y^d，均衡时：
+$$x = [c/(c+d)]·(m/p_x)，  y = [d/(c+d)]·(m/p_y)
+如果使用变量的指数之和为1的柯布-道格拉斯函数是非常方便的。例如 u(x,y) = x^a·y^(1−a)，则我们立即可将 a 解释为花费在商品 x 上的收入比例。`,
+          hasImage: false },
+
+        { id: 't2q1', special: '专题二', qid: '练习1',
+          question: `1、假设某消费者的效用函数是 U = x³y，他会把收入的多少用于商品 y 上？（贸大2012年考题）`,
+          answer: `解：假设商品价格为 p_x、p_y，消费者收入为 m。
+
+此时消费者效用最大化问题为：
+$$max x³y   s.t.  p_x·x + p_y·y = m
+
+构造拉格朗日函数：L = x³y − λ(p_x·x + p_y·y − m)，由一阶条件可得：
+$$∂L/∂x = 3x²y − λp_x = 0
+$$∂L/∂y = x³ − λp_y = 0
+$$∂L/∂λ = m − p_x·x − p_y·y = 0
+
+解得需求函数为：
+$$x = 3m/(4p_x)，  y = m/(4p_y)
+
+所以消费者在商品 y 上的支出占收入的比例为：
+$$p_y·y/m = 1/4`,
+          hasImage: false },
+
+        { id: 't2q2', special: '专题二', qid: '练习2',
+          question: `2、假设某消费者消费 X 和 Y 两种商品，两者的价格分别为 P_X 和 P_Y，消费者收入为 M，消费者的效用函数为柯布-道格拉斯形式，即 U = XY，这意味着消费者消费 X 的边际效用为 Y，即 MU_X = Y，而消费 Y 的边际效用为 X，即 MU_Y = X。请回答如下问题：
+（1）该消费者对 X 的需求取决于哪些因素？推算出需求函数来。
+（2）从数学公式中看，消费者偏好是通过什么途径影响需求的？
+（3）X 和 Y 是互补商品还是替代商品？为什么？
+（4）X 与 Y 是正常商品还是低劣商品？为什么？
+（5）效用函数 U = XY 是否可以说明序数效用论？为什么？
+（6）商品的边际替代率是什么？
+（7）在这个问题里体现了微观经济学最基本的出发点（基本假设），它们是什么？（武汉大学考题）`,
+          answer: `解：（1）该消费者效用最大化问题为：
+$$max XY   s.t.  P_X·X + P_Y·Y = M
+
+构造拉格朗日函数：L = XY − λ(P_X·X + P_Y·Y − M)
+最优选择必定满足以下三个条件：
+$$∂L/∂X = Y − λP_X = 0
+$$∂L/∂Y = X − λP_Y = 0
+$$∂L/∂λ = M − P_X·X − P_Y·Y = 0
+
+解得：
+$$X = M/(2P_X)，  Y = M/(2P_Y)
+其中 X = M/(2P_X) 是消费者对 X 的需求函数，Y = M/(2P_Y) 是消费者对 Y 的需求函数。故可知消费者对 X 的需求取决于收入和 X 的价格；消费者对 Y 的需求取决于收入和 Y 的价格。【柯布-道格拉斯函数的结论】
+
+（2）根据消费者对 X 的需求函数可以看出，消费者的偏好（效用 U）并不进入消费者的需求函数，所以消费者的偏好通过影响消费者的效用函数来影响消费者的需求函数。
+
+（3）X 与 Y 既不是替代品，也不是互补品。因为商品 X 的需求量与商品 Y 的价格不相关，即 X 的需求量不会对商品 Y 的价格的变动做出反应，相应的需求的交叉价格弹性为零。【柯布-道格拉斯函数的结论】
+
+（4）由于 dX/dM = 1/(2P_X) > 0，dY/dM = 1/(2P_Y) > 0，所以当收入增加时，对商品 X 和 Y 的需求都会增加，所以二者都是正常商品。
+
+（5）效用函数 U = XY 可以说明序数效用论。序数效用论认为，商品给消费者带来的效用大小应用顺序或等级来表示。由于消费者偏好于更高无差异曲线上的各点，所以，更高无差异曲线上物品的组合提供了更高的效用。可以对 U = XY 中的 U 赋予不同的值，来表示一个选择的顺序，形成一组无差异曲线，使赋值较高的无差异曲线表示较为偏好的顺序，即可说明序数效用论。
+
+（6）在维持效用水平不变的前提下，消费者增加一单位某种商品的消费数量时所需要的放弃的另一种商品的消费数量，被称为商品的边际替代率，即：
+$$MRS = −∂Y/∂X = MU_X/MU_Y = Y/X
+
+（7）在这个问题里体现了微观经济学最基本的出发点（基本假设），即：
+① 理性人假设。假设每一个从事经济活动的人所采取的经济行为都是力图以自己的最小经济代价去获得自己的最大经济利益，即消费者追求效用最大化。
+② 资源稀缺性假设。在充满稀缺性的世界里，用稀缺资源生产或消费某种物品都是有代价的，每个经济主体都要面临权衡取舍。`,
+          hasImage: false },
+
+        { id: 't2q3', special: '专题二', qid: '练习3',
+          question: `3、某个消费者的效用函数为 u(x₁,x₂) = x₁²x₂。商品1、2的价格和消费者的收入分别为 p₁、p₂ 和 m。
+（1）如果 m = 24，p₁ = 1，p₂ = 1，现在 p₁ 上升为2，求此消费者关于商品1的斯勒茨基替代效应和收入效应；
+（2）请根据计算，验证恩格尔加总规则。`,
+          answer: `解：（1）根据柯布-道格拉斯函数结论有：
+$$x₁(p₁,p₂,m) = 2m/(3p₁)，  x₂(p₁,p₂,m) = m/(3p₂)
+代入 m = 24，p₁ = 1，p₂ = 1，得价格变化前的 x₁(p₁,m) = 16
+代入变化后的价格 p₁' = 2，得价格变化后的 x₁(p₁',m) = 8
+价格上升的总效应为 Δx = −8
+
+下面把总效应分解为斯勒茨基替代效应和收入效应。
+为了在新价格下还能恰好买得起原消费束，货币收入改变量应恰好等于商品1的原来消费数量乘以价格的改变量，即 Δm = x₁·Δp₁。
+本题中 Δm = 16 × 1 = 16，因此 m' = Δm + m = 16 + 24 = 40。
+这样在保持消费者购买力不变的条件下，消费者对商品1的需求为：
+$$x₁(p₁', m') = 2 × (24 + 16) / (3 × 2) = 40/3
+从而消费者的替代效应为：
+$$Δx' = x₁(p₁', m') − x₁(p₁, m) = 40/3 − 16 = −8/3
+消费者的收入效应为：
+$$Δx'' = Δx − Δx' = −8 + 8/3 = −16/3
+
+（2）恩格尔加总法则是说，把消费者在每种商品上的支出份额和该商品的需求收入弹性之积加总等于1。
+柯布-道格拉斯函数关于支出份额我们有结论，本题中商品1的份额为 2/3，商品2的份额为 1/3。
+而两商品的需求收入弹性均为1（本专题刚刚推导证明）。
+所以：2/3 × 1 + 1/3 × 1 = 1，验证了恩格尔加总规则。`,
+          hasImage: false },
+
+        { id: 't2q4', special: '专题二', qid: '练习4',
+          question: `4、考虑社会中一个典型消费者的效用函数为 U(x₁,x₂) = ln x₁ + 3ln x₂，x₁ 和 x₂ 分别为商品1和商品2的消费量，该消费者的收入为1000元，两种商品价格都是1。求：
+（1）消费者最优消费的 x₁ 和 x₂ 的量。
+（2）假设政府想征收100元的税，它有两个选择：一是对收入征收10%的所得税，第二是对商品1征收消费税（即每消费一单位的商品1需要交纳 t 元的税），请设置一个恰好能够在消费者最优消费时征收到100元的税率 t。
+（3）比较上述两种措施对消费者效用的影响，哪种情况下消费者效用较大？
+【题干的效用函数可以转化为柯布-道格拉斯函数 U = x₁x₂³，结合柯布-道格拉斯函数的结论方便计算】`,
+          answer: `解：（1）消费者实现消费均衡的条件是：
+$$MRS₁₂ = MU₁/MU₂ = P₁/P₂
+已知效用函数为 U(x₁,x₂) = ln x₁ + 3ln x₂，因此 MU₁ = 1/x₁，MU₂ = 3/x₂。
+代入消费者均衡条件，可得：
+$$x₂/(3x₁) = P₁/P₂
+将其代入预算约束方程 P₁x₁ + P₂x₂ = m 解得需求函数为：
+$$x₁ = m/(4P₁)，  x₂ = 3m/(4P₂)
+代入 P₁ = P₂ = 1，m = 1000 解得需求量为：
+$$x₁ = 250，  x₂ = 750
+
+【或者题干的效用函数单调变换转化为柯布-道格拉斯函数 U = x₁x₂³，得到 x₁ = m/(4P₁)，x₂ = 3m/(4P₂)】
+
+（2）如果对商品1征收消费税，此时消费者面对的商品价格为 1 + t。
+由（1）可知需求函数为 x₁ = m/(4P₁)，x₂ = 3m/(4P₂)。
+代入 P₁ = 1 + t，P₂ = 1，m = 1000 解得需求量为：
+$$x₁ = 250/(1 + t)，  x₂ = 750
+税收总额 = t·x₁ = 250t/(1 + t) = 100，解得税率：
+$$t = 2/3
+
+（3）第一种情况：对收入征收10%的所得税，此时收入有900元。
+代入 P₁ = P₂ = 1，m = 900 解得需求量为 x₁ = 225，x₂ = 675。
+此时消费者的效用水平：
+$$U = ln225 + 3ln675 = 24.96
+
+第二种情况：对商品1征收消费税（从量税）。由（2）问可知：
+$$x₁ = 250/(1 + t) = 250/(1 + 2/3) = 150，  x₂ = 750
+消费者效用：
+$$U = ln150 + 3ln750 = 24.87
+由于 24.96 > 24.87，因此第一种情况即对收入征收10%的所得税消费者的效用大。`,
+          hasImage: false },
+
+        /* ==================== 专题三 · 替代效应与收入效应 ==================== */
+        { id: 't3k', special: '专题三', qid: '知识要点',
+          question: '专题三 · 替代效应和收入效应计算题｜全部知识点总结',
+          answer: `【提示】这一部分的斯勒茨基分解法属于中级教材知识点，大家可以等看范里安教材时再看斯勒茨基分解法，或者先单独去看一下范里安第9版91–95页对应部分的讲解。
+
+**一、希克斯分解法（高鸿业教材）**
+
+假设商品 x 和商品 y 的初始价格分别为 p_x 和 p_y，现在商品 x 价格变为 p_x'，消费者收入为 m，效用函数为 U(x,y)。
+
+（1）由效用最大化解出消费者初始的最优消费组合：
+$$max U = U(x,y)   s.t.  p_x·x + p_y·y = m
+可解得：x₁，y₁，U₁
+
+（2）由效用最大化解出价格变动后的最优消费组合：
+$$max U = U(x,y)   s.t.  p_x'·x + p_y·y = m
+可解得：x₂，y₂
+
+（3）根据希克斯分解法的定义，由支出最小化解出使得原效用保持不变的最优消费组合：
+$$min p_x'·x + p_y·y   s.t.  U(x,y) = U₁
+可解得：x₃，y₃
+
+最终可得出商品 x 的：
+$$替代效应 = x₃ − x₁，  收入效应 = x₂ − x₃，  总效应 = x₂ − x₁
+
+**二、斯勒茨基分解法（范里安教材）**
+
+假设商品 x 和商品 y 的初始价格分别为 p_x 和 p_y，现在商品 x 价格变为 p_x'，消费者收入为 m，效用函数为 U(x,y)。
+
+（1）由效用最大化解出消费者初始的最优消费组合：
+$$max U = U(x,y)   s.t.  p_x·x + p_y·y = m
+可解得：x₁，y₁
+
+（2）由效用最大化解出价格变动后的最优消费组合：
+$$max U = U(x,y)   s.t.  p_x'·x + p_y·y = m
+可解得：x₂，y₂
+
+（3）根据斯勒茨基分解法的定义，保持原有购买力（能买得起原消费束）：
+$$max U(x,y)   s.t.  p_x'·x + p_y·y = p_x'·x₁ + p_y·y₁
+可解得：x₃，y₃
+
+最终可得出商品 x 的：
+$$替代效应 = x₃ − x₁，  收入效应 = x₂ − x₃，  总效应 = x₂ − x₁
+
+**三、两种分解法的关键区别**
+
+希克斯分解法：保持原效用水平不变（补偿预算线与原无差异曲线相切）；
+斯勒茨基分解法：保持原购买力不变（补偿预算线通过原消费束）。
+斯勒茨基替代效应的绝对值一般小于希克斯替代效应的绝对值。`,
+          hasImage: false },
+
+        { id: 't3q1', special: '专题三', qid: '练习1',
+          question: `1、小明的效用函数为 U(P,B) = P^(1/3)·B^(2/3)，P 和 B 分别表示土豆和牛肉的数量。一直以来，土豆和牛肉的价格分别为2和4，小明每天的收入为12。但是某天突然爆发了疯牛病，导致牛肉的价格跌到3。请问：
+（1）在疯牛病爆发之前，小明每天消费的土豆和牛肉分别是多少？
+（2）在疯牛病爆发之后，小明每天消费的土豆和牛肉分别是多少？
+（3）请画图说明小明消费牛肉的数量变化情况，并将其分解为替代效应和收入效应。（贺大2021年考题）
+【对外经贸的参考书是平狄克，平狄克教材上用的是希克斯分解法，所以这里答案给出的是希克斯分解法，斯勒茨基分解法的求解留作大家自行练习】`,
+          answer: `解：（1）假设土豆和牛肉的价格分别为 p_P、p_B，小明的收入为 m。
+则小明效用最大化问题为：
+$$max P^(1/3)·B^(2/3)   s.t.  p_P·P + p_B·B = m
+构造拉格朗日函数并由一阶条件解得需求函数：
+$$P = m/(3p_P)，  B = 2m/(3p_B)
+疯牛病爆发之前，p_P = 2，p_B = 4，m = 12，所以此时消费量：
+$$P = 2，  B = 2
+
+（2）疯牛病爆发之后，p_P = 2，p_B' = 3，m = 12。
+代入（1）中需求函数，求得此时的消费量：
+$$P' = 2，  B' = 8/3
+
+（3）初始效用水平为 U = P^(1/3)·B^(2/3) = 2。
+在新的价格水平下实现初始的效用水平，小明的支出最小化问题为 P^(1/3)·B^(2/3) = 2，构造拉格朗日函数并由一阶条件解得：
+$$P'' = ∛36 / 2，  B'' = 2∛36 / 3
+所以：
+$$替代效应 = B'' − B = 2∛36/3 − 2
+$$收入效应 = B' − B'' = (8 − 2∛36)/3
+$$总效应 = B' − B = 2/3
+作图如下（横轴为牛肉数量 B，纵轴为土豆数量 P，画出原预算线、新预算线、补偿预算线及三个均衡点）。
+【本题有图示】`,
+          hasImage: true },
+
+        { id: 't3q2', special: '专题三', qid: '练习2',
+          question: `2、消费者的效用函数为 U(x,y) = √(xy)，收入 m = 120，商品价格分别为 p_x = 10，p_y = 8。请计算：
+（1）消费者均衡是多少；
+（2）当商品 x 价格下降为 p_x' = 6，价格变化的斯勒茨基替代效应和收入效应分别是多少；
+（3）当商品 x 价格下降为 p_x' = 6，价格变化的希克斯替代效应和收入效应分别是多少。`,
+          answer: `解：（1）【法一】消费者效用最大化问题为：
+$$max √(xy)   s.t.  10x + 8y = 120
+构造拉格朗日函数并由一阶条件可以解得：x₁ = 6，y₁ = 7.5
+
+【法二】由柯布-道格拉斯效用函数的基本性质可知：
+$$x = [a/(a+β)]·(m/p_x)，  y = [β/(a+β)]·(m/p_y)
+代入 a = 1/2，β = 1/2，p_x = 10，p_y = 8，m = 120 可得：x₁ = 6，y₁ = 7.5
+
+（2）价格变化后消费者效用最大化问题为：
+$$max √(xy)   s.t.  6x + 8y = 120
+构造拉格朗日函数并由一阶条件可以解得：x₂ = 10，y₂ = 7.5
+
+在新的价格水平下，消费者能消费得起初始消费束所需要的收入：
+$$m' = p_x'·x₁ + p_y·y₁ = 6×6 + 8×7.5 = 96
+此时消费者面临的问题为：
+$$max √(xy)   s.t.  6x + 8y = 96
+构造拉格朗日函数并由一阶条件可以解得：x₃ = 8，y₃ = 6
+
+因此：
+$$斯勒茨基替代效应 = x₃ − x₁ = 8 − 6 = 2
+$$收入效应 = x₂ − x₃ = 10 − 8 = 2
+$$总效应 = x₂ − x₁ = 10 − 6 = 4
+
+（3）由（1）（2）可知：
+价格变化前消费者对两种商品的消费量为 x₁ = 6，y₁ = 7.5，初始效用水平 U₁ = √(6 × 7.5) = 3√5。
+价格变化后消费者对两种商品的消费量为 x₂ = 10，y₂ = 7.5。
+
+为求希克斯替代效应，此时消费者面临的问题为：
+$$min 6x + 8y   s.t.  √(xy) = 3√5
+构造拉格朗日函数并由一阶条件可以解得：
+$$x₃' = 2√15，  y₃' = (3/2)√15
+因此：
+$$希克斯替代效应 = x₃' − x₁ = 2√15 − 6 = 2(√15 − 3)
+$$收入效应 = x₂ − x₃' = 10 − 2√15 = 2(5 − √15)
+$$总效应 = x₂ − x₁ = 10 − 6 = 4
+
+【提示】本题是一道非常常规的题，通过本题大家需要回顾和进一步熟练前面给大家总结的斯勒茨基分解法下以及希克斯分解法下替代效应和收入效应的解题思路。`,
+          hasImage: false },
+
+        { id: 't3q3', special: '专题三', qid: '练习3',
+          question: `3、假设小明喜欢吃羊肉串（x）和啤酒（y），两者的价格分别为 p_x、p_y，收入为 I，其效用函数为 u(x,y) = min(x, y/2)。
+（1）如果羊肉串和啤酒的相对价格发生变动，是否会改变小明对这两种物品的消费比例？
+（2）计算小明对羊肉串和啤酒这两种物品的需求函数。
+（3）当价格体系由 (p_x, p_y) = (2, 2) 变为 (p_x', p_y) = (1, 2)，求商品 x 的斯勒茨基替代效应和收入效应。`,
+          answer: `解：（1）即使羊肉串和啤酒的相对价格发生变动，也不会改变小明对这两种物品的消费比例，因为小明的效用函数为 u(x,y) = min(x, y/2)，这表明对于小明，羊肉串和啤酒是两种完全互补的商品，使得小明效用最大化的消费比例满足 x = y/2。
+
+（2）将 x = y/2 代入预算约束线 p_x·x + p_y·y = I，可得小明对羊肉串的需求函数为：
+$$x = I/(p_x + 2p_y)
+对啤酒的需求函数为：
+$$y = 2I/(p_x + 2p_y)
+
+（3）由（2）可知需求函数 x = I/(p_x + 2p_y)，y = 2I/(p_x + 2p_y)。
+代入 p_x = 2，p_y = 2 可得初始消费量：
+$$x = I/6，  y = I/3
+代入 p_x' = 1，p_y = 2 可得新的消费量：
+$$x' = I/5，  y' = 2I/5
+
+在新的价格水平下，能够买得起初始消费束所需要的收入水平为：
+$$I' = 1×(I/6) + 2×(I/3) = 5I/6
+此时消费者效用最大化问题为：
+$$max min(x, y/2)   s.t.  x + 2y = 5I/6
+解得：
+$$x'' = I/6，  y'' = I/3
+所以：
+$$替代效应 = x'' − x = I/6 − I/6 = 0
+$$收入效应 = x' − x'' = I/5 − I/6 = I/30
+$$总效应 = I/30`,
+          hasImage: false },
+
+        /* ==================== 专题四 · 补偿变化与等价变化 ==================== */
+        { id: 't4k', special: '专题四', qid: '知识要点',
+          question: '专题四 · 补偿变化和等价变化计算题｜全部知识点总结',
+          answer: `【提示】这一部分属于中级教材知识点，大家可以等看范里安教材时再做这一部分思路总结和题目。
+
+**一、补偿变化（CV）一般解题步骤**
+
+价格变化之后使消费者回复到初始无差异曲线上（初始效用上）所必须的收入变化称之为收入的补偿变化，这种收入变化刚好补偿了价格变化给消费者带来的影响。这种补偿变化测度的是如果想要准确地补偿受价格变动影响的消费者，就必须给予消费者多少额外货币。
+
+假设商品 x 和商品 y 的初始价格分别为 p_x 和 p_y，消费者收入为 m，现在商品 x 价格变为 p_x'，效用函数为 U(x,y)，求补偿变化。
+
+（1）由效用最大化求出价格变动前的最优消费组合及其对应的效用水平：
+$$max U = U(x,y)   s.t.  p_x·x + p_y·y = m
+可解得：x₁，y₁，U₁
+
+（2）求出价格变化后为使得消费者效用维持在 U₁ 所需要的最小支出：
+$$min p_x'·x + p_y·y   s.t.  U(x,y) = U₁
+可解得：x₂，y₂，m' = p_x'·x₂ + p_y·y₂
+
+则补偿变化：
+$$CV = m' − m
+
+【提示】补偿变化一句话总结就是：**新价格原效用**。
+
+**二、等价变化（EV）一般解题步骤**
+
+价格变化以前必须从消费者那里取走多少货币，才能使他的境况同他在价格变化以后的境况（变化后的效用）一样好。等价变化测度的是消费者为了避免价格变动而愿意付出的最大收入量。
+
+（1）由效用最大化求出价格变动后的消费者最优选择及对应的效用水平：
+$$max U(x,y)   s.t.  p_x'·x + p_y·y = m
+可解得：x₁，y₁，U₁
+
+（2）求出消费者为维持价格变动后的效用水平所愿意付出的最小支出量：
+$$min p_x·x + p_y·y   s.t.  U(x,y) = U₁
+可解得：x₂，y₂，m' = p_x·x₂ + p_y·y₂
+
+则等价变化：
+$$EV = m − m'
+
+【提示】等价变化一句话总结就是：**原价格新效用**。
+
+**三、利用支出函数求补偿变化和等价变化**
+
+前面总结的解题思路是一般思路，下面我们借助支出函数来求补偿变化和等价变化。
+由既定预算约束下效用最大化可以求得马歇尔需求函数，将马歇尔需求函数代入效用函数，可得间接效用函数 V = V(p_x, p_y, m)；由间接效用函数和支出函数的对偶性可得支出函数 E = E(p_x, p_y, U)。
+
+$$补偿变化：CV = E(p_x', p_y, U₀) − E(p_x, p_y, U₀)
+$$等价变化：EV = E(p_x, p_y, U₀) − E(p_x, p_y, U₁)
+
+【提示】这一方法可以等学习完拔高阶段以后再进行了解，掌握这里的方法在计算补偿变化和等价变化时可以节省很多时间。
+
+**四、CV 与 EV 的符号与经济含义**
+
+补偿变化和等价变化是具有经济学含义的，二者并不总是为正：
+（1）当价格上升时，补偿变化与等价变化均为正值，表明此时需要补偿消费者一部分收入使其在新价格下回到初始价格水平，也表明此时需要拿走消费者一部分收入使其在原价格水平下实现新的效用水平；
+（2）当价格下降时，补偿变化与等价变化均为负值，此时表明需要拿走消费者一部分收入使其在新价格下回到初始价格水平，也表明此时需要补偿消费者一部分收入使其在原价格水平下实现新的效用水平。`,
+          hasImage: false },
+
+        { id: 't4q1', special: '专题四', qid: '练习1',
+          question: `1、消费者的效用函数为 U(x₁,x₂) = √(x₁x₂)，商品 x₁ 和 x₂ 的价格为 p₁ 和 p₂，收入为 y。
+（1）假设商品 x₁ 和 x₂ 的价格为 p₁ = 1 和 p₂ = 2，该消费者收入为 y = 100，求该消费者对两种商品的需求量。
+（2）若商品 x₁ 价格升至2，即此时 p₁' = p₂ = 2，该消费者收入不变。求此价格变化对商品 x₁ 产生的替代效应和收入效应。
+（3）求此时的补偿变化（CV）和等价变化（EV）。`,
+          answer: `解：（1）消费者效用最大化问题为：
+$$max √(x₁x₂)   s.t.  x₁ + 2x₂ = 100
+由 C-D 效用函数基本结论可知：
+$$x₁ = y/(2p₁) = 50，  x₂ = y/(2p₂) = 25
+此时消费者的效用为：
+$$u = √(x₁x₂) = 25√2
+
+（2）① 希克斯分解法
+若商品 x₁ 价格升至2，此时消费者效用最大化问题为：
+$$max √(x₁x₂)   s.t.  2x₁ + 2x₂ = 100
+由 C-D 效用函数基本结论可知：
+$$x₁' = y/(2p₁') = 25，  x₂' = y/(2p₂) = 25
+此时消费者的效用为 u' = √(x₁'x₂') = 25。
+若想维持初始的效用水平 u = 25√2，此时消费者支出最小化问题为：
+$$min 2x₁ + 2x₂   s.t.  √(x₁x₂) = 25√2
+构造拉格朗日并由一阶条件可得：
+$$x₁'' = 25√2，  x₂'' = 25√2
+因此商品 x₁ 价格上升的：
+$$替代效应 = x₁'' − x₁ = 25(√2 − 2)
+$$收入效应 = x₁' − x₁'' = 25(1 − √2)
+$$总效应 = x₁' − x₁ = −25
+
+② 斯勒茨基分解法
+要使得原始购买力保持不变，则收入水平应调整为：
+$$y' = p₁'·x₁ + p₂·x₂ = 2×50 + 2×25 = 150
+此时消费者效用最大化问题为：
+$$max √(x₁x₂)   s.t.  2x₁ + 2x₂ = 150
+由 C-D 效用函数基本结论可知：x₁'' = 37.5，x₂'' = 37.5
+因此商品 x₁ 价格上升的：
+$$替代效应 = x₁'' − x₁ = −12.5
+$$收入效应 = x₁' − x₁'' = −12.5
+$$总效应 = x₁' − x₁ = −25
+
+（3）① 补偿变化
+若想维持初始的效用水平 u = 25√2，此时消费者支出最小化问题为：
+$$min 2x₁ + 2x₂   s.t.  √(x₁x₂) = 25√2
+构造拉格朗日并由一阶条件可得：x₁'' = 25√2，x₂'' = 25√2。
+此时的最小支出为：
+$$y'' = 25√2 × 2 + 25√2 × 2 = 100√2
+因此补偿变化为：
+$$CV = y'' − y = 100(√2 − 1)
+
+② 等价变化
+若想维持新的效用水平 u' = 25，此时消费者支出最小化问题为：
+$$min x₁ + 2x₂   s.t.  √(x₁x₂) = 25
+构造拉格朗日并由一阶条件可得：
+$$x₁'' = 25√2，  x₂'' = 12.5√2
+此时的最小支出为：
+$$y''' = 25√2 × 1 + 12.5√2 × 2 = 50√2
+因此等价变化为：
+$$EV = y − y''' = 50(2 − √2)
+
+【提示1】利用支出函数求补偿变化和等价变化的解法：
+商品 x₁ 和 x₂ 的马歇尔需求函数：x₁ = y/(2p₁)，x₂ = y/(2p₂)。
+将马歇尔需求函数代入效用函数 U = √(x₁x₂) 得间接效用函数：
+$$v = √(x₁x₂) = y/(2√(p₁p₂))
+由间接效用函数得出支出函数：
+$$e = 2u√(p₁p₂)
+$$补偿变化：CV = 2×25√2×√(2×2) − 2×25√2×√(1×2) = 100(√2 − 1)
+$$等价变化：EV = 2×25√2×√(1×2) − 2×25×√(1×2) = 50(2 − √2)
+
+【提示2】补偿变化和等价变化是具有经济学含义的，二者并不总是为正，详见知识要点卡片。`,
+          hasImage: false },
+
+        { id: 't4q2', special: '专题四', qid: '练习2',
+          question: `2、假设小明只消费两种商品 X 和 Y。小明的效用函数为 U(x,y) = 2xy + 1，其中 x 表示小明在商品 X 上的消费量，y 表示小明在商品 Y 上的消费量。假设商品 X 和商品 Y 的价格都为1，小明的收入为20元。
+（1）求出小明对商品 X 和商品 Y 的需求。
+（2）假设商品 X 的价格上涨到2，商品 Y 的价格不变，求出斯勒茨基分解法和希克斯分解法下由于 X 的价格上涨所引起的商品 X 的需求变化中的替代效应和收入效应。
+（3）继续考虑（2）中的情况，即商品 X 的价格上涨到2，商品 Y 的价格不变，求出小明收入的等价变化和补偿变化。（上财2016年考题）`,
+          answer: `解：（1）小明的效用最大化问题为：
+$$max 2xy + 1   s.t.  x + y = 20
+构造拉格朗日函数并由一阶条件可以解得：
+$$x = y = 10
+
+（2）① 斯勒茨基分解法
+当 X 的价格上涨到2时，小明的效用最大化问题为：
+$$max 2xy + 1   s.t.  2x + y = 20
+可以解得：x' = 5，y' = 10，所以总效应：x' − x = −5。
+令 m' 指价格变化之后为保持原来消费束的新收入水平，所以：
+$$m' = m + Δp·x = 20 + 1×10 = 30
+此时的问题为：
+$$max 2xy + 1   s.t.  2x + y = 30
+可以解得：x'' = 7.5
+所以替代效应为：
+$$Δx' = x''(p_x', p_y, m') − x(p_x, p_y, m) = 7.5 − 10 = −2.5
+收入效应为：
+$$Δx'' = Δx − Δx' = −5 − (−2.5) = −2.5
+
+② 希克斯分解法
+当 X 的价格上涨到2时，小明的效用最大化问题为：
+$$max 2xy + 1   s.t.  2x + y = 20
+可以解得：x' = 5，y' = 10，所以总效应是：x' − x = −5。
+由（1）知原来效用水平 U₁ = 2×10×10 + 1 = 201，所以问题表述为：
+$$min 2x + y   s.t.  2xy + 1 = 201
+可以解得：
+$$x'' = 5√2，  y'' = 10√2
+替代效应为 x'' − x = 5(√2 − 2)，收入效应为 x' − x'' = 5(1 − √2)。
+
+（3）补偿性变化是指当价格变化后，为维持原来的效用不变，所需要补偿的收入。
+由于价格变化之前的总效用为201，所以现在的问题可以写为：
+$$min 2x + y   s.t.  2xy + 1 = 201
+可以解得：x = 5√2，y = 10√2。
+对应的收入水平：
+$$m' = 5√2 × 2 + 10√2 × 1 = 20√2
+所以补偿变化为：
+$$CV = m' − m = 20√2 − 20
+
+等价变化是指价格变化以前必须从消费者那里取走多少货币，才能使他的境况同他在价格变化以后的境况（变化后的效用）一样好。
+由于价格变化之后的效用为101，所以此时的问题变为：
+$$min x + y   s.t.  2xy + 1 = 101
+可以解得：x = y = 5√2。
+对应的收入水平：
+$$m'' = 5√2 + 5√2 = 10√2
+所以等价变化为：
+$$EV = m − m'' = 20 − 10√2`,
+          hasImage: false },
+
+        { id: 't4q3', special: '专题四', qid: '练习3',
+          question: `3、已知消费者只消费两种商品，效用函数是 u = √(xy)，x 价格为10元，y 价格是5元，财富为500元。请回答下列问题。
+（1）计算边际替代率，判断该消费者是否具有凸偏好？
+（2）求解消费者最优需求。
+（3）政府对每单位商品 x 征收5元的消费税，那么为了使得消费者福利水平不变，政府应给予消费者多少补贴？`,
+          answer: `解：（1）该消费者的边际替代率为：
+$$MRSxy = −dy/dx = MUx/MUy = [(1/2)x^(−1/2)y^(1/2)] / [(1/2)x^(1/2)y^(−1/2)] = y/x
+$$dMRSxy/dx = (dy/dx·x − y)/x² = −2y/x² < 0
+所以该消费者的边际替代率递减，具有凸偏好。
+
+（2）此时消费者效用最大化问题为：
+$$max √(xy)   s.t.  p_x·x + p_y·y = m
+构造拉格朗日函数并由一阶条件解得需求函数为：
+$$x = m/(2p_x)，  y = m/(2p_y)
+代入 p_x = 10，p_y = 5，m = 500 解得消费者的最优需求为：
+$$x = 25，  y = 50
+
+（3）【法一】该消费者原来的效用为 √(25 × 50) = 25√2，在新的价格水平下为了使消费者的福利水平不变，此时消费者面临的问题为：
+$$min 15x + 5y   s.t.  √(xy) = 25√2
+构造拉格朗日函数并由一阶条件解得：
+$$x' = (25/3)√6，  y' = 25√6
+此时需要的收入：
+$$m' = 15x' + 5y' = 15 × (25/3)√6 + 5 × 25√6 = 250√6
+因此，政府应给予消费者 250√6 − 500 的补贴。
+
+【法二】由（2）可得，需求函数为 x = m/(2p_x)，y = m/(2p_y)。
+因此间接效用函数：
+$$V = √[(m/(2p_x))·(m/(2p_y))] = m/(2√(p_x·p_y))
+由间接效用函数和支出函数的关系可得支出函数为：
+$$E = 2U√(p_x·p_y)
+该消费者原来的效用为 25√2，征收5元消费税后 x 的价格变为15元，y 价格还是5元，为了使消费者的福利水平不变，消费者的最小支出：
+$$E = 2 × 25√2 × √(15 × 5) = 250√6
+因此，政府应给予消费者 250√6 − 500 的补贴。
+
+【提示1】边际效用之比等于价格之比（拉格朗日法）只适用于边际替代率递减的效用函数。对于课本上没有的（除柯布-道格拉斯、完全替代、完全互补、拟线性偏好、凹偏好以外）效用函数，在求最优选择前大家最好验证一下其边际替代率是否是递减的。
+【提示2】本题是柯布-道格拉斯效用函数常规计算题，很简单，属于送分题。虽然简单，但是大家也不要轻视，因为南开真题曾反复考察柯布-道格拉斯效用函数。
+【提示3】本题第（3）问实际上问的是补偿变化，【法一】用的是最常规的方法，【法二】用的是支出函数的方法。`,
+          hasImage: false },
+
+        /* ==================== 专题五 · 跨期消费问题 ==================== */
+        { id: 't5k', special: '专题五', qid: '知识要点',
+          question: '专题五 · 跨期问题常见计算题类型总结｜全部知识点总结',
+          answer: `主要的类型有两类假设前提：
+
+**1、不存在借贷约束，且两期都有收入**
+
+（1）消费者的跨期预算约束：
+现值表达式：
+$$C₁ + C₂/(1+r) = Y₁ + Y₂/(1+r)
+终值表达式：
+$$(1+r)C₁ + C₂ = (1+r)Y₁ + Y₂
+
+当 C₁ = 0 时，即两期的收入全部用于 C₂，C₂ = (1+r)Y₁ + Y₂；
+当 C₂ = 0 时，即两期的收入全部用于 C₁，C₁ = Y₁ + Y₂/(1+r)。
+
+【提示】跨期消费预算约束的构造思路：
+第一步，先根据题意写出第二期的消费量 C₂，如 C₂ = Y₂ + (1+r)(Y₁ − C₁)；
+第二步，分别将两期消费和两期收入移动到同一侧，整理后即可得到预算约束。
+
+（2）两种方法求解消费者的最优选择：
+【法一】拉格朗日乘数法。
+【法二】根据均衡时边际效用之比等于预算线的斜率的绝对值：
+$$MU₁/MU₂ = 1 + r
+【注】两种方法本质上都是一样的，法二更简便，建议首选法二以节省时间。
+
+**2、不存在借贷约束，且只有第一期有收入**
+
+第一期收入为 w，消费为 C₁，储蓄为 s，第二期无收入，消费为 C₂，利率为 r。
+此时的约束条件为：
+$$C₁ + s = w，  C₂ = (1+r)s
+整理可以得到：
+$$C₁ + C₂/(1+r) = w
+【提示】其实本类型和一般化的预算约束是一样的，这时的预算约束仍然符合两期都有收入的预算约束 C₁ + C₂/(1+r) = Y₁ + Y₂/(1+r)，只是此时的 Y₁ = w，Y₂ = 0。此时求最优选择的思路同上。
+
+**3、存在借贷约束，两期都有收入**
+
+此时的预算约束为：
+$$C₁ + C₂/(1+r) = Y₁ + Y₂/(1+r)，  C₁ ≤ Y₁
+解题思路：
+第一步，先按照无借贷约束求出消费者的最优选择，即根据最大化问题：
+$$max U(C₁, C₂)   s.t.  C₁ + C₂/(1+r) = Y₁ + Y₂/(1+r)
+求出最优选择分别为 C₁*、C₂*。
+第二步，比较 C₁* 与 Y₁ 的关系：
+若 C₁* ≤ Y₁，则最优选择即为 C₁*、C₂*；
+若 C₁* > Y₁，则最优选择为禀赋点 Y₁、Y₂。
+
+【提示】跨期消费问题的思路很简单，但是此类题目的难点主要有两处，大家在平时练习的时候需要注意：
+第一，根据题意构造出预算约束方程，尤其是对于一些变形的题目。如2007年计算题第一题第（3）问的对消费者征收利息收入税，此时的预算方程就不是我们经常见到的 C₁ + C₂/(1+r) = Y₁ + Y₂/(1+r) 形式。
+第二，计算量很大，尤其是对于只给出字母的抽象函数计算题。此时题目可能会进一步对效用函数进行变形来增加难度，由于不是常见的柯布-道格拉斯形式效用函数，因此要求大家按照常规的解题思路一步一步求出需求函数，对大家的计算能力和计算速度有很高要求。`,
+          hasImage: false },
+
+        { id: 't5q1', special: '专题五', qid: '练习1',
+          question: `1、费雪两期消费模型，C₁、C₂ 为两期消费；Y₁、Y₂ 为两期收入；r 为实际利率，p 为时间贴现因子，p 越大就越偏好第1期消费，消费者效用为 U = ln C₁ + ln C₂/(1+p)。
+（1）推导预算约束式；
+（2）找出最优效用条件；
+（3）当 r = p 时，求两期消费（设 W = Y₁ + Y₂/(1+r)）；
+（4）当 r > p 时，求两期消费，说明此时更偏好第1期还是第2期消费（设 W = Y₁ + Y₂/(1+r)）。（中财803经济学综合2023年考题）`,
+          answer: `解：（1）消费者第二期的消费为：
+$$C₂ = Y₂ + (1+r)(Y₁ − C₁)
+整理可得预算约束方程为：
+$$C₁ + C₂/(1+r) = Y₁ + Y₂/(1+r)
+
+（2）如果将两期消费看作两种商品，那么从预算约束 C₁ + C₂/(1+r) = Y₁ + Y₂/(1+r) 可以看出，第一期消费 C₁ 的价格为1，第二期消费 C₂ 的价格为 1/(1+r)。
+所以消费者效用最大化时满足条件：
+$$MU₁/MU₂ = 1 + r
+即：
+$$(1+p)C₂/C₁ = 1 + r
+
+（3）当 r = p 时，消费者最优效用的条件变为：
+$$(1+r)C₂/C₁ = 1 + r
+整理得：C₂ = C₁。
+设 Y₁ + Y₂/(1+r) = W，将 C₂ = C₁ 代入预算约束 C₁ + C₂/(1+r) = W 解得两期消费：
+$$C₁ = C₂ = (1+r)W/(2+r)
+
+（4）将 (1+p)C₂/C₁ = 1 + r 代入预算约束 C₁ + C₂/(1+r) = W，解得两期的消费：
+$$C₁ = (1+p)W/(2+p)，  C₂ = (1+r)W/(2+p)
+由于 r > p，所以 C₁ < C₂，此时消费者会更偏好第二期消费。`,
+          hasImage: false },
+
+        { id: 't5q2', special: '专题五', qid: '练习2',
+          question: `2、假设消费者只进行两期消费选择，消费者两期收入分别为 Y₁、Y₂，两期消费分别为 C₁、C₂，利率为 r，消费者效用函数为 U = aC₁C₂ + β，两期结束后，消费者的收入和消费均为0，证明：
+（1）1期消费与2期收入同方向变化，与利率反方向变化；
+（2）1期储蓄与2期收入反方向变化；
+（3）2期消费与1期收入和2期收入及利率均同方向变化。`,
+          answer: `解：【法一】拉格朗日法
+消费者效用最大化问题为：
+$$max aC₁C₂ + β   s.t.  C₁ + C₂/(1+r) = Y₁ + Y₂/(1+r)
+构建拉格朗日函数：
+$$L = aC₁C₂ + β − λ[C₁ + C₂/(1+r) − Y₁ − Y₂/(1+r)]
+由一阶条件可得：
+$$∂L/∂C₁ = aC₂ − λ = 0
+$$∂L/∂C₂ = aC₁ − λ/(1+r) = 0
+$$∂L/∂λ = Y₁ + Y₂/(1+r) − C₁ − C₂/(1+r) = 0
+
+【法二】均衡条件法
+消费者的均衡条件为 MU₁/MU₂ = 1 + r。由于 U = aC₁C₂ + β，所以 MU₁ = aC₂，MU₂ = aC₁，代入 MU₁/MU₂ = 1 + r 可得：
+$$C₂ = (1+r)C₁
+代入消费者的预算约束 C₁ + C₂/(1+r) = Y₁ + Y₂/(1+r) 可以解得需求函数为：
+$$C₁ = (1/2)·[Y₁ + Y₂/(1+r)]
+$$C₂ = (1/2)·[Y₁(1+r) + Y₂]
+
+（1）可见 C₁ 与 Y₂ 同方向变化，与 r 反方向变化。
+（2）S₁ = Y₁ − C₁ = Y₁ − (1/2)[Y₁ + Y₂/(1+r)] = (1/2)[Y₁ − Y₂/(1+r)]，可见 S₁ 与 Y₂ 反方向变化。
+（3）可见 C₂ 与 Y₁、Y₂、r 均同方向变化。`,
+          hasImage: false },
+
+        { id: 't5q3', special: '专题五', qid: '练习3',
+          question: `3、一个消费者生存两期，t = 1, 2。在 t = 1 时，他持有初始财富为 A，期间收入 Y₁；在 t = 2 时，收入为 Y₂。消费者的财富和收入可以用来消费（以 C 代表）或储蓄，储蓄利率为 r。假定消费者的效用函数是自然对数形式：U(C_t) = ln C_t。消费者的目标是最大化两期消费的加权效用（0 < ρ < 1）：
+U(C₁) + U(C₂)/(1+ρ)
+（1）如果消费者可以以 r 的利率自由借入或借出资金，写出消费者的预算约束；求出消费者的最优消费计划。
+（2）如果消费者不能借入或借出资金，消费者的最优消费计划是什么？`,
+          answer: `解：（1）如果消费者可以以 r 的利率自由借入或借出资金，则消费者的预算约束为：
+$$C₁ + C₂/(1+r) = A + Y₁ + Y₂/(1+r)
+该消费者的效用最大化问题为：
+$$max ln C₁ + [1/(1+ρ)]·ln C₂
+$$s.t.  C₁ + C₂/(1+r) = A + Y₁ + Y₂/(1+r)
+
+构造拉格朗日辅助函数：
+$$L = ln C₁ + [1/(1+ρ)]·ln C₂ − λ[C₁ + C₂/(1+r) − A − Y₁ − Y₂/(1+r)]
+一阶条件为：
+$$∂L/∂C₁ = 1/C₁ − λ = 0
+$$∂L/∂C₂ = 1/[(1+ρ)C₂] − λ/(1+r) = 0
+$$∂L/∂λ = A + Y₁ + Y₂/(1+r) − C₁ − C₂/(1+r) = 0
+解得：
+$$C₁ = [(1+ρ)/(2+ρ)]·(A + Y₁ + Y₂/(1+r))
+$$C₂ = [1/(2+ρ)]·[(1+r)(A + Y₁) + Y₂]
+
+【提示】本题的效用函数实际上还是由 U = C₁^(1+ρ)·C₂ 或 U = C₁·C₂^(1+ρ) 正单调变换所得，大家在做题时应该要及时反应过来。在利用拉格朗日法求出需求函数以后可以利用柯布-道格拉斯效用函数的结论 C₁ = [a/(a+β)]·(m/p₁)，C₂ = [β/(a+β)]·(m/p₂) 来对结果进行验证。本题的 a = 1+ρ，β = 1，p₁ = 1，p₂ = 1/(1+r)，m = A + Y₁ + Y₂/(1+r)。
+考场上为了节省时间，大家在写出拉格朗日函数的一阶条件以后可以直接利用结论写出需求函数。
+
+（2）如果消费者不能借入或借出资金，意味着 r = 0，消费者只能通过不生利息的储蓄来进行跨期消费。他在时期1最多只能花费 A + Y₁。
+此时的预算约束变为：
+$$C₁ + C₂ = A + Y₁ + Y₂   （C₁ ≤ A + Y₁）
+重新计算消费者的最优消费计划为：
+$$C₁ = [(1+ρ)/(2+ρ)]·(A + Y₁ + Y₂)
+$$C₂ = [1/(2+ρ)]·(A + Y₁ + Y₂)
+但要求 C₁ = [(1+ρ)/(2+ρ)]·(A + Y₁ + Y₂) ≤ A + Y₁，即 Y₂(1+ρ) ≤ A + Y₁。
+如果 Y₂(1+ρ) > A + Y₁，则最优消费计划只能为：
+$$C₁ = A + Y₁，  C₂ = Y₂
+
+【提示】注意这里和前面提到的借贷约束的区别，这里是既不可以借入资金也不可以贷出资金，前面说的借贷约束是不可以借入资金，但可以进行储蓄（贷出资金）。`,
+          hasImage: false },
+
+        { id: 't5q4', special: '专题五', qid: '练习4',
+          question: `4、假设一个消费者有一个两期的效用函数 u(x₁,x₂) = a·ln x₁ + (1−a)·ln x₂，其中 x₁ 是第一期的消费数量。该消费者拥有的资源禀赋是 A，包括两部分，第一期拿出其中的一部分消费，其余部分做投资留在第二期消费，投资的收益率是 r，第二期末所有资源全部消费掉。
+（1）计算最优的消费配置 (x₁, x₂)；
+（2）指出参数 a 的含义；
+（3）解释随着 A、r 和 a 的变化，最优消费配置将发生什么样的变化。`,
+          answer: `解：（1）两期选择的最优条件为：
+$$MU₁/MU₂ = 1 + r
+由于效用函数为 u(x₁,x₂) = a·ln x₁ + (1−a)·ln x₂，所以 MU₁ = a/x₁，MU₂ = (1−a)/x₂。
+代入最优条件可得：
+$$(a/x₁)·[x₂/(1−a)] = 1 + r
+整理可得 x₂ = [(1−a)/a]·(1+r)·x₁，代入预算约束 x₁ + x₂/(1+r) = A，解得需求函数为：
+$$x₁ = a·A，  x₂ = (1−a)(1+r)A
+
+【提示】也可以用拉格朗日法，这里不再赘述。
+
+（2）由（1）可知，最优消费量 x₁ = a·A，所以 x₁/A = a，因而 a 的经济含义是该消费者用于第一期消费的资源占总资源禀赋的比例。
+
+（3）由（1）可知最优消费量 x₁ = a·A，x₂ = (1−a)(1+r)A。
+因为 ∂x₁/∂a = A > 0，∂x₂/∂a = −(1+r)A < 0，所以 a 的提高将导致第一期消费的提高，第二期消费的下降。
+因为 ∂x₁/∂A = a > 0，∂x₂/∂A = (1−a)(1+r) > 0，所以 A 的提高将导致第一期和第二期最优消费的提高。
+因为 ∂x₁/∂r = 0，∂x₂/∂r = (1−a)A > 0，所以 r 的提高对第一期的最优消费没有影响，但会导致第二期最优消费的提高。`,
+          hasImage: false },
+
+        { id: 't5q5', special: '专题五', qid: '练习5',
+          question: `5、假设经济中个人的生命分为两期——工作期和退休期。当个人工作时，可以获得劳动收入 Y₁；当个人退休时，没有劳动收入，必须依靠工作期储蓄的本金和所获得的利息生活。假设经济中的实际利率为 r，并假设个人在工作期的消费是退休期的消费的两倍。
+（1）假设此人在工作期所得劳动收入为100万元，且储蓄的实际利率为50%。个人的储蓄为多少？在工作期和退休期的消费分别为多少？
+（2）假如一个社会保障系统可以在个人退休时支付给个人相当于25%的工作期劳动收入的转移支付，其他条件不变。此时，个人的储蓄为多少？在工作期和退休期的消费分别为多少？
+（3）假设个人在工作期所得劳动收入上升，个人储蓄和每期的消费将如何变化？请说明理由。
+（4）假如实际利率 r 上升，个人的储蓄将如何变化？请说明理由。`,
+          answer: `解：（1）设此人工作期消费为 C₁，退休期消费为 C₂，工作期收入为 Y₁，退休期收入为 Y₂，利率为 r。
+根据题意有 C₁ = 2C₂，Y₁ = 100，Y₂ = 0，r = 0.5。
+将其代入跨期预算约束方程：
+$$C₁ + C₂/(1+r) = Y₁ + Y₂/(1+r)
+解得此人退休期消费为 C₂ = 37.5 万元，工作期消费为75万元，个人储蓄为工作期收入减去工作期消费为 100 − 75 = 25 万元。
+
+（2）此时有 C₁ = 2C₂，Y₁ = 100，Y₂ = 25，r = 0.5。
+将其代入跨期预算约束方程 C₁ + C₂/(1+r) = Y₁ + Y₂/(1+r)
+解得此人退休期消费为 C₂ = 43.75 万元，工作期消费为87.5万元，个人储蓄为工作期收入减去工作期消费为 100 − 87.5 = 12.5 万元。
+
+（3）假设个人在工作期所得劳动收入上升，按照跨期预算约束方程，个人储蓄和每期的消费都会增加。原因在于：随着个人在工作期所挣得的劳动收入上升，由于第一期消费和第二期消费都是正常品，所以消费者两期消费都增加。第二期收入不变，而第二期消费要增加，必然要求第一期个人储蓄增加。
+
+（4）本题中有 C₁ = 2C₂，Y₂ = 0，代入跨期预算约束方程 C₁ + C₂/(1+r) = Y₁ + Y₂/(1+r)：
+解得：
+$$C₁ = 2[(1+r)/(3+2r)]·Y₁，  C₂ = [(1+r)/(3+2r)]·Y₁
+则储蓄：
+$$S = Y₁ − C₁ = Y₁/(3+2r)
+所以，实际利率上升，储蓄减少。`,
+          hasImage: false },
+
+        /* ==================== 专题六 · 要素需求与产品供给函数 ==================== */
+        { id: 't6k', special: '专题六', qid: '知识要点',
+          question: '专题六 · 由生产函数求要素需求函数和产品供给函数｜全部知识点总结',
+          answer: `【提示】这一部分属于中级教材知识点，大家可以等看范里安教材时再看这一部分思路总结和题目。（本专题微观和宏观的计算题都可能涉及到；本专题和下一专题讨论的都是完全竞争厂商长期生产的问题）
+
+**一、一般框架**
+
+假设企业的生产函数为 f(x₁,x₂)，两种要素 x₁、x₂ 的价格分别为 w₁、w₂，产品价格为 p。企业的利润最大化问题为：
+$$max p·f(x₁,x₂) − w₁x₁ − w₂x₂
+它的一阶条件为：
+$$p·∂f(x₁*,x₂*)/∂x₁ − w₁ = 0
+$$p·∂f(x₁*,x₂*)/∂x₂ − w₂ = 0
+
+**二、柯布-道格拉斯生产函数的完整求解**
+
+假设柯布-道格拉斯生产函数为 f(x₁,x₂) = x₁^a·x₂^b（a+b<1），则上述一阶条件变为：
+$$p·a·x₁^(a−1)·x₂^b − w₁ = 0
+$$p·b·x₁^a·x₂^(b−1) − w₂ = 0
+可以解得要素需求函数为：
+$$x₁(w₁,w₂,p) = [(1/p)·(w₁/a)^(1−b)·(w₂/b)^b]^[1/(a+b−1)]
+$$x₂(w₁,w₂,p) = [(1/p)·(w₁/a)^a·(w₂/b)^(1−a)]^[1/(a+b−1)]
+
+由此，我们得到了要素1和2的需求函数，要素需求函数是要素价格 (w₁,w₂) 与产品价格 p 的函数。
+
+但是，我们还必须解出最优的产量。此时将最优要素需求量代入到柯布-道格拉斯生产函数可得：
+$$y = [(1/p)^(a+b)·(w₁/a)^a·(w₂/b)^b]^[1/(a+b−1)]
+这样我们就得到了柯布-道格拉斯企业的供给函数。它和上面已经推导出来的要素需求函数一起，构成了利润最大化问题的完整解。
+
+**三、重要前提条件**
+
+一般而言，从利润最大化模型求解要素需求函数是有前提条件的，即生产函数呈规模报酬递减。
+
+解释：首先需要明确的是这里不管是成本最小化问题还是利润最大化问题，研究的都是长期问题。再回顾课本上学过的规模报酬与最大经济利润的关系——“如果厂商在长期的最大利润水平大于零，那么厂商的生产技术一定是规模报酬递减的”。
+
+验证：大家可以利用柯布-道格拉斯生产函数来验证以上结论。`,
+          hasImage: false },
+
+        { id: 't6q1', special: '专题六', qid: '练习1',
+          question: `1、假定某厂商的产量水平 y 由柯布-道格拉斯生产函数 y = x₁^α·x₂^β 给出，其中 0 < α + β < 1，产出的价格为 p，要素 x₁ 价格为 w₁，要素 x₂ 价格为 w₂，求出该厂商的供给函数。（提示：先求出要素的需求函数）`,
+          answer: `解：厂商利润最大化问题为：
+$$max π = p·x₁^α·x₂^β − w₁x₁ − w₂x₂
+利润最大化的一阶条件为：
+$$∂π/∂x₁ = p·α·x₁^(α−1)·x₂^β − w₁ = 0
+$$∂π/∂x₂ = p·β·x₁^α·x₂^(β−1) − w₂ = 0
+由以上两式可得：
+$$α·x₂/(β·x₁) = w₁/w₂
+代入一阶条件求得要素需求函数为：
+$$x₁ = [(1/p)·(w₁/α)^(1−β)·(w₂/β)^β]^[1/(α+β−1)]
+$$x₂ = [(1/p)·(w₁/α)^α·(w₂/β)^(1−α)]^[1/(α+β−1)]
+代入生产函数求得供给函数为：
+$$y = p^[(α+β)/(α+β−1)]·(α/w₁)^[α/(α+β−1)]·(β/w₂)^[β/(α+β−1)]`,
+          hasImage: false },
+
+        { id: 't6q2', special: '专题六', qid: '练习2',
+          question: `2、已知某宏观经济中的总量生产函数 Y = K^α·L^β，α + β = 1，K 和 L 分别为两个生产要素，它们相应的价格分别为 C 和 W。假设 K 固定不变，产出 Y 的价格为 P。求出劳动需求函数。`,
+          answer: `解：厂商利润最大化问题为：
+$$max π = P·K^α·L^β − W·L − C·K
+要求利润最大化的劳动投入，须使 dπ/dL = 0，即：
+$$dπ/dL = P·β·K^α·L^(β−1) − W = 0
+解得劳动需求函数为：
+$$L = K·β^(1/α)·(W/P)^(−1/α)
+若 K、α、β 给定，劳动需求函数可以简写为：
+$$L = f(W/P)
+显然，劳动需求是实际工资的减函数。`,
+          hasImage: false },
+
+        /* ==================== 专题七 · 条件要素需求与成本函数 ==================== */
+        { id: 't7k', special: '专题七', qid: '知识要点',
+          question: '专题七 · 由生产函数求条件要素需求函数和成本函数｜全部知识点总结',
+          answer: `【提示】这一部分属于中级教材知识点，大家可以等看范里安教材时再看这一部分思路总结和题目（特别是柯布-道格拉斯函数情形下的）。
+
+**一、由既定产量下成本最小化 ⟹ 条件要素需求函数 ⟹ 成本函数**
+
+**（1）完全互补**
+假设生产技术中要素是完全互补的，考虑最简单的完全互补生产函数 f(x₁,x₂) = min{x₁,x₂}。如果我们想生产 y 单位产品，显然需要 y 单位的 x₁ 和 y 单位的 x₂。因此，最小的生产成本为：
+$$c(w₁,w₂,y) = w₁y + w₂y = (w₁ + w₂)y
+
+【提示】若生产函数的形式为 f(x₁,x₂) = min{ax₁, bx₂}，此时生产者面临的问题为：
+$$min w₁x₁ + w₂x₂   s.t.  min{ax₁, bx₂} = y
+解得：x₁ = y/a，x₂ = y/b。
+因此厂商的成本函数为：
+$$C = w₁x₁ + w₂x₂ = (w₁/a + w₂/b)y
+
+**（2）完全替代**
+如果生产技术是完全替代类型的，考虑最简单的完全替代生产函数 f(x₁,x₂) = x₁ + x₂。
+既然要素1和2在生产过程中是完全替代的，显然哪种要素价格低，企业就会使用哪种要素。因此，生产 y 单位产品的最小成本是 w₁y 和 w₂y 中小的那个：
+$$c(w₁,w₂,y) = min{w₁, w₂}·y
+
+【提示】若生产函数的形式为 f(x₁,x₂) = ax₁ + bx₂，此时生产者面临的问题为：
+$$min w₁x₁ + w₂x₂   s.t.  ax₁ + bx₂ = y
+解得：
+① 当 a/b < w₁/w₂ 时，x₁ = 0，x₂ = y/b，成本函数 C = (w₂/b)y；
+② 当 a/b > w₁/w₂ 时，x₁ = y/a，x₂ = 0，成本函数 C = (w₁/a)y；
+③ 当 a/b = w₁/w₂ 时，最优点为等产量线 ax₁ + bx₂ = y 上任意一点，此时成本函数 C = (w₂/b)y 或 C = (w₁/a)y。
+
+**（3）柯布-道格拉斯生产函数**
+假设柯布-道格拉斯生产函数为 f(x₁,x₂) = x₁^a·x₂^b，要素 x₁、x₂ 的价格分别为 w₁、w₂，求成本函数 c(w₁,w₂,y)。
+成本函数可以进一步写成 c(w₁,w₂,y) = w₁·x₁(w₁,w₂,y) + w₂·x₂(w₁,w₂,y)，因此我们首先要求条件要素需求函数 x₁(w₁,w₂,y) 和 x₂(w₁,w₂,y)。
+
+厂商成本最小化问题为：
+$$min w₁x₁ + w₂x₂   s.t.  x₁^a·x₂^b = y
+
+【法一】构建拉格朗日辅助函数：
+$$L = w₁x₁ + w₂x₂ − λ(x₁^a·x₂^b − y)
+由一阶条件可得：
+$$∂L/∂x₁ = w₁ − λ·a·x₁^(a−1)·x₂^b = 0
+$$∂L/∂x₂ = w₂ − λ·b·x₁^a·x₂^(b−1) = 0
+$$∂L/∂λ = y − x₁^a·x₂^b = 0
+解得两要素的条件要素需求函数分别为：
+$$x₁ = (a/b)^[b/(a+b)]·w₁^[−b/(a+b)]·w₂^[b/(a+b)]·y^[1/(a+b)]
+$$x₂ = (a/b)^[−a/(a+b)]·w₁^[a/(a+b)]·w₂^[−a/(a+b)]·y^[1/(a+b)]
+代入 c(w₁,w₂,y) = w₁·x₁ + w₂·x₂，经过复杂演算我们得到成本函数。
+
+【法二】厂商投入要素最优组合条件为 MP₁/MP₂ = w₁/w₂，得：
+$$(a·x₁^(a−1)·x₂^b)/(b·x₁^a·x₂^(b−1)) = w₁/w₂
+即 x₂ = (b·w₁)/(a·w₂)·x₁，代入生产函数后同上。
+
+**二、由成本函数 ⟹ 供给函数**
+
+完全竞争市场条件下，厂商利润最大化的原则为 p = MC，由此在前面求得的成本函数的基础上进一步可以得到厂商的供给函数。
+
+【提示1】一般而言，从利润最大化模型求解要素需求函数是有前提条件的，即生产函数呈规模报酬递减。而从成本最小化出发求条件要素需求函数时对生产函数没有要求，规模报酬递减、不变和递增都适用。
+【提示2】至此，专题六和专题七分别给大家提供了两种求厂商长期供给函数的思路，这里再给大家捋一遍思路：
+（1）厂商利润最大化 ⟹ 要素需求函数 x₁(w₁,w₂,p)、x₂(w₁,w₂,p) ⟹ 代入生产函数得到供给函数 Q = Q(w₁,w₂,p)；
+（2）既定产量下成本最小化 ⟹ 条件要素需求函数 x₁(w₁,w₂,y)、x₂(w₁,w₂,y) ⟹ 代入 C = w₁x₁ + w₂x₂ 得到成本函数 C(w₁,w₂,y) ⟹ 完全竞争市场 p = MC 得到厂商的供给函数。`,
+          hasImage: false },
+
+        { id: 't7q1', special: '专题七', qid: '练习1',
+          question: `1、假设生产函数为 q = A·L^α·K^β，其中 0 < α, β < 1，同时假设劳动和资本的价格 w₁、w₂ 都保持不变。
+（1）短期内资本的投入量保持不变，求厂商的短期成本函数；
+（2）求厂商的长期成本函数，同时说明厂商扩展线的形状；
+（3）运用 α 和 β 的取值讨论厂商的规模报酬状况对长期平均成本曲线的影响。
+（4）当 0 < α + β < 1 时，求厂商的要素需求函数；
+（5）求厂商长期供给函数。`,
+          answer: `解：（1）短期内资本的投入量保持不变，设 K = K̄，那么 q = A·L^α·K̄^β，则 L = (q/(A·K̄^β))^(1/α)。
+因此厂商的短期成本函数为：
+$$STC = w₁·(q/(A·K̄^β))^(1/α) + w₂·K̄
+
+（2）在长期，厂商既定产量 Q 下成本最小化的问题为：
+$$min w₁L + w₂K   s.t.  A·L^α·K^β = q
+构造拉格朗日函数：f = w₁L + w₂K − λ(A·L^α·K^β − q)
+由一阶条件可得：
+$$∂f/∂L = w₁ − λ·α·A·L^(α−1)·K^β = 0
+$$∂f/∂K = w₂ − λ·β·A·L^α·K^(β−1) = 0
+$$∂f/∂λ = q − A·L^α·K^β = 0
+根据前两个一阶条件可得：
+$$w₁/w₂ = (α/β)·(K/L)   ⟹  K = (β·w₁)/(α·w₂)·L
+因此厂商扩展线的形状为一条过原点的射线。
+
+将 K = (β·w₁)/(α·w₂)·L 代入约束条件解得：
+$$L = {q/A · (w₂·α/(w₁·β))^β}^[1/(α+β)]
+$$K = {q/A · (w₁·β/(w₂·α))^α}^[1/(α+β)]
+因此，长期成本函数为：
+$$LTC = w₁L + w₂K
+
+（3）长期平均成本函数为：
+$$LAC = w₁·q^[1/(α+β) − 1]·[1/A·(w₂·α/(w₁·β))^β]^[1/(α+β)] + w₂·q^[1/(α+β) − 1]·[1/A·(w₁·β/(w₂·α))^α]^[1/(α+β)]
+① 当 α + β = 1，即规模报酬不变时，平均成本与产量无关；
+② 当 α + β > 1，即规模报酬递增时，平均成本是产量的减函数；
+③ 当 α + β < 1，即规模报酬递减时，平均成本是产量的增函数。
+
+（4）厂商利润最大化问题为：
+$$max π = P·A·L^α·K^β − w₁L − w₂K
+由利润最大化的一阶条件可得：
+$$∂π/∂L = P·α·A·L^(α−1)·K^β − w₁ = 0
+$$∂π/∂K = P·β·A·L^α·K^(β−1) − w₂ = 0
+整理得 K = (w₁/w₂)·(β/α)·L，将其代入一阶条件可解得要素需求函数：
+$$L = [(1/(P·A))·(w₁/α)^(1−β)·(w₂/β)^β]^[1/(α+β−1)]
+$$K = [(1/(P·A))·(w₁/α)^α·(w₂/β)^(1−α)]^[1/(α+β−1)]
+
+（5）由（4）可得厂商要素需求函数，将其代入生产函数可得厂商供给函数为：
+$$Q = [(1/(P^(α+β)·A))·(w₁/α)^α·(w₂/β)^β]^[1/(α+β−1)]`,
+          hasImage: false },
+
+        { id: 't7q2', special: '专题七', qid: '练习2',
+          question: `2、假定厂商生产函数为柯布-道格拉斯生产函数，有 q = K^α·L^β（其中 α, β > 0）。厂商可以在竞争性投入市场购买租金价格分别为 v 与 w 的任意数量的 K 与 L。
+（1）证明成本最小化要求：vK/α = wL/β，该厂商的扩张线的形状是什么？
+（2）假定成本最小化，证明总成本可以表示为下述的关于 q、v 与 w 的函数：
+TC = B·q^[1/(α+β)]·w^[β/(α+β)]·v^[α/(α+β)]
+这里，B 是依赖于 α 与 β 的常量。（提示：这部分可通过运用（1）中的结果去计算 TC 作为 L 的函数，以及 TC 作为 K 的函数并代入到生产函数中去）
+（3）证明如果 α + β = 1，则 TC 与 q 成比例。`,
+          answer: `证明：（1）厂商的成本最小化问题为：
+$$min wL + vK   s.t.  K^α·L^β = q
+构造拉格朗日函数：
+$$f = wL + vK − λ(K^α·L^β − q)
+一阶条件为：
+$$∂f/∂L = w − λ·β·K^α·L^(β−1) = 0
+$$∂f/∂K = v − λ·α·K^(α−1)·L^β = 0
+$$∂f/∂λ = q − K^α·L^β = 0
+由前两个一阶条件可得：
+$$vK/α = wL/β
+生产扩张线是指在技术水平和投入要素价格不变的条件下，由投入总成本的变化而引起的最优要素比例的变动的轨迹。在本题中，由于最优的要素组合满足 vK/α = wL/β，从而得到 K = (α·w)/(β·v)·L，这说明生产扩张线是一条经过原点的射线。
+
+（2）将 vK/α = wL/β 代入约束方程 q = K^α·L^β，解得条件要素需求函数为：
+$$K = q^[1/(α+β)]·(α·w/(β·v))^[β/(α+β)]
+$$L = q^[1/(α+β)]·(β·v/(α·w))^[α/(α+β)]
+将其代入成本函数 TC = wL + vK 可得总成本函数为：
+$$TC = B·q^[1/(α+β)]·w^[β/(α+β)]·v^[α/(α+β)]
+其中：
+$$B = (α/β)^[β/(α+β)] + (β/α)^[α/(α+β)]
+
+（3）如果 α + β = 1，那么总成本的表达式就变为：
+$$TC = B·v^α·w^β·q
+即 TC 和 q 成比例。
+
+【提示】对于柯布-道格拉斯生产函数，如果规模报酬不变，则其长期成本函数的形式就为 TC = Aq，此时 MC = AC = A。这一结论很重要，有的时候会是计算题解题的关键点。`,
+          hasImage: false },
+
+        { id: 't7q3', special: '专题七', qid: '练习3',
+          question: `3、某个企业的生产函数为 q = √(min(K, L))，其中 K 和 L 分别为资本和劳动的投入量，资本和劳动的价格分别为 r 和 w。请写出该企业的成本函数 C(q, r, w) 的具体形式。`,
+          answer: `解：根据已知条件可以得到 q² = min(K, L)。
+此时厂商既定产量下成本最小化问题等价于：
+$$min wL + rK   s.t.  min(K, L) = q²
+由完全互补生产函数的性质可知，最优的生产点满足 K = L，因此 K = L = q²。
+成本函数为：
+$$C(q, r, w) = wL + rK = (w + r)q²`,
+          hasImage: false },
+
+        { id: 't7q4', special: '专题七', qid: '练习4',
+          question: `4、厂商生产函数为 Y = min{2L, K̄}
+（1）求厂商短期条件要素需求；
+（2）求厂商长期条件要素需求；
+（3）比较一下长短期要素需求，在什么情况下，长短期是一样的。`,
+          answer: `解：（1）由于厂商的生产函数 Y = min{2L, K̄} 为固定比例的生产函数，因此短期条件要素需求函数为：
+$$2L = K̄ = Y，即 L = Y/2
+
+（2）在长期，两种要素的投入量都可变，由于生产函数为固定比例生产函数，成本最小化均衡条件为：
+$$2L = K = Y
+从而长期条件要素需求函数为：L = Y/2，K = Y。
+
+（3）由上述可知，厂商的短期要素需求和长期要素需求形式相似，区别在于：短期要素需求数量是固定不变的，取决于固定要素的投入比例；而长期要素需求是可变的，根据产量的变化而变化。当长期生产量与短期产量相同时，长短期要素需求是一样的。`,
+          hasImage: false },
+
+        { id: 't7q5', special: '专题七', qid: '练习5',
+          question: `5、推导成本函数 C(r₁, r₂, q)，当生产函数分别为以下形式时：
+（1）f(z₁, z₂) = z₁ + z₂
+（2）f(z₁, z₂) = min{z₁, z₂}
+（3）f(z₁, z₂) = (z₁^p + z₂^p)^(1/p)  （0 < p < 1）
+注：假设每个生产函数都只有一种产出。z₁, z₂ 为两种投入，r₁, r₂ 分别为两种投入的单价，q 为产量。`,
+          answer: `解：（1）成本最小化问题为：
+$$min r₁z₁ + r₂z₂   s.t.  z₁ + z₂ = q
+由约束条件解得 z₂ = q − z₁，z₁ ∈ [0, q]。
+把上式代入目标函数式中，得到一个无约束的成本最小化问题，即：
+$$min (r₁ − r₂)z₁ + r₂q
+下面分三种情况讨论：
+$$r₁ − r₂ > 0 时，z₁ = 0，z₂ = q，此时成本函数 c = r₂q
+$$r₁ − r₂ < 0 时，z₁ = q，z₂ = 0，此时成本函数 c = r₁q
+$$r₁ − r₂ = 0 时，两种要素的投入任意，此时成本函数为 r₁q 或 r₂q
+综上可知厂商的成本函数为：
+$$c(q) = q·min(r₁, r₂)
+这个问题也可以进行直观的分析：由于生产函数显示的是两种生产要素是完全替代的，因此厂商只会选择价格便宜的那种要素，成本函数必然是 c(q) = q·min(r₁, r₂) 这种形式。
+
+（2）成本最小化问题为：
+$$min r₁z₁ + r₂z₂   s.t.  min{z₁, z₂} = q
+对于最优的要素需求数量，一定有 z₁ = z₂ = q。
+把 z₁ = z₂ = q 代入目标函数式，就得到成本函数为：
+$$c(q) = (r₁ + r₂)q
+本问题可以直观地分析：由于生产函数显示的是一个完全互补的生产函数，因此两种要素投入的比例必然是一比一的，因此其成本函数是 c(q) = (r₁ + r₂)q 的形式。
+
+（3）成本最小化问题为：
+$$min r₁z₁ + r₂z₂   s.t.  (z₁^p + z₂^p)^(1/p) = q
+这个问题的拉格朗日函数为：
+$$L = r₁z₁ + r₂z₂ − λ[(z₁^p + z₂^p)^(1/p) − q]
+成本最小化的一阶条件为：
+$$∂L/∂z₁ = r₁ − λ·(1/p)(z₁^p + z₂^p)^(1/p − 1)·(p·z₁^(p−1)) = 0
+$$∂L/∂z₂ = r₂ − λ·(1/p)(z₁^p + z₂^p)^(1/p − 1)·(p·z₂^(p−1)) = 0
+$$∂L/∂λ = q − (z₁^p + z₂^p)^(1/p) = 0
+由以上一阶条件解得：
+$$z₁ = [1 + (r₂/r₁)^(p/(p−1))]^(−1/p)·q
+$$z₂ = [1 + (r₁/r₂)^(p/(p−1))]^(1/p)·q
+将上述两式代入目标函数式中，得到成本函数：
+$$C(r, q) = q·(r₁^(p/(p−1)) + r₂^(p/(p−1)))^((p−1)/p)`,
+          hasImage: false },
+
+        /* ==================== 专题八 · 一厂商多工厂 ==================== */
+        { id: 't8k', special: '专题八', qid: '知识要点',
+          question: '专题八 · 一厂商多工厂问题与等边际法则｜全部知识点总结',
+          answer: `【提示】这一部分属于中级教材知识点，大家可以等看范里安教材时再看这一部分思路总结和题目。经济学院2008年、2012年真题和金融学院2024年真题都考过一厂商多工厂分配产量的问题。
+
+**1、问题概述**
+
+假设一个厂商有两个工厂，它们的成本函数不同，工厂1和2的成本函数分别为 c₁(y₁) 和 c₂(y₂)。此时厂商想以最小的成本生产 y 单位产品。一般来说，厂商会使用两个工厂各生产一些产量。问题是，两个工厂各应该生产多少？
+建立最小化问题：
+$$min c₁(y₁) + c₂(y₂)   s.t.  y₁ + y₂ = y
+
+**2、最优解的文字解释及图形说明**
+
+可以证明，在最优产量分配处，工厂1的边际成本必定等于工厂2的边际成本。
+为了证明这一点，假设边际成本不相等，那么厂商肯定会将一些产量从边际成本较高的工厂（假设是工厂1）转移到边际成本较低的工厂2，从而降低总成本。在产量转移的过程中，工厂1由于生产的产量减少，其生产最后一单位产量的边际成本是下降的，工厂2生产最后一单位产量的边际成本上升，最终两个工厂的边际成本相等。如果产量分配已达到最优，那么将产量从一家工厂移动到另一家就不可能降低成本。
+
+【提示】注意这里的分析隐含了“边际成本曲线递增”的假设。
+
+我们在图中，画出了上述两个工厂的边际成本曲线 MC₁(y₁) 和 MC₂(y₂)。两家工厂合在一起的边际成本曲线，就是这两个工厂各自边际成本曲线在水平方向上的加总。
+对于任何既定水平的边际成本，比如 c，两个工厂将分别生产 y₁* 和 y₂* 单位，使得 MC₁(y₁*) = MC₂(y₂*)，这样我们就生产出了 y₁* + y₂* 单位产品。因此，在任一边际成本水平 c 上的产量就是当两工厂各自边际成本均等于 c 时的产量之和。
+【本题有图示】
+
+**3、最优解的数理推导**
+
+此时厂商的成本最小化问题为：
+$$min c₁(y₁) + c₂(y₂)   s.t.  y₁ + y₂ = y
+构造拉格朗日函数：
+$$L = c₁(y₁) + c₂(y₂) − λ(y₁ + y₂ − y)
+由一阶条件可得最优解满足条件：
+$$MC₁(y₁) = MC₂(y₂)
+
+**4、特殊情况**
+
+（1）在一定产量范围内，一个工厂边际成本的最大值还是小于另一个工厂边际成本的最小值（此时应全部由低成本工厂生产）；
+（2）两个工厂的边际成本曲线是递减的（回顾前面文字分析的前提假设，此时存在角点解）。`,
+          hasImage: true },
+
+        { id: 't8q1', special: '专题八', qid: '练习1',
+          question: `1、某公司有两个厂房，生产成本分别是 C(y) = (1/2)y² 和 C(y) = y。求此厂商的成本函数。（北大2013年考题）`,
+          answer: `解：由题意可得 MC₁ = y₁，MC₂ = 1，如果厂商同时使用两个工厂，应当满足 MC₁(y₁) = MC₂(y₂)。
+
+（1）当 y < 1 时
+MC₁ 始终小于 MC₂，所以追求成本最小化的厂商会只用厂商1来生产，即此时 y = y₁，y₂ = 0，此时的成本函数为：
+$$C(y) = (1/2)y²
+
+（2）当 y > 1 时
+满足 MC₁(y₁) = MC₂(y₂) 时，y₁ = 1，y₂ = y − 1，成本函数为：
+$$C(y) = 0.5×1² + (y − 1) = y − 0.5
+
+综上：
+$$C(y) = { 0.5y²   （y < 1）
+          y − 0.5  （y ≥ 1） }`,
+          hasImage: false },
+
+        { id: 't8q2', special: '专题八', qid: '练习2',
+          question: `2、一个企业有三个车间，各自的成本函数为：TC₁ = 4x₁ + x₁²，TC₂ = 4x₂ + 2x₂²，TC₃ = 6x₃。问：当此企业要生产8单位产品时，应如何分配产量使其成本最小？（北京大学考题）`,
+          answer: `解：为使成本最小化，应当使三个车间的边际成本相同，即 MC₁ = MC₂ = MC₃。
+因此：
+$$4 + 2x₁ = 4 + 4x₂ = 6
+又有总产量条件：x₁ + x₂ + x₃ = 8。
+解得：
+$$x₁ = 1，  x₂ = 0.5，  x₃ = 6.5
+所以，为使总成本最小，应在第一个车间生产1单位产品，在第二个车间生产0.5单位产品，在第三个车间生产6.5单位产品。`,
+          hasImage: false },
+
+        { id: 't8q3', special: '专题八', qid: '练习3',
+          question: `3、某厂商有两个工厂，求其生产 y 的成本函数。
+（1）工厂1的成本函数为 c₁(y₁) = y₁²/4，工厂2的成本函数为 c₂(y₂) = y₂。
+（2）工厂1的成本函数为 c₁(y₁) = √y₁，工厂2的成本函数为 c₂(y₂) = 4√y₂。
+（3）工厂1的成本函数为 c₁(y₁) = y₁²，工厂2的成本函数为 c₂(y₂) = 2y₂²。（北大软微2018年考题）`,
+          answer: `解：（1）此时厂商的成本最小化问题为：
+$$min y₁²/4 + y₂   s.t.  y₁ + y₂ = y
+构造拉格朗日函数并由一阶条件可以解得 y₁ = 2，y₂ = y − 2。
+注意，上面的答案只在 y > 2 时才成立，当 y ≤ 2 时，应有 y₁ = y，y₂ = 0。
+所以厂商成本函数为：
+$$c(y) = { y − 1    （y > 2）
+          y²/4    （y ≤ 2） }
+
+（2）此时厂商的成本最小化问题为：
+$$min √y₁ + 4√y₂   s.t.  y₁ + y₂ = y
+构造拉格朗日函数并由一阶条件可以解得：
+$$y₁ = y/17，  y₂ = 16y/17
+代入成本函数可得：
+$$c(y) = √(y/17) + 4√(16y/17) = 17√(y/17)
+然而如果产量全部由工厂1进行生产，即 y₁ = y，y₂ = 0 时有 c(y) = √y。
+经比较可知 17√(y/17) > √y，此时存在角点解，这意味着该厂商的全部产量应该全部都由工厂1进行生产。
+
+（3）此时厂商的成本最小化问题为：
+$$min y₁² + 2y₂²   s.t.  y₁ + y₂ = y
+构造拉格朗日函数并由一阶条件可以解得 y₁ = 2y/3，y₂ = y/3。
+代入成本函数可得：
+$$c(y) = (2y/3)² + 2×(y/3)² = (2/3)y²
+
+【提示】本题第（1）问即是前面提到的第一类特殊情况“在一定产量范围内，一个工厂边际成本的最大值还是小于另一个工厂边际成本的最小值”；第（2）问即是第二类特殊情况“两个工厂的边际成本曲线是递减的”，此时是存在角点解；第（3）问即是常规情形。`,
+          hasImage: false },
+
+        /* ==================== 专题九 · 完全竞争市场政府征税 ==================== */
+        { id: 't9k', special: '专题九', qid: '知识要点',
+          question: '专题九 · 完全竞争市场政府征税问题｜全部知识点总结',
+          answer: `税收的分摊和供求双方的弹性有关系，缺乏弹性的一方承担更多的税负。常考计算题，可参见范里安第16章。
+
+**1、前提假设**
+
+第一，市场完全竞争，市场需求函数为 D = D(p_d)，市场供给函数为 S = S(p_s)；
+第二，政府征收从量税，即政府对每单位商品征收 t 的税收。
+
+**2、均衡结果求解**
+
+**（1）征税前的均衡**
+此时 p_d = p_s = p，直接令供求相等 D(p) = S(p) 即可求得均衡价格 p*。
+
+**（2）对消费者征税**
+此时 p_d ≠ p_s，而是满足 p_d = p_s + t，该式子的含义是消费者支付的价格 p_d 等于厂商获得的支付 p_s 加上政府税收 t，即消费者支付的价格一部分给厂商一部分给政府。
+联立方程：
+$$p_d = p_s + t
+$$D(p_d) = S(p_s)
+即可解得市场均衡价格 p' = p_d。
+
+**（3）对生产者征税**
+此时 p_d ≠ p_s，而是满足 p_s = p_d − t，该式子的含义是厂商获得的支付 p_s 等于消费者支付的价格 p_d 减去税收 t，即消费者支付的价格中政府要拿走 t，剩余部分才是厂商获得的支付。
+联立方程：
+$$p_s = p_d − t
+$$D(p_d) = S(p_s)
+即可解得市场均衡价格 p' = p_d。
+
+**（4）结论**
+无论是对消费者还是对厂商征收从量税，最终均衡结果都是相同的。
+
+**3、税收的无谓损失**
+
+征收从量税无谓损失通用的式子：
+$$无谓损失 = (1/2) × t × (Q − Q')
+其中 Q、Q' 分别为征税前后的均衡产量。它等于征税引起的社会总剩余的减少（即消费者剩余的变化、生产者剩余的变化和政府税收三者之和）。
+
+【提示】当政府征税后，均衡时消费者支付的价格 p_D 和生产者实际获得的支付 p_S 不再相等，此时题目如果问的是“市场均衡价格”，那么指的其实就是 p_D，因为 p_S 是厂商交税以后获得的支付，在市场交易中不会显现。`,
+          hasImage: false },
+
+        { id: 't9q1', special: '专题九', qid: '练习1',
+          question: `1、假设某商品需求函数为 Q = 100 − 2P，供给函数为 Q = 20 + 6P。
+（1）该商品的市场均衡价格和销售量是多少？
+（2）如果政府对该商品征收每单位商品4元的数量税，市场均衡的销售量是多少？消费者支付的价格和生产商接受的价格分别是多少？税收负担如何分配？
+（3）如果商品供给函数变为 Q = 40 + 6P，题目（1）和（2）中的答案该如何变化？`,
+          answer: `解：（1）市场均衡时满足供求相等，即 100 − 2P = 20 + 6P，解得：
+$$均衡价格 P = 10，  均衡销量 Q = 80
+
+（2）当对该商品征收每单位商品4元的数量税时，满足 P_d = P_s + 4。
+均衡时依然满足供求相等，即 Q_d = Q_s，联立以下方程：
+$$100 − 2P_d = 20 + 6P_s
+$$P_d = P_s + 4
+解得：
+$$P_s = 9，  P_d = 13，  Q = 74
+即市场均衡的销售量为74，消费者支付的价格为13，厂商接受的价格为9。
+$$消费者承担的税负 = P_d − 10 = 13 − 10 = 3
+$$生产者承担的税负 = 10 − P_s = 10 − 9 = 1
+
+（3）① 征税前，均衡时满足 Q_d = Q_s，即 100 − 2P = 40 + 6P，解得：
+$$均衡价格 P = 7.5，  均衡销量 Q = 85
+② 征税后，满足 P_d = P_s + 4 以及 Q_d = Q_s，即：
+$$100 − 2P_d = 40 + 6P_s
+$$P_d = P_s + 4
+解得：
+$$P_s = 6.5，  P_d = 10.5，  Q = 79
+即市场均衡的销售量为79，消费者支付的价格为10.5，厂商接受的价格为6.5。
+$$消费者承担的税负 = P_d − 7.5 = 10.5 − 7.5 = 3
+$$生产者承担的税负 = 7.5 − P_s = 7.5 − 6.5 = 1`,
+          hasImage: false },
+
+        { id: 't9q2', special: '专题九', qid: '练习2',
+          question: `2、某完全竞争市场的需求曲线为 D(p) = 100 − 2p，厂商的短期成本函数为 TC = 50q² + 100，厂商数目为300。
+（1）求市场供给曲线，均衡价格和均衡数量是多少？
+（2）假定政府对消费者征收5元的数量税，均衡的数量和价格将是多少？
+（3）如果该税加给厂商，而非消费者，均衡的价格和数量将是多少？
+（4）计算税收的额外净损失。`,
+          answer: `解：（1）完全竞争厂商利润最大化条件为 p = MC，即 p = 100q，解得单个厂商供给函数为 q = p/100。
+所以市场供给曲线为：
+$$S = 300q = 3p
+均衡时满足市场供求相等，即 100 − 2p = 3p，解得：
+$$均衡价格 p = 20，  均衡产量 Q = 60
+
+（2）由于政府对消费者征税，所以存在 p_D = p_S + 5。
+同时，均衡时市场供给等于市场需求，即 100 − 2p_D = 3p_S。
+联立解得：p_S = 18，p_D = 23，因此均衡价格为23，相应的均衡数量为54。
+
+【提示】当政府征税后，均衡时消费者支付的价格 p_D 和生产者实际获得的支付 p_S 不再相等，此时题目如果问的是“市场均衡价格”，那么指的其实就是 p_D，因为 p_S 是厂商交税以后获得的支付，在市场交易中不会显现。
+
+（3）如果对厂商征税，结果同第（2）问（结果相同）。
+
+（4）由（1）可知，不征税时，均衡价格 p = 20，均衡产量 Q = 60。
+征税的无谓损失是指征税引起的社会总剩余的减少（即消费者剩余的变化、生产者剩余的变化和政府税收三者之和），它等于：
+$$(1/2) × 5 × (60 − 54) = 15
+【本题有图示】`,
+          hasImage: true },
+
+        { id: 't9q3', special: '专题九', qid: '练习3',
+          question: `3、在某一商品市场上，有100个相同的消费者，每个人的需求函数都是 Q_d = 28 − 2P；同时有10个相同的生产者，每个生产者的供给函数都是 Q_s = 40P − 20。其中，Q_d 和 Q_s 分别代表需求量和供给量，单位：个；P 代表价格，单位：元。
+（1）求该商品的市场均衡价格和均衡交易量；
+（2）如果政府对每单位商品征收3元的销售税，消费者和生产者各自承担了多少税收负担？政府得到的税收总量是多少？
+（3）消费者剩余、生产者剩余及无谓损失有多大？（对外经贸2008年考题）`,
+          answer: `解：（1）市场总的需求函数为：
+$$Q_D = 100·Q_d = 2800 − 200P
+总的供给函数为：
+$$Q_S = 10·Q_s = 400P − 200
+市场均衡时满足供求相等 Q_D = Q_S，即 2800 − 200P = 400P − 200，解得：
+$$P* = 5，  Q* = 1800
+
+（2）对每单位产品征收 t = 3 的税收时，满足 P_d − P_s = 3。
+同时征税后的均衡也满足供求相等 Q_D = Q_S，联立方程：
+$$2800 − 200P_d = 400P_s − 200
+$$P_d − P_s = 3
+解得：
+$$P_d = 7，  P_s = 4，  Q' = 1400
+$$消费者承担的税收：P_d − P* = 7 − 5 = 2 元
+$$生产者承担的税收：P* − P_s = 5 − 4 = 1 元
+$$政府税收收入：T = t·Q' = 3 × 1400 = 4200
+
+（3）征税后：
+$$消费者剩余 CS' = (1/2) × (14 − 7) × 1400 = 4900
+$$生产者剩余 PS' = (1/2) × (4 − 0.5) × 1400 = 2450
+$$消费者剩余变化量 ΔCS = −(1/2) × (1400 + 1800) × (7 − 5) = −3200
+$$生产者剩余变化量 ΔPS = −(1/2) × (1800 + 1400) × (5 − 4) = −1600
+$$社会总福利变化量 = ΔCS + ΔPS + T = −3200 − 1600 + 4200 = −600
+因此，消费者剩余损失为3200，生产者剩余损失为1600，无谓损失为600。
+【本题有图示】`,
+          hasImage: true },
+
+        { id: 't9q4', special: '专题九', qid: '练习4',
+          question: `4、假设市场需求函数和市场供给函数分别为 D(p) = 300 − p，S(p) = 2p。
+（1）试求均衡价格和均衡数量；
+（2）假设对消费者购买的每单位商品征收数额为 t 的税，求新的均衡。消费者支付的价格是多少？销售者获得的价格是多少？销售量是多少？
+（3）试将税收收入表述为 t 的函数，并求此时征税所导致的无谓损失。`,
+          answer: `解：（1）市场均衡时满足供求相等，即 300 − p = 2p，解得：
+$$p = 100，  Q = 200
+
+（2）假设对消费者购买的每单位商品征收数额为 t 的税，则有 p_d = p_s + t。
+此时市场达到均衡时满足条件：
+$$300 − p_d = 2p_s
+$$p_d = p_s + t
+联立解得：
+$$均衡时消费者实际支付的价格 p_d = 100 + (2/3)t
+$$销售者获得的价格 p_s = p_d − t = 100 − (1/3)t
+$$均衡产量 Q = 200 − (2/3)t
+
+（3）政府税收：
+$$t·Q = 200t − (2/3)t²
+【政府税收收入先随着税率的增加而上升，达到一定水平后随着税率的增加，税收收入减少，符合拉弗曲线的特征】
+征税的无谓损失：
+$$(1/2) × t × [200 − (200 − (2/3)t)] = (1/3)t²
+
+【提示1】以上两道题都是完全竞争市场条件下政府征税基础的题目，通过上面两道题需要大家熟练掌握征税后均衡的求解，以及征税前后的福利求解，要做到即使不画图也能快速求出不同主体和市场福利的变化量。
+【提示2】征收从量税无谓损失通用的式子：无谓损失 = (1/2) × t × (Q − Q')，其中 Q、Q' 分别为征税前后的均衡产量。`,
+          hasImage: false },
+
+        /* ==================== 专题十 · 三级价格歧视 ==================== */
+        { id: 't10k', special: '专题十', qid: '知识要点',
+          question: '专题十 · 三级价格歧视的详细探讨｜全部知识点总结',
+          answer: `价格歧视作为垄断板块的一项内容，是常考的，简答题和计算题都有可能涉及，其中最常考的是一级和三级价格歧视。
+往年真题考察情况：2013年简答题4和计算题2，2015年计算题1，2017年832计算题2，2021年经院880（微宏观）简答题3，2021年金院878（微宏计）简答题3，2023年经院880（微宏观）简答题3和计算题2，2024年经院877（微宏观）计算题2。
+三类价格歧视的详细讲解可以见范里安第25章垄断行为，本专题主要讨论三级价格歧视相关计算题的一般性解题思路。
+
+**1、三级价格歧视**
+
+指垄断者对同一商品在不同的市场上收取不同的价格，或者对不同的人收取不同的价格，但使得每一市场上出售产品的边际收益相等。
+实行三级价格歧视需要具备两个重要的条件：
+第一个条件是存在着可以分隔的市场。若市场不可分隔，市场上的套利行为将使得价格歧视消失。
+第二个条件是被分隔的各个市场上需求价格弹性不同。如果被分隔的各个市场需求价格弹性相同，则最佳策略是对同一产品收取相同的价格。
+
+**2、在实行三级价格歧视时，总产量、细分市场产量和价格的确定**
+
+完全垄断厂商按照 MR₁ = MR₂ = MC 的原则确定产量和价格。
+
+**原因分析：**
+【法一】经济学含义分析：这是因为，第一，就不同的市场而言，厂商应该使各个市场的边际收益相等。只要各市场之间的边际收益不相等，厂商就可以通过不同市场之间的销售量的调整，来获得更大的利益。第二，厂商应该使生产的边际成本 MC 等于各市场相等的边际收益，只要两者不等，厂商就可以通过增加或减少产量来获得更大的利益，直至实现 MR₁ = MR₂ = MC 的条件。
+【法二】图形分析法：总产量 Q_T = Q₁ + Q₂ 由边际收益曲线 MR₁ 和 MR₂ 水平相加所生成的虚线联合边际收益曲线 MR_T 与边际成本曲线 MC 的交点得到。因为 MC 必须等于 MR₁ 和 MR₂，由此得到两个市场的产量分别为 Q₁ 和 Q₂。这里具有需求曲线 D₁ 的第一组的价格是 P₁，而具有更高弹性的需求曲线 D₂ 的第二组的价格是较低的 P₂。
+【本题有图示】
+【法三】数学推导法：令 p₁(y₁) 和 p₂(y₂) 分别表示消费者群体1和2的反需求曲线，令 c(y₁ + y₂) 表示垄断者的成本函数。则垄断者的利润最大化问题为：
+$$max p₁(y₁)·y₁ + p₂(y₂)·y₂ − c(y₁ + y₂)
+最优解必然满足：
+$$MR₁(y₁) = MC(y₁ + y₂)
+$$MR₂(y₂) = MC(y₁ + y₂)
+也即是说，额外多生产一单位产品的边际成本必须等于每个市场的边际收益。由于每个市场的边际成本是相等的，这当然表示每个市场的边际收益也必须相等。
+我们可以使用边际收益和需求价格弹性之间的关系，以及边际收益等于边际成本的关系，将利润最大化的一阶条件写为：
+$$p₁(y₁)[1 − 1/|ε₁(y₁)|] = MC(y₁ + y₂)
+$$p₂(y₂)[1 − 1/|ε₂(y₂)|] = MC(y₁ + y₂)
+当 |ε₂(y₂)| > |ε₁(y₁)| 时，p₁ > p₂，即价格较高的那个市场的需求价格弹性必然较小。因此，实行价格歧视的企业，对价格敏感的消费者群体制定的价格较低，而对价格相对不敏感的群体制定相对较高的价格。这样，企业就实现了总利润的最大化。
+
+**3、在不同细分市场实行差别定价的合理性**
+
+通过在不同细分市场实行差别定价，对价格变化反应不灵敏的消费者制定较高的价格，而对价格变化反应灵敏的消费者制定较低的价格，这有利于垄断厂商获得更大的利润。
+
+**4、三级价格歧视下社会福利的讨论（范里安教材334页）**
+
+假设一家厂商面对两个具有线性需求曲线的市场，第一个市场的需求曲线 D₁ 为 x₁ = a − b·p₁，第2个市场的需求曲线 D₂ 为 x₂ = c − d·p₂，厂商的边际成本为0。
+
+（1）厂商实行三级价格歧视时：由三级价格歧视下厂商利润最大化的条件 MR₁ = MR₂ = MC 可知：
+$$(a − 2x₁)/b = (c − 2x₂)/d = 0
+解得：
+$$x₁* = a/2，  x₂* = c/2，  p₁* = a/(2b)，  p₂* = c/(2d)，  x* = (a + c)/2
+厂商所选择的价格-产量组合位于每一条需求曲线的中点。
+
+（2）厂商实行统一定价时：
+① 如果厂商按照利润最大化原则所确定的价格在两个市场都有销量，此时厂商面临的需求曲线是 x = (a + c) − (b + d)p，由利润最大化的条件可解得：
+$$x* = (a + c)/2，  p* = (a + c)/[2(b + d)]
+② 如果厂商按照利润最大化原则所确定的价格只在市场1有销量，此时厂商实现最大利润时的产量为 x* = a/2。
+
+（3）通过上面的分析可以得出这样的结论：
+如果厂商一开始同时在两个市场上以相同的价格销售商品，此时厂商实行三级价格歧视，厂商所生产的总产量不变；
+如果厂商一开始只在一个市场上销售商品，此时厂商实行三级价格歧视，厂商所生产的总产量增加，社会总福利增加。
+
+**5、三级价格歧视定价原则速记**
+
+$$p₁[1 − 1/|e_d1|] = p₂[1 − 1/|e_d2|] = MC
+$$p₁/p₂ = [1 − 1/|e_d2|] / [1 − 1/|e_d1|]`,
+          hasImage: true },
+
+        { id: 't10q1', special: '专题十', qid: '练习1',
+          question: `1、一个垄断厂商决定在两个分隔的市场销售其产品。反需求函数为：P₁ = 12 − Q₁，P₂ = 16 − 2Q₂。假设成本函数为：C = 5 + Q²。
+（1）假设可以采取价格歧视，请问这个垄断厂商将如何定价？
+（2）假设不可以采取价格歧视，请问这个垄断厂商将如何定价？`,
+          answer: `解：（1）垄断厂商的利润最大化问题为：
+$$max π = (12 − Q₁)Q₁ + (16 − 2Q₂)Q₂ − 5 − (Q₁ + Q₂)²
+由一阶条件可得：
+$$∂π/∂Q₁ = 12 − 2Q₁ − 2(Q₁ + Q₂) = 0
+$$∂π/∂Q₂ = 16 − 4Q₂ − 2(Q₁ + Q₂) = 0
+解得 Q₁ = Q₂ = 2，每个市场的定价分别为：
+$$P₁ = 10，  P₂ = 12
+
+（2）如果垄断厂商不采取价格歧视，则只能以同一价格 P 向两个市场出售产品。
+市场1的需求函数为 Q₁ = 12 − P，市场2的需求函数为 Q₂ = 8 − 0.5P。
+则总的需求函数为：
+$$Q = Q₁ + Q₂ = { 20 − 1.5P   （0 ≤ P < 12）
+                   8 − 0.5P    （12 ≤ P ≤ 16） }
+
+① 当 0 ≤ P < 12 时，厂商利润最大化问题为：
+$$max π = (40/3 − (2/3)Q)Q − 5 − Q²
+由利润最大化的一阶条件可得：
+$$dπ/dQ = 40/3 − (4/3)Q − 2Q = 0
+解得 Q = 4，此时市场价格 P = 32/3。
+
+② 当 12 ≤ P ≤ 16 时，厂商利润最大化问题为：
+$$max π = (16 − 2Q)Q − 5 − Q²
+由利润最大化的一阶条件可得：
+$$dπ/dQ = 16 − 4Q − 2Q = 0
+解得 Q = 8/3，此时市场价格 P = 32/3（舍去，因为不满足 12 ≤ P ≤ 16）。
+
+综上，当不可以采取价格歧视时，厂商最优定价为 P = 32/3。`,
+          hasImage: false },
+
+        { id: 't10q2', special: '专题十', qid: '练习2',
+          question: `2、假设北京的互联网服务是由北京电讯独家提供。北京电讯有两类顾客。第一类顾客是在当地经营的企业，其在目前价格水平上企业需求的价格弹性为1.25；第二类顾客是当地居民，其在目前价格水平上需求的价格弹性是4。北京电讯目前定价对企业客户每单位终端50元钱，而对居民客户服务每单位终端17.5元。请证明北京电讯目前的定价不是最优定价。（对外经贸2013年考题）`,
+          answer: `答：若北京电讯可以通过三级价格歧视对不同用户群体实行差别定价以实现自身利润最大化。
+假设企业客户的反需求函数为 p₁ = p₁(q₁)，居民客户的反需求函数为 p₂ = p₂(q₂)，北京电讯的成本函数为 C = C(q₁ + q₂)。
+因此其利润最大化问题为：
+$$π = p₁(q₁)q₁ + p₂(q₂)q₂ − C(q₁ + q₂)
+利润最大化的一阶条件为：
+$$∂π/∂q₁ = ∂p₁(q₁)/∂q₁·q₁ + p₁ − MC(q₁ + q₂) = 0
+$$∂π/∂q₂ = ∂p₂(q₂)/∂q₂·q₂ + p₂ − MC(q₁ + q₂) = 0
+
+对一阶条件进行整理可得三级价格歧视的定价原则为：
+$$p₁[1 − 1/|e_d1|] = p₂[1 − 1/|e_d2|] = MC(q₁ + q₂)
+即三级价格歧视下两个市场的价格之比：
+$$p₁/p₂ = [1 − 1/|e_d2|] / [1 − 1/|e_d1|]
+
+由题意，此时 p₁ = 50，|e_d1| = 1.25，p₂ = 17.5，|e_d2| = 4，所以：
+$$p₁/p₂ = 50/17.5 = 20/7
+$$[1 − 1/|e_d2|]/[1 − 1/|e_d1|] = [1 − 1/4]/[1 − 1/1.25] = (3/4)/(1/5) = 15/4
+因为 20/7 ≠ 15/4，故北京电讯目前的定价不是最优。`,
+          hasImage: false },
+
+        { id: 't10q3', special: '专题十', qid: '练习3',
+          question: `3、已知某垄断厂商利用一个工厂生产一种产品，两地销售，其成本函数为 TC = Q² + 40Q，需求函数分别为 Q₁ = 12 − 0.1P₁，Q₂ = 20 − 0.4P₂，求：
+（1）当该厂商实行三级价格歧视时，求厂商利润最大化时两个市场各自的销售量、价格以及厂商的总利润；
+（2）当该厂商在两个市场上实行统一定价时，求厂商利润最大化时两个市场各自的销售量、价格以及厂商的总利润。`,
+          answer: `解：（1）【法一】直接利用三级价格歧视厂商利润最大化的条件
+由三级价格歧视厂商利润最大化的条件 MR₁ = MR₂ = MC 可得：
+$$120 − 20Q₁ = 2(Q₁ + Q₂) + 40
+$$50 − 5Q₂ = 2(Q₁ + Q₂) + 40
+解得 Q₁ = 3.6，Q₂ = 0.4，代入两个市场需求函数解得：
+$$P₁ = 84，  P₂ = 49
+总利润：
+$$π = TR₁ + TR₂ − TC = 84×3.6 + 49×0.4 − (4² + 40×4) = 146
+
+【法二】厂商利润最大化问题为：
+$$max (120 − 10Q₁)Q₁ + (50 − 2.5Q₂)Q₂ − [(Q₁ + Q₂)² + 40(Q₁ + Q₂)]
+由利润最大化的一阶条件可得：
+$$∂π/∂Q₁ = 120 − 10Q₁ − 10Q₁ − 2(Q₁ + Q₂) − 40 = 0
+$$∂π/∂Q₂ = 50 − 2.5Q₂ − 2.5Q₂ − 2(Q₁ + Q₂) − 40 = 0
+联立解得 Q₁ = 3.6，Q₂ = 0.4，代入两个市场需求函数解得 P₁ = 84，P₂ = 49。
+总利润 π = 146。
+
+（2）当实行统一定价时，两个市场总需求函数为：
+$$Q = Q₁ + Q₂ = { 32 − 0.5P    （0 < P ≤ 50）
+                    12 − 0.1P    （50 < P ≤ 120） }
+
+① 当 0 < P ≤ 50 时，厂商利润最大化问题为：
+$$max π = (64 − 2Q)Q − (Q² + 40Q)
+由利润最大化的一阶条件可得：
+$$dπ/dQ = 64 − 4Q − 2Q − 40 = 0
+解得 Q = 4，代入需求函数得 P = 56（舍）
+
+② 当 50 < P ≤ 120 时，厂商利润最大化问题为：
+$$max π = (120 − 10Q)Q − (Q² + 40Q)
+由利润最大化的一阶条件可得：
+$$dπ/dQ = 120 − 10Q − 10Q − 2Q − 40 = 0
+解得 Q = 40/11，代入需求函数得 P = 920/11。
+总利润：
+$$π = PQ − (Q² + 40Q) ≈ 145.5`,
+          hasImage: false },
+
+        { id: 't10q4', special: '专题十', qid: '练习4',
+          question: `4、假设垄断厂商面临两个分割的市场A和B，市场需求分别为 P_A = 15 − 2Q_A，P_B = 20 − 3Q_B，厂商的固定成本为15元，单位可变成本为2元。求在两市场差别定价比统一定价可多获利多少？（中财801经济学2020年考题）`,
+          answer: `解：（1）当垄断厂商进行价格歧视时，厂商利润最大化问题为：
+$$max π = (15 − 2Q_A)Q_A + (20 − 3Q_B)Q_B − [2(Q_A + Q_B) + 15]
+由利润最大化的一阶条件可得：
+$$∂π/∂Q_A = 15 − 4Q_A − 2 = 0
+$$∂π/∂Q_B = 20 − 6Q_B − 2 = 0
+解得 Q_A = 13/4，Q_B = 3，故两个市场的价格：
+$$P_A = 8.5，  P_B = 11
+因此价格歧视时的总利润：
+$$π₁ = P_A·Q_A + P_B·Q_B − [2(Q_A + Q_B) + 15] = 33.125
+
+（2）当垄断厂商实施统一定价时，两个市场总需求函数：
+$$Q = { 85/6 − (5/6)P   （0 ≤ P ≤ 15）
+        20/3 − (1/3)P   （15 < P ≤ 20） }
+
+① 当 0 ≤ P ≤ 15 时，厂商利润最大化问题为：
+$$max π = (17 − (6/5)Q)Q − (2Q + 15)
+由利润最大化的一阶条件可得：
+$$dπ/dQ = 17 − (12/5)Q − 2 = 0
+解得 Q = 25/4，P = 19/2。
+此时的利润 π₂ = 31.875。
+
+② 15 < P ≤ 20 时，厂商利润最大化问题为：
+$$max π = (20 − 3Q)Q − (2Q + 15)
+由利润最大化的一阶条件可得：
+$$dπ/dQ = 20 − 6Q − 2 = 0
+解得 Q = 3，P = 11（舍去）。
+
+故当厂商选择统一定价时，利润最大化的产量和价格分别为 Q = 25/4，P = 19/2，此时的利润 π₂ = 31.875。
+
+综上，两市场差别定价比统一定价可多获利：
+$$Δπ = π₁ − π₂ = 33.125 − 31.875 = 1.25`,
+          hasImage: false },
+
+        { id: 't10q5', special: '专题十', qid: '练习5',
+          question: `5、某垄断企业面临政府保护的国内市场以及竞争激烈的国际市场这两个分割的市场。在国内市场，其产品的需求方程为 p_d = 120 − q_d/10；在国际市场中，其产品的需求方程为 p_e = 240 − q_e/10。企业的边际成本为 MC = 60 + Q/10。其中，Q = q_d + q_e。
+（1）求出垄断企业的最优产出以及国内、国外市场所占份额。（3分）
+（2）比较两个市场的价格与需求弹性。（4分）
+（3）若两个分割的市场合并为一个市场，这时总产出与价格为多少？（3分）（中财801经济学2010年考题）`,
+          answer: `解：（1）由企业的边际成本为 MC = 60 + Q/10 可知企业的总成本为：
+$$TC = 60Q + Q²/20
+此时垄断企业的利润最大化问题为：
+$$max (120 − q_d/10)q_d + (240 − q_e/10)q_e − [60(q_d + q_e) + (q_d + q_e)²/20]
+由利润最大化的一阶条件可知：
+$$∂π/∂q_d = 120 − q_d/5 − 60 − (q_d + q_e)/10 = 0
+$$∂π/∂q_e = 240 − q_e/5 − 60 − (q_d + q_e)/10 = 0
+解得：
+$$q_d = 0，  q_e = 600，  p_d = 120，  p_e = 180
+所以，国内市场所占的份额为0，国外市场所占的份额为100%。
+
+（2）两市场的需求曲线分别为 q_d = 1200 − 10p_d，q_e = 2400 − 10p_e。
+两个市场需求价格弹性分别为：
+$$E_d = −(dq_d/dp_d)·(p_d/q_d) = ∞
+$$E_e = −(dq_e/dp_e)·(p_e/q_e) = 3
+
+（3）当两个市场合并为一个市场后，市场的总需求曲线为：
+$$Q = { 3600 − 20P   （0 ≤ P ≤ 120）
+        2400 − 10P   （120 < P ≤ 240） }
+
+① 当 0 ≤ P ≤ 120，市场反需求函数为 P = 180 − Q/20，此时厂商利润最大化问题为：
+$$max (180 − Q/20)Q − (60Q + Q²/20)
+由利润最大化的一阶条件得：
+$$dπ/dQ = 180 − Q/10 − 60 − Q/10 = 0
+解得 Q = 600，P = 150（舍去）
+
+② 当 120 < P ≤ 240 时，市场反需求函数 P = 240 − Q/10，此时厂商利润最大化问题为：
+$$max (240 − Q/10)Q − (60Q + Q²/20)
+由利润最大化的一阶条件得：
+$$dπ/dQ = 240 − Q/5 − 60 − Q/10 = 0
+解得 Q = 600，P = 180（保留）
+
+综上，当两个市场合并为一个市场后，厂商最优产量 Q = 600，此时市场价格 P = 180。`,
+          hasImage: false },
+
+        /* ==================== 专题十一 · 寡头模型均衡 ==================== */
+        { id: 't11k', special: '专题十一', qid: '知识要点',
+          question: '专题十一 · 寡头模型均衡问题｜全部知识点总结',
+          answer: `**寡头模型分类**
+
+非合作模型（同时定产：古诺模型；产量领导：斯塔克尔伯格模型；同时定价：伯特兰模型；价格领导：价格领导模型）；合作模型（卡特尔模型）。
+
+**1、古诺模型（产量竞争）**
+
+第一步，构造各寡头厂商关于自身产量的利润函数；
+第二步，由利润最大化一阶条件求得每个厂商的反应函数；
+第三步，联立每个厂商的反应函数求得每个厂商的产量，进而得到市场价格和每个厂商的利润。
+
+**2、斯塔克尔伯格模型（产量领导模型）**
+
+第一步，构造追随厂商的利润函数，并由利润最大化的一阶条件得到追随者的反应函数；
+第二步，构造领导厂商的利润函数，并将追随者厂商的反应函数代入其中消掉利润函数中追随者的产量；
+第三步，由利润最大化一阶条件得到领导者的产量，并将其代入追随者的反应函数得到追随者的产量，进而得到市场价格和厂商利润。
+
+**3、伯特兰模型（价格竞争）**
+
+当厂商的边际成本为常数时：
+（1）厂商边际成本 MC₁ = MC₂ = c，市场均衡价格 p = c；
+（2）厂商的边际成本分别是 MC₁ = c₁，MC₂ = c₂，且 c₁ < c₂，此时可以知道最终一定是厂商1独占市场，此时需要考虑如果厂商1按照垄断情况 MR₁ = c₁ 进行定价，垄断价格 p 是否小于 c₂，需要大家进行验算，利用厂商1利润最大化的一阶条件 MR₁ = c₁ 求得均衡的垄断价格 p：
+$$若 p < c₂，此时市场均衡价格为 p
+$$若 p ≥ c₂，此时市场均衡价格为 c₂ − ξ，ξ → 0
+
+**4、价格领导模型**
+
+第一步，追随厂商为价格接受者，由利润最大化一阶条件 P = MC 得到追随者的供给函数；
+第二步，市场需求函数减去追随者供给函数得到市场剩余需求函数（如果是有多个追随者，则需要所有追随者供给函数水平加总得到追随者总的供给函数）；
+第三步，根据市场剩余需求函数构造领导厂商的利润函数，利用利润最大化一阶条件得到领导者的产量，将领导者的产量代入市场剩余需求函数得到市场价格；
+第四步，由市场价格得到市场总的需求量，市场总的需求量减去领导者产量即为追随者产量。
+
+【提示】价格领导模型的解题思路直接看可能比较抽象，大家可以结合图形进行理解。
+【本题有图示】
+
+**5、卡特尔模型**
+
+（1）一般情况：构造整个卡特尔组织的利润函数，并由一阶条件得到每个卡特尔成员的产量。最终得到卡特尔均衡条件：
+$$MC₁(q₁) = MC₂(q₂) = MR(q₁ + q₂)
+（2）特殊情况：每个卡特尔成员厂商的边际成本均为常数，并且某个成员的边际成本总是小于其他厂商，此时应该由边际成本最小的厂商生产所有产量，卡特尔问题转变为垄断厂商利润最大化问题。
+（3）证明卡特尔成员的违约动机：假设其他成员的产量保持在卡特尔均衡的产量不变，只有一个厂商改变其产量，并构造该厂商的利润函数，利用利润最大化的一阶条件求得此时厂商的产量，并对比此时厂商的利润和违约前的利润。`,
+          hasImage: true },
+
+        { id: 't11q1', special: '专题十一', qid: '练习1',
+          question: `1、假设市场中存在两个生产商生产相同的产品，分别记为企业1和企业2。企业1的生产成本为 C₁(q₁) = 2q₁，企业2的生产成本为 C₂(q₂) = 3q₂，其中 q₁、q₂ 为企业1和企业2的产量。该产品的反需求函数为 P(Q) = 10 − Q，其中 Q 为总需求量。
+（1）若市场中只有企业1，且企业1垄断市场，求解均衡时的产量和价格以及企业1的利润；
+（2）若两个企业同时选择自己的产量进行博弈，求解均衡时两个企业分别的产量、均衡价格以及每个企业的利润；
+（3）若企业1是产量领导者，企业2是追随者，即企业1先选择自己的产量，企业2根据企业1的产量选择自己的产量，求解均衡时两个企业分别的产量、均衡价格以及每个企业的利润。（中财801经济学2019年考题）`,
+          answer: `解：（1）若市场中只有企业1，此时企业1利润最大化问题为：
+$$max (10 − q₁)q₁ − 2q₁
+由利润最大化的一阶条件：10 − 2q₁ − 2 = 0，解得此时均衡的产量 q₁ = 4，市场价格 P = 6，企业1的利润 π₁ = 16。
+
+（2）若两个企业同时选择自己的产量进行博弈，此时为古诺竞争。
+企业1利润最大化问题为：
+$$max π₁ = [10 − (q₁ + q₂)]q₁ − 2q₁
+由利润最大化的一阶条件：10 − 2q₁ − q₂ − 2 = 0，解得此时企业1的反应函数为：
+$$q₁ = (8 − q₂)/2
+企业2利润最大化问题为：
+$$max π₂ = [10 − (q₁ + q₂)]q₂ − 3q₂
+由利润最大化的一阶条件：10 − q₁ − 2q₂ − 3 = 0，解得此时企业2的反应函数为：
+$$q₂ = (7 − q₁)/2
+联立企业1和企业2的反应函数可以解得其古诺均衡时的产量分别为：
+$$q₁ = 3，  q₂ = 2
+$$市场均衡产量 Q = 5，  市场均衡价格 P = 5
+$$企业1和企业2的利润分别为：π₁ = 9，  π₂ = 4
+
+（3）企业2作为追随者，其利润最大化问题为：
+$$max π₂ = [10 − (q₁ + q₂)]q₂ − 3q₂
+由利润最大化的一阶条件：10 − q₁ − 2q₂ − 3 = 0，解得此时企业2的反应函数为：
+$$q₂ = (7 − q₁)/2
+企业1作为领导者知道企业2的反应函数，故其利润最大化问题为：
+$$max π₁ = [10 − (q₁ + (7 − q₁)/2)]q₁ − 2q₁
+由利润最大化的一阶条件可得：
+$$∂π₁/∂q₁ = [10 − (q₁ + (7 − q₁)/2)] − (1/2)q₁ − 2 = 0
+解得：
+$$q₁ = 9/2，  故企业2的产量 q₂ = 5/4
+$$市场均衡产量 Q = 23/4，  市场均衡价格 P = 17/4
+$$企业1和企业2的利润分别为：π₁ = 81/8，  π₂ = 25/16`,
+          hasImage: false },
+
+        { id: 't11q2', special: '专题十一', qid: '练习2',
+          question: `2、两个企业生产同质产品。市场需求函数为 p(Y) = 50 − Y，其中 Y = y₁ + y₂。两个企业的边际成本都为零。
+（1）计算古诺（Cournot）均衡中的价格和每个企业的产量。
+（2）计算这个行业的卡特尔（Cartel）产量。（中山大学考题）`,
+          answer: `解：（1）由于固定成本不影响厂商决策，所以这里假设两个厂商的固定成本都为0。
+对于厂商1而言，其利润函数为：
+$$π₁ = (50 − y₁ − y₂)y₁
+利润最大化的一阶条件为：
+$$∂π₁/∂y₁ = 50 − 2y₁ − y₂ = 0
+解得厂商1的反应函数为：
+$$y₁ = 25 − y₂/2
+同样的方法可得出厂商2的反应函数为：
+$$y₂ = 25 − y₁/2
+联立两厂商的反应函数可得：
+$$y₁ = y₂ = 50/3，  市场价格 p = 50 − y₁ − y₂ = 50/3
+
+（2）两个厂商共谋组成卡特尔，他们会谋求利润总和的最大，而不是每家厂商只求自身利润的最大。于是，利润最大化问题就变成为：
+$$max π = (50 − y₁ − y₂)(y₁ + y₂) = (50 − y)y
+利润最大化的一阶条件为：
+$$dπ/dy = 50 − 2y = 0
+求得均衡的总产量为 y = 25。`,
+          hasImage: false },
+
+        { id: 't11q3', special: '专题十一', qid: '练习3',
+          question: `3、假设某商品的需求函数为 Q = 100 − P，只有两家厂商能生产这种商品。每家厂商的成本函数为 C_i = 50 + Q_i²，i = 1, 2。市场总产出是这两家厂商产出之和。
+（1）若两厂商行为遵循古诺模型，则求出每家厂商的产量、价格及其总利润。
+（2）若两企业组成卡特尔，则每家厂商的产量、价格及其总利润是多少？这种卡特尔稳定吗？一家厂商若首先违约，则其产量及利润为多少？
+（3）若厂商1是价格领导者，厂商2是追随者，则求出每家厂商的产量及价格。`,
+          answer: `解：（1）对于厂商1，其利润为：
+$$π₁ = P·Q₁ − C₁ = (100 − Q₁ − Q₂)Q₁ − (50 + Q₁²)
+利润最大化的一阶条件为：
+$$∂π₁/∂Q₁ = 100 − 2Q₁ − Q₂ − 2Q₁ = 0
+因此，厂商1的反应函数为：
+$$Q₁ = (100 − Q₂)/4
+同理可得厂商2的反应函数为：
+$$Q₂ = (100 − Q₁)/4
+联立两个厂商的反应函数，可得：
+$$Q₁ = Q₂ = 20，  市场价格 P = 60
+厂商的利润：π₁ = π₂ = 750，因此市场总利润 π = 1500。
+
+（2）【法一】数学思想法
+如果两个企业组成卡特尔，则两者将追求总体利润最大化。总利润为：
+$$π = (100 − Q₁ − Q₂)(Q₁ + Q₂) − (50 + Q₁²) − (50 + Q₂²)
+利润最大化的一阶条件为：
+$$∂π/∂Q₁ = 100 − 2(Q₁ + Q₂) − 2Q₁ = 0
+$$∂π/∂Q₂ = 100 − 2(Q₁ + Q₂) − 2Q₂ = 0
+解得：
+$$Q₁ = Q₂ = 50/3，  市场价格 P = 200/3
+总利润 π = 4700/3，各厂商利润为 π₁ = π₂ = 2350/3。
+
+一家厂商若首先违约，不妨设厂商1违约，他将假定厂商2的产量为 Q₂ = 50/3，则厂商1的利润为：
+$$π₁ = (100 − Q₁ − 50/3)Q₁ − (50 + Q₁²)
+利润最大化的一阶条件为：
+$$∂π₁/∂Q₁ = 100 − 50/3 − 2Q₁ − 2Q₁ = 0
+解得：
+$$Q₁ = 125/6，  市场价格为 P = 375/6
+厂商1的利润为 π₁ = 14725/18 > 2350/3。
+
+对比结果可知，相对于两企业组成卡特尔时，一旦厂商1首先违约，厂商1获取的利润更大。出于自身利益的考虑，各厂商可能会暗中采取行动，从而获取更大的利润。由于卡特尔成员往往不多，一旦有某个成员违反协议，其行动很容易被其他厂商察觉，从而引起“连锁反应”，最终导致卡特尔崩溃。这说明卡特尔是很不稳定的。
+
+【法二】先利用等边际法则求出厂商关于总产量的成本函数，然后利用利润最大化的条件
+此时卡特尔组织成本最小化问题为：
+$$min 50 + Q₁² + 50 + Q₂²   s.t.  Q₁ + Q₂ = Q
+构造拉格朗日函数并由一阶条件可得 Q₁ = Q₂ = Q/2。
+则卡特尔组织的成本函数为：
+$$C = 50 + (Q/2)² + 50 + (Q/2)² = 100 + Q²/2
+由利润最大化条件 MR = MC 可得：100 − 2Q = Q，解得总产量 Q = 100/3，每个厂商的产量 Q₁ = Q₂ = 50/3。剩下的步骤同【法一】。
+
+（3）此时厂商2为价格的接受者，其利润最大化的条件为 P = MC₂，即 P = 2Q₂。
+解得厂商2的供给函数为 Q₂ = P/2。
+所以厂商1面临的剩余需求函数：
+$$Q₁ = Q − Q₂ = 100 − P − P/2
+即 P = 200/3 − (2/3)Q₁
+厂商1的利润最大化问题为：
+$$π₁ = (200/3 − (2/3)Q₁)Q₁ − 50 − Q₁²
+一阶条件为：
+$$dπ₁/dQ₁ = 200/3 − (4/3)Q₁ − 2Q₁ = 0
+解得：
+$$Q₁ = 20，  市场价格 P = 160/3，  厂商2的产量 Q₂ = 80/3`,
+          hasImage: false },
+
+        { id: 't11q4', special: '专题十一', qid: '练习4',
+          question: `4、假设网球鞋市场有一家主导厂商和五家边缘厂商。市场需求为 Q = 400 − 2P。主导厂商有20的不变边际成本。每个边缘厂商有 MC = 20 + 5q 的边际成本。
+（1）求解价格领导模型均衡的结果。
+（2）如果有10家边缘厂商，价格领导模型均衡的结果有什么变化？`,
+          answer: `解：（1）五家边缘厂商的总供给曲线是通过水平加总五家厂商的供给曲线所得到的。
+由于每家追随厂商都是价格的接受者，因此每家厂商利润最大化时满足 p = MC 的条件，由此可得：
+$$MC = 20 + 5q = p
+整理得单个厂商的供给曲线：
+$$q = P/5 − 4
+因为每家企业都是相同的，所以5家厂商的总供给曲线为：
+$$Q_f = 5(P/5 − 4) = P − 20
+主导厂商的需求曲线是市场需求与边缘厂商总供给之间的差，即：
+$$Q_L = 400 − 2P − Q_f = 420 − 3P
+即 P = 140 − Q_L/3
+此时主导厂商的利润最大化问题为：
+$$max π = (140 − Q_L/3)Q_L − 20Q_L
+由利润最大化的一阶条件可得：
+$$dπ/dQ = 140 − (2/3)Q_L − 20 = 0
+解得主导厂商的产量 Q_L = 180，市场价格 P = 80。
+每个边缘厂商将与主导厂商索要相同的价格，5家边缘厂商的总产量为：
+$$Q_f = P − 20 = 60
+每家边缘厂商将生产12单位的产量。
+
+（2）如果有10家边缘厂商，则边缘厂商的总供给曲线为：
+$$Q_f = 2P − 40
+从而主导厂商的总需求曲线为 Q_L = 440 − 4P，即 P = 110 − Q_L/4。
+由 MR = MC = 20 可得：
+$$110 − Q_L/2 = 20，  主导厂商的产量为 Q_L = 180，市场价格为 P = 65
+从而每个边缘厂商的价格也将为65，10家边缘厂商的总供给为：
+$$Q_f = 2×65 − 40 = 90，  每家边缘厂商的供给为9`,
+          hasImage: false },
+
+        { id: 't11q5', special: '专题十一', qid: '练习5',
+          question: `5、某同质产品的市场，反需求函数为 P = 5 − Q，其中 P 为价格，Q 为需求量。供给方面有两个厂商，每个厂商除了不变的边际成本 MC_i（i = 1,2）之外，无其它成本。两个厂商同时选择价格，进行伯特兰竞争。如果某个厂商的定价严格低于另一个厂商的，则价格较低的厂商得到其定价之下的全部市场需求；如果两个厂商定价相同，则每个厂商获得该价格之下市场需求的一半。设 MC₁ = 1、MC₂ = 4。试求伯特兰均衡价格 P*。（中财803经济学综合2018年考题）`,
+          answer: `解：伯特兰竞争会导致厂商竞相削价来赢得更多的市场，因此厂商1若与厂商2进行价格竞争，由于 MC₂ = 4 > MC₁ = 1，所以只要厂商1制定价格 P₁ = 4 − ε，ε 为任意小的正数，则厂商1将占据整个市场，厂商2会退出市场（P₁ < MC₂）。
+
+当厂商1获得全部市场需求时，该产品市场为完全垄断市场，厂商1作为垄断厂商进行垄断定价。
+由题意可知，厂商1的边际收益为 MR₁ = 5 − 2Q，厂商1根据 MR₁ = MC₁ 进行垄断定价，有：
+$$5 − 2Q = 1，  解得 Q* = 2
+代入反需求函数可得：
+$$P* = 3
+由于 P* = 3 < MC₂ = 4，因此厂商2仍然不会进入市场，厂商1可以维持其垄断地位并获得最大垄断利润，因此伯特兰均衡价格 P* = 3。`,
+          hasImage: false },
+
+        { id: 't11q6', special: '专题十一', qid: '练习6',
+          question: `6、考虑一个由两家企业组成的寡头垄断行业，市场的需求由 p = 10 − Q 给出。这两家企业的成本函数分别为 C₁ = 4 + 2Q₁，C₂ = 3 + 3Q₂。
+（1）若两家厂商串谋追求共同的利润最大化，总的产量水平是多少？市场价格是多少？各自生产多少？各自的利润多大？
+（2）若两家企业追求各自的利润最大化，利用古诺模型，各自生产多少？各自利润多大？市场价格多大？并给出各自的反应函数。
+（3）若串通是非法的，但收购不违法。企业1会出多少钱收购企业2？`,
+          answer: `解：（1）若两家企业串谋时，它们的目标是追求总利润的最大化。
+由于厂商2的边际成本为3大于厂商1的边际成本2，不能安排厂商2产量，即 Q₂ = 0。
+利润最大化时要求厂商1的边际成本等于边际收益，即：
+$$2 = 10 − 2Q₁，  解得 Q₁ = 4，Q₂ = 0
+于是市场价格为 p = 10 − Q₁ − Q₂ = 6，厂商1的利润为12，厂商2的亏损为固定成本3。
+
+（2）企业1的利润最大化问题为：
+$$max [10 − (Q₁ + Q₂)]Q₁ − (4 + 2Q₁)
+根据利润最大化的一阶条件就可以得到企业1的反应函数为：
+$$Q₁ = 4 − 0.5Q₂
+类似的方法可以得到企业2的反应函数为：
+$$Q₂ = 3.5 − 0.5Q₁
+联立厂商1和厂商2的反应函数可得古诺均衡时每家企业的产量为：
+$$Q₁ = 3，  Q₂ = 2
+市场价格 p = 5，厂商1和厂商2的利润分别为：
+$$π₁ = 5，  π₂ = 1
+
+（3）企业1收购了企业2后，利润为（1）中企业1的利润加企业2利润，即 12 − 3 = 9。对企业2的收购出的钱不会高于（1）（2）两种情况下的利润差，即：
+$$9 − 5 = 4`,
+          hasImage: false },
+
+        { id: 't11q7', special: '专题十一', qid: '练习7',
+          question: `7、假定在一个寡头市场上有两个生产同种产品的厂商，分别记为厂商1和厂商2。市场需求函数为 P = 100 − Q，其中 Q = Q₁ + Q₂，两个厂商的成本函数分别为 TC₁ = 20Q₁，TC₂ = 0.5Q₂²。
+（1）假定两个厂商按古诺模型行动，求解两个厂商各自的产量和利润水平，以及行业的总利润水平。
+（2）假定厂商1先决定产量，求解两个厂商各自的产量。
+（3）假定厂商1先决定价格，求解两个厂商各自的产量。
+（4）假定两个厂商联合行动组成卡特尔，追求共同利润最大化，求解两个厂商各自的产量和利润水平，以及行业的总利润水平。
+（5）验证卡特尔成员的违约动机。`,
+          answer: `解：（1）对于厂商1，其利润最大化问题为：
+$$max π₁ = [100 − (Q₁ + Q₂)]Q₁ − 20Q₁
+由利润最大化的一阶条件得：
+$$∂π₁/∂Q₁ = 100 − (Q₁ + Q₂) − Q₁ − 20 = 0
+解得厂商1的反应函数为：
+$$Q₁ = 40 − Q₂/2
+对于厂商2，其利润最大化问题为：
+$$max π₂ = [100 − (Q₁ + Q₂)]Q₂ − 0.5Q₂²
+由利润最大化的一阶条件得：
+$$∂π₂/∂Q₂ = 100 − (Q₁ + Q₂) − Q₂ − Q₂ = 0
+解得厂商2的反应函数为：
+$$Q₂ = (100 − Q₁)/3
+联立两厂商的反应函数解得：
+$$Q₁ = 28，  Q₂ = 24，  P = 48
+故：
+$$π₁ = 784，  π₂ = 864，  π = π₁ + π₂ = 1648
+
+（2）由（1）可知，厂商2的反应函数为 Q₂ = (100 − Q₁)/3。
+所以产量领导者厂商1的利润最大化问题为：
+$$max π₁ = [100 − (Q₁ + (100 − Q₁)/3)]Q₁ − 20Q₁
+利润最大化的一阶条件为：
+$$dπ₁/dQ₁ = 100 − (4/3)Q₁ − 100/3 − 20 = 0
+解得：
+$$Q₁ = 35，  所以 Q₂ = 65/3
+
+（3）此时厂商2是价格的接受者，其利润最大化的条件为 P = MC₂，即 P = Q₂，所以厂商2的供给函数为 Q₂ = P，从而厂商1面临的剩余需求函数：
+$$Q₁ = Q − Q₂ = 100 − 2P，  即 P = 50 − Q₁/2
+厂商1利润最大化问题为：
+$$max π₁ = (50 − Q₁/2)Q₁ − 20Q₁
+利润最大化的一阶条件为：
+$$dπ₁/dQ₁ = 50 − Q₁ − 20 = 0
+解得 Q₁ = 30。
+将其代入厂商1面临的剩余需求函数，得到市场价格 P = 35，所以市场总产量 Q = 65，厂商2的产量为 Q₂ = 35。
+
+（4）【法一】构造卡特尔组织关于各个厂商产量的函数
+整个卡特尔组织利润最大化问题为：
+$$max π = [100 − (Q₁ + Q₂)](Q₁ + Q₂) − 20Q₁ − 0.5Q₂²
+由利润最大化的一阶条件可得：
+$$∂π/∂Q₁ = 100 − 2(Q₁ + Q₂) − 20 = 0
+$$∂π/∂Q₂ = 100 − 2(Q₁ + Q₂) − Q₂ = 0
+解得：
+$$Q₁ = Q₂ = 20，  P = 60，  π₁ = 800，  π₂ = 1000，  π = 1800
+
+【法二】构造卡特尔组织关于总产量的利润函数
+对于整个卡特尔组织，要想实现既定产量下成本最小化需要满足：
+$$min 20Q₁ + 0.5Q₂²   s.t.  Q₁ + Q₂ = Q
+构造拉格朗日函数并由一阶条件可以证明此时满足条件 MC₁ = MC₂【等边际法则】。
+解得 Q₁ = Q − 20，Q₂ = 20，故整个卡特尔组织的成本函数为 TC(Q) = 20Q − 200。
+此时卡特尔组织利润最大化问题为：
+$$max π = (100 − Q)Q − (20Q − 200)
+由一阶条件可以解得 Q = 40，故 Q₁ = Q₂ = 20，所以 π₁ = 800，π₂ = 1000，π = 1800。
+
+（5）【法一】利用利润最大化问题
+不妨假设厂商2不改变产量，则厂商1此时利润最大化问题为：
+$$max π₁ = [100 − (Q₁ + 20)]Q₁ − 20Q₁
+利润最大化的一阶条件为：
+$$dπ₁/dQ₁ = 80 − 2Q₁ − 20 = 0
+解得 Q₁ = 30，市场价格 P = 50，此时厂商1的利润 π₁ = 900 > 800，所以厂商1有违约动机。
+
+【法二】利用反应函数
+由（1）可知，厂商1的反应函数为 Q₁ = 40 − Q₂/2，所以当厂商2不违约依然生产 Q₂ = 20 时，厂商1的产量为 Q₁ = 30，对应市场价格 P = 50，此时厂商1的利润 π₁ = 900 > 800，所以厂商1有违约动机。`,
+          hasImage: false },
+
+        /* ==================== 专题十二 · 契约曲线与瓦尔拉斯均衡 ==================== */
+        { id: 't12k', special: '专题十二', qid: '知识要点',
+          question: '专题十二 · 求解契约曲线和瓦尔拉斯均衡｜全部知识点总结',
+          answer: `**题设条件：**
+消费者1的初始禀赋为 (x₁⁰, y₁⁰)，效用函数为 U(x₁, y₁)；消费者2的初始禀赋为 (x₂⁰, y₂⁰)，效用函数为 U(x₂, y₂)。
+
+**1、交换契约曲线的求解**
+
+第一步：利用交换的一般均衡的条件：
+$$MRS¹xy = MRS²xy
+解得 (x₁, y₁, x₂, y₂) 之间的关系。
+第二步：利用 x₁ + x₂ = x₁⁰ + x₂⁰ 和 y₁ + y₂ = y₁⁰ + y₂⁰ 消去两个变量，得到 x₁ = f(y₁) 或 x₂ = g(y₂)。
+第三步：x₁ = f(y₁) 或 x₂ = g(y₂) 即为交换的契约曲线。
+
+【提示】利用边际替代率相等的条件求交换契约曲线需要满足的前提是：两个消费者的边际替代率都是递减的。
+
+**2、最终交换结果的求解**
+
+【法一】
+第一步：假设商品 x 的价格为1，商品 y 的价格为 p。
+第二步：根据效用最大化问题求得每个消费者对于每种商品的需求。消费者1的效用最大化问题可表述为：
+$$max U₁(x₁, y₁)   s.t.  x₁ + p·y₁ = x₁⁰ + p·y₁⁰
+构造拉格朗日函数并由一阶条件可解得 x₁ = x₁(p)，y₁ = y₁(p)。
+同理可解得消费者2的消费束 x₂ = x₂(p)，y₂ = y₂(p)。
+第三步：由市场出清条件求得均衡的价格体系和消费者消费束：
+$$x₁ + x₂ = x₁⁰ + x₂⁰
+$$y₁ + y₂ = y₁⁰ + y₂⁰
+利用上面任意一个方程即可解得相对价格体系，即 p_x/p_x = p。
+将价格 p 代入消费者的需求函数即可解得消费者1和消费者2的消费束 (x₁, y₁) 和 (x₂, y₂)。
+
+【法二】
+第一步、第二步同【法一】。
+第三步：将消费者1的需求函数代入之前求得的交换的契约曲线 x₁ = f(y₁) 求得价格 p。
+将 x₁ = x₁(p)，y₁ = y₁(p) 代入契约曲线 x₁ = f(y₁) 得到 x₁(p) = f[y₁(p)]，一个方程，一个未知数，即可解得相对价格体系 p。
+
+【提示】本方法适用范围：前几问已经求得契约曲线再使用此方法会比较简单。若题目没让求契约曲线，相较于【法一】，用此方法求一般均衡解会更加复杂。
+
+**3、瓦尔拉斯均衡求解通法（务必熟练掌握）**
+
+先求出市场中各个主体的需求函数 ⟹ 市场出清的条件求出未知量。`,
+          hasImage: false },
+
+        { id: 't12q1', special: '专题十二', qid: '练习1',
+          question: `1、市场上只有 A 和 B 两个消费者，A 消费者对商品 X 和商品 Y 的效用函数为 U_A = X_A²·Y_A，其初始拥有的 X 和 Y 商品禀赋为 (9, 0)；B 消费者对商品 X 和商品 Y 的效用函数为 U_B = X_B·Y_B²，其初始拥有的 X 和 Y 商品禀赋为 (0, 9)。
+（1）求一般均衡时的契约曲线；
+（2）求一般均衡时的 X 和 Y 商品的市场价格比。
+【这类题不难，大家务必非常熟练】`,
+          answer: `解：（1）消费者A的边际替代率为：
+$$MRS_A = MU_X^A/MU_Y^A = (2X_A·Y_A)/(X_A²) = 2Y_A/X_A
+同理可得，消费者B的边际替代率为：
+$$MRS_B = MU_X^B/MU_Y^B = (Y_B²)/(2X_B·Y_B) = Y_B/(2X_B)
+一般均衡时有 MRS_A = MRS_B，即：
+$$2Y_A/X_A = Y_B/(2X_B)
+又因为 X_A + X_B = 9，Y_A + Y_B = 9，则有：
+$$2Y_A/X_A = (9 − Y_A)/[2(9 − X_A)]
+可得：
+$$Y_A = 3X_A/(12 − X_A)   （0 ≤ X_A ≤ 9, 0 ≤ Y_A ≤ 9）
+此即为一般均衡时的契约曲线。
+
+（2）本问可以用如下两种方法求解：
+【法一】假定商品 X 为计价物，价格为1，商品 Y 的价格为 P_Y。
+消费者A的收入为 M_A = 9，消费者B的收入为 M_B = 9P_Y。
+由柯布-道格拉斯效用函数的结论可得：
+$$X_A = (2/3)·M_A/P_X = (2/3)×9 = 6，  Y_A = (1/3)·M_A/P_Y = 3/P_Y
+$$X_B = (1/3)·M_B/P_X = 3P_Y，  Y_B = (2/3)·M_B/P_Y = 6
+由市场出清条件 X_A + X_B = 9 + 0 = 9 可得 6 + 3P_Y = 9，解得 P_Y = 1，即 P_X/P_Y = 1。
+即一般均衡时的 X 和 Y 商品的市场价格比为1。
+
+【法二】假定商品 X 为计价物，价格为1，商品 Y 的价格为 P_Y，消费者A的收入为 M_A = 9。
+由柯布-道格拉斯效用函数的结论可得：
+$$X_A = 6，  Y_A = 3/P_Y
+将 X_A = 6，Y_A = 3/P_Y 代入交换的契约曲线 Y_A = 3X_A/(12 − X_A)，解得 P_Y = 1，即 P_X/P_Y = 1。`,
+          hasImage: false },
+
+        { id: 't12q2', special: '专题十二', qid: '练习2',
+          question: `2、假设一个 2×2 的交换经济，消费者A和B交换两种商品 x 和 y，消费者A的效用函数是 u_A(x_A, y_A) = √(x_A·y_A)，消费者B的效用函数是 u_B(x_B, y_B) = √(x_B·y_B)。他们拥有两种商品的初始禀赋分别是 W_A(40, 60) 和 W_B(40, 40)。标准化商品 x 的价格 P_x = 1，商品 y 的价格为 P。
+（1）计算消费者A和B对两种商品 x 和 y 的需求函数。
+（2）计算该交换经济的均衡价格及均衡配置。
+【函数形式都是柯布-道格拉斯函数，很容易计算，先根据禀赋求出收入 I，人大2016年又考了同类题】`,
+          answer: `解：（1）I_A = 40 + 60P，I_B = 40 + 40P，因此：
+消费者A的预算约束为：
+$$P_x·x_A + P_y·y_A = x_A + P·y_A = 40 + 60P
+消费者B的预算约束为：
+$$P_x·x_B + P_y·y_B = x_B + P·y_B = 40 + 40P
+
+消费者A的效用最大化问题为：
+$$max √(x_A·y_A)   s.t.  x_A + P·y_A = 40 + 60P
+构造拉格朗日辅助函数：
+$$L = √(x_A·y_A) − λ(x_A + P·y_A − 40 − 60P)
+效用最大化的一阶条件为：
+$$∂L/∂x_A = (1/2)x_A^(−0.5)·y_A^(0.5) − λ = 0
+$$∂L/∂y_A = (1/2)x_A^(0.5)·y_A^(−0.5) − λP = 0
+$$∂L/∂λ = 40 + 60P − x_A − P·y_A = 0
+解得：
+$$x_A = 20 + 30P，  y_A = (20 + 30P)/P
+同理可得：
+$$x_B = 20 + 20P，  y_B = (20 + 20P)/P
+
+（2）此时需要市场达到出清：
+$$x_A + x_B = (20 + 30P) + (20 + 20P) = 80
+解得：
+$$P = 4/5
+可得：
+$$x_A = 44，  y_A = 55，  x_B = 36，  y_B = 45
+
+【提示】本题第（2）问答案给的是求解瓦尔拉斯均衡的通法，大家务必熟练掌握：先求出市场中各个主体的需求函数 ⟹ 市场出清的条件求出未知量。`,
+          hasImage: false },
+
+        { id: 't12q3', special: '专题十二', qid: '练习3',
+          question: `3、考虑一种两个消费者、两种物品的交易经济，消费者的效用函数与禀赋如下
+u¹(x₁, x₂) = (x₁x₂)²，  e¹ ∈ (18, 4)
+u²(x₁, x₂) = ln x₁ + 2ln x₂，  e² ∈ (3, 6)
+（1）描绘出帕累托有效集的特征（写出该集的特征函数式）；
+（2）发现瓦尔拉斯均衡。`,
+          answer: `解：（1）消费者1的边际替代率为 MRS¹₁₂ = x₂¹/x₁¹；
+消费者2的边际替代率为 MRS²₁₂ = x₂²/(2x₁²)。
+在交换契约曲线上的每一点，每个消费者两种物品的边际替代率相等，即 MRS¹₁₂ = MRS²₁₂，从而有：
+$$x₂¹/x₁¹ = x₂²/(2x₁²)   …… ①
+又因为 x₁² = 21 − x₁¹，x₂² = 10 − x₂¹，把这两个式子代入上式，就得到了交换契约曲线的方程：
+$$x₂¹/x₁¹ = (10 − x₂¹)/[2(21 − x₁¹)]   …… ②
+
+（2）由题设给定的效用函数可以得出各个消费者的马歇尔需求函数为：
+$$x₁¹(p₁, p₂) = 9 + 2p₂/p₁，  x₂¹(p₁, p₂) = 2 + 9p₁/p₂
+$$x₁²(p₁, p₂) = 1 + 2p₂/p₁，  x₂²(p₁, p₂) = 4 + 2p₁/p₂
+
+【提示】根据题设，我们可得消费者1的禀赋 I₁ = 18p₁ + 4p₂，由消费者1的效用函数，可以直接用柯布-道格拉斯函数的结论，我们得到 x₁¹p₁ = (1/2)I₁，就可得上面第一个式子，x₂¹ 同理。
+消费者2的禀赋 I₂ = 3p₁ + 6p₂，利用消费者的均衡条件 MU₁²/MU₂² = (1/x₁²)/(2/x₂²) = p₁/p₂，结合 I₂ = 3p₁ + 6p₂，可得出消费者2的马歇尔需求函数。
+
+达到瓦尔拉斯均衡时，每种商品市场都出清。由商品2市场出清可得：
+$$2 + 9p₁/p₂ + 4 + 2p₁/p₂ − 4 − 6 = 0
+解得：
+$$p₁/p₂ = 4/11
+解得：
+$$x₁¹ = 58/4，  x₂¹ = 58/11，  x₁² = 26/4，  x₂² = 52/11`,
+          hasImage: false },
+
+        { id: 't12q4', special: '专题十二', qid: '练习4',
+          question: `4、考虑一个简单的经济体。只有两个人 i = 1, 2；他们有相同的效用函数：u^i(x₁, x₂) = √(x₁x₂)。
+（1）假定第一个人的初始禀赋是 (x̄₁ = 1, x̄₂ = 0)，第二个人的初始禀赋是 (x̄₁ = 0, x̄₂ = 2)。相对价格 p₁/p₂ 满足什么条件时，市场可以出清？写出此时的市场分配情况。
+（2）证明：无论初始禀赋如何分配，只要总的禀赋不变，（1）中的价格始终出清市场。
+（3）契约曲线是什么样子？（中财803经济学综合2016年考题）`,
+          answer: `解：（1）消费者1的效用最大化问题为：
+$$max √(x₁¹·x₂¹)   s.t.  p₁x₁¹ + p₂x₂¹ = p₁
+构造拉格朗日函数并由一阶条件可以解得消费者1的需求函数为：
+$$x₁¹ = 1/2，  x₂¹ = p₁/(2p₂)
+同理可得消费者2的需求函数为：
+$$x₁² = p₂/p₁，  x₂² = 1
+当市场出清时满足条件 x₁¹ + x₁² = x̄₁¹ + x̄₁²，即：
+$$1/2 + p₂/p₁ = 1
+解得均衡的相对价格：
+$$p₁/p₂ = 2
+此时消费者1和消费者2的消费束分别为：
+$$(x₁¹, x₂¹) = (1/2, 1)，  (x₁², x₂²) = (1/2, 1)
+
+（2）由（1）可知，市场出清时需要满足 x₁¹ + x₁² = x̄₁¹ + x̄₁²，即 1/2 + p₂/p₁ = 1，因此市场出清的价格只与总的禀赋有关，而与初始禀赋的分配状况无关。
+
+（3）契约曲线是指埃奇沃斯方框内所有帕累托有效配置点的集合。合同曲线描述了从方框内任何一点开始的互利交易所可能产生的全部结果。
+交换的帕累托最优状态需要满足条件 MRS¹₁₂ = MRS²₁₂，即：
+$$x₂¹/x₁¹ = x₂²/x₁²
+由于禀赋条件为 x₁¹ + x₁² = 1，x₂¹ + x₂² = 2，所以：
+$$x₂¹/x₁¹ = (2 − x₂¹)/(1 − x₁¹)
+整理可得：
+$$x₂¹ = 2x₁¹
+此即为契约曲线，在商品1为横轴，商品2为纵轴的埃奇沃斯方框图中，它是一条斜率为2的直线。`,
+          hasImage: false },
+
+        { id: 't12q5', special: '专题十二', qid: '练习5',
+          question: `5、已知商品 X 的生产函数为 X = 5L^0.4·K^0.6，而商品 Y 的生产函数为 Y = 4L^0.5·K^0.5，若社会上有劳动力 L̄ = 100，资本 K̄ = 200，且只生产商品 X 与 Y，试问：该社会的生产契约曲线是什么？
+【契约曲线方程（包括交换契约曲线方程）的求解，建议考生一定要熟练掌握，很容易出考题，特别是计算题。就消费的一般均衡来说（生产的一般均衡道理类似），一般会告诉消费者的效用函数、初始禀赋，然后来求交换契约曲线方程、相对价格、最终均衡点。】`,
+          answer: `解：由商品 X 的生产函数可得 X 的边际技术替代率为：
+$$MRTS_LK^X = MP_L^X/MP_K^X = (2L_X^(−0.6)·K_X^0.6)/(3L_X^0.4·K_X^(−0.4)) = 2K_X/(3L_X)
+同理可得 Y 的边际技术替代率为：
+$$MRTS_LK^Y = MP_L^Y/MP_K^Y = K_Y/L_Y
+社会生产契约曲线上的点必须满足 MRTS_LK^X = MRTS_LK^Y，即有：
+$$2K_X/(3L_X) = K_Y/L_Y
+市场出清时有：
+$$L_X + L_Y = 100
+$$K_X + K_Y = 200
+代入上式可得：
+$$2K_X/(3L_X) = (200 − K_X)/(100 − L_X)
+此即为社会的生产契约曲线方程。`,
+          hasImage: false },
+
+        /* ==================== 专题十三 · 经济波动理论计算 ==================== */
+        { id: 't13k', special: '专题十三', qid: '知识要点',
+          question: '专题十三 · 经济波动理论具体函数计算题｜全部知识点总结',
+          answer: `宏观经济学中经济波动理论主要研究的是短期经济，涉及到的模型主要包括：凯恩斯交叉模型、IS-LM模型和蒙代尔-弗莱明模型，以上模型之间的关系如下：
+
+凯恩斯交叉模型：产品市场均衡 ⟹ IS曲线
+流动性偏好理论：货币市场均衡 ⟹ LM曲线
+IS-LM模型 ⟹ AD曲线
+劳动力市场均衡 ⟹ AS曲线
+
+**模型一览表**
+$$凯恩斯交叉：短期封闭经济，研究产品市场均衡
+$$IS-LM模型：短期封闭经济，IS为产品市场均衡，LM为货币市场均衡
+$$AD-AS模型：短期封闭经济，AD为产品与货币市场同时均衡，AS为劳动力市场均衡
+$$蒙代尔-弗莱明模型：短期开放经济，IS*为产品市场均衡，LM*为货币市场均衡
+
+本专题主要讨论以上模型具体函数计算题，至于更高难度的抽象函数计算题留作大家拔高阶段掌握。
+
+相关题目的核心思路：利用市场均衡条件，其中：
+产品市场均衡条件：实际支出 Y = 计划支出 PE，其中 PE = C + I + G（封闭经济）；
+货币市场均衡条件：实际货币余额供给 M/P = 实际货币余额需求 L(r, Y)。
+
+**1、凯恩斯交叉模型具体函数计算题**
+
+题目一般给出：消费函数 C = C(Y − T)，投资 I = Ī，政府购买 G = Ḡ。
+
+（1）求均衡产出，以及政策变动对均衡产出的影响：直接利用产品市场均衡条件 Y = C + I + G 即可求得均衡产出 Y*。
+
+（2）求非均衡点处的非意愿存货积累：直接利用非意愿存货积累的定义，非意愿存货积累 = Y − PE，其中 Y 题目会给出，PE 可以由给出的 Y 求得。
+
+（3）求乘数：直接套公式即可。凯恩斯交叉图中不同乘数的总结如下，注意以下是没有挤出效应的乘数（即不涉及货币市场）：
+
+$$投资乘数：总量税 1/(1−β)；比例税 1/[1−β(1−t)]
+$$转移支付乘数：总量税 β/(1−β)；比例税 β/[1−β(1−t)]
+$$政府购买乘数：总量税 1/(1−β)；比例税 1/[1−β(1−t)]
+$$税收乘数：总量税 −β/(1−β)；比例税 −β(1−t)/[1−β(1−t)]
+$$平衡预算乘数：总量税 1；比例税 1
+
+注：β 为边际消费倾向，t 为比例税税率。
+
+**2、IS-LM模型具体函数计算题**
+
+题目一般给出：消费函数 C = C(Y − T)，投资 I = I(r)，政府购买 G = Ḡ，名义货币供给 M = M̄，价格水平 P = P̄，实际货币余额需求函数 L = L(r, Y)。
+
+（1）求均衡产出：由产品市场均衡条件 Y = PE，PE = C(Y − T) + I(r) + Ḡ 可得 IS 曲线；由货币市场均衡条件 M̄/P̄ = L(r, Y) 可得 LM 曲线；联立即可解得初始均衡利率和产量 r₁、Y₁。
+
+（2）求均衡的变动（以政府购买变动 ΔG 为例）：将新的政府购买量代入产品市场条件解得新的 IS 曲线（IS₂），联立新的 IS 和原 LM 曲线方程即可求得 r₂、Y₂。
+
+（3）求挤出效应、挤出的投资量或消费量：
+【法一】挤出效应 = Y₃ − Y₂ = (Y₃ − Y₁) − (Y₂ − Y₁) = [1/(1−β)]·ΔG − (Y₂ − Y₁)
+【法二】挤出效应 = Y₃ − Y₂，其中把 r₁ 代入政府购买变动以后新的 IS₂ 表达式求得 Y₃；挤出的投资量 = I(r₁) − I(r₂)；挤出的消费量 = [C(Y₃) − C(Y₁)] − [C(Y₂) − C(Y₁)] = C(Y₃) − C(Y₂)。
+
+（4）求乘数：直接用乘数定义公式求，比如政府购买乘数 k_g = ΔY/ΔG = (Y₂ − Y₁)/ΔG。
+
+（5）为实现一定目标需要变动的政策量：设政府变动的变量值，如 ΔT 或 ΔG，求出新的 IS' 曲线，联立 IS' 和 LM 曲线，此时是两个方程三个未知数（新均衡条件下的 Y、r 和政策变动量 ΔT），代入政府的政策目标（如目标的 Y）后就是两个方程两个未知数，即可解出 ΔT 或 ΔG。货币政策或货币财政政策结合都是以上思路。
+
+**3、AD-AS模型具体函数计算题**
+
+注意，如果涉及 AD 和 AS 曲线，那么此时价格是可变的，不再像 IS-LM 模型中价格水平固定。
+此类题目一般都会给出总供给曲线 AS 的表达式，并且一般的设问方式和 IS-LM 模型具体函数形式一样，即求均衡、均衡的变动、为实现一定的目标需要变动的政策量等，每类问题的思路和之前一样，关键还是求出不同情形下的 AD 曲线。
+
+下面主要总结 AD 曲线的求解方式：
+由产品市场均衡条件 Y = PE，PE = C(Y − T) + I(r) + Ḡ 可得 IS 曲线；
+由货币市场均衡条件 M̄/P = L(r, Y) 可得 LM 曲线；
+联立 IS、LM 曲线：
+$$Y = C(Y − T) + I(r) + G
+$$M̄/P = L(r, Y)
+消去 r 即可得到产出 Y 和价格 P 的关系，此即为总需求曲线。
+
+**4、蒙代尔-弗莱明模型具体函数计算题**
+
+此类题目给的题设条件、题目设问方式以及对应的解题思路与 IS-LM 模型具体函数计算题基本一样，这里不再赘述。只是开放经济下会有净出口 NX，同时还可能涉及不同的汇率制度，这一点大家在做题时要留意。`,
+          hasImage: false },
+
+        { id: 't13q1', special: '专题十三', qid: '练习1',
+          question: `1、考虑下述经济模型：
+Y = C + I + G
+C = 20 + 0.75(Y − T)
+I = 380，G = 400，T = 0.2Y
+（1）试指出消费函数与支出函数的斜率以及纵截距。
+（2）当 Y = 2400 时，存货积累或者存货负积累是多少？均衡收入应该高于2400还是低于？并求均衡收入。
+（3）在收入的均衡水平上，政府预算盈余是多少？
+（4）政府购买 G 由400增加到410，计算出政府购买乘数，并且解释为什么其不再等于 1/(1−MPC)。`,
+          answer: `解：（1）根据题意：
+$$C = 20 + 0.75(Y − T) = 20 + 0.75(Y − 0.2Y) = 20 + 0.6Y
+所以消费函数的斜率0.6，纵截距为20。
+支出函数：
+$$PE = C + I + G = 20 + 0.6Y + 380 + 400 = 0.6Y + 800
+所以支出曲线的斜率也是0.6，纵截距为800。
+
+（2）当 Y = 2400 时，计划支出：
+$$PE = 20 + 0.75×(2400 − 0.2×2400) + 380 + 400 = 2240
+所以存货积累 = Y − PE = 2400 − 2240 = 160。
+此时实际产出 Y 大于计划支出 PE，企业生产的量大于企业销售的量，出现计划外存货积累，此时企业就会减少雇用工人和生产，经济趋于均衡，因此均衡的收入应该低于2400。
+由产品市场均衡条件 Y = PE，以及 PE = C + I + G 可得：
+$$Y = 20 + 0.75(Y − 0.2Y) + 380 + 400
+解得均衡的收入水平：Y = 2000。
+
+（3）在均衡收入处，政府税收收入 T = 0.2Y = 0.2 × 2000 = 400，政府支出 G = 400，所以政府预算盈余：
+$$T − G = 400 − 400 = 0
+
+（4）政府购买 ΔG = 10 时，由产品市场均衡条件可得：
+$$Y = 20 + 0.75(Y − 0.2Y) + 380 + 410
+解得新的均衡收入 Y' = 2025。
+所以政府购买乘数：
+$$ΔY/ΔG = (2025 − 2000)/10 = 2.5
+模型包含政府部门后，由于政府征收比例税，此时政府购买乘数 k_G = 1/[1 − MPC(1 − t)]，其中 t 为税率。此时的政府购买乘数小于 1/(1 − MPC)，这是因为任何收入的增加都要伴随着税收的增加，所以可支配收入的增长均小于收入的增长，此时消费增加的乘数效应小于不存在比例税的情形。`,
+          hasImage: false },
+
+        { id: 't13q2', special: '专题十三', qid: '练习2',
+          question: `2、假设某经济体的消费函数为 C = 90 + 0.9Y_D，Y_D 为可支配收入，投资函数为 I = 200 − 1000i，实际货币需求函数为 L = Y − 1000i，税率 t = 1/3，政府购买 G = 710，实际货币供给 M/P = 2220。
+（1）求 IS、LM 表达式，并解释 IS、LM 曲线各代表什么含义；
+（2）求均衡的利率和国民收入；
+（3）私人消费及投资各为多少？政府有预算赤字还是盈余？其值为多少？（中财801经济学2021年考题）`,
+          answer: `解：（1）由产品市场均衡条件 Y = C + I + G 可得：
+$$Y = 90 + 0.9(Y − Y/3) + 200 − 1000i + 710
+解得 IS 曲线表达式为：
+$$Y = 2500 − 2500i
+
+由货币市场均衡条件 L(i, Y) = (M/P)^s 可得：
+$$Y − 1000i = 2220
+解得 LM 曲线表达式为：
+$$Y = 2220 + 1000i
+
+IS 曲线含义：IS 曲线是描述满足产品市场均衡条件的利率与收入关系的曲线。IS 曲线上任何一点都代表一定的利率和收入的组合。在这样的组合下，投资和储蓄都是相等的，即 I = S，从而产品市场是均衡的。
+LM 曲线含义：LM 曲线是描述满足货币市场均衡条件（货币需求等于货币供给）的利率与收入关系的曲线。LM 曲线上任一点都代表一定利率和收入的组合，在这样的组合下，货币需求与供给都是相等的，亦即货币市场是均衡的。
+
+（2）联立 IS 曲线和 LM 曲线表达式：
+$$Y = 2500 − 2500i
+$$Y = 2220 + 1000i
+解得均衡时的利率和国民收入分别为：
+$$i = 0.08，  Y = 2300
+
+（3）将税率 t = 1/3，Y = 2300 代入消费函数 C = 90 + 0.9Y_D 解得此时的消费量 C = 1470。
+将 i = 0.08 代入投资函数 I = 200 − 1000i 解得此时的投资量 I = 120。
+此时政府预算：
+$$BS = T − G = (1/3)×2300 − 710 = 170/3 > 0
+因此政府预算是盈余的。`,
+          hasImage: false },
+
+        { id: 't13q3', special: '专题十三', qid: '练习3',
+          question: `3、假设某国宏观经济关系如下：消费函数为 C = 90 + 0.9Y_D，税收 T = (1/3)Y，投资函数为 I = 200 − 1000R，政府购买支出 G = 710，货币需求为 L = Y − 10000R，货币供给为 m = M/P = 500，物价 P = 1。
+（1）求 IS、LM 曲线；
+（2）求均衡收入和利率；
+（3）如果充分就业的国民收入为 Y_F = 2400，为了实现充分就业，分别采用增加政府支出及增加货币供给量的办法，各需要多少数额？（上海财经大学2006年考题）`,
+          answer: `解：（1）产品市场的均衡条件为 Y = C + I + G，代入相关参数可得：
+$$Y = 90 + 0.9(Y − Y/3) + 200 − 1000R + 710
+整理得 IS 曲线方程：
+$$Y = 2500 − 2500R
+由货币市场均衡条件 M/P = L(R, Y) 可得：
+$$500 = Y − 10000R
+整理得 LM 曲线方程：
+$$Y = 500 + 10000R
+
+（2）联立 IS 和 LM 曲线方程，得均衡收入水平 Y = 2100 和均衡利率 R = 0.16。
+
+（3）根据（2）小问，经济达到充分就业意味着国民收入必须增加300。
+① 假设政府购买支出增加 ΔG 时，经济达到充分就业。
+由产品市场均衡条件 Y = C + I + G 可得：
+$$Y = 90 + 0.9(Y − Y/3) + 200 − 1000R + 710 + ΔG
+整理可得 IS 曲线方程为：
+$$Y = 2500 − 2500R + 2.5ΔG
+此时 LM 曲线不变，联立新的 IS 和原 LM 曲线方程可得：
+$$Y = 2500 − 2500R + 2.5ΔG
+$$Y = 500 + 10000R
+代入 Y_F = 2400，解得：
+$$ΔG = 150
+
+② 假设名义货币供给量增加 ΔM 时，经济达到充分就业。
+由货币市场均衡条件 M/P = L(R, Y) 可得：
+$$500 + ΔM = Y − 10000R
+整理可得新的 LM 曲线方程为：
+$$Y = 500 + 10000R + ΔM
+此时 IS 曲线不变，联立原 IS 和新的 LM 曲线方程可得：
+$$Y = 2500 − 2500R
+$$Y = 500 + 10000R + ΔM
+代入 Y_F = 2400，解得：
+$$ΔM = 1500`,
+          hasImage: false },
+
+        { id: 't13q4', special: '专题十三', qid: '练习4',
+          question: `4、考虑如下经济模型：
+商品市场：C = 100 + 0.9(Y − T)；I = 190 − 10r；NX = −200；G = 200；T = 100
+货币市场：M = 2000；P = 5；L(Y, r) = Y − 100r
+其中 C 为消费，Y 为总产出，T 为税收，I 为投资，r 为利率，NX 为净出口，G 为政府支出，M 为货币供给，P 为价格水平，L 为货币需求。
+（1）推导出 IS 和 LM 方程，并计算均衡状态下的产出 Y 和利率 r。
+（2）如果政府想要平衡预算（G = T），可以增加税收，也可以降低政府支出，哪一个对产出的影响较小？
+（3）求（2）中税收和政府购买变动后的挤出效应、税收乘数与政府购买乘数。`,
+          answer: `解：（1）由产品市场均衡条件 Y = C + I + G + NX 可得：
+$$Y = 100 + 0.9(Y − 100) + 190 − 10r + 200 + (−200)
+整理可得 IS 曲线方程为：
+$$Y = 2000 − 100r
+由货币市场均衡条件 (M/P)^s = L(r, Y) 可得：
+$$2000/5 = Y − 100r
+整理可得 LM 曲线方程为：
+$$Y = 400 + 100r
+联立 IS 和 LM 曲线方程可得均衡的产出和利率：
+$$Y = 1200，  r = 8
+
+（2）① 当政府增加税收以实现预算平衡，需要增加的税收量为100，此时 G = T = 200。
+由产品市场均衡条件 Y = C + I + G + NX 可得：
+$$Y = 100 + 0.9(Y − 200) + 190 − 10r + 200 + (−200)
+整理可得新的 IS 曲线方程为：
+$$Y = 1100 − 100r
+此时 LM 曲线方程不变，联立解得新的均衡产出 Y' = 750，产出减少450。
+
+② 当政府减少支出以实现预算平衡，需要减少的政府购买量为100，此时 G = T = 100。
+由产品市场均衡条件 Y = C + I + G + NX 可得：
+$$Y = 100 + 0.9(Y − 100) + 190 − 10r + 100 + (−200)
+整理可得新的 IS 曲线方程为：
+$$Y = 1000 − 100r
+此时 LM 曲线方程不变，联立解得新的均衡产出 Y'' = 700，产出减少500。
+综上，增加税收对产出的影响较小。
+
+（3）① 税收增加100以后 IS 曲线方程为 Y = 1100 − 100r。
+将 r = 8 代入新的 IS 曲线方程，可得收入 Y₁ = 300。
+所以：
+$$挤出效应 = 300 − 750 = −450
+$$税收乘数 k_T = ΔY/ΔT = (750 − 1200)/100 = −4.5
+
+② 政府购买减少100以后 IS 曲线方程为 Y = 1000 − 100r。
+将 r = 8 代入新的 IS 曲线方程，可得收入 Y₂ = 200。
+所以：
+$$挤出效应 = 200 − 700 = −500
+$$政府购买乘数 k_G = ΔY/ΔG = (700 − 1200)/(−100) = 5`,
+          hasImage: false },
+
+        { id: 't13q5', special: '专题十三', qid: '练习5',
+          question: `5、以下等式描述了一个经济（C、I、G 等以10亿元为计量单位，i 以百分比计量，如5%的利率意味着 i = 5）。其中 t 为政府收取收入税的税率。
+C = 0.8(1 − t)Y，t = 0.25，I = 900 − 50i，G = 800，L = 0.25Y − 62.5i，M̄/P̄ = 500
+（1）推导出描述 IS 曲线的方程；
+（2）推导出描述 LM 曲线的方程；
+（3）求出均衡收入水平与均衡利率水平；
+（4）推导并计算政府支出乘数 α_G。（中财803经济学综合2019年考题）`,
+          answer: `解：（1）由产品市场均衡条件 Y = C + I + G 可得：
+$$Y = 0.8(1 − 0.25)Y + 900 − 50i + 800
+整理可得 IS 曲线方程为：
+$$Y = 4250 − 125i
+
+（2）由货币市场均衡条件 (M/P)^s = L(i, Y) 可得：
+$$500 = 0.25Y − 62.5i
+整理可得 LM 曲线方程为：
+$$Y = 2000 + 250i
+
+（3）联立 IS、LM 曲线方程可得：
+$$Y = 4250 − 125i
+$$Y = 2000 + 250i
+解得均衡收入与均衡利率分别为：
+$$Y = 3500，  i = 6
+
+（4）假设政府购买为 G，由产品市场均衡条件 Y = C + I + G 可得：
+$$Y = 0.8(1 − 0.25)Y + 900 − 50i + G
+整理可得 IS 曲线方程为：
+$$Y = 2250 − 125i + 2.5G
+LM 曲线方程为：
+$$Y = 2000 + 250i
+联立 IS、LM 曲线方程可得：
+$$Y = 2250 − 125i + 2.5G
+$$Y = 2000 + 250i
+解得均衡收入为：
+$$Y = (6500 + 5G)/3
+因此政府支出乘数：
+$$α_G = ΔY/ΔG = 5/3
+
+【提示】注意这里涉及到 LM 曲线，因此当政府购买支出发生变动时存在挤出效应，所以第（4）问求政府购买支出乘数时不能直接套凯恩斯交叉中的政府购买乘数的公式，而是要从支出函数的定义出发，求考虑了挤出效应的乘数。`,
+          hasImage: false },
+
+        { id: 't13q6', special: '专题十三', qid: '练习6',
+          question: `6、假设一个经济中消费函数为 C = 350 + 0.8Y_D，税率 t = 0.25，投资函数为 I = 400 − 48i，i 为利率，转移支付 TR = 250，政府采购 G = 200，净出口为 NX = 50，实际货币余额为 M/P = 400，货币需求为 L = 0.2Y − 16i。
+（1）求出 IS、LM 曲线，以及均衡收入和均衡利率。
+（2）如果政府支出增加 ΔG = 200，求新的均衡收入与利率。
+（3）计算政府支出变动引起的挤出效应有多大？如果政府采取财政赤字货币化政策，通货-存款比率为0.35，准备金率为0.10，问中央银行需要在公开市场购买多少政府债券才能完全消除财政挤出效应？（对外经贸2012年考题）`,
+          answer: `解：（1）由产品市场均衡条件 Y = C + I + G + NX 可得：
+$$Y = 350 + 0.8Y_D + 400 − 48i + 200 + 50
+其中 Y_D = Y − T + TR = Y − 0.25Y + 250 = 0.75Y + 250
+整理得 IS 曲线方程：
+$$Y = 3000 − 120i
+由货币市场均衡条件 L = M/P 可得：
+$$0.2Y − 16i = 400
+整理得 LM 曲线方程：
+$$Y = 2000 + 80i
+联立 IS 曲线和 LM 曲线方程可以求得均衡利率和收入分别为：
+$$i = 5，  Y = 2400
+
+（2）当政府购买变动 ΔG = 200，则由产品市场均衡条件可得：
+$$Y = 350 + 0.8Y_D + 400 − 48i + 200 + 50 + 200
+整理得新的 IS 曲线方程：
+$$Y = 3500 − 120i
+联立新的 IS 曲线和 LM 曲线方程：
+$$Y = 3500 − 120i
+$$Y = 2000 + 80i
+解得新的均衡利率和收入：
+$$i = 7.5，  Y' = 2600
+
+（3）① 求挤出效应
+【法一】此时产出的变化量 ΔY₁ = Y' − Y = 200。
+如果不存在挤出效应，则根据乘数效应，产出应该增加：
+$$ΔY₂ = ΔG/[1 − β(1 − t)] = 1/[1 − 0.8(1 − 0.25)] × 200 = 500
+【以上也是 IS 曲线向右平移的距离】
+因此挤出效应 = ΔY₂ − ΔY₁ = 500 − 200 = 300。
+【法二】将初始利率 i = 5 代入新的 IS 曲线方程 Y = 3500 − 120i，得到 Y'' = 3500 − 120×5 = 2900。
+所以挤出效应 = Y'' − Y' = 2900 − 2600 = 300。
+
+② 求货币变动量
+要想完全消除挤出效应，就要使利率降低到原来的均衡水平，即 i = 5。此时，中央银行必须增加货币供给 ΔM，则根据货币市场均衡条件 L = M/P + ΔM 有：
+$$0.2Y − 16i = 400 + ΔM
+整理得新的 LM 曲线方程：
+$$Y = 2000 + 80i + 5ΔM
+联立新的 IS 曲线和新的 LM 曲线方程：
+$$Y = 3500 − 120i
+$$Y = 2000 + 80i + 5ΔM
+代入 i = 5，解得均衡收入和货币供给变动量分别为：
+$$Y = 2900，  ΔM = 100
+由题意得，货币创造乘数：
+$$mm = (1 + cu)/(re + cu) = (1 + 0.35)/(0.35 + 0.10) = 3
+则基础货币的增加量：
+$$ΔH = ΔM/mm = 100/3
+即中央银行在公开市场上需要购买的政府债券的量为 100/3。`,
+          hasImage: false },
+
+        { id: 't13q7', special: '专题十三', qid: '练习7',
+          question: `7、假设在封闭经济中，消费函数为 C = 200 + 0.8(Y − T)，投资函数为 I = 200 − 2r。政府购买和税收都是120，货币需求函数为 L = Y − 80r，货币供给是 (M/P)^s = 1000，物价水平为2，请回答：
+（1）求出均衡状态下的利率和收入水平？
+（2）假设同时采取扩张性的财政和货币政策，政府购买从120提高到140，货币供给从1000提高到1200，那么 IS 和 LM 如何移动，在新的均衡条件下利率和收入水平是多少？
+（3）使用财政和货币政策的初始值，假设物价水平从2上升到4，会发生什么变化？新的均衡下利率和收入水平是多少？
+（4）推导出总需求方程。如果货币政策像（2）那样变化，那么需求曲线怎样变动？（中财803经济学综合2018年考题）`,
+          answer: `解：（1）由产品市场均衡条件 Y = C + I + G 可得：
+$$Y = 200 + 0.8(Y − T) + 200 − 2r + 120
+解得 IS 曲线方程为：
+$$Y = 2120 − 10r
+由货币市场均衡条件 (M/P)^s = L(r, Y) 可得：
+$$1000 = Y − 80r
+解得 LM 曲线方程为：
+$$Y = 1000 + 80r
+联立以上 IS、LM 曲线方程解得：
+$$Y* = 1995.56，  r* = 12.44
+即均衡状态下的利率为12.44，收入水平为1995.56。
+
+（2）增加政府购买使 IS 曲线向右移动，增加货币供给使 LM 曲线向右移动。
+移动后的 IS 曲线方程为：
+$$Y = 2220 − 10r
+移动后的 LM 曲线方程为：
+$$Y = 1200 + 80r
+联立以上 IS、LM 曲线方程解得：
+$$Y* = 2106.67，  r* = 11.33
+在新的均衡条件下，收入水平为2106.67，利率为11.33。
+
+（3）物价水平变化不影响 IS 曲线，物价上升使 LM 曲线向左移动。
+当 P = 2 时，(M/P)^s = 1000；因此，当物价水平由2上升到4时，(M/P)^s = 500。
+移动后的 LM 曲线方程为：
+$$Y = 500 + 80r
+IS 曲线方程不变，联立 IS、LM 曲线方程可得：
+$$Y = 2120 − 10r
+$$Y = 500 + 80r
+解得：
+$$Y* = 1940，  r* = 18
+此时利率上升，产出下降，新的均衡产出为1940，均衡利率为18。
+
+（4）由题意可知，经济中的名义货币供给量 M = 2000。
+在初始财政政策和名义货币供给不变的条件下，产品市场和货币市场同时均衡时，有：
+$$Y = 2120 − 10r
+$$2000/P = Y − 80r
+联立解得总需求方程为：
+$$Y = 16960/9 + 2000/(9P)
+根据（2）中要求调整货币政策后，(M/P)^s = 1200，此时经济中的名义货币供给量 M = 2400。
+此时产品市场和货币市场同时均衡时，有：
+$$Y = 2120 − 10r
+$$2400/P = Y − 80r
+故总需求方程变为：
+$$Y = 16960/9 + 2400/(9P)`,
+          hasImage: false },
+
+        { id: 't13q8', special: '专题十三', qid: '练习8',
+          question: `8、考虑一个由以下方程式所描述的经济：Y = C + I + G + NX，政府采购 G = 200；税收 T = 200；消费 C = 100 + 0.75(Y − T)；投资 I = 400 − 20r；净出口 NX = 200 − 200e；利率 r = r* = 5。其中，Y 表示总收入，e 表示汇率，r* 表示世界利率。又假设货币需求函数为 (M/P)^d = Y − 100r，货币供给 M = 1000，物价水平 P = 2，该经济实行的是浮动汇率制。请问：
+（1）该经济 IS* 曲线和 LM* 曲线的方程分别是多少？
+（2）市场实现均衡时，该经济的国民收入、均衡汇率、贸易余额、投资又为多少？
+（3）假设该经济实行固定汇率制，当政府购买增加100，为维持初始的均衡汇率水平，货币供给应该如何变动？新的均衡产出是多少？`,
+          answer: `解：（1）由产品市场均衡条件 Y = C + I + G + NX 可得：
+$$Y = 100 + 0.75(Y − 200) + 400 − 20×5 + 200 + 200 − 200e
+整理可得 IS* 曲线方程为：
+$$Y = 2600 − 800e
+由货币市场均衡条件 M/P = L(r, Y) 可得：
+$$1000/2 = Y − 100×5
+整理可得 LM* 曲线为：
+$$Y = 1000
+
+（2）当市场实现均衡时，联立 IS* 曲线和 LM* 曲线方程：
+$$Y = 2600 − 800e
+$$Y = 1000
+解得均衡收入为 Y* = 1000，均衡汇率为 e* = 2。
+此时贸易余额为：
+$$NX = 200 − 200e* = −200（即出现贸易逆差）
+投资为：
+$$I = 400 − 20r = 300
+
+（3）当政府购买增加100，由产品市场均衡条件 Y = C + I + G + NX 可得：
+$$Y = 100 + 0.75(Y − 200) + 400 − 20×5 + 200 + 100 + 200 − 200e
+整理可得新的 IS* 曲线方程为：
+$$Y = 3000 − 800e
+假设名义货币变动量为 ΔM，由货币市场均衡条件 M/P = L(r, Y) 可得：
+$$(1000 + ΔM)/2 = Y − 100×5
+整理可得新的 LM* 曲线为：
+$$Y = 1000 + ΔM/2
+联立方程：
+$$Y = 3000 − 800e
+$$Y = 1000 + ΔM/2
+代入 e* = 2 解得新的均衡产出 Y = 1400，名义货币变动量 ΔM = 800。`,
+          hasImage: false },
+
+        { id: 't13q9', special: '专题十三', qid: '练习9',
+          question: `9、某小型开放经济由下列方程描述：
+Y = C + I + G + NX
+C = 50 + 0.75(Y − T)，I = 200 − 20r，NX = 200 − 50e
+(M/P)^D = Y − 40r，G = 500
+T = 600，M = 3000，P = 3，r* = 5
+（1）推导 IS* 和 LM* 曲线，计算此时的均衡收入、均衡汇率和净出口；（5分）
+（2）假设该经济体的充分就业产出是1600，采用固定汇率制度，政策制定者应采取怎样的政策使产出达到充分就业产出？请给出政策变动量的具体值；（5分）
+（3）用蒙代尔-弗莱明模型的图像推导总需求曲线，并从汇率的角度简述总需求曲线向右下方倾斜的原因。（5分）`,
+          answer: `解：（1）由产品市场均衡条件 Y = C + I + G + NX 可得：
+$$Y = 50 + 0.75(Y − 600) + 200 − 20×5 + 500 + 200 − 50e
+可得 IS* 曲线表达式为：
+$$Y = 1600 − 200e
+由货币市场均衡条件 M/P = L(r, Y) 可得 LM* 曲线为：
+$$3000/3 = Y − 40×5  ⟹  Y = 1200
+联立 IS* 和 LM* 曲线表达式可得：
+$$Y = 1600 − 200e
+$$Y = 1200
+解得：
+$$Y = 1200，  e = 2，  NX = 200 − 50×2 = 100
+
+（2）固定汇率制下，财政政策和货币政策必须搭配使用才能影响经济的总产出。假设政府购买变动量为 ΔG，货币供给变动量为 ΔM。
+由产品市场均衡条件 Y = C + I + G + NX 可得新的 IS* 曲线表达式为：
+$$Y = 1600 − 200e + 4ΔG
+由货币市场均衡条件 M/P = L(r, Y) 可得新的 LM* 曲线为：
+$$Y = 1200 + ΔM/3
+联立新的 IS* 和 LM* 曲线表达式可得：
+$$Y = 1600 − 200e + 4ΔG
+$$Y = 1200 + ΔM/3
+代入充分就业产出水平 Y = 1600 和（1）中的汇率水平 e = 2 可以解得：
+$$ΔM = 1200，  ΔG = 100
+
+（3）当价格水平 P 下降时，实际货币余额供给 M/P 会增加，此时利率有下降的趋势，国内资本会流向国外，本国货币贬值，净出口增加，产出水平增加。因此，价格水平 P 和产出水平 Y 之间负相关，总需求曲线 AD 向右下方倾斜。
+【本题有图示】（图(a)为 M-F 模型，图(b)为总需求曲线）`,
+          hasImage: true },
+
+        /* ==================== 专题十四 · 经济增长（一） ==================== */
+        { id: 't14k', special: '专题十四', qid: '知识要点',
+          question: '专题十四 · 经济增长计算题常见的类型（一）｜全部知识点总结',
+          answer: `2012、2013、2014、2016、2017、2018、2019、2020、2021、2022、2023、2024和2025年南开真题中均考查了经济增长的计算题。经济增长这块2015年是放在了论述题里面考的，所以计算题中未涉及。
+
+经济增长问题的计算分析题主要涉及到两大类型或这两大类结合起来命题：
+第一类：稳态条件的推导、稳态变量的求解、黄金律条件的推导、黄金律变量的求解；
+第二类：稳态时各变量的增长率。
+
+本专题讲解第一类经济增长计算题（第二类见下一个专题）。
+求解这一大类题的最核心的一步（最关键的一步）是求出人均资本生产函数的式子，即求出 y = f(k) 的具体的式子，剩下的问题在此基础上基本就都不难解决了。
+
+**几种常见的类型：**
+
+**1、不含有技术进步的总产出函数**
+
+函数形式是 Y = K^α·L^(1−α) 或 Y = A·K^α·L^(1−α)（A为常数），假设储蓄率、资本折旧率和人口增长率分别为 s、δ、n，人均资本 k = K/L，人均产出 y = Y/L。
+
+（1）稳态条件的推导：
+$$人均产出 y = Y/L = K^α·L^(1−α)/L = (K/L)^α = k^α
+$$资本积累 ΔK = sY − δK
+由增长率的性质可得：
+$$Δk/k = ΔK/K − ΔL/L = (sY − δK)/K − n = s·(Y/K) − (δ + n)
+整理可得：
+$$Δk = s·(Y/K)·k − (δ + n)k = s·y − (δ + n)k
+稳态时满足 Δk = 0，因此稳态条件为：
+$$s·y = (δ + n)k
+
+（2）黄金律条件的推导：黄金律稳态水平要求人均消费最大（解题的核心：稳态，人均消费最大）。
+人均消费函数为 c = y − s·y，由于稳态时满足条件 s·y = (δ + n)k，所以稳态时人均消费函数可以进一步写成：
+$$c = y − (δ + n)k = f(k) − (δ + n)k
+由人均消费最大化的一阶条件可得：
+$$dc/dk = f'(k) − (δ + n) = 0
+解得黄金律稳态的条件是：
+$$f'(k) = (δ + n)
+由以上条件可以求得黄金律稳态时人均资本水平 k*gold，将其代入稳态条件 s·y = (δ + n)k 即可解得稳态时的储蓄率水平 s*gold。
+
+【提示】黄金律水平的储蓄率一定是等于产出函数中资本的指数幂，即 s*gold = α，大家一定要牢记这个结论，方便大家验算自己得到的结果是否正确。
+
+**2、有技术进步的总产出函数**
+
+常见的函数形式是劳动增加型（哈罗德中性）的，即 Y = K^a·(AL)^(1−a)，假设储蓄率、资本折旧率、人口增长率和技术进步率分别为 s、δ、n、g，有效人均资本 k = K/(AL)，有效人均产出 y = Y/(AL)。
+
+（1）稳态条件的推导：
+$$有效人均产出 y = Y/(AL) = K^a·(AL)^(1−a)/(AL) = (K/(AL))^a = k^a
+$$资本积累 ΔK = sY − δK
+由增长率的性质可得：
+$$Δk/k = ΔK/K − ΔA/A − ΔL/L = s·(Y/K) − (δ + g + n)
+整理可得：
+$$Δk = s·y − (δ + n + g)k
+稳态条件 Δk = 0，因此此时：
+$$s·y = (δ + g + n)k
+
+（2）黄金律条件的推导：黄金律稳态水平要求有效人均消费最大。
+有效人均消费函数为 c = y − s·y，由于稳态时满足 s·y = (δ + g + n)k，所以有效人均消费函数可以进一步写成：
+$$c = y − (δ + g + n)k = f(k) − (δ + g + n)k
+由有效人均消费最大化的一阶条件可得：
+$$dc/dk = f'(k) − (δ + g + n) = 0
+解得黄金律稳态的条件是：
+$$f'(k) = (δ + g + n)
+由以上条件可以求得黄金律稳态时有效人均资本水平 k*gold，将其代入稳态条件 s·y = (δ + g + n)k 即可解得稳态时的储蓄率水平 s*gold。
+
+【提示】黄金律水平的储蓄率一定等于产出函数中资本的指数幂，即 s*gold = a，大家一定要牢记这个结论，方便验算自己得到的结果是否正确。
+
+**3、稳态人均资本与人均产出的常用结果（柯布-道格拉斯情形）**
+
+无技术进步时（y = k^α）：
+$$k* = [s/(δ + n)]^[1/(1−α)]
+$$y* = [s/(δ + n)]^[α/(1−α)]
+$$c* = (1 − s)·[s/(δ + n)]^[α/(1−α)]
+$$k*gold = [α/(δ + n)]^[1/(1−α)]，  s*gold = α
+
+有技术进步时（y = k^a）：
+$$k* = [s/(δ + n + g)]^[1/(1−a)]
+$$y* = [s/(δ + n + g)]^[a/(1−a)]
+$$c* = (1 − s)·[s/(δ + n + g)]^[a/(1−a)]
+$$k*gold = [a/(δ + n + g)]^[1/(1−a)]，  s*gold = a`,
+          hasImage: false },
+
+        { id: 't14q1', special: '专题十四', qid: '练习1',
+          question: `1、在一个经济体中，总生产函数为 Y = K^0.5·L^0.5，其中 Y 为总产出，K 为资本存量，L 为人口数量。假设储蓄率为0.1，人口增长率为0.02，资本折旧率 δ = 0.03。
+（1）写出人均资本形式的生产函数，并求稳定状态下的人均资本存量 k 和人均产出 y。
+（2）稳定状态下的 k 比黄金律下的 k 是大还是小？
+（3）在该经济体中，储蓄率要达到多少才能得到黄金律下的人均资本存量 k？`,
+          answer: `解：（1）令人均资本 k = K/L，则人均产出：
+$$y = Y/L = K^0.5·L^0.5/L = k^0.5
+由增长率的性质可知：
+$$Δk/k = ΔK/K − ΔL/L = (sY − δK)/K − ΔL/L = s·(Y/K) − (δ + n)
+进一步整理可得：
+$$Δk = s·y − (δ + n)k
+稳态时 Δk = 0，即满足 s·y = (δ + n)k，代入 s = 0.1，δ = 0.03，n = 0.02，y = k^0.5 可以解得稳态时：
+$$k* = 4，  y* = 2
+
+（2）稳态时人均消费：
+$$c = y − s·y = y − (δ + n)k = k^0.5 − (δ + n)k
+人均消费最大化的一阶条件为：
+$$dc/dk = 0.5k^(−0.5) − (δ + n) = 0
+代入 δ = 0.03，n = 0.02，解得黄金律稳态下的人均资本：
+$$k*gold = 100
+因此当前稳态下的 k 小于黄金律下的人均资本。
+
+（3）δ = 0.03，n = 0.02，k*gold = 100 代入稳态条件 s·k^0.5 = (δ + n)k 可得稳态时的储蓄率：
+$$s*gold = 0.5`,
+          hasImage: false },
+
+        { id: 't14q2', special: '专题十四', qid: '练习2',
+          question: `2、假设 y 表示人均有效劳动的产出，k 表示人均有效劳动的资本，考虑由以下生产函数的索洛增长模型描述了一个经济：y = √k
+（1）解出 y 作为 s（储蓄率）、n（人口增长率）、g（技术进步速度）和 δ（折旧率）的函数时，达到稳定状态时的值。
+（2）假设一个发达国家的储蓄率为28%，人口增长率为每年1%；一个不发达国家的储蓄率为10%，人口增长率为每年4%。而在这两个国家中 g = 0.02，δ = 0.04，求出每个国家稳定状态的 y 值。
+（3）不发达国家想要提高有效人均资本水平，应采取什么政策？（中财801经济学2022年考题）`,
+          answer: `解：由题意可知，有效人均资本 k = K/(AL)，有效人均产出 y = Y/(AL) = √k。
+由增长率的性质可知：
+$$Δk/k = ΔK/K − ΔA/A − ΔL/L
+由于资本积累方程为 ΔK = sY − δK，所以：
+$$Δk/k = (sY − δK)/K − ΔA/A − ΔL/L = s·(Y/K) − (δ + n + g)
+进一步整理可得：
+$$Δk = s·y − (δ + n + g)k
+稳态时满足条件 Δk = 0，即 s·√k = (δ + n + g)k，解得稳态时有效人均资本存量：
+$$k* = [s/(δ + n + g)]²
+所以稳态时有效人均产出：
+$$y* = √k* = s/(δ + n + g)
+
+（2）由（1）可知，稳态时有效人均产出 y* = s/(δ + n + g)。
+代入 s₁ = 28%，n₁ = 1%，g = 0.02，δ = 0.04，解得发达国家稳态时有效人均产出：
+$$y₁* = 4
+代入 s₂ = 10%，n₂ = 4%，g = 0.02，δ = 0.04，解得不发达国家稳态时有效人均产出：
+$$y₂* = 1
+
+（3）不发达国家想要提高有效人均资本水平，可以采取的政策包括：
+① 提高储蓄率，储蓄率上升会导致稳态时有效人均资本水平上升。具体政策包括：减少政府预算赤字或增加预算盈余；刺激私人储蓄：降低资本利得税、公司所得税、房产税等；将政府所得税改为消费税；加大对个人退休账户或其他退休账户的税收优惠。
+② 控制人口增加，降低人口增长率，也会导致稳态时有效人均资本水平上升。`,
+          hasImage: false },
+
+        { id: 't14q3', special: '专题十四', qid: '练习3',
+          question: `3、生产函数为：Y = F(K, L) = K^a·L^(1−a)，储蓄率为 s，资本折旧率为 δ，人口增长率为 n。
+（1）人均生产函数是什么？
+（2）假设没有技术进步，求出稳定状态的人均资本存量、人均产出，以及作为储蓄率和折旧率函数的人均消费。
+（3）求出资本黄金律水平的人均资本 k_gold、人均产出 y_gold 以及储蓄率 s_gold。
+（4）假设当前储蓄率 s < s_gold，画图说明储蓄率变动对产出、消费和投资影响的动态过程。`,
+          answer: `解：（1）对生产函数两端除以 L，得：
+$$y = Y/L = K^a·L^(1−a)/L = (K/L)^a = k^a
+其中 y = Y/L，k = K/L。
+
+（2）由于没有技术进步，稳定状态的条件为：
+$$Δk = s·y − (δ + n)k = s·f(k) − (δ + n)k = 0
+把 y = f(k) = k^a 代入均衡条件解得稳定状态的人均资本存量：
+$$k* = [s/(δ + n)]^[1/(1−a)]
+代入人均生产函数得稳定状态下的人均产出：
+$$y* = [s/(δ + n)]^[a/(1−a)]
+因为人均消费等于人均产出减人均储蓄，那么人均消费就是人均产出的 (1 − s) 倍，即：
+$$c* = (1 − s)·f(k*) = (1 − s)·[s/(δ + n)]^[a/(1−a)]
+
+（3）人均消费 c = y − s·y，由于稳态时有 s·y = (δ + n)k，因此稳态时人均消费：
+$$c = y − s·y = k^a − (δ + n)k
+由人均消费最大的一阶条件可得：
+$$dc/dk = a·k^(a−1) − (δ + n) = 0
+解得黄金律水平人均资本：
+$$k_gold = [a/(δ + n)]^[1/(1−a)]
+因此黄金律水平人均产出：
+$$y_gold* = [a/(δ + n)]^[a/(1−a)]
+将 k_gold = [a/(δ + n)]^[1/(1−a)] 代入稳态条件 Δk = s·k^a − (δ + n)k = 0 可得黄金律水平的储蓄率：
+$$s_gold* = a
+
+（4）由于当前的储蓄率小于黄金律水平的储蓄率，因此政府应该选择提高储蓄率的政策。下图显示了向稳态过渡的过程中各变量随时间变化的情况。在时间 t₀ 储蓄率的提高导致了消费的立即减少和投资的立即增加。随着时间的推移，更高的投资引起资本存量的增加。随着资本的积累，产出、消费和投资逐渐增加，最终达到新的稳定状态水平。由于初始稳定状态低于黄金律，储蓄的增加最终导致消费水平高于初始水平。
+【本题有图示】
+
+【提示】本题是求解稳态人均资本、人均产出、黄金律水平人均资本、储蓄率等的母题，大家一定要重点掌握这道题每一问的分析思路，把这道题弄懂，大家对于这一大类题型就没问题了（包括有技术进步的，其分析思路和这道题基本一致，只是有技术进步那里是有效人均资本 k = K/(AL)）。`,
+          hasImage: true },
+
+        { id: 't14q4', special: '专题十四', qid: '练习4',
+          question: `4、某国宏观生产函数为 Y = A·K^0.5·L^0.5，Y、A、K、L 分别代表产出总量、技术水平、资本总量、劳动总量；资本变动遵循 ΔK = I − dK，ΔK、I、d 分别代表资本增加量、投资、折旧率。假设该国的人口均为劳动力且零增长，技术水平、折旧率和储蓄率 (s) 都保持不变。
+（1）请写出该国经济实现稳态增长时，人均收入 (y)、人均资本 (k) 和人均消费 (c) 的表达式。
+（2）令折旧率为5%，请分别计算储蓄率为10%、技术水平为2，和储蓄率为20%、技术水平为4的两种情况下，经济实现稳态增长时的人均收入和人均消费；并讨论是否达到了最高人均消费水平。`,
+          answer: `解：（1）令人均资本 k = K/L，则人均生产函数：
+$$y = Y/L = A·K^0.5·L^0.5/L = A·(K/L)^0.5 = A·k^0.5 = f(k)
+由题意可知，劳动增长率 ΔL/L = 0。
+由于储蓄等于投资，所以资本积累方程 ΔK = I − dK = sY − dK。
+由增长率的性质可得：
+$$Δk/k = ΔK/K − ΔL/L = (I − dK)/K = s·(Y/K) − d
+进一步整理可得：
+$$Δk = s·y − d·k = s·A·k^0.5 − d·k = 0
+稳态时 Δk = 0，所以稳态条件为 s·A·k^0.5 = d·k。
+解得稳态时人均资本：
+$$k* = (s·A/d)²
+$$人均产出 y* = s·A²/d
+$$人均消费 c* = (1 − s)·y* = (1 − s)·(s·A²/d)
+
+（2）① 代入 d = 5%，s = 10%，A = 2，解得稳态人均产出 y* = 8，人均消费 c* = 7.2。
+② 代入 d = 5%，s = 20%，A = 4，解得稳态人均产出 y* = 64，人均消费 c* = 51.2。
+③ 稳态时人均消费 c = y − s·y = A·k^0.5 − d·k。
+人均消费最大化的一阶条件为：
+$$dc/dk = 0.5A·k^(−0.5) − d = 0
+解得黄金律稳态的人均资本：
+$$k_gold* = (0.5A/d)²
+将 k_gold* = (0.5A/d)² 代入稳态条件 s·A·k^0.5 = d·k，解得黄金律水平的储蓄率：
+$$s_gold* = 50%
+因此此时都未达到最高人均消费水平。
+
+【提示】注意这里生产函数中虽然有 A，但技术水平是不变的，即不存在技术进步，此时把 A 当作常数处理，并按照不存在技术进步的思路进行求解即可。在运用本专题总结的解题思路时，一定要根据具体题目给的条件来判断应该用哪种方法。`,
+          hasImage: false },
+
+        { id: 't14q5', special: '专题十四', qid: '练习5',
+          question: `5、某经济体的生产函数为：F(K, AL) = K^a·(AL)^(1−a)，0 < a < 1。假设该经济体的人口增长率、技术进步率、折旧率和储蓄率分别为 n、g、δ 和 s。
+（1）求出有效劳动的平均资本生产函数；求出稳态时有效劳动的资本存量 k*、每单位有效劳动的生产量 y* 和每单位有效劳动的消费 c*；
+（2）求出每单位有效劳动资本存量 k 的黄金律值；
+（3）求出满足黄金律稳态时资本存量时的储蓄率水平。`,
+          answer: `解：（1）柯布-道格拉斯的生产函数形式为 Y = K^a·(AL)^(1−a)，令有效工人的人均资本和产出分别为 k = K/(AL)、y = Y/(AL)。
+$$y = Y/(AL) = K^a·(AL)^(1−a)/(AL) = (K/(AL))^a = k^a
+由增长率的性质可得：
+$$Δk/k = ΔK/K − (ΔA/A + ΔL/L)
+由资本积累方程 ΔK = sY − δK 可得：
+$$Δk/k = (sY − δK)/K − (ΔA/A + ΔL/L)
+整理可得：
+$$Δk = s·y − (δ + n + g)k
+稳态时有效工人的人均资本变化量为0，即 Δk = 0。
+因此稳态条件为 Δk = s·y − (δ + n + g)k = 0，即 s·k^a − (δ + n + g)k = 0。
+解得稳态时有效工人的人均资本：
+$$k* = [s/(δ + n + g)]^[1/(1−a)]
+有效工人的人均产出：
+$$y* = [s/(δ + n + g)]^[a/(1−a)]
+又因为 c = (1 − s)y，所以：
+$$c* = (1 − s)·[s/(δ + n + g)]^[a/(1−a)]
+
+（2）有效人均消费 c = y − s·y，稳态时存在 s·y = (δ + n + g)k。
+因此稳态时有效人均消费：
+$$c = y − (δ + n + g)k = k^a − (δ + n + g)k
+由有效人均消费最大的一阶条件可得：
+$$a·k^(a−1) − (δ + n + g) = 0
+解得黄金律水平的有效人均资本为：
+$$k_gold* = [a/(δ + n + g)]^[1/(1−a)]
+
+（3）由（2）可知黄金律水平的有效人均资本为 k_gold* = [a/(δ + n + g)]^[1/(1−a)]，将其代入稳态条件 s·k^a = (δ + n + g)k 可以解得黄金律水平的储蓄率：
+$$s_gold* = a
+
+【提示】本题第（3）问可以当作结论：黄金律稳态时的储蓄率等于资本 K 的指数。该结论不仅适用于曼昆教材中常规的总产出函数形式 Y = F(K, L) 或 Y = F(K, AL)，也适用于变形的总产出函数，如引入失业率、资本利用率和税收的总产出函数。`,
+          hasImage: false },
+
+        { id: 't14q6', special: '专题十四', qid: '练习6',
+          question: `6、在不包含技术进步索洛模型中，假设生产函数为 F(K, L) = A·K^a·L^(1−a)（其中 A 为大于0的常数，0 < a < 1），人口增长率为 n，储蓄率为 s，资本折旧率为 δ。定义 k = K/L 表示人均资本，y = Y/L 表示人均产出。请回答以下问题：
+（1）推导出人均资本积累的动态方程；
+（2）计算出黄金律的资本存量 k_gold 以及相应的储蓄率 s_gold；
+（3）在上述索洛模型中引入税收政策，假设政府对收入征税，税率为 τ（为简化起见，这里不考虑税收的具体用途），重新计算黄金律的资本存量 k_gold 以及相应的储蓄率 s_gold。（中财801经济学2014年考题）`,
+          answer: `解：（1）由生产函数 Y = A·K^a·L^(1−a) 可得人均生产函数为 y = f(k) = A·k^a，其中 k = K/L。
+人均资本积累的动态方程推导如下：
+$$Δk/k = ΔK/K − ΔL/L = (sY − δK)/K − n = s·(Y/K) − (δ + n)
+左右同时乘以 k 可得：
+$$Δk = s·y − (δ + n)k = s·A·k^a − (δ + n)k
+此即为人均资本积累的动态方程。
+
+（2）人均消费 c = y − s·y，稳态时有 s·y = (δ + n)k。
+故稳态时的人均消费为：
+$$c = y − (δ + n)k = A·k^a − (δ + n)k
+黄金律的资本存量应满足人均消费水平最大，即：
+$$dc/dk = A·a·k^(a−1) − (δ + n) = 0
+解得：
+$$k_gold* = [A·a/(δ + n)]^[1/(1−a)]
+将其代入稳态条件 s·A·k^a = (δ + n)k 可以解得黄金律水平的储蓄率：
+$$s_gold* = a
+
+（3）征税后，稳态条件为：
+$$s(1 − τ)y = (δ + n)k
+所以稳态的人均消费为：
+$$c = (1 − τ)y − s(1 − τ)y = (1 − τ)y − (δ + n)k = (1 − τ)A·k^a − (δ + n)k
+黄金律的资本存量应满足人均消费水平最大，即：
+$$dc/dk = (1 − τ)·A·a·k^(a−1) − (δ + n) = 0
+解得：
+$$k_gold* = [A·a·(1 − τ)/(δ + n)]^[1/(1−a)]
+将其代入稳态条件 s(1 − τ)y = (δ + n)k 可以解得黄金律水平的储蓄率：
+$$s_gold* = a`,
+          hasImage: false },
+
+        /* ==================== 专题十五 · 经济增长（二） ==================== */
+        { id: 't15k', special: '专题十五', qid: '知识要点',
+          question: '专题十五 · 经济增长计算题常见的类型（二）｜全部知识点总结',
+          answer: `**1、增长率的几个性质**
+
+关于增长率的问题，需要大家记住并学会应用以下增长率的基本性质。以下性质的具体证明在罗默《高级宏观经济学》、高鸿业和曼昆教材都有，只是不同教材中具体字母的表达方式不一样。
+
+**性质1**：两个变量乘积的增长率等于其增长率的和，即，若 Z(t) = X(t)·Y(t)，则：
+$$ΔZ(t)/Z(t) = ΔX(t)/X(t) + ΔY(t)/Y(t)
+推导：Z(t) = X(t)·Y(t) 左右同时取对数：ln Z(t) = ln X(t) + ln Y(t)，然后左右同时全微分即可。
+
+**性质2**：两个变量比率的增长率等于其增长率的差，即，若 Z(t) = X(t)/Y(t)，则：
+$$ΔZ(t)/Z(t) = ΔX(t)/X(t) − ΔY(t)/Y(t)
+推导：Z(t) = X(t)/Y(t) 左右同时取对数：ln Z(t) = ln X(t) − ln Y(t)，然后左右同时全微分即可。
+
+**性质3**：如果 Z(t) = X(t)^α，则 Z(t) 的增长率是 X(t) 的增长率的 α 倍，即：
+$$ΔZ(t)/Z(t) = α·ΔX(t)/X(t)
+推导：Z(t) = X(t)^α 左右同时取对数：ln Z(t) = α·ln X(t)，然后左右同时全微分即可。
+
+比如我们熟知的增长率核算方程：Y = A·K^α·L^(1−α)，则：
+$$ΔY/Y = α·ΔK/K + (1 − α)·ΔL/L + ΔA/A
+
+【提示】后续做题大家可能看到的几种等价表达：ΔX(t) = Ẋ(t) = dX(t)/dt，三者是一样的，只是不同教材表示方法不一样。
+
+**2、稳态条件下不同变量增长率的总结**
+
+假设人口增长率为 n，技术进步率为 g。
+
+$$有效人均资本 k̃ = K/(AL)：无技术进步 —，有技术进步 0
+$$有效人均产出 ỹ = Y/(AL)：无技术进步 —，有技术进步 0
+$$人均资本 k = K/L：无技术进步 0，有技术进步 g
+$$人均产出 y = Y/L：无技术进步 0，有技术进步 g
+$$总资本 K：无技术进步 n，有技术进步 n + g
+$$总产出 Y：无技术进步 n，有技术进步 n + g
+
+以有技术进步的情况为例，稳态时：
+$$Δk̃ = s·f(k̃) − (δ + n + g)k̃ = 0
+因此稳态时有效人均资本增长率 Δk̃/k̃ = 0。
+由于 ỹ = f(k̃)，因此稳态时有效人均产出增长率 Δỹ/ỹ = 0。
+人均资本 k = K/L = A·(K/(AL)) = A·k̃，因此人均资本增长率：
+$$Δk/k = ΔA/A + Δk̃/k̃ = g
+同理人均产出增长率 Δy/y = g。
+总资本 K = AL·(K/(AL)) = AL·k̃，因此总资本增长率：
+$$ΔK/K = ΔA/A + ΔL/L + Δk̃/k̃ = n + g
+同理总产出增长率 ΔY/Y = n + g。
+
+【提示】无技术进步的稳态增长率推导思路和上面一致，建议大家自行推导无技术进步时的情形，强化对上面思路的理解。对于以上推导，大家一定要熟练掌握，只要掌握了推导，关于上面的结论才不会记混。
+
+**3、资本与劳动收入份额的结论**
+
+在有技术进步的柯布-道格拉斯模型 Y = K^α·(LE)^(1−α) 中，稳态时：
+$$资本收入份额 = (MP_K·K)/Y = α
+$$劳动收入份额 = (MP_L·L)/Y = 1 − α
+因此资本总收入与劳动总收入的增长率均等于总产出增长率 n + g。`,
+          hasImage: false },
+
+        { id: 't15q1', special: '专题十五', qid: '练习1',
+          question: `1、索洛模型中，假设某国的生产函数 Y = 0.6K^0.5·L^0.5，劳动增长率 n = 0.09，储蓄率 s = 0.4，折旧率 δ = 0.11，试求：
+（1）长期稳态下的人均资本和人均产出？
+（2）长期稳态下的人均产出增长率和总产出增长率？
+（3）目前的储蓄率符合黄金规则水平吗？若不符合，偏高或偏低？
+（4）储蓄率为何值，才能达到黄金规则水平？`,
+          answer: `解：（1）令人均资本 k = K/L，人均产出：
+$$y = Y/L = 0.6K^0.5·L^0.5/L = 0.6k^0.5
+由增长率的性质可知：
+$$Δk/k = ΔK/K − ΔL/L = (sY − δK)/K − ΔL/L = s·(Y/K) − (δ + n)
+进一步整理可得：
+$$Δk = s·y − (δ + n)k
+稳态时 Δk = 0，即满足 s·y = (δ + n)k，代入 s = 0.4，δ = 0.11，n = 0.09，y = 0.6k^0.5 可以解得稳态时：
+$$k* = 1.44，  y* = 0.72
+
+（2）稳态时满足 Δk = 0，因此稳态时人均资本增长率 Δk/k = 0，由于 y = 0.6k^0.5，所以人均产出增长率也为0。
+由增长率的性质可知，总产出增长率：
+$$ΔY/Y = Δy/y + ΔL/L = 0.09
+
+（3）稳态时人均消费：
+$$c = y − s·y = y − (δ + n)k = 0.6k^0.5 − (δ + n)k
+人均消费最大化的一阶条件为：
+$$dc/dk = 0.3k^(−0.5) − (δ + n) = 0
+代入 δ = 0.11，n = 0.09，解得黄金律稳态下的人均资本：
+$$k_gold* = 2.25
+当前稳态下的 k = 1.44 小于黄金律下的人均资本，所以当前的储蓄率低于黄金律水平的储蓄率。
+
+（4）将 k_gold* = 2.25，δ = 0.11，n = 0.09，y = 0.6k^0.5 代入稳态条件 s·y = (δ + n)k，解得黄金律水平的储蓄率：
+$$s_gold* = 0.5`,
+          hasImage: false },
+
+        { id: 't15q2', special: '专题十五', qid: '练习2',
+          question: `2、含有人口增长和技术进步的索洛模型为 Y = F(K, LE) = K^α·(LE)^(1−α)，0 < α < 1，人口增长率为 n，技术进步增长率为 g；资本折旧率为 δ。
+（1）求解在稳态条件下，有效工人的人均资本和人均产出；
+（2）证明在稳态条件下，资本-产出比是固定不变的；
+（3）证明资本收入份额是 α，劳动的收入份额是 1 − α；（提示：资本收入份额等于 (MP_K·K)/Y，劳动收入份额等于 (MP_L·L)/Y）
+（4）证明在稳态条件下，资本总收入与劳动总收入都会按照人口增长率加技术进步率 (n + g) 的速率增长。（中财801经济学2020年考题）`,
+          answer: `解：（1）由题意可知有效人均产出 y = k^α，其中 k = K/(LE)，y = Y/(LE)。
+稳态时满足条件 s·y = (δ + n + g)k，即 s·k^α = (δ + n + g)k。
+解得稳态时有效人均资本：
+$$k* = [s/(δ + n + g)]^[1/(1−α)]
+有效人均产出：
+$$y* = [s/(δ + n + g)]^[α/(1−α)]
+
+（2）稳态时满足条件 s·y = (δ + n + g)k，故稳态时：
+$$K/Y = (k·LE)/(y·LE) = k/y = s/(δ + n + g)
+为一固定的常数。
+
+（3）资本收入份额：
+$$(MP_K·K)/Y = [α·K^(α−1)·(LE)^(1−α)·K]/[K^α·(LE)^(1−α)] = α
+劳动收入份额：
+$$(MP_L·L)/Y = [(1 − α)·K^α·(LE)^(−α)·E·L]/[K^α·(LE)^(1−α)] = 1 − α
+
+（4）稳态时 Δk = 0，由于有效人均产出 y = k^α，故稳态时也存在 Δy = 0，因此稳态时：
+$$Δk/k = Δy/y = 0
+由于 Y = y·LE，由增长率的性质可知稳态时：
+$$ΔY/Y = Δy/y + ΔL/L + ΔE/E = n + g
+由（3）可知，资本收入份额 = (MP_K·K)/Y = α，劳动收入份额 = (MP_L·L)/Y = 1 − α。
+因此资本总收入 (R = MP_K·K) 增长率：
+$$ΔR/R = ΔY/Y = n + g
+劳动总收入 (W = MP_L·L) 增长率：
+$$ΔW/W = ΔY/Y = n + g`,
+          hasImage: false },
+
+        { id: 't15q3', special: '专题十五', qid: '练习3',
+          question: `3、假设社会总生产函数为 Y = A·K^α·(LE)^(1−α)，其中 K 表示资本存量，L 表示劳动，E 表示劳动生产率，A 为常数。其中储蓄率、资本折旧率和人口增长率分别为常数 s、δ 和 n，劳动生产效率增长率为 g。
+（1）推导出此模型的索洛增长模型的基本方程式。
+（2）图示并辅以简要文字说明，“全面二孩政策”对经济增长的影响。
+（3）计算在“全面二孩政策”下稳态时经济中人均消费和社会总消费的增长率。`,
+          answer: `解：（1）设 LE 是有效劳动，则按有效劳动平均的产出 y = Y/(LE)，按有效劳动平均的资本存量 k = K/(LE)，由社会总生产函数得 y = A·k^α。
+由增长率的性质可得：
+$$Δk/k = ΔK/K − ΔL/L − ΔE/E = (sY − δK)/K − (n + g) = s·(Y/K) − (δ + n + g)
+进一步整理可得：
+$$Δk = s·y − (δ + n + g)k
+此即为索洛模型的基本方程式。
+稳态时 Δk = 0，即稳态条件为：
+$$s·y = (δ + n + g)k
+
+（2）“全面二孩政策”相当于人口增长率从 n 提高到 n'。经济最初位于 A 点所示的稳态。假定人口增长率从 n 提高到 n'，则图中的 (n + g + δ)k 线便移动到 (n' + g + δ)k 线，这时，新的稳态为 A' 点。比较 A' 点与 A 点可知：
+① “全面二孩政策”降低了人均资本的稳态水平，从原来的 k_A 减少到 k'；
+② “全面二孩政策”提高了总产出的稳态增长率，从 n + g 增加到 n' + g。
+【本题有图示】
+
+（3）“全面二孩政策”下，稳态时，按有效劳动平均的资本存量 k 增长率为零，则按有效劳动平均的产出 y = A·k^α 增长率为零，总产出 Y = LE·y 增长率等于劳动效率 E 增长率和劳动 L 增长率之和，即 n' + g。
+显然，社会总消费 C = Y − sY。由于储蓄率是常数 s，因而总储蓄 sY 增长率等于总产出 Y 增长率。因此，社会总消费增长率也等于总产出 Y 增长率，为 n' + g。
+人均消费 c = C/L，人均消费 c 增长率等于社会总消费 C 增长率与劳动 L 增长率之差，即 g。`,
+          hasImage: true },
+
+        { id: 't15q4', special: '专题十五', qid: '练习4',
+          question: `4、把劳动生产率定义为 Y/L，即产出量除以劳动投入量。从增长核算方程式证明劳动生产率的增长取决于全要素生产率的增长和资本与劳动之比的增长，即证明下式成立：
+Δ(Y/L)/(Y/L) = ΔA/A + α·Δ(K/L)/(K/L)`,
+          answer: `证明：根据定义，产出 Y 等于劳动生产率 Y/L 与劳动力 L 的乘积：
+$$Y = (Y/L)·L
+根据性质1，可以得到：
+$$ΔY/Y = Δ(Y/L)/(Y/L) + ΔL/L
+将增长核算方程 ΔY/Y = α·ΔK/K + (1 − α)·ΔL/L + ΔA/A 代入得：
+$$Δ(Y/L)/(Y/L) = α·ΔK/K + (1 − α)·ΔL/L + ΔA/A − ΔL/L
+$$= ΔA/A + α·(ΔK/K − ΔL/L)
+再利用性质2，有：
+$$ΔK/K − ΔL/L = Δ(K/L)/(K/L)
+因此证得：
+$$Δ(Y/L)/(Y/L) = ΔA/A + α·Δ(K/L)/(K/L)
+成立。
+
+【提示】经济增长核算方程 ΔY/Y = α·ΔK/K + (1 − α)·ΔL/L + ΔA/A 在经济增长中求增长率问题时经常会用到。`,
+          hasImage: false }
+
+        ];
+
+        // ============================================================
+        // 应用状态
+        // ============================================================
+        let currentData = [...cardData];
+        let favorites = JSON.parse(localStorage.getItem('calc_key_favs') || '[]');
+        let notes = JSON.parse(localStorage.getItem('calc_key_notes') || '{}');
+        let edits = JSON.parse(localStorage.getItem('calc_key_edits') || '{}');
+
+        let singleModeId = null;
+        let history = [];
+        let historyIndex = -1;
+
+        const grid = document.getElementById('cardGrid');
+        const totalSpan = document.getElementById('totalCards');
+        const favSpan = document.getElementById('favCount');
+        const filterSpecial = document.getElementById('filterSpecial');
+        const filterFav = document.getElementById('filterFav');
+        const filterSearch = document.getElementById('filterSearch');
+        const clearBtn = document.getElementById('clearFilterBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        const toast = document.getElementById('toast');
+        const singleModeBar = document.getElementById('singleModeBar');
+        const singleCardBadge = document.getElementById('singleCardBadge');
+        const exitSingleBtn = document.getElementById('exitSingleBtn');
+        const prevCardBtn = document.getElementById('prevCardBtn');
+        const nextCardBtn = document.getElementById('nextCardBtn');
+        const filterBar = document.getElementById('filterBar');
+
+        let toastTimer = null;
+
+        function showToast(msg) {
+            clearTimeout(toastTimer);
+            toast.textContent = msg;
+            toast.classList.add('show');
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        function saveFavs() {
+            localStorage.setItem('calc_key_favs', JSON.stringify(favorites));
+        }
+
+        function saveNotes() {
+            localStorage.setItem('calc_key_notes', JSON.stringify(notes));
+        }
+
+        function saveEdits() {
+            localStorage.setItem('calc_key_edits', JSON.stringify(edits));
+        }
+
+        // ---- 答案段落渲染 ----
+        // 约定：以 $$ 开头的行渲染为公式行（不缩进）；**加粗**
+        function renderAnswerParagraphs(text) {
+            if (!text) return '';
+            const paragraphs = text.split('\n');
+            const filtered = paragraphs.filter(p => p.trim() !== '');
+            if (filtered.length === 0) return '';
+            return filtered.map(p => {
+                let t = p.trim();
+                let isFormula = false;
+                if (t.indexOf('$$') === 0) {
+                    isFormula = true;
+                    t = t.slice(2).trim();
+                }
+                t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                return '<p class="' + (isFormula ? 'formula' : '') + '">' + t + '</p>';
+            }).join('');
+        }
+
+        // ---- 获取卡片数据（含编辑） ----
+        function getCardData(id) {
+            const original = currentData.find(d => d.id === id);
+            if (!original) return null;
+            if (edits[id]) {
+                return {
+                    ...original,
+                    question: edits[id].question || original.question,
+                    answer: edits[id].answer || original.answer,
+                };
+            }
+            return { ...original };
+        }
+
+        function exitSingleMode() {
+            if (singleModeId === null) return;
+            singleModeId = null;
+            history = [];
+            historyIndex = -1;
+            singleModeBar.classList.remove('show');
+            filterBar.classList.remove('disabled');
+            render();
+            showToast('📋 已退出抽查模式');
+        }
+
+        function enterSingleMode(id) {
+            if (!id) return;
+            if (singleModeId !== null) {
+                if (singleModeId === id) return;
+                exitSingleMode();
+                setTimeout(() => { enterSingleMode(id); }, 100);
+                return;
+            }
+            const card = getCardData(id);
+            if (!card) {
+                showToast('😅 卡片不存在');
+                return;
+            }
+            singleModeId = id;
+            const existIdx = history.indexOf(id);
+            if (existIdx !== -1) {
+                historyIndex = existIdx;
+            } else {
+                history.push(id);
+                historyIndex = history.length - 1;
+            }
+            singleModeBar.classList.add('show');
+            filterBar.classList.add('disabled');
+            updateSingleBadge(id);
+            updateNavButtons();
+            render(id);
+            showToast(`🎯 抽查: ${card.special} · ${card.qid}`);
+        }
+
+        function updateSingleBadge(id) {
+            const card = getCardData(id);
+            if (card) {
+                singleCardBadge.textContent = `${card.special} · ${card.qid}`;
+            } else {
+                singleCardBadge.textContent = id;
+            }
+        }
+
+        function updateNavButtons() {
+            prevCardBtn.classList.toggle('disabled', historyIndex <= 0);
+            const ids = getFilteredIds();
+            nextCardBtn.classList.toggle('disabled', ids.length <= 1);
+        }
+
+        function goPrevCard() {
+            if (singleModeId === null) return;
+            if (historyIndex <= 0) {
+                showToast('已经是第一张了');
+                return;
+            }
+            historyIndex--;
+            const id = history[historyIndex];
+            if (id) {
+                singleModeId = id;
+                updateSingleBadge(id);
+                updateNavButtons();
+                render(id);
+            } else {
+                exitSingleMode();
+            }
+        }
+
+        function goNextCard() {
+            if (singleModeId === null) return;
+            const ids = getFilteredIds();
+            if (ids.length <= 1) {
+                showToast('😅 没有更多卡片可抽查');
+                return;
+            }
+            const available = ids.filter(id => id !== singleModeId);
+            if (available.length === 0) {
+                showToast('😅 没有更多卡片可抽查');
+                return;
+            }
+            const randomId = available[Math.floor(Math.random() * available.length)];
+            history = history.slice(0, historyIndex + 1);
+            history.push(randomId);
+            historyIndex = history.length - 1;
+            singleModeId = randomId;
+            updateSingleBadge(randomId);
+            updateNavButtons();
+            render(randomId);
+            const card = getCardData(randomId);
+            if (card) {
+                showToast(`▶ 下一张: ${card.special} · ${card.qid}`);
+            }
+        }
+
+        function doRandom() {
+            const ids = getFilteredIds();
+            if (ids.length === 0) {
+                showToast('😅 当前没有卡片可抽查，请调整筛选条件');
+                return;
+            }
+            if (singleModeId !== null) {
+                exitSingleMode();
+                setTimeout(() => { doRandom(); }, 150);
+                return;
+            }
+            const randomId = ids[Math.floor(Math.random() * ids.length)];
+            enterSingleMode(randomId);
+        }
+
+        // ---- 编辑功能 ----
+        const editBackups = {};
+
+        function enterEditMode(id) {
+            const card = getCardData(id);
+            if (!card) return;
+
+            const questionEl = document.querySelector(`.card-question[data-id="${id}"] .q-text`);
+            const answerInner = document.querySelector(`.card-answer[data-id="${id}"] .answer-inner`);
+            const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+
+            if (!questionEl || !answerInner || !editBtn) return;
+            if (editBtn.classList.contains('is-editing')) return;
+
+            const currentQ = questionEl.textContent.trim();
+            const pNodes = answerInner.querySelectorAll('p');
+            let currentA = '';
+            if (pNodes.length > 0) {
+                currentA = Array.from(pNodes).map(p => p.textContent.trim()).join('\n');
+            } else {
+                currentA = answerInner.textContent.trim();
+            }
+            editBackups[id] = { question: currentQ, answer: currentA };
+
+            const editQ = document.createElement('div');
+            editQ.contentEditable = true;
+            editQ.className = 'q-text editable';
+            editQ.textContent = currentQ;
+            editQ.style.cssText =
+                'display:inline-block;min-width:60px;outline:none;border-bottom:2px solid #6a9e9e;padding:2px 4px;white-space:pre-wrap;';
+            questionEl.replaceWith(editQ);
+
+            const editA = document.createElement('div');
+            editA.className = 'answer-inner editable';
+            editA.contentEditable = true;
+            const paragraphs = currentA.split('\n').filter(p => p.trim() !== '');
+            if (paragraphs.length === 0) {
+                editA.innerHTML = '<p><br></p>';
+            } else {
+                editA.innerHTML = paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+            }
+            editA.style.cssText =
+                'background:transparent;border-left:none;padding:4px 6px;min-height:40px;outline:none;border:2px dashed #6a9e9e;border-radius:8px;';
+            answerInner.replaceWith(editA);
+
+            editBtn.classList.add('is-editing');
+            editBtn.textContent = '💾';
+            editBtn.title = '保存修改';
+
+            let cancelBtn = document.querySelector(`.btn-cancel-edit[data-id="${id}"]`);
+            if (!cancelBtn) {
+                cancelBtn = document.createElement('button');
+                cancelBtn.className = 'btn-cancel-edit';
+                cancelBtn.dataset.id = id;
+                cancelBtn.textContent = '❌';
+                cancelBtn.title = '取消编辑';
+                cancelBtn.style.cssText =
+                    'font-size:18px;padding:4px 6px;background:transparent;border:none;cursor:pointer;border-radius:10px;color:#8a4a4a;transition:background 0.15s,transform 0.1s;';
+                editBtn.parentNode.insertBefore(cancelBtn, editBtn.nextSibling);
+                cancelBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    cancelEdit(id);
+                });
+                cancelBtn.addEventListener('mouseenter', function() {
+                    this.style.background = '#f0e0e0';
+                });
+                cancelBtn.addEventListener('mouseleave', function() {
+                    this.style.background = 'transparent';
+                });
+            } else {
+                cancelBtn.style.display = 'inline-block';
+            }
+
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                saveEdit(id);
+            };
+
+            showToast('✏️ 正在编辑，点击 💾 保存 或 ❌ 取消');
+        }
+
+        function saveEdit(id) {
+            const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+            if (!editBtn || !editBtn.classList.contains('is-editing')) return;
+
+            const editQ = document.querySelector(`.card-question[data-id="${id}"] .q-text.editable`);
+            const editA = document.querySelector(`.card-answer[data-id="${id}"] .answer-inner.editable`);
+
+            if (!editQ || !editA) {
+                showToast('⚠️ 编辑内容不存在');
+                return;
+            }
+
+            const newQ = editQ.textContent.trim();
+            const pNodes = editA.querySelectorAll('p');
+            let newA = '';
+            if (pNodes.length > 0) {
+                newA = Array.from(pNodes).map(p => p.textContent.trim()).join('\n');
+            } else {
+                newA = editA.textContent.trim();
+            }
+
+            if (!newQ || !newA) {
+                showToast('⚠️ 题目和答案不能为空');
+                return;
+            }
+
+            edits[id] = { question: newQ, answer: newA };
+            saveEdits();
+
+            exitEditMode(id, true);
+            showToast('✅ 修改已保存');
+        }
+
+        function cancelEdit(id) {
+            const backup = editBackups[id];
+            if (!backup) {
+                exitEditMode(id, false);
+                return;
+            }
+
+            const editQ = document.querySelector(`.card-question[data-id="${id}"] .q-text.editable`);
+            const editA = document.querySelector(`.card-answer[data-id="${id}"] .answer-inner.editable`);
+
+            if (editQ) {
+                const newSpan = document.createElement('span');
+                newSpan.className = 'q-text';
+                newSpan.textContent = backup.question;
+                editQ.replaceWith(newSpan);
+            }
+
+            if (editA) {
+                const newDiv = document.createElement('div');
+                newDiv.className = 'answer-inner';
+                newDiv.innerHTML = renderAnswerParagraphs(backup.answer);
+                editA.replaceWith(newDiv);
+            }
+
+            delete editBackups[id];
+            exitEditMode(id, false);
+            showToast('↩️ 已取消编辑');
+        }
+
+        function exitEditMode(id, saved) {
+            const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+            const cancelBtn = document.querySelector(`.btn-cancel-edit[data-id="${id}"]`);
+
+            if (editBtn) {
+                editBtn.classList.remove('is-editing');
+                editBtn.textContent = '✏️';
+                editBtn.title = '编辑题目和答案';
+                editBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    enterEditMode(id);
+                };
+            }
+
+            if (cancelBtn) {
+                cancelBtn.style.display = 'none';
+            }
+
+            if (saved) {
+                render(singleModeId || null);
+            }
+
+            delete editBackups[id];
+        }
+
+        // ---- 获取筛选后的ID ----
+        function getFilteredIds() {
+            const specialVal = filterSpecial.value;
+            const favVal = filterFav.value;
+            const searchVal = filterSearch.value.trim().toLowerCase();
+
+            return currentData
+                .filter(d => {
+                    if (specialVal !== 'all' && d.special !== specialVal) return false;
+                    if (favVal === 'fav' && !favorites.includes(d.id)) return false;
+                    if (searchVal) {
+                        const q = d.question.toLowerCase();
+                        const a = d.answer.toLowerCase();
+                        if (!q.includes(searchVal) && !a.includes(searchVal)) return false;
+                    }
+                    return true;
+                })
+                .map(d => d.id);
+        }
+
+        // ---- 渲染 ----
+        function render(singleId = null) {
+            if (singleId !== null && singleModeId === null) {
+                const ids = getFilteredIds();
+                if (ids.includes(singleId)) {
+                    singleModeId = singleId;
+                    if (history.length === 0 || history[history.length - 1] !== singleId) {
+                        history.push(singleId);
+                        historyIndex = history.length - 1;
+                    }
+                    singleModeBar.classList.add('show');
+                    filterBar.classList.add('disabled');
+                    updateSingleBadge(singleId);
+                    updateNavButtons();
+                } else {
+                    singleId = null;
+                }
+            }
+            if (singleId === null && singleModeId !== null) {
+                exitSingleMode();
+                return;
+            }
+
+            const isSingleMode = singleModeId !== null;
+            let filtered;
+
+            if (isSingleMode) {
+                const card = getCardData(singleModeId);
+                filtered = card ? [card] : [];
+                if (filtered.length === 0) {
+                    exitSingleMode();
+                    return;
+                }
+                updateSingleBadge(singleModeId);
+            } else {
+                const specialVal = filterSpecial.value;
+                const favVal = filterFav.value;
+                const searchVal = filterSearch.value.trim().toLowerCase();
+
+                filtered = currentData
+                    .map(d => getCardData(d.id))
+                    .filter(d => {
+                        if (!d) return false;
+                        if (specialVal !== 'all' && d.special !== specialVal) return false;
+                        if (favVal === 'fav' && !favorites.includes(d.id)) return false;
+                        if (searchVal) {
+                            const q = d.question.toLowerCase();
+                            const a = d.answer.toLowerCase();
+                            if (!q.includes(searchVal) && !a.includes(searchVal)) return false;
+                        }
+                        return true;
+                    });
+            }
+
+            totalSpan.textContent = currentData.length;
+            favSpan.textContent = favorites.length;
+
+            grid.classList.toggle('single-mode', isSingleMode);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="no-result">🌿 没有找到匹配的卡片，试试调整筛选条件吧</div>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(d => {
+                const isFav = favorites.includes(d.id);
+                const note = notes[d.id] || '';
+                const noteHtml = note || '';
+                const qText = d.question;
+                const aHtml = renderAnswerParagraphs(d.answer);
+                const isKnowledge = d.qid === '知识要点';
+
+                html += `
+                    <div class="card-item ${isFav ? 'favorited' : ''} ${isKnowledge ? 'knowledge' : ''}" data-id="${d.id}">
+                        <div class="card-header">
+                            <div class="label">
+                                <span class="tag">${d.special}</span>
+                                <span class="qid">${d.qid}</span>
+                                ${d.hasImage ? '<span class="has-img">📐 有图示</span>' : ''}
+                            </div>
+                            <div class="card-actions" data-id="${d.id}">
+                                <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${d.id}" title="收藏">${isFav ? '⭐' : '☆'}</button>
+                                <button class="btn-note ${note ? 'active' : ''}" data-id="${d.id}" title="笔记">📝</button>
+                                <button class="btn-edit" data-id="${d.id}" title="编辑题目和答案">✏️</button>
+                            </div>
+                        </div>
+                        <div class="card-question" data-id="${d.id}">
+                            <span class="q-text">${qText}</span>
+                            <span class="toggle-hint">(点击展开答案)</span>
+                        </div>
+                        <div class="card-answer" data-id="${d.id}">
+                            <div class="answer-inner">${aHtml}</div>
+                        </div>
+                        <div class="card-note-area" data-id="${d.id}">
+                            <div class="note-editor" contenteditable="true" data-id="${d.id}">${noteHtml}</div>
+                            <div class="img-resize-control" data-id="${d.id}">
+                                <span>📐 大小</span>
+                                <input type="range" min="10" max="200" value="100" step="2" />
+                                <span class="size-val">100%</span>
+                                <button class="btn-reset-size" data-id="${d.id}">重置</button>
+                            </div>
+                            <div class="note-actions">
+                                <button class="btn-insert-img" data-id="${d.id}">🖼️ 插入图片</button>
+                                <button class="note-save" data-id="${d.id}">💾 保存笔记</button>
+                                <button class="note-clear" data-id="${d.id}">🗑️ 清空</button>
+                                <span class="note-size-hint">支持粘贴图片 · 点击图片调大小</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+
+            // ---- 事件绑定 ----
+
+            // 1. 点击题目切换答案
+            document.querySelectorAll('.card-question').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    if (this.classList.contains('editable')) return;
+                    const id = this.dataset.id;
+                    const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
+                    const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                    const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+
+                    if (!answerDiv) return;
+
+                    const isOpen = answerDiv.classList.contains('open');
+                    if (isOpen) {
+                        answerDiv.classList.remove('open');
+                        if (noteArea) {
+                            noteArea.classList.remove('open');
+                            if (noteBtn) noteBtn.classList.remove('active');
+                        }
+                    } else {
+                        answerDiv.classList.add('open');
+                        if (noteArea) {
+                            const hasContent = notes[id] && notes[id].trim().length > 0;
+                            if (hasContent) {
+                                noteArea.classList.add('open');
+                                if (noteBtn) noteBtn.classList.add('active');
+                            }
+                        }
+                    }
+                });
+            });
+
+            // 2. 收藏
+            document.querySelectorAll('.btn-fav').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const idx = favorites.indexOf(id);
+                    if (idx > -1) {
+                        favorites.splice(idx, 1);
+                        this.classList.remove('active');
+                        this.textContent = '☆';
+                    } else {
+                        favorites.push(id);
+                        this.classList.add('active');
+                        this.textContent = '⭐';
+                    }
+                    saveFavs();
+                    const card = this.closest('.card-item');
+                    if (card) {
+                        if (favorites.includes(id)) {
+                            card.classList.add('favorited');
+                        } else {
+                            card.classList.remove('favorited');
+                        }
+                    }
+                    favSpan.textContent = favorites.length;
+                });
+            });
+
+            // 3. 笔记按钮
+            document.querySelectorAll('.btn-note').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                    const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
+
+                    if (!noteArea) return;
+
+                    const isOpen = noteArea.classList.contains('open');
+                    if (isOpen) {
+                        noteArea.classList.remove('open');
+                        this.classList.remove('active');
+                    } else {
+                        if (answerDiv && !answerDiv.classList.contains('open')) {
+                            answerDiv.classList.add('open');
+                        }
+                        noteArea.classList.add('open');
+                        this.classList.add('active');
+                        const editor = noteArea.querySelector('.note-editor');
+                        if (editor) setTimeout(() => editor.focus(), 100);
+                    }
+                });
+            });
+
+            // 4. 插入图片
+            document.querySelectorAll('.btn-insert-img').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (!editor) return;
+
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'image/*';
+                    fileInput.style.display = 'none';
+                    document.body.appendChild(fileInput);
+
+                    fileInput.onchange = function() {
+                        const file = this.files[0];
+                        if (!file) { document.body.removeChild(fileInput); return; }
+                        const reader = new FileReader();
+                        reader.onload = function(ev) {
+                            const img = document.createElement('img');
+                            img.src = ev.target.result;
+                            img.alt = '笔记图片';
+                            img.style.maxWidth = '100%';
+                            img.style.maxHeight = '300px';
+                            img.style.borderRadius = '10px';
+                            img.style.margin = '6px 0';
+                            img.style.display = 'block';
+                            img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                            img.dataset.noteImg = 'true';
+                            const sel = window.getSelection();
+                            if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+                                const range = sel.getRangeAt(0);
+                                range.insertNode(img);
+                                range.setStartAfter(img);
+                                range.collapse(true);
+                                sel.removeAllRanges();
+                                sel.addRange(range);
+                            } else {
+                                editor.appendChild(img);
+                            }
+                            showToast('🖼️ 图片已插入，点击图片可调大小');
+                            document.body.removeChild(fileInput);
+                            bindImgClick(editor);
+                        };
+                        reader.readAsDataURL(file);
+                    };
+                    fileInput.click();
+                });
+            });
+
+            // 5. 保存笔记
+            document.querySelectorAll('.note-save').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (!editor) return;
+
+                    let content = editor.innerHTML.trim();
+                    if (content === '<br>' || content === '') {
+                        content = '';
+                    }
+                    if (content && content.indexOf('note-placeholder') > -1 && editor.querySelectorAll('img').length === 0) {
+                        content = '';
+                    }
+                    if (content) {
+                        notes[id] = content;
+                    } else {
+                        delete notes[id];
+                    }
+                    saveNotes();
+                    const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+                    if (noteBtn) {
+                        if (content) {
+                            noteBtn.classList.add('active');
+                        } else {
+                            noteBtn.classList.remove('active');
+                        }
+                    }
+                    if (content) {
+                        const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                        if (noteArea) noteArea.classList.add('open');
+                    }
+                    const orig = btn.textContent;
+                    btn.textContent = '✅ 已保存';
+                    setTimeout(() => { btn.textContent = orig; }, 1200);
+                });
+            });
+
+            // 6. 清空笔记
+            document.querySelectorAll('.note-clear').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    if (!confirm('⚠️ 确定要清空这条笔记吗？')) return;
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (editor) {
+                        editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                        delete notes[id];
+                        saveNotes();
+                        const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+                        if (noteBtn) noteBtn.classList.remove('active');
+                        const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                        if (noteArea) noteArea.classList.remove('open');
+                        const rc = document.querySelector(`.img-resize-control[data-id="${id}"]`);
+                        if (rc) rc.classList.remove('show');
+                        showToast('🗑️ 笔记已清空');
+                    }
+                });
+            });
+
+            // 7. 粘贴图片到笔记
+            document.querySelectorAll('.note-editor').forEach(editor => {
+                editor.addEventListener('paste', function(e) {
+                    const items = e.clipboardData && e.clipboardData.items;
+                    if (!items) return;
+                    for (let item of items) {
+                        if (item.type && item.type.startsWith('image/')) {
+                            e.preventDefault();
+                            const file = item.getAsFile();
+                            const reader = new FileReader();
+                            reader.onload = function(ev) {
+                                const img = document.createElement('img');
+                                img.src = ev.target.result;
+                                img.alt = '粘贴图片';
+                                img.style.maxWidth = '100%';
+                                img.style.maxHeight = '300px';
+                                img.style.borderRadius = '10px';
+                                img.style.margin = '6px 0';
+                                img.style.display = 'block';
+                                img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                                img.dataset.noteImg = 'true';
+                                const sel = window.getSelection();
+                                if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+                                    const range = sel.getRangeAt(0);
+                                    range.insertNode(img);
+                                    range.setStartAfter(img);
+                                    range.collapse(true);
+                                    sel.removeAllRanges();
+                                    sel.addRange(range);
+                                } else {
+                                    editor.appendChild(img);
+                                }
+                                showToast('🖼️ 图片已粘贴，点击可调整大小');
+                                bindImgClick(editor);
+                            };
+                            reader.readAsDataURL(file);
+                            break;
+                        }
+                    }
+                });
+            });
+
+            // 8. 笔记编辑器占位
+            document.querySelectorAll('.note-editor').forEach(editor => {
+                const id = editor.dataset.id;
+                const content = notes[id] || '';
+                if (!content || content.trim() === '') {
+                    editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                }
+                editor.addEventListener('focus', function() {
+                    const placeholder = this.querySelector('.note-placeholder');
+                    if (placeholder) {
+                        this.innerHTML = '';
+                    }
+                });
+                editor.addEventListener('blur', function() {
+                    if (this.innerHTML.trim() === '' || this.innerHTML === '<br>') {
+                        this.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                    }
+                });
+            });
+
+            // 9. 图片点击 + 滑块控制
+            document.querySelectorAll('.note-editor').forEach(editor => {
+                bindImgClick(editor);
+            });
+
+            // 10. 重置图片大小
+            document.querySelectorAll('.btn-reset-size').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (!editor) return;
+                    const imgs = editor.querySelectorAll('img');
+                    imgs.forEach(img => {
+                        img.style.width = '';
+                        img.style.maxWidth = '100%';
+                        img.dataset.origWidth = '100';
+                    });
+                    const slider = document.querySelector(
+                        `.img-resize-control[data-id="${id}"] input[type="range"]`);
+                    if (slider) {
+                        slider.value = 100;
+                        const valSpan = slider.closest('.img-resize-control').querySelector('.size-val');
+                        if (valSpan) valSpan.textContent = '100%';
+                    }
+                    showToast('📐 图片大小已重置');
+                });
+            });
+
+            // 11. 滑块调整图片大小
+            document.querySelectorAll('.img-resize-control input[type="range"]').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const id = this.closest('.img-resize-control').dataset.id;
+                    const val = parseInt(this.value);
+                    const valSpan = this.closest('.img-resize-control').querySelector('.size-val');
+                    if (valSpan) valSpan.textContent = val + '%';
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (!editor) return;
+                    const imgs = editor.querySelectorAll('img');
+                    imgs.forEach(img => {
+                        if (img.classList.contains('selected')) {
+                            img.style.width = val + '%';
+                            img.style.maxWidth = val + '%';
+                        }
+                    });
+                });
+            });
+
+            // 12. 编辑按钮
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.onclick = function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    if (this.classList.contains('is-editing')) return;
+                    enterEditMode(id);
+                };
+            });
+
+            // 13. 有笔记内容自动展开
+            document.querySelectorAll('.card-note-area').forEach(area => {
+                const id = area.dataset.id;
+                const hasContent = notes[id] && notes[id].trim().length > 0;
+                if (hasContent) {
+                    const btn = document.querySelector(`.btn-note[data-id="${id}"]`);
+                    if (btn && btn.classList.contains('active')) {
+                        area.classList.add('open');
+                    }
+                }
+            });
+
+            if (isSingleMode) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // ---- 图片点击 ----
+        function bindImgClick(editor) {
+            const imgs = editor.querySelectorAll('img');
+            imgs.forEach(img => {
+                img.removeEventListener('click', imgClickHandler);
+                img.addEventListener('click', imgClickHandler);
+            });
+        }
+
+        function imgClickHandler(e) {
+            e.stopPropagation();
+            const img = this;
+            const editor = img.closest('.note-editor');
+            if (!editor) return;
+            const id = editor.dataset.id;
+
+            const allImgs = editor.querySelectorAll('img');
+            allImgs.forEach(i => i.classList.remove('selected'));
+            img.classList.add('selected');
+
+            const rc = document.querySelector(`.img-resize-control[data-id="${id}"]`);
+            if (!rc) return;
+            rc.classList.add('show');
+
+            const slider = rc.querySelector('input[type="range"]');
+            const valSpan = rc.querySelector('.size-val');
+            if (!slider) return;
+
+            let currentPct = 100;
+            if (img.style.width) {
+                const w = parseInt(img.style.width);
+                if (w > 0 && w <= 200) currentPct = w;
+            }
+            slider.value = currentPct;
+            if (valSpan) valSpan.textContent = currentPct + '%';
+
+            slider.oninput = function() {
+                const val = parseInt(slider.value);
+                if (valSpan) valSpan.textContent = val + '%';
+                img.style.width = val + '%';
+                img.style.maxWidth = val + '%';
+                img.dataset.origWidth = val;
+            };
+
+            const resetBtn = rc.querySelector('.btn-reset-size');
+            if (resetBtn) {
+                resetBtn.onclick = function(e2) {
+                    e2.stopPropagation();
+                    img.style.width = '';
+                    img.style.maxWidth = '100%';
+                    img.dataset.origWidth = '100';
+                    slider.value = 100;
+                    if (valSpan) valSpan.textContent = '100%';
+                    showToast('📐 已重置');
+                };
+            }
+        }
+
+        // ---- 筛选 ----
+        function onFilterChange() {
+            if (singleModeId !== null) {
+                exitSingleMode();
+            } else {
+                render();
+            }
+        }
+
+        filterSpecial.addEventListener('change', onFilterChange);
+        filterFav.addEventListener('change', onFilterChange);
+        filterSearch.addEventListener('input', onFilterChange);
+
+        clearBtn.addEventListener('click', function() {
+            filterSpecial.value = 'all';
+            filterFav.value = 'all';
+            filterSearch.value = '';
+            if (singleModeId !== null) {
+                exitSingleMode();
+            } else {
+                render();
+            }
+        });
+
+        exitSingleBtn.addEventListener('click', exitSingleMode);
+        prevCardBtn.addEventListener('click', goPrevCard);
+        nextCardBtn.addEventListener('click', goNextCard);
+        randomBtn.addEventListener('click', doRandom);
+
+        // ---- 键盘快捷键 ----
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'r' || e.key === 'R') {
+                if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+                    const target = e.target;
+                    if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA' && target.contentEditable !== 'true') {
+                        e.preventDefault();
+                        doRandom();
+                    }
+                }
+            }
+            if (e.key === 'Escape') {
+                if (singleModeId !== null) {
+                    e.preventDefault();
+                    exitSingleMode();
+                }
+            }
+            if (singleModeId !== null) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    goPrevCard();
+                }
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    goNextCard();
+                }
+            }
+        });
+
+        // ---- 初始渲染 ----
+        render();
+
+        setTimeout(() => {
+            document.querySelectorAll('.note-editor').forEach(editor => {
+                const id = editor.dataset.id;
+                const content = notes[id] || '';
+                if (!content || content.trim() === '') {
+                    editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                }
+                bindImgClick(editor);
+            });
+        }, 100);
+    </script>
+</body>
+</html>

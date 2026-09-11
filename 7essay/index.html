@@ -1,0 +1,2734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>南开经济学 · 论述题记忆卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f7f0;
+            color: #1e3a2a;
+            padding: 20px;
+        }
+        .app-header {
+            max-width: 1200px;
+            margin: 0 auto 20px auto;
+            background: #d9edd9;
+            padding: 18px 28px;
+            border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(60, 110, 60, 0.12);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .app-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e4a2a;
+            letter-spacing: 0.5px;
+        }
+        .app-header .stats {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            background: #c4e0c4;
+            padding: 6px 18px;
+            border-radius: 40px;
+        }
+        .app-header .stats span {
+            font-weight: 500;
+        }
+        .app-header .stats .num {
+            color: #1f6b3a;
+            font-weight: 700;
+        }
+        .filter-bar {
+            max-width: 1200px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            background: #e6f3e6;
+            padding: 12px 20px;
+            border-radius: 14px;
+            transition: opacity 0.3s;
+        }
+        .filter-bar.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .filter-bar label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f4a2a;
+        }
+        .filter-bar select,
+        .filter-bar input {
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid #b3d9b3;
+            background: #fafffa;
+            font-size: 14px;
+            color: #1e3a2a;
+            outline: none;
+        }
+        .filter-bar select:focus,
+        .filter-bar input:focus {
+            border-color: #6a9e6a;
+            box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.2);
+        }
+
+/* 新增：去掉 optgroup（微观部分 / 宏观部分）的斜体 */
+.filter-bar select optgroup {
+    font-style: normal;
+    font-weight: 600;
+}
+        .filter-bar .btn-clear-filter {
+            background: #cfe2cf;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #1e4a2a;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .filter-bar .btn-clear-filter:hover {
+            background: #b8d4b8;
+        }
+        .filter-bar .btn-random {
+            background: #d4c49a;
+            border: none;
+            padding: 6px 22px;
+            border-radius: 30px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #3f3a1a;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .filter-bar .btn-random:hover {
+            background: #c9b888;
+            transform: scale(1.02);
+        }
+        .filter-bar .btn-random:active {
+            transform: scale(0.96);
+        }
+
+        /* ---- 抽查模式提示条 ---- */
+        .single-mode-bar {
+            max-width: 1200px;
+            margin: 0 auto 16px auto;
+            background: #f5efe0;
+            border: 2px solid #d4a24e;
+            border-radius: 14px;
+            padding: 8px 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            animation: fadeSlide 0.3s ease;
+        }
+        .single-mode-bar.show {
+            display: flex;
+        }
+        .single-mode-bar .mode-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .single-mode-bar .mode-left .btn-nav {
+            background: transparent;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 2px 10px;
+            border-radius: 8px;
+            color: #7a5a2a;
+            transition: background 0.15s, transform 0.1s;
+            line-height: 1;
+        }
+        .single-mode-bar .mode-left .btn-nav:hover {
+            background: #e8ddd0;
+            transform: scale(1.05);
+        }
+        .single-mode-bar .mode-left .btn-nav:active {
+            transform: scale(0.92);
+        }
+        .single-mode-bar .mode-left .btn-nav.disabled {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        .single-mode-bar .card-id-badge {
+            font-size: 15px;
+            font-weight: 600;
+            color: #5a4a2a;
+            background: #e8ddd0;
+            padding: 4px 18px;
+            border-radius: 30px;
+            white-space: nowrap;
+        }
+        .single-mode-bar .mode-hint {
+            font-size: 13px;
+            color: #8a7a5a;
+            margin-left: 4px;
+        }
+        .single-mode-bar .btn-exit-single {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 2px 10px;
+            border-radius: 8px;
+            color: #8a5a4a;
+            transition: background 0.15s, transform 0.1s;
+            line-height: 1;
+        }
+        .single-mode-bar .btn-exit-single:hover {
+            background: #e8d5d0;
+            transform: scale(1.05);
+        }
+        .single-mode-bar .btn-exit-single:active {
+            transform: scale(0.92);
+        }
+
+        .card-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+        .card-grid.single-mode {
+            max-width: 820px;
+        }
+        .card-grid.single-mode .card-item {
+            box-shadow: 0 8px 32px rgba(60, 100, 60, 0.18);
+            border-left-width: 8px;
+        }
+
+        .card-item {
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 4px 14px rgba(60, 100, 60, 0.08);
+            border-left: 6px solid #8fbe8f;
+            transition: box-shadow 0.25s, transform 0.15s, border-color 0.3s;
+            overflow: hidden;
+            position: relative;
+        }
+        .card-item:hover {
+            box-shadow: 0 8px 24px rgba(50, 100, 50, 0.13);
+        }
+        .card-item.favorited {
+            border-left-color: #d4a24e;
+            background: #fcf9f0;
+        }
+        .card-item.highlight {
+            border-left-color: #e67e22;
+            box-shadow: 0 0 0 3px #e67e22, 0 8px 28px rgba(230, 126, 34, 0.25);
+            transform: scale(1.005);
+        }
+        .card-header {
+            padding: 16px 22px 8px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .card-header .label {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header .label .tag {
+            background: #dcebd9;
+            padding: 2px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a4a2a;
+            white-space: nowrap;
+        }
+        .card-header .label .qid {
+            font-weight: 600;
+            font-size: 15px;
+            color: #1f5a2f;
+        }
+        .card-header .label .has-img {
+            background: #d9c8b0;
+            color: #5a3f1a;
+            padding: 0 12px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .card-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .card-actions button {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 10px;
+            transition: background 0.15s, transform 0.1s;
+            line-height: 1;
+            color: #3f6a3f;
+        }
+        .card-actions button:hover {
+            background: #e6f0e6;
+            transform: scale(1.05);
+        }
+        .card-actions .btn-fav {
+            color: #b8a06a;
+        }
+        .card-actions .btn-fav.active {
+            color: #d4a24e;
+        }
+        .card-actions .btn-note {
+            color: #4f7a4f;
+        }
+        .card-actions .btn-note.active {
+            color: #2b6b2b;
+        }
+        .card-actions .btn-edit {
+            color: #4f6a8f;
+        }
+        .card-actions .btn-edit.is-editing {
+            color: #2b6b2b;
+        }
+        .card-actions .btn-save-edit {
+            color: #2b7a2b;
+            font-weight: 700;
+        }
+        .card-actions .btn-cancel-edit {
+            color: #8a4a4a;
+        }
+        .card-actions .btn-edit-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .card-actions .btn-edit-group .btn-edit {
+            font-size: 18px;
+        }
+        .card-actions .btn-edit-group .btn-save-edit,
+        .card-actions .btn-edit-group .btn-cancel-edit {
+            font-size: 18px;
+        }
+
+        .card-question {
+            padding: 6px 22px 12px 22px;
+            font-size: 15.5px;
+            line-height: 1.7;
+            color: #1c3322;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+        .card-question .q-text {
+            display: inline;
+            white-space: pre-wrap;
+        }
+        .card-question .q-text .math {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+        .card-question .toggle-hint {
+            font-size: 13px;
+            color: #5f8a5f;
+            margin-left: 10px;
+            font-weight: 400;
+            opacity: 0.7;
+            white-space: nowrap;
+        }
+        .card-question.editable {
+            cursor: text;
+            user-select: text;
+            border: 2px dashed #6a9e9e;
+            border-radius: 10px;
+            padding: 10px 18px;
+            background: #fafffe;
+        }
+        .card-question.editable:focus {
+            border-color: #2b6b6b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(60, 150, 150, 0.15);
+        }
+        .card-answer {
+            padding: 0 22px 6px 22px;
+            display: none;
+            animation: fadeSlide 0.3s ease;
+        }
+        .card-answer.open {
+            display: block;
+        }
+        .card-answer .answer-inner {
+            background: #f3faf3;
+            padding: 18px 22px;
+            border-radius: 14px;
+            font-size: 14.8px;
+            line-height: 1.75;
+            color: #1a3322;
+            word-break: break-word;
+        }
+        /* ---- 答案段落缩进核心样式 ---- */
+        .card-answer .answer-inner p {
+            text-indent: 2em;
+            margin: 0 0 0.2em 0;
+            padding: 0;
+            line-height: 1.75;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .card-answer .answer-inner p:last-child {
+            margin-bottom: 0;
+        }
+        .card-answer .answer-inner .math {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+        .card-answer .answer-inner .img-placeholder {
+            display: inline-block;
+            background: #dce8dc;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 13px;
+            color: #2a5a2a;
+            margin: 6px 0;
+            font-weight: 500;
+        }
+        .card-answer.editable {
+            cursor: text;
+            user-select: text;
+            border: 2px dashed #6a9e9e;
+            border-radius: 10px;
+            padding: 8px 16px;
+            background: #fafffe;
+        }
+        .card-answer.editable .answer-inner {
+            background: transparent;
+            padding: 4px 6px;
+        }
+        .card-answer.editable .answer-inner p {
+            text-indent: 2em;
+            margin: 0 0 0.2em 0;
+            padding: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .card-answer.editable .answer-inner p:last-child {
+            margin-bottom: 0;
+        }
+        .card-answer.editable:focus {
+            border-color: #2b6b6b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(60, 150, 150, 0.15);
+        }
+        .card-note-area {
+            padding: 0 22px 18px 22px;
+            display: none;
+            animation: fadeSlide 0.3s ease;
+        }
+        .card-note-area.open {
+            display: block;
+        }
+        .card-note-area .note-editor {
+            background: #f8fcf8;
+            border: 1px solid #c2ddc2;
+            border-radius: 14px;
+            padding: 12px 16px;
+            min-height: 80px;
+            max-height: 360px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #1c3322;
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s;
+            word-break: break-word;
+            position: relative;
+        }
+        .card-note-area .note-editor:focus {
+            border-color: #6a9e6a;
+            box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.15);
+        }
+        .card-note-area .note-editor img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            margin: 6px 0;
+            display: block;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            background: #f0f5f0;
+            border: 2px solid transparent;
+            transition: border 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .card-note-area .note-editor img.selected {
+            border-color: #4f8a4f;
+            box-shadow: 0 0 0 3px rgba(79, 138, 79, 0.25), 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+        .card-note-area .note-editor .note-placeholder {
+            color: #8aaa8a;
+            font-style: italic;
+        }
+
+        /* ---- 图片滑块控制 ---- */
+        .card-note-area .img-resize-control {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+            padding: 6px 14px;
+            background: #edf5ed;
+            border-radius: 30px;
+            border: 1px solid #c2ddc2;
+            font-size: 13px;
+            color: #2a5a2a;
+            flex-wrap: wrap;
+        }
+        .card-note-area .img-resize-control.show {
+            display: flex;
+        }
+        .card-note-area .img-resize-control input[type="range"] {
+            flex: 1;
+            min-width: 80px;
+            accent-color: #4f8a4f;
+            height: 4px;
+            cursor: pointer;
+        }
+        .card-note-area .img-resize-control .size-val {
+            font-weight: 600;
+            min-width: 44px;
+            text-align: center;
+        }
+        .card-note-area .img-resize-control .btn-reset-size {
+            background: #dcebd9;
+            border: none;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #1e4a2a;
+            transition: background 0.2s;
+        }
+        .card-note-area .img-resize-control .btn-reset-size:hover {
+            background: #c2ddc2;
+        }
+
+        .card-note-area .note-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            align-items: center;
+        }
+        .card-note-area .note-actions button {
+            background: #dcebd9;
+            border: none;
+            padding: 4px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #1e4a2a;
+            font-weight: 500;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .card-note-area .note-actions button:hover {
+            background: #c2ddc2;
+        }
+        .card-note-area .note-actions button:active {
+            transform: scale(0.96);
+        }
+        .card-note-area .note-actions .btn-insert-img {
+            background: #d4d9c4;
+            color: #2f4a2f;
+        }
+        .card-note-area .note-actions .btn-insert-img:hover {
+            background: #c4cdb0;
+        }
+        .card-note-area .note-actions .note-save {
+            background: #a8c8a8;
+            color: #1a3a1a;
+        }
+        .card-note-area .note-actions .note-save:hover {
+            background: #94b894;
+        }
+        .card-note-area .note-actions .note-clear {
+            background: #e6d6d6;
+            color: #6a3a3a;
+        }
+        .card-note-area .note-actions .note-clear:hover {
+            background: #dcc4c4;
+        }
+        .card-note-area .note-actions .note-size-hint {
+            font-size: 12px;
+            color: #6f8f6f;
+            margin-left: auto;
+            opacity: 0.7;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .no-result {
+            text-align: center;
+            padding: 50px 20px;
+            color: #4f7a4f;
+            font-size: 17px;
+            background: #e6f3e6;
+            border-radius: 24px;
+        }
+        .footer-note {
+            max-width: 1200px;
+            margin: 30px auto 10px auto;
+            text-align: center;
+            font-size: 13px;
+            color: #5f7f5f;
+            border-top: 1px solid #cce0cc;
+            padding-top: 18px;
+        }
+        .footer-note kbd {
+            background: #dce8dc;
+            padding: 0 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2a4a2a;
+            color: #f0faf0;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-size: 14px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.4s, transform 0.4s;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 640px) {
+            .app-header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 14px 18px;
+            }
+            .app-header h1 {
+                font-size: 20px;
+            }
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .single-mode-bar {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                padding: 10px 14px;
+            }
+            .single-mode-bar .mode-left {
+                justify-content: center;
+            }
+            .card-header {
+                padding: 14px 16px 4px 16px;
+            }
+            .card-question {
+                padding: 4px 16px 10px 16px;
+                font-size: 14.5px;
+            }
+            .card-answer {
+                padding: 0 16px 6px 16px;
+            }
+            .card-answer .answer-inner {
+                padding: 14px 16px;
+                font-size: 14px;
+            }
+            .card-note-area {
+                padding: 0 16px 14px 16px;
+            }
+            .card-note-area .note-editor {
+                min-height: 60px;
+                max-height: 260px;
+            }
+            .card-grid.single-mode {
+                max-width: 100%;
+            }
+            .card-note-area .img-resize-control {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #dce8dc;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8fbe8f;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6f9e6f;
+        }
+/* ================= 返回主页按钮 ================= */
+.app-header .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 15px 7px 11px;
+    border-radius: 30px;
+    background: #c4e0c4;
+    color: #1e4a2a;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(60, 110, 60, 0.10);
+    transition: background .2s, transform .2s, box-shadow .2s;
+}
+.back-home:hover {
+    background: #a8d0a8;
+    transform: translateX(-2px);
+    box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+}
+.back-home .arrow {
+    font-size: 15px;
+    line-height: 1;
+    transition: transform .2s;
+}
+.back-home:hover .arrow {
+    transform: translateX(-3px);
+}
+
+/* 移动端微调 */
+@media (max-width: 640px) {
+    .app-header .header-left { gap: 10px; }
+    .back-home { padding: 6px 13px 6px 10px; font-size: 12.5px; }
+}
+    </style>
+</head>
+<body>
+
+    <div class="app-header">
+        <div class="header-left">
+    <a href="../index.html" class="back-home" title="返回主页">
+        <span class="arrow">⬅</span><span>主页</span>
+    </a>
+    <h1>📝 南开经济学 · 论述题记忆卡</h1>
+</div>
+        <div class="stats">
+            <span>📚 总卡 <span class="num" id="totalCards">0</span></span>
+            <span>⭐ 收藏 <span class="num" id="favCount">0</span></span>
+        </div>
+    </div>
+
+    <div class="filter-bar" id="filterBar">
+        <label for="filterSpecial">专项</label>
+        <select id="filterSpecial">
+            <option value="all">全部</option>
+            <option value="使用说明">使用说明</option>
+            <optgroup label="微观部分（共18道）">
+                <option value="微观·第一类">第一类 · 课本知识类</option>
+                <option value="微观·第二类">第二类 · 材料分析类</option>
+            </optgroup>
+            <optgroup label="宏观部分（共24道）">
+                <option value="宏观·第一层次">第一层次 · 政策手段类</option>
+                <option value="宏观·第二层次">第二层次 · 内外交织类</option>
+                <option value="宏观·第三层次">第三层次 · 发展改革类</option>
+            </optgroup>
+        </select>
+        <label for="filterFav">⭐ 收藏</label>
+        <select id="filterFav">
+            <option value="all">全部</option>
+            <option value="fav">仅收藏</option>
+        </select>
+        <input type="text" id="filterSearch" placeholder="搜索题目关键词…" style="flex:1; min-width:140px;" />
+        <button class="btn-clear-filter" id="clearFilterBtn">重置筛选</button>
+        <button class="btn-random" id="randomBtn">🎲 随机抽查</button>
+    </div>
+
+    <!-- 抽查模式提示条 -->
+    <div class="single-mode-bar" id="singleModeBar">
+        <div class="mode-left">
+            <button class="btn-nav" id="prevCardBtn" title="上一张">◀</button>
+            <span class="card-id-badge" id="singleCardBadge">卡片 #1</span>
+            <button class="btn-nav" id="nextCardBtn" title="下一张">▶</button>
+            <span class="mode-hint">抽查中</span>
+        </div>
+        <button class="btn-exit-single" id="exitSingleBtn" title="退出抽查模式">✕</button>
+    </div>
+
+    <div class="card-grid" id="cardGrid"></div>
+
+    <div class="footer-note">
+        点击题目区域可展开/收起答案 · 点击 ⭐ 收藏 · 点击 📝 添加笔记 · 点击 ✏️ 编辑题目/答案
+        <span style="display:block;font-size:12px;color:#8aaa8a;margin-top:4px;">
+            按 <kbd>R</kbd> 键快速随机抽查 · 抽查模式中 ◀ ▶ 切换卡片 · 点击笔记图片可调大小
+        </span>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============================================================
+        // 数据（完整内容，含使用说明、微观18题、宏观24题）
+        // ============================================================
+        const cardData = [
+            /* ===================== 第一部分 · 使用说明 ===================== */
+            { id: 'g1', special: '使用说明', qid: '1', question: '论述题专项拔高训练使用建议及说明',
+                answer: `在做一部分论述题时，大家需要注意以下几点：
+第一，刚上来做论述题时，大家会觉得无话可说，也不用过于焦虑，这是因为现阶段很多同学都没有语料积累或者根本没有系统训练过论述题，往届的学长学姐们刚开始做论述的时候也不少人有这个情况。目前大家的主要任务就是通过坚持训练论述题，慢慢找到做题的感觉，边做边学，逐步锻炼和提升自己作答论述的能力和积累常用语料，随着题目训练多了，逐步的就会作答论述题了。
+第二，做题时大家一定不要上来就看答案，而是把答案遮住，独立完成题目，做完后再与参考答案对比。即使对于部分难度比较大或者是与当年实事联系紧密的题，也可以先试着先尽力写一写，拓展自己的答题能力边界，然后再对照答案，从答案中进行学习。
+第三，要学会分析和总结答案，分析答案的回答思路并积累其中的表达。将自己的答案与本序列答案对比，找到自己有哪些点没有答出来，弄懂答案的回答逻辑、思路和层次。同时弄清楚自己的不足，是思考不全面，不太会组织语言和逻辑，还是知识和模型没有掌握？如果是前者，那就在做题过程中不断总结思路，提升自己联想和全面思考的能力，注意归纳总结不同类型题目回答角度和思路；如果是后者，那就赶紧回归教材，熟练掌握知识，并注意积累记忆一些常用的答题语料。`,
+                hasImage: false },
+            { id: 'g2', special: '使用说明', qid: '2', question: '关于主观题大家的复习误区',
+                answer: `很多同学以为论述题拿高分的关键是熟练背诵课本知识和热点，其实这是一种错误的认知。论述题本质上考的是运用课本知识来解释分析和解决现实经济问题的能力。对于课本知识主要在于平时的教材学习中区理解和掌握知识，并进行适当的背诵积累；对于解释分析问题的能力，不是简单背诵就能解决的，唯有通过大量做题过程中大量的思考，并对照答案来反馈改进，才能逐步提升，掌握答题的思路和逻辑。
+如果只是熟练背了知识，而没有掌握答题思路和技巧，那么考场上很难用背过的知识组织出较为完善的答案，很可能就是把背过的类似题目的答案照搬到试卷上，导致自己的答案不够切题，过于冗余或者过于简单以及遗漏其他关键点。
+如果把回答主观题比作打仗，背诵的知识就相当于是大家手中握有的"士兵"，而回答思路和逻辑就是指挥士兵打仗的"兵书"，没有答题思路这一"兵书"的指导，背过的知识只会是"散兵游勇"。所以，要想在主观题部分拿高分，"兵书"与"士兵"缺一不可。`,
+                hasImage: false },
+            { id: 'g3', special: '使用说明', qid: '3', question: '一、南开微观论述题分析（两类微观论述题与答题思路）',
+                answer: `南开微观的论述题考察形式较为灵活。根据考察方式的不同，大体上可以分为两类：
+1、考察课本上的基础知识，包括大家在备考过程中积累背诵的定义、原因、影响、措施等等，还有需要掌握的各种图形分析。
+这类题目一般也会给出材料，但是问题和材料关系不大，或者回答时不需要过多结合材料进行回答，对大家分析材料的能力要求不高。
+这类题各个板块都有考察到的可能。无论是多问归属同一个板块，还是说每一问归属于不同板块，回答时都可以把它当成多个简答题来对待。因此备考时也可以与简答题一起准备。
+2、给出比较长的一段材料，需要结合材料和课内知识进行分析的题目。
+这类题目常考的板块包括市场结构、市场失灵、一般均衡等，往往材料都是与当年热点话题相关。在回答时需要三方面准备：第一，课内知识的背诵，与简答题和第一类题目一同准备；第二，热点知识的积累，后续我们也会出热点手册；第三，分析回答的方式，这需要在做这一部分练习题时自己思考总结。
+此类题目主要有两种设问的方式：
+第一种是先给出材料，后面给出多小问，847应用经济学和849理论经济学的微观论述题多是此类设问方式。
+第二种是先给出材料背景，然后只给出一个大问题，不再分多小问，金融学院微观论述题多是此类设问方式。
+第一类论述题难度较低，主要考察大家对教材知识的理解和积累。第二类第一种设问方式，每一小问的问题都会比较具体，类似于一道比较综合的简答题，难度不是很大，主要的难点在于需要大家对热点知识有所了解，同时能够利用课本知识并结合热点材料进行规范作答。第二类第二种设问方式，问题会比较宽泛，比如结合课本知识谈谈对热点背景中这一经济现象/观点的看法、影响和政策建议等等。此类问题更加开放、宽泛和综合，作答时通常会涉及跨章节知识，需要大家能够结合教材知识和材料背景进行发散性、多角度作答，难度较大。`,
+                hasImage: false },
+            { id: 'g4', special: '使用说明', qid: '4', question: '微观例题一：结合材料分析互联网平台经济垄断（多小问设问方式）',
+                answer: `材料1：2020年2月29日，字节跳动旗下办公套件飞书发布官方公告称，飞书相关域名无故被微信全面封禁，并且被单方面关闭微信分享API接口。在微信封禁飞书之前，淘宝就因为其他原因无法直接在微信跳转。而早在2013年11月，阿里就关闭了微信的跳转通道，用户从微信淘宝商品或店铺链接进入，需要转到手机淘宝的下载安装页面下载淘宝后方可进行购物。事实上，互联网平台之间对接入平台的合作方及外部链接有严格管理并不少见，因为字节跳动、腾讯、阿里都希望平台的用户流量在自己的产品生态闭环内部流动，并不希望为对手竞品导流。
+材料2：微软在2022年1月份以每股95美元收购游戏界巨头动视暴雪，交易总额达到了687亿美元，这是微软有史以来耗资最大的一笔收购。在过去的20个月里，这笔交易受到各国监管机构的严苛审查，包括与英国竞争与市场管理局（CMA）经历了长时间周旋，另外还在与美国联邦贸易委员会（FTC）的法庭斗争中取得了胜利，竞争对手索尼出于《使命召唤》系列在PlayStation平台的重要性，也曾强烈反对。2023年10月13日宣布，在获得英国反垄断监管机构“竞争与市场管理局”（CMA）的批准之后，现已完成687亿美元收购动视暴雪交易。这意味着，经过20多个月的努力，微软终于成功收购动视暴雪。
+请结合材料以及经济学知识回答以下问题：
+（1）结合传统的反垄断理论分析垄断产生的原因，以及为何要反垄断？
+（2）结合经济学知识分析互联网平台经济为何更容易产生垄断？
+（3）政府是否一定要针对大型互联网平台进行管制，请说明理由。
+【参考答案及思路分析】
+（1）"结合传统的反垄断理论分析垄断产生的原因，以及为何要反垄断？"
+第一问便是我们所说的第一类题目，考察课内知识：垄断产生的原因、垄断的负面影响，只要大家平时背诵积累到位，这一问属于送分题目。
+本小问的参考答案如下：
+① 垄断产生的原因：
+第一，独家厂商控制了生产某种商品的全部资源或基本资源的供给。这种对生产资源的独占，排除了经济中的其他厂商生产同种商品的可能性；
+第二，独家厂商拥有某种商品的专利权。这便使得独家厂商可以在一定时期内垄断该产品的生产；
+第三，政府的特许。政府往往在某些行业实行垄断的政策，如铁路运输部门、供电供水部门等，于是，独家企业就成了这些行业的垄断者；
+第四，自然垄断。自然垄断企业生产的规模经济需要在一个很大的产量范围和相应巨大的资本设备的生产运行水平上才能得到充分的体现，以至于整个行业的产量只有由一个企业来生产时才有可能达到这样的生产规模。而且，只要发挥这一企业在这一生产规模上的生产能力，就可以满足整个行业对这种产品的需求。在这类产品的生产中，行业内总有某个厂商凭借雄厚的经济实力和其他优势，最先达到这一生产规模，从而垄断了整个行业的生产和销售。
+② 反垄断的原因：
+第一，垄断导致资源配置低效率。垄断均衡时满足 MR=MC，由于 MR=P(1−1/|e_d|)，所以垄断均衡的价格 P=MC/(1−1/|e_d|)。垄断均衡时 P>MC，此时消费者愿意支付的最高价格等于厂商愿意接受的最低支付，存在帕累托改进，所以资源配置是低效率的。
+第二，垄断存在福利损失，垄断利润是不公平的。完全竞争条件下的产量 Q₁ 和价格 P₁，消费者剩余是三角形 FP₁H 的面积，而当垄断者把价格提高到 P₂ 时，消费者剩余只有 FP₂G 的面积，所减少的消费者剩余的一部分（图 P₁P₂GI 所代表的面积）转化为垄断者的利润，另一部分（GH 所代表的面积）就是由垄断所引起的社会福利的纯损失，它代表由于垄断造成的低效率带来的损失。
+（2）"互联网平台经济容易产生垄断的原因"
+先将问题对应到考点上，垄断的原因我们在第一问回答过，主要有四点：垄断资源、专利、政府特许、自然垄断。我们分析这四点，结合材料给出的是关于"平台经济"的热点，因此可以排除"专利"和"政府特许"，"垄断资源"也不太符合。
+首先，结合大家平时对热点的积累和常识，我们注意到互联网经济前期固定成本非常高，后续拓展新用户边际成本低，这与"自然垄断"的特征相符。因此我们首先应该想到把【自然垄断的定义、特点】回答上，但因为第一问已经回答过了，就略去这一部分。然后根据【自然垄断的定义、特点】分析"互联网平台经济"。自然垄断的特点是"前期固定成本非常高、后续边际成本低"，"最低效率规模大"，互联网平台经济也正有这样的特征。通过以上分析，得出答案：
+互联网平台企业具有"自然垄断"的特征，因此容易形成垄断。互联网平台企业面临很高的固定成本和很低的边际成本，引起企业的平均成本曲线不断递减。由于此类企业的成本曲线具备以上特性，企业只有在很大的产量处才能实现平均成本最小化，因此企业的最低效率规模很大，需求规模相对较小，容易形成垄断。
+其次，我们还知道，互联网平台企业往往具有"网络外部性"，"网络外部性"会导致"强者愈强"，所以容易出现垄断。这一概念在范里安《微观经济学现代观点》中有涉及。因此，我们同样先给出【网络外部性的概念】，然后结合材料进行分析，得出答案：
+互联网平台一般具有网络外部性。网络外部性是外部效应的一种特殊形式，即一个人得自某种商品的使用取决于消费这种商品的其他消费者的数量。网络平台正是具有这样的特征，一个人对于互联网平台的需求往往取决于市场上使用该产品的人数，因此一旦市场上有企业率先搭建起新的具有网络外部性的互联网平台，只要使用人数达到临界点，就能够快速占领所有市场，从而形成垄断。
+本小问的参考答案如下：
+① 互联网平台企业的最低效率规模很大，因此容易形成垄断。最低效率规模是指相对于需求的规模，使平均成本实现最小化的产量水平。利用最低效率规模可以判断一个行业是否是垄断行业。互联网平台企业的成本特性与自然垄断企业相似，因为他们均面临很高的固定成本和很低的边际成本，引起企业的平均成本曲线不断递减。由于此类企业的成本曲线具备以上特性，企业只有在很大的产量处才能实现平均成本最小化，因此企业的最低效率规模很大，需求规模相对较小，容易形成垄断。
+② 互联网平台一般具有网络外部性。网络外部性是外部效应的一种特殊形式，即一个人得自某种商品的效用取决于消费这种商品的其他消费者的数量。因此，一个人对于互联网平台的需求往往取决于市场上使用该产品的人数，一旦市场上有企业率先搭建起新的具有网络外部性的互联网平台，只要使用人数达到临界点，就能够快速占领所有市场，从而形成垄断。
+③ 互联网平台存在巨大的转换成本，同时是以数据进行驱动。由于平台经济存在网络外部性，用户与平台之间存在黏性，所以当用户从一个平台转移到另一个平台时，会带来效用水平的降低，如新平台的用户数量可能小于原平台、用户需要付出学习成本等，此时存在转换成本。因此，当一家企业率先进入市场，能够快速建立起与用户的黏性，同时获得大量用户数据，利用这些数据企业可以实时观察用户情况、深度洞悉竞争对手的信息，进而通过限制、阻断数据或并购来消除竞争，此时相当于先进入的企业控制了数据要素的供给。
+（3）"政府是否一定要针对大型互联网平台进行管制"
+这类论述题中的是否题的答案往往不是非黑即白，而是要辩证地去回答。
+首先，考虑其负面影响（正是因为有负面影响，所以需要监管）：
+根据教材知识，可以知道垄断负面影响主要有减弱市场竞争程度、抑制创新、损害社会总福利等；再根据大家平时对热点的积累，我们可以知道"互联网平台经济"下可能存在的负面影响主要有大型互联网平台会实施大数据杀熟、二选一、搭售、数字化卡特尔、扼杀性并购等垄断行为，损害其他企业和消费者的福利。
+其次，考虑其正面影响（正是因为有正面影响，所以监管要适度）
+还是先根据教材知识分析其正面影响，比如因为互联网平台的垄断有着"自然垄断"的特征，所以具备自然垄断企业所具备的优点，比如降低生产成本、提高生产效率；再考虑"平台经济"的特征，它还可以为传统产业赋能、打破商家与用户之间信息不对称等。因此不能简单地拆分企业去禁止垄断。
+最后，如果时间允许，可以再给出一些合适的政策措施。
+本小问的参考答案如下：
+政府应该正确认识与对待平台经济，重视对平台垄断企业动态行为的监管，而不是只要出现大型互联网平台，就对其进行管制。
+① 通过前面的分析可知，之所以要反对垄断性市场结构，是因为过于集中的市场结构会带来经济无效率，如阻碍资源自由流动，减弱市场竞争程度，并抑制创新，损害社会总福利。但需要认识到，处于市场支配地位的经营者具有滥用这种地位的倾向，但不必然；只有市场支配地位被滥用，市场运行效率才会受到影响。
+② 大型互联网平台的垄断行为会导致企业获得不正当的超额利润，政府应该对此类垄断行为进行管制。如互联网平台的大数据杀熟、二选一、搭售等垄断行为会导致消费者福利受损；数字化卡特尔、扼杀性并购等垄断行为会妨碍市场的公平竞争，出现赢者通吃的局面，同时也会减损市场供给的质量，抑制社会创新。
+③ 但也要认识到健康的平台经济发展能够带来积极影响，如拓宽企业发展空间，倒逼创新；为传统产业赋能，提质降本；打破商家与用户之间信息不对称，提高交易效率等，因此对于大型互联网平台的正常健康发展，政府应该尽量减少管制。
+④ 总之，针对互联网平台，反垄断的重点不应该是反对市场集中，而是要对那些处于市场支配地位的平台企业保持警惕，对市场结构状况要密切关注，即反垄断的着眼点不应是平台是否在市场中居于支配地位，而是应该对其市场行为进行动态监管，核心是关注其是否利用自身的支配地位采取破坏竞争、妨碍创新、损害消费者权益的行为。`,
+                hasImage: true },
+            { id: 'g5', special: '使用说明', qid: '5', question: '微观例题二：电子商务平台发展对社会福利的影响（单一宽泛设问方式）',
+                answer: `电子商务平台是指通过互联网搭建的用于交易和商业活动的平台，它提供了一个集购买、销售、支付、物流等功能于一体的商业环境，典型的电子商务平台包括淘宝、京东、拼多多、亚马逊等。电子商务平台的发展拓宽了商品消费的种类、增加了商品信息的透明度，但同时也存在不正当竞争、假冒伪劣商品等问题。请结合经济学知识谈一谈电子商务平台的发展对社会福利的影响。
+【参考答案及思路分析】
+这类题目与上一道题不同，给出了一段材料，但是只提出一个问题，要求考生自己得出分析的角度，难度上更高一些。
+在本题中，背景材料是关于电子商务平台的，问题是其发展对于社会福利的影响，那么我们自然想到要从正反两方面回答。
+电商平台对于社会福利的促进，题中已经给出两条提示："拓宽了商品消费的种类""增加了商品信息的透明度"。
+首先分析"拓宽了商品消费的种类"：根据消费者的最优理论，在消费者面临的预算不变时，可选择商品种类的增加会使得消费者的福利至少和之前一样好。因此拓宽商品消费种类可以提高社会福利。
+其次是"增加了商品信息的透明度"："增加了商品信息的透明度"，这与市场失灵中的"信息不对称"有关，因此，我们首先可以回答信息不对称会导致的问题。然后，再结合电商平台通过数字化技术大幅降低了消费者的搜寻成本，因此缓解了信息不对称问题，提高了社会福利。
+然后再联系生活经验和课内知识进行分析。在生活中我们对于"网上购物"的印象主要是"便宜""物美价廉""退货方便"。这些显然也是有利于提高社会福利的特征。
+首先分析"便宜"：为何网上购物价格更低？首先是因为电商平台上，卖家需要跟全国的同行进行竞争，而且价格透明，可以用伯川德竞争模型来分析。在位企业任何一方用格优惠的方式来吸引顾客，另一方也会快速跟进，从而在竞争均衡时，商品的售价趋于其边际成本，遏制了厂商获取超额利润。其次，电商平台上商品信息的传播速度飞快，如果在位厂商定价过高，立马会有潜在进入者以稍低的价格出售同类产品，而且电商渠道飞快的信息传播速度也使得低价厂商可以迅速获得消费者的青睐，因此电商时代潜在进入者的威胁远大于传统时期。
+其次是电商平台为何"物美价廉"：我们可以接着上一段分析的逻辑，如果厂商出售完全相似的产品，伯川德竞争的结果就是售价等于边际成本。因此厌倦了"价格战"的厂商会寻求差异化产品以获得更高的利润，他们除了改进产品性能，还更加注重消费服务的完善，我们所说的"退货方便"实质也是提高服务质量的体现，这都将增加社会福利。
+综合以上，可以得出正面的影响：
+（1）电子商务平台的发展一定程度上有利于社会福利的增加，主要包括以下几方面：
+① 电子商务提供了更多可行的商品选择集合。传统经济模式下，大部分市场都被主流产品占据，从而限制了消费者的选择权。电子商务平台能够跨越地域限制进行交易，消费者能够从平台获知更多的商品种类，增加购买决策时可供选择商品的范围，提高了消费者福利水平。
+② 电子商务平台发展缓解了信息不对称问题。第一，传统销售模式下，卖方比买方拥有更多关于商品的信息，此时存在信息不对称，导致交易价格不能真实反映买者的边际收益或卖者的边际成本，市场主体不能做出理性的选择，容易出现逆向选择问题。而在电商平台中，对比各类商品与服务在价格、质量、性质等方面的信息要比在线下容易得多，如消费者可以看到平台中其他用户的评价，此时信息不对称问题得到缓解，在一定程度上解决逆向选择问题。第二，传统销售模式下，消费者无法事先获知市场上的价格分布及商品质量等信息，而消费者想要获得商品的信息并进行比较，付出的搜寻成本比较大，效率也较低，不少商家正是利用信息优势来赚取超额利润。相对于从传统渠道收集商品信息，电子商务平台缓解了信息不对称问题，消费者信息搜寻成本下降和搜寻范围得到扩大，便利了市场双方的信息交流和价值交换，提高了市场双方参与者的匹配质量，此时厂商想要凭借信息不对称获得超额利润的难度增加。
+③ 网络购物和电子商务发展加剧竞争，遏制厂商获取超额利润并促进创新。竞争的加剧主要来自两个主要方面：第一，在位的平台企业之间的竞争。短期来看，由于电商的参与，信息更加透明，在位企业任何一方用价格优惠的方式来吸引顾客，另一方也会快速跟进，从而进入Bertrand竞争，在竞争均衡时，商品的售价趋于其边际成本，从而遏制了厂商获取超额利润。在位企业的另一个可选策略是创新，除了在产品性能上改进外，还更加注重消费服务的完善，从而获得更多消费者的认可。价格战让参与竞争的企业精疲力竭，迫使有实力的企业通过创新从降低成本和提高产品品质两方面获取竞争优势，长期将增加社会福利。第二，潜在进入者的威胁。电子商务的快速发展使得商品信息的传播速度已经数倍于传统时期，潜在进入者可以通过电商渠道较快的获得市场，这提高了进入者成功的概率，故电商时代潜在进入者的威胁远大于传统时期。
+接下来分析电商平台对于社会福利的负面影响，题中也给出了提示："不正当竞争""假冒伪劣商品"。
+首先分析"不正当竞争"：对应到课内考点，就是"形成垄断""垄断行为"等。电商平台的网络外部性使得大平台更容易实现垄断，形成垄断后，也更容易采取价格歧视等垄断行为，损害社会福利。
+其次是"假冒伪劣商品"：电商平台进行交易时，卖家只能通过图片、视频了解商品，存在信息不对称的问题，卖家可能出售假冒伪劣商品、虚假宣传等，损害社会福利。
+此外，电商平台掌握了大量信息，其中包括了买卖双方的隐私信息，可能存在信息泄漏的问题，损害社会福利。
+综合以上，可以得出负面的影响：
+（2）电子商务平台的发展也可能损害社会福利，主要包括以下几方面：
+① 电子商务平台下更容易实施价格歧视。电子商务平台以数据为驱动，保留有大量用户数据，电子商务平台通过大数据分析可以消费者的购买意愿和保留价格，同时可以通过软件为用户显示不同的商品价格，实现不同用户之间的隔离，为价格歧视提供了可能，从而损害了消费者福利。如电商平台中的"大数据杀熟"。
+② 电商平台可能凭借自身垄断地位实施其他妨碍市场竞争的行为。第一，数字化卡特尔。传统的卡特尔由于存在囚徒困境，所以是不稳定的。但是，寡头平台下可以通过大数据和算法形成数字化的卡特尔，它是一种更为隐蔽的新型垄断协议。电商平台之间可以通过使用同一特定的价算法和历史定价数据协调定价，达成价格合谋后，还可以利用实时数据来监控该项卡特尔的实施，避免卡特尔成员违约，保证了卡特尔的稳定性。第二，掠夺性定价。主要指互联网平台通过交叉补贴等方式，以低于成本的价格销售商品或服务，将客户锁定在平台的生态系统中，从而挤压竞争对手并占领市场。第三，自我优待行为。主要指互联网平台违背网络中立性原则，通过操纵算法等行为，增强自有商品或服务的竞争优势，扭曲平台内的竞争。以上行为都会妨碍市场的有序竞争，市场竞争机制失效会导致资源配置的低效率，大型电商平台对行业的长期垄断会导致消费者福利的下降。
+③ 可能侵犯用户隐私。电商平台的用户信息蕴含丰富的商业价值。一方面，平台企业可以通过数据积累实现平台两侧的供需匹配、偏好与定价的匹配。但另一方面，平台企业也可能会在经济利益的驱使下，会尽可能收集用户信息甚至侵犯用户隐私。`,
+                hasImage: true },
+            { id: 'g6', special: '使用说明', qid: '6', question: '二、南开宏观论述题分析（三个层次、知识框架、答题思路）',
+                answer: `南开宏观论述题的命题：由"微观"到"宏观"可以大体分成三个层次（相当于"母题"，千变万变，"母题不变"，掌握了"母题"，延伸或包含的众多"子问题"也就不难了）：
+1、第一个层次：本年度货币政策和财政政策具体手段及其影响的层次，也可以提升一下就是财政货币和政策搭配的层次，属于比较"微观"的层次。
+这类题需要结合当前我国经济形势进行简述，也就是实施这些政策的宏观经济背景（或者说原因），同时会涉及政策搭配、政策有效性（有时也会涉及流派）的分析。
+从宏观经济学理论上来说，这一层次对应的模型是宏观问题中的IS-LM、AD-AS模型等。
+2、第二个层次是中国宏观内外困境交织的问题，即对内与对外相结合且相互影响，比上一个层次要更宏大一些。
+回答起来不用答到上一个层次那么细微，但是涉及的命题更多，需要思维更发散，能够封闭与开放相结合，且要会运用大型开放经济长短期模型、蒙代尔-弗莱明模型、三元悖论和 S−I=NX 关系式。
+从宏观经济学理论上来说，这一层次对应的模型是IS-LM、AD-AS模型、蒙代尔-弗莱明模型（M-F模型）和大型开放经济长短期模型。
+3、第三个层次是中国经济发展和改革困境，这是一个更加宏大的问题。
+涉及到人口老龄化，经济减速，新常态，发展模式，发展新源泉，发展驱动力，经济结构，改革与发展，供给侧改革等等。
+回答此类问题需要长期和短期相结合，需求和供给相结合，对内和对外相结合，均衡和失衡相结合。
+从宏观经济学理论上来说，这一层次对应的模型除了IS-LM、AD-AS模型和蒙代尔-弗莱明模型（M-F模型），还要加上经济增长模型和经济增长核算方程。
+（二）关于宏观的知识框架总论
+微观知识板块非常清晰，因此按照板块来复习；宏观知识以模型为主体和串联，因此按照框架和模型来复习，南开的命题也一贯如此。
+宏观中我们学过的模型包括IS-LM模型、AD-AS模型、菲利普斯曲线、开放经济四个模型（主要是M-F模型），再加上Solow模型。前四个模型（IS-LM模型、AD-AS模型、菲利普斯曲线和M-F模型）是短期和长期经济波动范畴，Solow模型是经济增长超长期经济学范畴。
+这些模型涵盖了宏观经济的主体知识点，包括宏观经济学的各方面：短期与长期，需求与供给，财政与货币，内部与外部，均衡与失衡，波动与增长，争论与共识等等。其他的知识都是这些模型的小枝节或者说"子知识""子问题"。
+1、短期与长期
+（1）高鸿业与曼昆教材的差异
+高鸿业宏观教材只是分成长期和短期：曼昆教材是分成短期的波动理论，长期的古典理论，超长期的增长理论。其实是一回事，因为高鸿业教材的短期是把曼昆教材的短期和长期结合起来，高鸿业教材的长期对应曼昆教材的超长期。
+（2）不同时期的不同模型（按照曼昆教材的分类）
+① 分析短期经济的模型：IS-LM模型、AD-AS模型、菲利普斯曲线、M-F模型、大型开放经济的短期模型。
+② 分析长期经济的模型：IS-LM模型、AD-AS模型、菲利普斯曲线、小型开放经济的储蓄投资模型、汇率决定模型、大型开放经济的长期模型。
+③ 分析超长期的模型：Solow模型。
+2、宏观经济学的四大目标和对应的指标
+（1）充分就业：失业率，涉及AD-AS模型、菲利普斯曲线。
+（2）价格稳定：价格水平和通货膨胀率，涉及AD-AS模型、菲利普斯曲线。
+（3）经济增长：产出水平及其增长率、人均产出水平及其增长率，涉及IS-LM模型、AD-AS模型、M-F模型、Solow模型。
+（4）国际收支平衡：开放经济五个模型。
+3、论述题分析思路
+首先，要分析题目考察的是短期、长期还是超长期。一般而言，超长期都是针对Solow模型的考察，很好辨别，而对于长期和短期的考察往往会结合在一起。
+其次，分析题目中的问题关注哪一个经济指标，由此找出可以用来分析的模型。`,
+                hasImage: false },
+            { id: 'g7', special: '使用说明', qid: '7', question: '宏观例题一：储蓄率与内需矛盾（短期与长期、需求与供给处理）',
+                answer: `【例题1】根据经济增长理论，储蓄率的提升有助于人均所得的增加。由于储蓄率与消费率之和是1，所以以上结果意味着降低消费率有助于人均所得的增加。但是在实践中，长期以来中国的学者和政策制定者常常被"内需不足"问题困扰，对高储蓄率问题十分担忧。你如何理解上述理论和现实矛盾的现象，请根据经济学理论并结合你个人观点分析上述现象。
+【本题是南开2014年考博论述题】
+【分析】
+请看下式：F(N,K)=Y=C+I+G+NX
+左边式子是 F(N,K)，这是一个产出（供给）函数，对应宏观经济学的长期经济增长（经济增长函数），如本论述题题干所提到的储蓄率与人均产出的关系就是从这个角度。
+右边的式子是 Y=C+I+G+NX，这个式子的 Y 是总需求，这个等式的右边是我们非常熟悉的拉动GDP的"三驾马车"。"三驾马车"是消费，投资和出口，而我国的政府支出一部分可以划到消费，一部分可以划到投资（我国是大部分）。这是宏观经济学的短期范畴，也是总需求角度。IS-LM模型、AD-AS模型和M-F模型都是 Y=C+I+G+NX 这个式子范围的知识，所有凯恩斯的理论都是这个范围的知识。那么本论述题的"内需呼声"，还有什么"节俭悖论"什么的都是"子问题"。
+具体到我国来说，长期以来，我国的GDP依赖政府投资和外需（净出口），忽视国内消费（内需）问题，而投资和外需的拉动日益走到尽头，内需的呼声越来越高。
+内需对中国经济的拉动大家可以用上面的 Y=C+I+G+NX 说明，可以再加上"乘数-加速数模型"，通过加速数消费的增长会拉动投资的增长，又通过乘数，投资又拉动收入增长；再次，结合我国当前，说明"内需"可以对冲我国的产能过剩。
+再就是，也可以用一些政治语言，比如：消费是生产的目的和动力，只有消费掉生产循环才能进行，比如资本主义经济大危机就是需求不足，生产过剩导致的等等。
+这样，理论和现实都可以很好的结合和拿来答题了。
+宏观经济学的短期侧重总需求角度，长期侧重总供给角度，短期是侧重波动角度，长期是侧重增长角度，短期侧重失衡，长期侧重均衡。
+本题可以运用如下理论知识：
+答：（1）Solow模型下储蓄变化的影响
+储蓄率的增加只是提高人均产出水平和人均资本水平，而不是提高了人均产出增长率。换句话说，提高储蓄率不能影响到稳态增长率，但确实能提高收入的稳态水平。储蓄率的增加只有水平效应，没有增长效应。
+（2）IS-LM模型下储蓄率变化的影响
+由IS曲线的公式，可知储蓄率s的变化会导致IS曲线的斜率和截距都发生变化。具体的，随着储蓄率从提高到s，IS曲线将会向左移动，同时还将顺时针旋转。均衡利率水平下降，均衡收入水平下降。
+（3）AD-AS模型下储蓄率变化的影响
+AD-AS模型在IS-LM模型的基础上进一步引入了劳动力市场，即考虑一般价格水平的影响，讨论的是国民收入（产量）和价格水平的关系及其决定。储蓄率对AD曲线的影响主要是通过其对IS曲线的影响，且IS曲线的斜率对总需求曲线的斜率的影响是正相关的。按照上述分析，随着储蓄率提高，IS曲线将会向左移动，对应的AD曲线也将向左移动。均衡收入水平下降。
+（4）比较Solow模型、IS-LM模型、AD-AS模型，首先会发现Solow模型是一般均衡动态模型，而IS-LM模型和AD-AS模型都是一般均衡静态模型，因而Solow模型对储蓄变化的影响可以进行动态分析，更高的储蓄率短期内导致了总产量和人均产量的增加，但是在长期稳态时，产量的均衡增长率是独立于储蓄的；而IS-LM模型和AD-AS模型对储蓄变化的影响更多的是比较静态分析，两者得出的结论与Solow模型正好相反，它们认为更高的储蓄率会导致更低的均衡收入和产出。
+换句话说，由于IS-LM模型和AD-AS模型都是立足于需求层面的分析，主要用于研究短期内经济波动问题，而Solow模型是立足于供给层面，旨在研究经济增长这样一个长期问题。这是两种完全不同的视角，因此得出的结论也有差异。
+（5）新古典增长理论的结论与凯恩斯模型关于储蓄率和总支出的关系的结论并不一致。
+凯恩斯的国民收入理论认为：在其他条件不变的情况下，如果储蓄率增加，居民用于消费的支出将减少，从而一国经济的总需求将减少，一国经济将出现有效需求不足，一国经济的总产出也将减少。因此，储蓄率的增加将导致国民收入的减少。
+新古典增长理论的结论与凯恩斯模型关于储蓄率和总支出的关系的结论看似矛盾，其实并不矛盾，关键在于两个理论分析储蓄率对国民收入影响的时间长短不同：凯恩斯模型主要是从短期来考虑一国储蓄水平对一国国民收入的影响。在短期内，储蓄的增加将会造成可支配收入的减少，消费水平的降低，总需求的不足，一国国民收入的下降。但是在长期内，一国的较高的储蓄水平，会增加一国经济中的资本存量，从而提高经济的长期产值。新古典经济增长理论主要是从较长的时期内考虑了储蓄对一国资本存量的影响以及对一国国民收入的长期影响：在长期，一国的资本存量对经济的发展起着重要作用。`,
+                hasImage: true },
+            { id: 'g8', special: '使用说明', qid: '8', question: '宏观例题二：量化宽松与通胀通缩（封闭与开放、短期与长期）',
+                answer: `【例题2】什么是量化宽松货币政策？为什么像美国这样的发达国家实行了量化宽松货币政策后，没有发生通货膨胀，像日本这样的国家反而出现了通缩？是不是经济学理论失效了？中国的 M₂/GDP 已经超过2，为什么中国的经济增长率和通货膨胀率却在下降？
+【本题是前半部分是南开2015年考博题，后半部分是华中科技大学2015年考博题】
+下面给出作答思路：
+（1）首先，从理论知识的角度要会做出短期与长期的处理
+货币增加就会导致通货膨胀这一直观的认识，在理论上是属于长期古典理论范畴的，在曼昆宏观经济学第4章的数量方程式 MV=PY，长期来说 M 和 P 同比例对应变动，所以 M 增加会带来通胀。
+这条理论不考虑短期货币政策刺激经济（刺激总需求），短期的理论我们可以用2012年南开真题最后一题的"财政政策货币化"理论（IS-LM模型）和短期凯恩斯总供给-总需求曲线（AD-AS模型）来说明：货币供给的增加，表现为LM曲线右移，会刺激总需求并且可以减小财政政策的"挤出效应"。
+在总供给曲线处于凯恩斯区域时，需求管理政策的效应：扩张的财政货币政策推动总需求曲线向右移动，产量上升，而价格水平保持不变。原因是对经济中存在大量闲置资源。
+（2）再就是要从理论和现实的角度进行封闭与开放的处理：
+货币数量方程式是在封闭经济下起作用，而现在讨论的是全球开放经济问题，特别是美国这样的资本自由流动的大经济体，
+① 美国量化宽松什么不通胀：
+由于美元是世界货币，大量的美元在国际市场上流通，因此，全球所有的美元持有者都共同分担了美联储增发货币所带来的成本，而增发美元所带来的铸币税却只有美国独自享受。
+美国经济不好，投资很难获的好收益，而中国这些新兴国家经济发展快，投资收益可观。资本是逐利的，这些美元很大一部分就流入了新兴市场国家、大宗商品市场。
+比如近些年中国不断以解决就业为驱动，通过各种政策工具推动对美国的廉价出口，美国是靠进口一般日常用品度日的国家，这全面压低了美国的商品价格，特别是日用品价格，同时中国又将挣得的大量美元兑换成各种形式的证券资产，在美国储备了起来。这从供给和消费两个方面抑制了美国物价上涨的空间。
+而美国政府通过定量宽松的货币政策，一方面不至于影响国内物价波动，另一方面非常轻松地"勾销了"中国的外汇储备。
+② 日本不断量化宽松，但一直持续通缩，也不是货币数量方程失效了：
+日本长期处于经济停滞，增长乏力，经济中的矛盾不是货币稀缺因素引起的，因此增发货币并不能使经济有较大恢复，从企业角度来看，企业的预期不好，就会降低投资，减少工业品供给和需求，因而工业价格指数下行，工业物价会持续通缩，因而会引起整个经济中的物价通缩现象；另外，日本的外贸依存度较高，近年来国际经济形势不好，国家大宗商品价格持续下降，国际间贸易往来也不景气，国际通缩因素也会对日本进行一个传导，因而日本会产生通缩也就不足为奇。
+（3）本题的最后部分，中国的经济增长率和通货膨胀率却在下降就是当前我国的宏观经济形势。
+虽然中国人民银行不断双降，为什么我国的通胀率却下行，因为影响通胀的因素众多，除了货币现象的通货膨胀还有需求推动与成本推动与结构性通胀和众多因素的结合：结合这两年国内和国际的实际因素，可以找到一些原因：
+需求疲弱、产能过剩且大宗商品价格下跌等：2014年厄尔尼诺现象并未发生，中国农作物均丰收，蔬菜价格、粮油价格平稳运行；国际油价下跌：本次油价大跌主要原因是全球原油供大于求；供给方面：受益于页岩油技术的发展，美国能源有望实现自给自足；同时，欧佩克内部分歧严重，难以有效减产；需求方面：全球经济增速放缓预期打压了原油需求。从我国经济的总需求方面来看，作为总需求的"三驾马车"，我国国内消费需求始终疲软，而近两年国内投资需求已经饱和呈下滑趋势，我国传统的廉价劳动力优势减弱等我国的外贸需求也呈下滑趋势。从总需求方面看没有推动通胀。从我国经济的供给方面来看，近两年我国产能过剩。`,
+                hasImage: true },
+
+            /* ===================== 第二部分 · 微观论述题（18道） ===================== */
+            /* ---------- 微观 · 第一类（6道） ---------- */
+            { id: 'w1q1', special: '微观·第一类', qid: '1',
+                question: '为了达到保护环境、绿色出行的目标，政府对汽油的生产者开征了汽油税。请根据经济学原理分析：\n（1）汽油税对汽油市场和汽车市场的影响；\n（2）汽油税可以被转嫁的原因及转嫁份额的影响因素，并导出消费者所承担的比例；\n（3）汽油税可能被超额转嫁的条件。\n（对外经贸2013年考题）',
+                answer: `（1）政府对汽油的生产者开征汽油税，会使得汽油市场汽油价格上升，汽油需求量减少。同时由于汽油和汽车是互补品，汽油价格的上升，会使得汽车市场需求结构发生变化。汽油价格上升会使得消费者对大排量汽车需求减少，对汽油排量小的汽车和非燃油汽车需求增加。
+（2）① 汽油税可以被转嫁的原因在于汽油生产者可以提高产品的价格从而将部分税收转嫁给消费者。
+② 转嫁份额取决于供给曲线和需求曲线的形状，即消费者需求弹性和生产者供给弹性的相对大小。当消费者的需求缺乏弹性而生产者的供给富有弹性，此时汽油税更多的由消费者承担；当消费者的需求富有弹性而生产者的供给缺乏弹性，则汽油税更多的由生产者承担，消费者只承担小部分。
+③ 消费者所承担的比例为 E_s/(E_s+E_d)，其中 E_s 为供给价格弹性，E_d 为需求价格弹性的绝对值形式。该式表明以高价形式转嫁给消费者的税收份额。当 E_d=0 时，消费者承担份额为1，所有税负由消费者承担；当 E_d=+∞ 时，份额为0，消费者不承担任何税负，生产者承担全部税负。
+（3）汽油税可能被超额转嫁的条件：
+① 汽油生产者为垄断厂商或者寡头，具有很大的垄断势力，可以控制汽油产量，制定远超过平均成本的高价格。
+② 消费者的需求完全缺乏弹性，消费者的需求曲线为垂直线，此时，汽油税完全由消费者承担，汽油生产者提高到汽油税之上的价格不仅能弥补税收，同时获得超额利润。
+由于上述两个条件，从而使得汽油税可能被超额转嫁。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'w1q2', special: '微观·第一类', qid: '2',
+                question: '自2008年金融危机以来，国际油价处于低位，国际石油卡特尔组织OPEC成员国举行了多次关于限产的会议，以期联合行动抬高油价。请回答以下的问题：\n（1）说明卡特尔组织的定价机制。\n（2）说明卡特尔定价与竞争性市场条件下定价的差别。\n（3）说明卡特尔定价成功的条件有哪些？\n（4）为什么近年来OPEC组织对国际油价的控制不如之前有效了？\n（5）利用博弈论的相关理论，简要说明限产协议的难度。\n（对外经贸2017年考题）',
+                answer: `（1）如果企业联合起来企图一起确定价格和产量以实现行业的最大利润，那么我们将这种组织称为卡特尔。卡特尔的行为和一个完全垄断企业是一样的，目的是实现卡特尔的利润（即成员利润之和）最大化。
+卡特尔在决策时就像一个垄断企业一样，根据整个卡特尔所面临的需求曲线和总成本曲线，使得 MR=MC，确定出最优的总产量和相应的价格，然后在成员企业之间分配这个总产量，同时指令成员企业执行卡特尔制定的价格。
+卡特尔将按照等边际成本原理来分配其总产量，因为在总产量 Q 和价格 P 已定的情况下，卡特尔的总收益已经确定，那么，利润最大化就等同于成本最小化。因此，按等边际成本原理分配总产量可使其总利润最大化。
+（2）卡特尔定价与竞争性市场下定价的差别是：竞争性市场条件下的价格等于边际成本，即 P=MC，而根据（1）问的分析可知卡特尔的定价往往大于边际成本，所以卡特尔的定价要高于竞争性市场下的定价，卡特尔定价下的产出要小于竞争市场条件下的产出。
+（3）主要有两个因素导致卡特尔具有天然的不稳定性：
+① 潜在进入者的威胁：一旦卡特尔把价格维持得较高水平，那么就会吸引新企业进入这个市场，而新企业进入后，可以通过降价扩大市场份额，此时卡特尔要想继续维持原来的高价就很不容易了。
+② 卡特尔内部成员所具有的欺骗动机：这是一个典型的"囚徒困境"，给定其他企业的生产数量和价格都不变，那么一个成员企业偷偷地增加产量将会获得额外的巨大好处，这会激励成员企业偷偷增加产量，如果每个成员企业都偷偷增加产量，显然市场总供给大量增加，市场价格必然下降，卡特尔限产提价的努力将瓦解。如果卡特尔不能有效解决这个问题，最终将导致卡特尔的解体。
+因此卡特尔成功要有两个条件：
+① 一个稳定的卡特尔组织必须要在其他成员对价格和生产水平达成协议并遵守该协定的基础上形成。
+② 垄断势力的潜在可能，这是卡特尔成功的最重要的条件。因为如果合作的潜在利益是很大的，卡特尔组织将有更大的解决他们组织上问题的意愿。
+（4）近年来OPEC组织对国际油价的控制不如之前有效，其主要原因有：
+① 随着石油价格的市场化，加上国际金融危机引发的美国经济的滑坡，美国经济衰退直接影响世界经济的增长，并造成石油消费需求下降；
+② 欧佩克组织的影响力下降；
+③ 受到美国页岩油迅猛发展的巨大冲击（即外来者的冲击），美国的页岩油成为全球的关键能源，即使在全球低油价的情况下，它也能发挥关键作用，这意味着欧佩克国家再也不能像从前那样操纵全球的石油价格了；
+④ 其他因素：如OPEC成员国的内部动乱、OPEC成员国之间的利益纷争、OPEC对成员国的约束力、国际经济的大环境等。
+（5）从博弈论的角度来分析卡特尔的不稳定性，一般而言，卡特尔成员"合作"是不稳定的。
+假设仅有两个卡特尔成员甲和乙，两者可以选择"合作"，也可以选择"不合作"。在支付矩阵中，甲合作乙合作时双方各得10；甲合作乙不合作时甲得6、乙得12；甲不合作乙合作时甲得12、乙得6；双方都不合作时各得8。"不合作"是两位卡特尔成员的占优策略，因此，（不合作，不合作）将成为一个占优策略均衡。
+具体而言，卡特尔"合作"是不稳定的，而"不合作"是占优均衡，其原因如下：
+① 从卡特尔成功的第一个条件看，由于不同的成员有不同的成本，有不同的市场需求，甚至有不同的目标，因而它们可能想要不同的价格水平，或者各成员可能受到略微降价即夺取比分配给它的更大的市场份额来欺骗其他厂商的诱惑，从而造成卡特尔组织的解体。只有长期回到竞争价格的威胁才能阻止这种欺骗，如果卡特尔的利润足够大，是有效的。
+② 从卡特尔成功的第二个条件来看，即使一个卡特尔能够解决组织上的问题，但如果它面临的是一条具有高度弹性的需求曲线，它就只有很小的提价的余地，因而组成卡特尔的利益就是很小的。
+在现实中，由于上面的原因，卡特尔组织具有不稳定性，卡特尔组织只能在一种短期利益的结合下形成，当这种共同利益不存在时，卡特尔组织就会解散。
+【补充教学推导】现实中卡特尔存在的问题是，卡特尔的成员有背叛的诱惑（即囚徒困境问题）。假设两个合谋的企业一开始生产的产量 (y₁*, y₂*) 能实现行业的利润最大，企业1考虑多生产 Ay₁ 单位的产量。
+企业1由于多生产带来的额外利润为：dπ₁/dy₁ = p(y₁*+y₂*) + (dp/dY)·y₁* − MC(y₁*)。
+卡特尔解的最优条件为：p(y₁*+y₂*) + (dp/dY)·[y₁*+y₂*] − MC₁(y₁*) = 0。
+整理可得：p(y₁*+y₂*) + (dp/dY)·y₁* − MC₁(y₁*) = −(dp/dY)·y₂* > 0。
+上式大于零是因为 dp/dY 为负，而这又是由于市场需求曲线的斜率为负。
+因此，如果企业1坚信企业2会维持产量不变，那么它将认为增加自己的产量会增加自己的利润。在卡特尔解中，企业联合起来限制总产量以便不"破坏"市场。但是，如果每个企业坚信其它企业会维持约定的产量水平，那么每个企业都有单方面增加产量的诱惑，因为这样可以增加自己的利润。因此，在能使联合利润最大的产量水平上，每个企业如果单方面增加产量都会增加自己的利润。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'w1q3', special: '微观·第一类', qid: '3',
+                question: '最低工资立法是各国管制劳动市场的通行做法。一些经济学家认为，这种做法会提高失业率，而另一些经济学家则指出，这种做法不仅不会提高失业率，反而能够带来工资水平和就业水平双重上升。请根据你所学的微观经济学理论和模型，讨论以下几个问题：\n（1）最低工资立法的经济学含义是什么？政府是如何通过最低工资立法干预劳动市场的？\n（2）假如市场上存在非成熟工（比如刚毕业的年轻学生）和熟练工两类劳动力，请问最低工资立法是如何影响着两类劳动力的就业水平和工资水平的？\n（3）假定劳动市场上劳动者面对的是垄断厂商，最低工资立法又是如何影响劳动者的就业水平和工资水平的？\n（4）最低工资立法对促进社会稳定有利吗？为什么？',
+                answer: `（1）最低工资立法是各国政府保护劳动者的一项重要法律，其中心目的是以法律形式来保证工薪劳动者通过劳动所获得的最低工资能够满足其自身及其家庭成员的基本生存需要。政府通过实施最低工资立法，规定雇主向员工支付一个高于市场均衡工资的工资，使得劳动供给量大于需求量，结果是出现失业。
+（2）劳动力市场中存在着非成熟工（比如刚毕业的年轻学生）和熟练工两类劳动力，最低工资立法对这两种类型劳动力的影响是不一样的。
+熟练工劳动力不受最低工资立法的影响，因为他们的均衡工资大大高于最低工资。对于这些工人来说，最低工资是非限制性的。对于非熟练工（比如刚毕业的年轻学生）来说，由于非熟练工的均衡工资往往较低，实施最低工资制，会造成一部分非熟练工的失业，现实中甚至还会出现部分非熟练工为了就业最终接受低于最低工资的工资水平。
+（3）假定劳动市场上劳动者面对的是垄断厂商，政府规定最低工资很可能会增加就业量。
+当劳动市场上厂商是垄断买方时，若所规定的最低工资高于原本的均衡工资 w*：只要政府规定的最低工资介于 w* 和 w** 之间就可以增加就业，并且此时不存在失业；当政府规定的最低工资介于 w** 和更高的水平之间时也会带来就业的增加，但此时存在失业；当政府规定的最低工资高于某一临界值时，此时会导致就业量的减少，同时也存在失业。
+（4）最低工资立法一方面来说有助于促进社会稳定。对于买方垄断情况，实施最低工资立法可能会迫使垄断厂商增加劳动力需求，扩大再生产，同时提高了工资水平。对于一般情形，实施最低工资立法有利于保障低收入者的基本生活，促进消费，带动经济增长；有利于调节收入分配差距，实现社会公平；有利于产业结构的优化和升级。
+从另外一方面来说，最低工资法导致部分从业者失业在家，有可能导致社会混乱，不利于社会的稳定。同时，实施最低工资法，也给一些厂商支付低工资提供了法律保障，反而在一定程度上侵害了劳动者的合法利益。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'w1q4', special: '微观·第一类', qid: '4',
+                question: '如何解决效率与公平之间的矛盾，对此，西方学者并无一致的答案。然而，大体的说来，他们较为普遍的思路是"效率优先、兼顾公平"。论述效率优先的涵义。\n（武汉大学819考题）',
+                answer: `（1）效率优先，就是在决定收入分配的问题上，首先考虑效率，把效率当作决定收入分配的第一位的因素。经济效率高，所得到的收入也高；反之，经济效率低，所得到的收入也低。是在保证效率的基础上，再考虑兼顾公平的问题。
+（2）根据福利经济学第一定理，市场能够实现资源的有效率配置，市场的价格信号功能以及供求机制，能够自发调节市场的供给与需求，保证供求的相对平衡，同时引导资源向有效率的部门移动，实现资源的高效和充分利用。除此之外，市场的竞争机制能够打破垄断，促进价格的合理形成，充分竞争的市场能够保证社会福利的最大化。
+因此，要做到效率优先，就是要让市场机制在收入分配领域里充分地发挥作用，就是要让市场的供求关系去决定各种生产要素的价格，去决定收入的分配，也就是要承认个人的天赋能力的差别、承认后天努力的差别、承认努力结果的差别。总之，承认一切合法和合理的差别，并把这些差别与它们的结果即收入联系起来。在这里，"合理"的和"合法"的差别就是指上述由于个人的"天赋"、"努力"或"运气"之类因素造成的差别，而不包括利用各种非法手段造成的差别。
+按照经济学的观点，只有在竞争性的市场经济中来决定收入的分配才可以使各种经济资源达到最优的配置，才可以使经济的效率达到最大。任何对市场机制的不必要的和不恰当的干预都只能起到妨碍资源优化配置和降低经济效率的作用。市场机制通过奖勤罚懒、优胜劣汰的办法，刺激人们去努力工作、储蓄和投资。
+（3）效率优先不是不要平等。在坚持效率优先的条件下，还必须兼顾公平。福利经济学第一定理只涉及效率问题，而福利经济学第二定理同时涉及公平与效率问题。
+根据福利经济学第二定理，在一定条件下，任何帕累托有效的配置都可以通过一套竞争性市场价格及某个恰当的收入分配状态来实现。根据这个定理，政府可以在无穷多帕累托有效的配置中，选择某个"社会最优"的配置，并通过市场机制和恰当的收入分配状态来实现它。福利经济学第二定理表明分配与效率的问题可以分开考虑，政府通过税收等分配手段，在不影响价格体系的前提下，不会影响有效均衡的实现。
+第二定理为政府干预经济提供了理论依据。如果政府参与再分配的过程，就可以更好地在不同个体之间分配要素收入，保障全体人民分享经济发展成果，同时利用市场的价格机制，兼顾"效率"与公平。
+为了做到效率优先、兼顾公平，需要做好以下几方面的工作：① 减少和消除不合理的收入；② 促进机会均等；③ 限制某些行业、某些个人的垄断性收入；④ 实现生存权利和消灭贫穷。`,
+                hasImage: false },
+
+            { id: 'w1q5', special: '微观·第一类', qid: '5',
+                question: '请阅读以下案例，并回答问题。\n【长三角启动排污权交易】排污指标可以像其他商品一样的买卖，这一发达国家为控制污染物总量而广泛采用的市场运作方式正在被引入长江三角洲地区，一些地方开始采取排污权交易的方式，调节经济发展与环境保护之间的平衡。\n江苏省南通市与上海仅一江之隔。2001年到2004年，这个市的GDP总量增长了51.5%，而水污染物的主要指针化学需氧量（COD）则下降了16.8%。同时做到GDP的增长和COD指标的下降，就需要政府有计划的控制污染物排放的总量，除了行政上严格控制排污指标外，南通市还尝试运用市场的力量来解决问题。\n南通泰尔特染整有限公司通过建成日处理能力3000吨的污水处理设备，COD排放远低于国家规定的排放标准。同时，同处通扬运河沿岸的如皋亚点毛巾织染有限公司计划扩大生产，却因得不到排放指标而无法开工。2004年，南通市环保局通过详细论证，牵线搭桥，审核确认由泰尔特公司将排污指标余量出售给亚点毛巾，转让期限为3年，每吨COD交易价格为1000元。合同明确规定：购买方在使用排放权时，必须符合国家规定的排放标准，以满足当地水环境质量的要求，且不得超过当地环保部门核定的排放总量。\n问题：结合上面具体案例，论述外部性为何导致市场失灵、解决外部性问题的各种方法以及各自的优缺点。内容包括：\n（1）污染为何会导致市场失灵？\n（2）排污权交易为何可以提升经济效率？\n（3）利用排污权交易治理水污染需要哪些条件？\n（4）除了这个方法，政府还有什么方法解决水污染问题，这些方法有何利弊？',
+                answer: `（1）市场失灵是指市场机制在一些场合下会导致资源配置不当，从而造成配置无效率的一种状况。外部性是指生产者或消费者在自己的活动中产生的一种有利或者不利的影响，这些有利影响带来的利益或者不利影响带来的损失不是由生产者或消费者本人获得或承担。
+污染是一种负的外部性，企业在生产过程中产生的污染对周围的自然环境造成了危害，而企业又没有对这种外部危害承担相应的费用。因此，从社会角度来看，企业的私人成本小于社会成本，在企业的私人成本等于私人收益的生产决策下，企业的产量水平要高于社会最优水平。这样，社会资源就过多地配置到了产生污染的企业中去，从而导致无效率。
+D=MR 为厂商面临的需求曲线，MC 为厂商私人边际成本曲线，在负外部性下，MC+ME 表示社会边际成本，ME 可以看成边际外部成本。竞争厂商为追求利润最大化，其产量为 X*；但使社会利益达到最大的产量应当使社会的边际收益（可以看成为价格）等于社会的边际成本，即应当为 X**。因此，生产的外部不经济造成产品生产过多，超过了帕累托效率所要求的水平 X**。
+（2）排污权即排放污染物的权利，是指权利主体按照自己所拥有的排污指标向环境排放污染物的权利。排污权交易指排污单位在环境保护行政主管部门的监督管理下，以排污指标为标的进行交易。排污权交易的目的是通过使排污权从治理成本低的污染者流向治理成本高的污染者，使社会以最低的成本实现污染物减排，环境资源得到高效率的配置。
+排污权交易的理论基础是科斯定理。科斯认为，在交易费用很小或为零时，只要产权初始界定清晰，并允许经济当事人进行谈判交易，就可以导致资源的有效配置。为消除负外部性，重新确定环境的使用权是必要的，排污权交易有利于外部成本内部化。办法就是在政府控制总量的条件下，将环境使用权作为特殊商品引入市场，即允许政府向企业发放的排污许可证在市场上买卖流通，实行排污权交易。
+由于排污权交易充分利用了市场机制的调节作用，因此具备很多优点。
+① 它能降低政府管理成本。排污标准与排污收费二者最大的缺陷是环境管理机构的信息成本费用高昂。而排污权交易的价格仅在最初发售许可证时，需要政府制定或拍卖决定。在许可证交易的过程中，价值规律会自发调节其价格，环境管理机构还可以通过发放或购进排污权等公开市场操作来控制排污权的价格和供给量。
+② 有利于调动企业治理污染的积极性。对于那些污染成本低于许可证价格的企业，出售剩余的排污指标可以获利，因而会积极治理污染以获得更大利益。非污染者如环境保护组织如果希望降低污染水平，可以进入市场购买污染权，然后把排污权控制在自己手中，不再卖出，这样也可以使污染水平降低。
+（3）排污权的交易是科斯定理在解决外部性问题上的运用。科斯定理认为：只要财产权是明确的，并且交易成本为零或很小，则不管开始时将产权赋予哪一方，都可以达到资源的有效配置。
+所以利用排污权交易治理水污染需要的条件是：
+① 明确界定的产权，要将一些自然资源的产权分配给某一个或某一群人。
+② 要进行一些制度建设，努力减小排污权交易的交易成本，即积极构建能够自由交易的排污许可证市场。这样，排污权交易市场才能有效运行。
+（4）污染等外部性问题除了采用科斯定理所倡导的排污权交易方式解决，其他的方法还有征税或政府行政手段即直接管制。
+① 庇古税是指应当由政府采取征税的方式消除污染这种负的外部性，实现社会福利的最大化。
+优点：征税使得税收成为产品价格的组成部分，对污染物或污染超标的企业征税增加其生产成本，以致降低其在市场上的竞争力，促使排污人通过治污达标而不纳或少纳污染税。所以，征税可以持续不断的刺激企业进行技术革新，以便减少纳税，增加盈利。
+缺点：第一，如果污染物或污染超标的企业对价格不敏感，则不适合作为环境税收的征税对象。第二，税收在一定程度上造成价格扭曲，影响价格信号的正确性，使价格信号失真。第三，税收的税率是各国在实施环境税制度中最难以测度的一个税收要素，税率定得低达不到治理环境的目的，税收定高了会过度扭曲产品价格。
+② 管制手段是指采取禁令、法规等形式，规定排污标准，禁止或限制某些污染物的排放，以及把某些污染活动限定在一定的时间和空间范围内，最终实现控制污染的目的。具体包括规定排污标准和技术标准等。
+优点：管理的权威性、指令的严格性和迅速有效性。
+缺点：第一，造成了效率上的损失。管制手段对生产和消费过程中所涉及污染活动进行直接干预，没有考虑企业之间成本与收益的差别，对所有企业采取"一刀切"式的做法，妨碍了企业对污染治理方法的自由选择，造成资源配置的低效率。第二，管制手段缺乏对企业技术革新的刺激。污染者如果达到了政府规定的污染量标准，一般情况下不会再努力治理污染，因为这样做只会增加企业本身的成本，却不能给企业带来任何好处。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'w1q6', special: '微观·第一类', qid: '6',
+                question: '处于不同地点的四家厂商向一条河中倾倒不同数量的废水。废水对住在下游的房屋主人的游泳质量产生不利影响。这些人可以建造游泳池来避免到河中游泳，而厂商可以购买过滤设备，消除向河中倾倒的物质中的有害化学成分。作为一个地区计划组织的政策顾问，你将如何比较和对照下列对付废水有害影响的选择：\n（1）对位于河边的厂商收同样费率的废水排放费。\n（2）对每家厂商可以倾倒的废水水平规定同样的标准。\n（3）实行可转让废水许可证制度，它确定废水的总水平并给所有的厂商一样的许可证。',
+                answer: `（1）对河边厂商收同样费率的废水排放费（排污费）
+对位于河边的厂商收同样费率的废水排放费（排污费），首先需要知道下游的房屋主人在河里游泳的价值，这一信息是比较难以得到的。因为房屋主人可能会夸大这一价值。如果河没有其他价值，可以将建造游泳池的花费作为这一价值的估算。其次，需要知道减污的边际成本。如果减污技术易于理解，那么减污成本就易于得到，否则就只能在对厂商了解的基础上进行估算。
+废水排放费的确定取决于边际收益和减污的边际成本。如果对所有的厂商收取同样的费，厂商会减少排放直至排污费等于边际收益那一点。如果废水排放量的降低不够达到能够游泳的程度，那么就应该提高排污费，或者将废水排放费的收入用来建造游泳池，使减小污染的需要降低。
+（2）对每家厂商可以倾倒的废水水平规定同样的标准（排污标准）
+如果有关当局对减污的边际成本和边际收益具有完全信息，并且厂商的减污边际成本是相等的，设定标准是有效的。
+当厂商减污的边际成本不等时，相同的减污标准会导致部分厂商排污更多，而部分厂商排污更少。此外，当新的过滤技术可得时，排污标准并不能鼓励厂商进一步减少污染。
+（3）实行可转让排污许可证制度
+可转让排污许可证结合了排污费和排污标准的特点。可转让排污许可证产生了一个外部性的市场。由于这一市场方法把标准制度下的某些优点和收费制度下的成本优点结合了起来，它是有吸引力的。管理这一制度的机构决定总的许可证数目，从而决定了总的排放量，这就像标准制度所做的那样。但是许可证的可销售性使得污染的减少以最低成本实现，这又像收费制度所做的那样。但是，许可证的总数量的错误选择可能产生无效率。许可证制度仍然要求决策者确定有效的废水标准。
+（4）对三种方法的总体比较：
+① 信息完全的情况下，排污费优于排污标准，因为：
+a. 当排污标准对所有厂商都相同时，排污费能以较低的成本实现同样的污染减少度；
+b. 排污费的征收，刺激厂商安装新设备，这些设备会进一步减少污染。
+② 考虑信息不对称的情况：
+a. 在信息不完全时，排污标准使污染排放水平比较确定而使得降低污染的成本不很确定；而排污费使降低污染的成本比较确定而使污染排放水平的降低不很确定。
+b. 边际社会成本曲线较陡而降低污染的边际成本曲线较为平坦时，排污标准优于排污费；边际社会成本曲线较平坦而降低污染的边际成本曲线较陡时，排污费优于排污标准。
+c. 实行可转让废水许可证制度把标准制度下的某些优点和收费制度下的成本优点结合了起来，但是，许可证的总数量的错误选择可能产生无效率。
+③ 总的说来，哪一种方法更好取决于不确定性的性质和各成本曲线的形状和位置。`,
+                hasImage: false },
+
+            /* ---------- 微观 · 第二类（12道） ---------- */
+            { id: 'w2q1', special: '微观·第二类', qid: '1',
+                question: '中新网2012年2月7日报道，在中国第三届大学生艺术展演活动中央媒体见面会上，浙江省教育厅厅长刘希平再次表达了改革教育的决心。早在两年前，浙江省教育厅举办的课业减负相关会议上，刘希平就痛批"应试绑架了教育"，倡导开展教育减负的改革。2010年8月，浙江省教育厅就减轻义务教育阶段中小学生过重课业负担下发通知，制定了"六个严格"和"六项制度"，对中小学课时、课程开设、规范考试、学生休息时间等都做了严格的规定。两年后，减负工作成效如何，刘希平感叹，顽疾难治，但决心不改，帮助孩子减负需要教育人持之以恒。"在减负的道路上，那么多年来我们可以说是屡战屡败、屡败屡战，但要改变应试教育的危害，减轻学生负担是必须要做的第一步，我们绝不可以退让。"\n试运用博弈理论分析目前的应试教育现象。',
+                answer: `目前我国的应试教育现象体现了博弈论中的"囚徒困境"理论。
+（1）"囚徒困境"
+囚徒困境指两个被捕获的囚徒之间的一种特殊"博弈"，说明为什么在合作对双方都有利时，保持合作却是困难的。具体情况如下：两囚徒被指控是同案犯。他们被关在不同的牢房里且无法互通信息，各囚徒都被要求坦白罪行。如果两囚徒都坦白，则各将被判入狱5年；如果两人都不坦白，则各将被判入狱2年；如果一方坦白另一方不坦白，则坦白方入狱1年，另一方入狱10年。
+如果囚徒A不坦白，他就冒着被囚徒B利用的危险，因为不管囚徒A怎么选择，囚徒B坦白总是最优方案。同样，囚徒A坦白也总是最优方案。总之，可以看出，对囚徒个人而言，选择坦白总比不坦白收益高。但从两人的支付总和来看，双方都不坦白的收益是最高的。因此，囚徒困境揭示了社会和经济生活中的一种普遍情况，即"个人理性"与"集体理性"之间的矛盾。它意味着个人理性并不是实现集体理性的充分条件。
+（2）目前应试教育现象中的"囚徒困境"
+"囚徒困境"再现了我国教育体制中"减负"口号渐渐陷入应试教育中的情形。学校、学生、家长和社会都意识到"减负"势在必行，"减负"对于广大莘莘学子来说应该是一种最佳的策略选择，但事实上学生们却做出了弃"减"选"增"的选择。其原因可以用囚徒困境的原理加以解释。
+以学生之间的减负与应试教育的博弈为例，"增负"和"减负"是学生A和学生B各自选择的策略。假设A、B都不增负（即都减负）时双方得益均为9；A增负B减负时A得10、B得2；A减负B增负时A得2、B得10；双方都增负时各得5。
+对于博弈方A来说，假设博弈方B选择"增负"，博弈方A也会选择"增负"，因为"增负"的得益5大于"减负"的得益；假设博弈方B选择"减负"，博弈方A出于自身利益的最大化，他依然会选择"增负"（10>9）。因此，不论博弈方B采取何种策略，博弈方A都会选择"增负"。同样，博弈方B与博弈方A的情形一样。最终这个博弈的纳什均衡是（增负，增负）。
+从整个社会的效益来看，（减负，减负）是最好的选择，但每个博弈方出于自身利益的最大化的考量，都会做出与社会收益最大化不同的选择。对于学生之间的博弈来说，（减负，减负）只是一个理想的状态，在现实的教育及其考核制度下是不可能实现的，选择"减负"只会让他们放弃上名校的机会，拉大与他人的距离，而"增负"不过就是多写作业、多上课，但可以获得好的成绩并上好的学校才是他们对自己最负责、最好的选择；对于家长之间的博弈来说，选择"减负"会使自己的孩子远离名校，落后于应试教育的孩子；对于学校之间的博弈来说，"减负"影响的不仅仅是学校的升学率，还有学校排名的下降，从而影响到之后的学生入学量；对于老师来说，"增负"使得学生获得好成绩的同时，也有奖金奖励及地位的提高。不论是学生、老师、家长，还是学校都不愿意承受较小收益的风险，会毫不犹豫的选择占优策略"增负"。
+（3）解决应试教育和减负"囚徒困境"的途径
+由以上的分析可知，如果要减少增负后带来的支付，必然要彻底改变整个社会对人才的考核制度，仅仅由相关部门下发通知不可能彻底解决应试教育带来的问题。如果社会、学校、家长和学生各方面共同努力，改变各方的博弈策略，可以得到一个新的博弈矩阵，从而摆脱减负中的"囚徒困境"现象。
+具体而言，社会各方应该从以下方面努力：
+① 政府应该改革现有教育制度，逐步改变应试教育的教育体制。可通过实现奖惩激励制度和重点培养素质教育学校的方法来改变"增负"、"减负"博弈的结构，尤其是要改变目前小升初、中考和高考的应试模式。
+② 学校应该实行多样化的考核方式，改进教学方法。学校应顺应素质教育的潮流，以考试成绩的衡量学生学习能力的标准是不可取的，考核制度要多样化，考试成绩是重要的标准，但不是唯一的标准，课堂表现、动手能力、组织能力等都应为标准。照本宣科、布置繁重功课的传统教学方法也应改进，要注重课外知识的传授，学生能力的培养。
+③ 家长转变现有的教育模式，转变教育思想，同时学生要实现自我意识的"减负"。
+此外，采取分层推进战略、预先先期实施素质教育的学校的升学率、开展严格的素质教育评估、建立保障机制、提高个体理性行为、创新教育制度等都是走出囚徒困境的途径。多种途径的结合才能更有效的解决减负的囚徒困境。`,
+                hasImage: false },
+
+            { id: 'w2q2', special: '微观·第二类', qid: '2',
+                question: '阅读以下材料，并根据微观经济学知识加以分析评论。\n材料1：全球变暖是指全球气温升高。近100多年来，全球平均气温呈上升趋势。大部分气候科学家认为，导致全球变暖的主要原因是人类在近一个世纪以来大量使用矿物燃料（如煤炭石油等等），排放出大量的二氧化碳等多种温室气体。\n材料2：为阻止全球变暖趋势，1992年联合国专门制定了《联合国气候变化框架公约》。1997年12月，《气候变化框架公约》缔约国第三次会议通过《京都议定书》。美国曾于1998年签署《京都议定书》。但2001年3月，布什政府以"减少温室气体排放将会影响美国经济发展"和"发展中国家也应该承担减排和限制温室气体的义务"为由，宣布拒绝批准《京都议定书》。\n材料3：《京都议定书》提出三个灵活减排机制之一是碳排放权交易。碳排放权交易的概念源于上世纪60年代经济学家提出的排污权交易概念。在推动排放权交易市场，欧盟的EU-ETS交易系统走在世界前列。中国也在逐步建立全国性的碳排放权交易市场，做好基础性准备工作。\n材料4：应对气候变化是世界各国共识，但多边谈判进程艰难曲折，各方利益博弈激烈复杂。2015年12月，近200个缔约方在巴黎气候大会上，经过十几天马拉松式的谈判，达成了里程碑式的《巴黎协定》。但是，就围绕落实《巴黎协定》，各方在一些技术细节上仍存分歧。',
+                answer: `（1）负的外部性
+外部性也称为外溢性、相邻效应，指一个经济活动的主体对他所处的经济环境的影响。外部性的影响方向和作用结果具有两面性，可以分为正的外部性和负的外部性。那些能为社会和其他个人带来收益或能使社会和个人降低成本支出的外部性称为正的外部性，它是对个人或社会有利的外部性；那些能够引起社会和其他个人成本增加或导致收益减少的外部性称为负的外部性，它是对个人或社会不利的。大量的二氧化碳等多种温室气体的排放，属于负的外部性，使得全球变暖。
+（2）外部性与市场失灵
+市场失灵是指现实的市场经济体制中有很多情况会导致资源不能达到有效的配置。外部性的影响会造成私人成本和社会成本之间，或私人收益和社会收益之间的不一致，这种成本和收益差别虽然会相互影响，却没有得到相应的补偿，因此容易造成市场失灵。由于温室气体排放负的外部性的存在，使得边际社会成本大于边际私人成本，因此使得各国都大量排放温室气体，远超过全球环境的承载量，造成全球气候变暖日趋恶化。
+（3）外部性的解决
+① 外部性解决中的"囚徒困境"
+温室气体排放的解决对于各国来说，有利于各国环境的改善，对全人类生存有积极的效果。然而解决全球变暖问题存在着"囚徒困境"，美国拒绝批准《京都议定书》很好的说明了这一点。共同解决全球变暖问题对各国都有利，但出于各国自身利益的考虑，不限制温室气体排放有利于本国经济的发展，同时减少温室气体排放需要巨大的成本，因此基于本国利益的考虑，美国拒绝批准《京都议定书》，若其他国家也采取同样的行动，各国的个体理性最终导致集体的非理性，全球变暖问题也会日趋恶化。
+② 外部性的解决措施——碳排放权交易
+碳排放权交易的理论基础是科斯定理，科斯理论的主要内容是：在交易费用很小或为零时，只要产权初始界定清晰，并允许经济当事人进行谈判交易，就可以导致资源的有效配置。科斯定理说明，只要假设条件成立，外部性可以通过市场自身来解决。
+碳排放权交易是一种产权交易的办法，各国通过建立自由的碳排放产权交易市场，有助于解决温室气体造成的外部性问题，有利于解决全球变暖问题。
+然而碳排放权如何界定，能否自由交易，以及各国碳排放权的大小等都难以解决，因此碳排放权交易并不能真正解决温室气体排放的外部性问题。
+③ 外部性协商解决中讨价还价的困境
+讨价还价既耗时间又成本高昂，在产权没有明确界定的时候尤其如此，此时，没有一方确切知道要做多大努力才能使对方同意一项解决办法，即使在对话和监督都无成本时如果双方都相信他们能够得到更大的受益，讨价还价仍会破裂。一方提出大份额的要求，而且由于不正确地假定另一方会最终让步而拒绝还价。这一战略行为会导致无效率、非合作的结果。`,
+                hasImage: false },
+
+            { id: 'w2q3', special: '微观·第二类', qid: '3',
+                question: '近些年来，神州大地被雾霾笼罩，地域已经不仅限于北方，而是广及全国。请从外部影响这个视角，从私人成本与社会成本、私人利益与社会利益的角度对这一大气污染问题的根源进行分析。然后，请给出你认为合理的解决方案。',
+                answer: `（1）外部影响是指，某一经济主体的经济行为对社会上其他人的福利造成了影响，但却并没有为此而承担后果或得到收益的情形，主要可分为正外部性与负外部性。
+负外部性也叫外部不经济，是指某个人的一项经济活动会给社会上其他成员带来危害，但他自己却并不为此而支付足够抵偿这种危害的成本。此时，这个人为其活动所付出的成本，即私人成本就小于该活动所造成的社会成本。
+大气污染严重的根源就在于存在着生产与消费的外部不经济。如果产生大气污染所得到的私人利益大于其私人成本而小于社会成本，则这个人显然会采取该行动，尽管从社会的观点看，该行动是不利的。
+（2）一般来说，纠正由于外部影响所造成的资源配置不当主要有以下办法：
+① 使用税收和津贴。
+对造成外部不经济的企业，国家应该征税，其数额应该等于该企业给社会其他成员造成的损失，从而使该企业的私人成本恰好等于社会成本。因此，政府可以对造成大气污染的企业征税，使其税额足以弥补治理污染所需要的费用。
+② 企业合并。
+如一个企业的生产影响到另外一个企业。如果影响是正的，则第一个企业的生产就会低于社会最优水平；反之，如果影响是负的，则第一个企业的生产就会超过社会最优水平。但是如果把这两个企业合并为一个企业，则此时的外部影响就被内部化了。合并后的企业为了自己的利益将使自己的生产确定在其边际成本等于边际收益的水平上。由于此时不存在外部影响，故合并企业的成本与收益就等于社会的成本与收益，于是资源配置达到帕累托最优状态。
+③ 规定财产权。
+如果财产权是完全确定的并得到充分保障，则有些外部影响就可能不会发生，明确的财产权及其转让可以使得私人成本（或利益）与社会成本（或利益）趋于一致。将财产权明确赋予某人，并假定该权利可以自由买卖，则财产权对所有者来说就是一件有价值的特殊"商品"。特别是在生产污染例子中，财产权（即污染权或不被污染权）就是一种有价值的特殊"生产要素"，是生产成本的一部分。因此，政府还可通过法律法规明确财产权利的方式解决大气污染问题。
+④ 政府直接管制。
+主要是指政府对产生外部成本的情况加以管制，政府可以通过规定或禁止某些行为来解决外部性。例如，规定某些污染行为是犯罪行为，规定工厂可以排放的最高污染水平，要求企业采用某项减少排污的技术等。`,
+                hasImage: false },
+
+            { id: 'w2q4', special: '微观·第二类', qid: '4',
+                question: '结合效率工资理论论述政府实施"高薪养廉"的利弊和作用。',
+                answer: `（1）效率工资是指一种足以消除工人偷懒或调动工人积极性的实际工资水平，这种工资一般高于与劳动市场充分就业均衡相适应的工资水平，或者高于劳动市场出清的工资水平。
+尽管提出效率工资的出发点是用来解释劳动市场中的失业问题，但在很大程度上它也可以用来解释政府部门的"高薪养廉"措施。腐败问题是世界各国的头痛问题之一，被称为政治的癌症，因为它诱导人们进行更多分配性努力，而不是生产性努力，因而是低效率的。"高薪养廉"被认为是一种有效减少腐败活动的措施，并在一些国家获得了成功，最明显的例子是新加坡。
+（2）政府与雇员之间的关系部分地类似于企业与工人之间的关系，但远比后者间的关系复杂。可以用效率工资理论的"怠工模型"来分析"高薪养廉"问题，把模型中的怠工换成腐败即可以得到以下结论：要使公职人员减少腐败的行为，政府可以有几种选择，即提供一个足够激励的效率工资水平 w、加大监督的力度 p 以及增加惩处力度 F。不过每一种选择都是需要成本的，不可能无限制地增加效率工资水平和惩处力度。尽管如此，认为实践中更多地考虑增加效率工资水平可能是可行的，这是因为，人力资本具有自我关闭的特性，因而对人力资本只能激励，不能惩罚。
+通过分析可以看出，"高薪"增加了腐败的机会成本，它应该是治理公职人员腐败和偷懒的一种可能选择。
+（3）尽管如此，你必须看到此方法在实际应用中所面临的一些问题：
+① 到底多"高"才是合适的，目前还不能给出一个明确的答案，因为不同部门所付出的劳动量以及工作的舒适程度本身就没有一个统一的标准，其薪水当然也不可能完全一样。但是，总体来说，"高"不能"高"的太离谱，必须与国家的发展阶段以及当地的市场平均工资相适应。
+② "高薪"是否真的能使政府雇员做到"廉洁"，其答案也不确定。如果支付了高的薪水，但仍然没有起到应有的激励作用，那就意味着政府行政成本上升，但却没有获得收益的上升，因而对社会而言只不过是做了一次财富再分配，是无效率的。`,
+                hasImage: false },
+
+            { id: 'w2q5', special: '微观·第二类', qid: '5',
+                question: '运用信息不对称理论分析国有企业改革的难点，并说明固定工资、奖金和期权等报酬制度在激励效果上的差异。',
+                answer: `（1）不对称信息是指市场上的某些参与者拥有，而另一些参与者不拥有的信息；或指一方掌握的信息多一些，另一方掌握的信息少一些。信息不对称会导致资源配置不当，减弱市场效率，并且还会产生道德风险和逆向选择。
+信息不对称会产生委托人-代理人问题，代理人是指交易中拥有信息优势的一方，委托人是交易中处于信息劣势的一方。由于信息的不对称，委托人往往不知道代理人要采取什么行动或者即使知道代理人采取某种行动，也不能观测和测度代理人从事这一行动的努力程度，同时两者之间存在的利益分割关系，这就使代理人不完全按照委托人的意图行事，产生道德风险和逆向选择问题。
+（2）国有企业改革的难点
+国有企业委托代理关系存在的问题是国有企业属于全民所有，由国家（政府）代表全民行使资产所有权职能。全民财产的庞大性、复杂性和分散性，决定其最高的控制经营机构必然会进一步寻找下一级代理人，代理人最终进入企业董事会，代表国家行使所有权职能，形成企业所有权代理。同时，所有权代理也作为委托人，在所有权与经营权分离原则下，委托代理人具体经营管理企业，形成经营权代理。我国国有企业同样存在着委托代理关系，并且由于治理结构设计不合理，委托代理问题更严重。
+① 多层代理关系与较高的代理费用。与个人股东为主组成的公司制相比，国有公司制度下委托关系表现为间接性、多层性、复杂性且协调关系繁琐。国家作为最终所有者，不可能对众多的国有企业直接行使监督权，只有借助多层代理关系间接加以管理。由于国有产权代表与各级产权代理间存在着权利和行为的界定问题，协调产权所有者与代理者目标不一致的代理费用较高。
+② 代理关系选择的非市场化。国有产权代表实质上处于代表国家（委托人）利益的代理人地位，他们既不具备私人股东追求利润最大化的内在动机，又无自主支配资产转让的实际权力，因而在选择代理人（经理）和约束其行为时，难以借助市场化自由契约特征，或多或少倾向于行政手段。目前，我国一些国有公司中董事会成员、经理均采用任命的方式，实际上使股东与经营者之间的委托代理关系完全缺乏市场选择的余地，使二者权力界定更困难，代理费用加大。
+③ 国有产权代表缺乏风险责任能力。西方股份公司虽然也实行法人治理制度，但大股东仍能通过董事会控制企业的重大决策，尤其是风险决策。而国有企业所有者因缺乏承担企业决策风险责任的物质基础，由于市场中存在着大量的不确定性、高风险性因素，在缺乏企业风险责任连带机制的情况下，国有产权代理的决策行为难以与个人股东一样理性化。可见，我国国有企业的委托人-代理人关系比股份制公司的委托人-代理人关系更加复杂，改革难度也更大。
+（3）固定工资、奖金和期权等报酬制度在激励效果上的差异
+在解决委托人-代理人问题上，一般的方法是设立一个激励机制。任何一个有效的激励机制的设计必须遵循两个原则：第一，代理人参与工作所得净收益必须不低于不工作也能得到的收益，这是参与约束；第二，代理人让委托人最满意的努力程度也是给他自己带来最大净收益的努力程度，即激励相容约束。
+在这种情况下，固定报酬的激励制度无法满足这两个约束条件。所以固定工资在激励效果上最弱，它不能解决国有企业中的代理人-委托人问题。
+从奖金方面看，奖金实际上相当于分成制。分成制是在一个非对称信息条件下的次优激励机制。如果要使代理人尽自己的努力工作，那就必须让报酬与产出相联系，这样就让厌恶风险的代理人承担了过多的风险，而风险在委托人和代理人之间的分配是低效的；但如果相对偏好风险的委托人承担一切产量波动的危险，那么代理人又没有动力工作，并且委托人无法及时地、完全地发现代理人的偷懒行为，或者其监督成本很高，生产将是低效率的。在完全信息条件下，由于产量完全确定地取决于劳动的真实投入量，分成制并不能使代理人满足委托人所期望的目标。但是在非对称情况下，分成制却是一种良好的折衷方案。这是因为代理人的报酬与产出直接相关，但产量波动的风险分摊在委托人和代理人双方面。奖金是与代理人努力程度成正比的"非全额报酬"，由于非全额报酬部分的存在，代理人必须努力工作，以期其收入高于偷懒情况下的所得，尽管他创造的每一元产值都要在自己和委托人之间进行分配。从这方面看，奖金是一个次优的选择。
+再分析期权的激励效果。有效的激励机制的设计，除了需要满足参与约束与激励相容约束外，还应将产量波动的风险，按照委托人和代理人对风险的相对偏好或规避程度，作适当的分配。
+另外，现实中的激励机制设计不管采取何种可能方案，都要考虑两点：一是劳动努力之外的因素对产量的影响程度以及监督劳动的成本；二是产量的波动程度以及委托人与代理人对待风险的态度。期权将代理人的收入和公司业绩联系起来，满足了上述有效激励机制的条件，所以期权是一种很好的激励机制。`,
+                hasImage: false },
+
+            { id: 'w2q6', special: '微观·第二类', qid: '6',
+                question: '为减缓城市交通拥堵，很多大城市已经出台或酝酿出台限制车辆数量的政策。这类政策以上海和北京两地为代表，分别采取了拍卖有限牌照的方式和摇号配给牌照的方式。请用经济学的基本理论讨论这两种方式的效果及利弊。',
+                answer: `拍卖有限牌照和摇号配给牌照这两种方式都可以在一定程度上限制车辆数量，都是实现"限牌令"的手段，各有利弊。
+（1）从经济效率的角度讲，拍卖有限牌照是有效率的，而摇号配给牌照是无效率的。市场经济的根本原则是，价格引导资源实现优化配置。拍卖就是按照"价高者得"的原则来配置稀缺的资源，从而保证了资源能够得到最有效率的使用。摇号则是随机地配置资源，没有反映资源的真实成本。同时，由于摇号规则不允许转让抽中的车牌，并没能满足所有有利可图的交易，从而导致了车牌黑市交易。
+（2）相对来说，一般认为摇号是一种体现社会公平的方式，因为每个人都有公平的机会来获胜。当然，摇号配给牌照貌似公平，因为不管贫富，人人机会均等，但它违背了效率原则。
+（3）事实上，对于那些喜欢摇号的人来说，存在一种方法可以让双方处境都变得更好的方法，即在保留摇号系统的同时设立合法的二级市场。那些中签者可以决定是自己留用，还是将其卖给更需要的人。如果这样做，在所有交易结束之后，拥有车牌的还会是同一批人，就像拍卖的结果一样。其实，这就是科斯定理的应用。原理如下：假设有1万个牌照需要用摇号的方式来发放，如果一些中签者并不在最想要牌照的那1万人之中，那么他们将愿意把牌照卖给那些最想要牌照的人。在这一过程中可能存在多次交易，但车牌最终应该落到最想要车牌的人的手中。但这原本就是拍卖所带来的结果，而且具有相同的效率。唯一不同于拍卖的地方在于，中签者将变得更富有，而政府却无法获得牌照拍卖的收入，这就是公平性所带来的差异。`,
+                hasImage: false },
+
+            { id: 'w2q7', special: '微观·第二类', qid: '7',
+                question: '在出租车市场上，乘客抱怨打车困难，司机抱怨份子钱太高收入太低。\n（1）为什么会出现打车困难，司机抱怨份子钱太高收入太低的现象？\n（2）如果减少份子钱，司机的收入会提高吗？\n（3）为什么会出现黑市泛滥现象？为了提高出租车市场服务质量，你有什么经济学建议？',
+                answer: `（1）打车困难与份子钱太高不是相矛盾的，因为它们涉及两个市场，是由各自的市场供求决定的。
+打车困难是由于出租车市场供不应求，乘客对于乘车的需求高于司机提供的出租车的供给，从而使得一些乘客打不到车，出现打车困难的现象。
+司机抱怨份子钱太高收入低是由出租车营运执照市场决定的。出租车营运执照比较稀缺，供给较少，一般由管理部门分配，而出租车公司会从管理部门获得营运执照并作为供给方，在一定程度上对出租车营运执照的供给存在垄断，通过向对运营执照有需求的出租车司机收份子钱作为主要收入来源。由于运营执照市场供不应求以及某种程度的垄断使得出租车公司向司机收取较高的份子钱，这里所说的司机收入很低应该是扣除份子钱等成本之后的一种"利润"，较高的份子钱意味着较高的成本，从而"利润"也就越低。
+（2）减少份子钱使得司机的成本降低，在司机通过搭载乘客获得的收入不变的情况下，其获得的"利润"就会增加，对于司机来说，其直观的感受是"收入"增加了。
+（3）黑市泛滥现象是由于同时具有供给和需求的激励。一方面，作为需求方，由于供不应求使得部分乘客在正规的出租车市场打不到车，但为了能够出行，所以对黑出租就有了一定的需求。另一方面，作为供给方，司机为了避免在正规出租车市场上交较高的份子钱，减少成本，便会有动机在黑出租市场上提供服务。因此，作为正规出租车的替代品，供给和需求两个方面的激励使得黑出租市场泛滥。
+为了提高出租车市场服务质量，有如下建议：
+① 降低出租车运营执照市场进入门槛，打破垄断。降低市场准入门槛，让更多的企业可以获得出租车运营执照并向司机供给，这样便提高了出租车公司间的竞争性，打破某个或某几个企业对市场的垄断。各企业追求利润最大化的行为有利于份子钱的降低，因为如果一个出租车公司收较高的份子钱，司机就会转向其他公司购买运营执照。
+② 增加出租车运营执照的供给。打车困难以及份子钱太高都是由于出租车运营执照稀缺供给太少导致的，所以需要增加运营执照的供给。一方面，运营执照供给增加使得运营执照市场供不应求的问题得到缓解，有利于降低份子钱。另一方面，更多的运营执照供给意味着正规的出租车市场上更多的出租车供给，有助于打车困难问题的解决。
+③ 对黑租车市场进行惩罚，无论是对于提供黑车服务的司机还是对黑出租车有需求的乘客，要有相对应的惩罚措施，降低他们对黑市供给和需求的激励，从供求两个方面遏制黑出租市场，从而有利于正规出租车市场的发展。`,
+                hasImage: false },
+
+            { id: 'w2q8', special: '微观·第二类', qid: '8',
+                question: '互联网专车的出现是对出租车市场的重大冲击。许多人呼吁政府管制互联网专车，也有人呼吁政府减少管制。请分析管制和减少管制的理由分别是什么？你对互联网专车政策的看法是什么？\n（中山大学2016年考题）',
+                answer: `（1）管制的理由：
+① 互联网专车市场是一个信息不对称的市场。在信息不对称的条件下，会导致资源配置不当，减弱市场效率，并且还会产生道德风险和逆向选择。在很多情况下，市场机制并不能解决信息不对称问题，只能通过其他的一些机制来解决，特别是运用博弈论的相关知识来解决机制设计问题。
+逆向选择是指在买卖双方信息非对称的情况下，差的商品总是将好的商品驱逐出市场；或者说拥有信息优势的一方，在交易中总是趋向于尽可能地做出有利于自己而不利于别人的选择。逆向选择的存在使得市场价格不能真实地反映市场供求关系，导致市场资源配置的低效率。解决逆向选择问题的方法主要有：政府对市场进行必要的干预和利用市场信号。
+在互联网专车市场上，假定有若干辆服务质量不同的专车要提供服务。车主知道自己要提供的服务的质量，质量高的索价高些，质量差的索价低些。但顾客不知道每辆专车的质量情况。在这种情况下，顾客只能按好的服务质量和差的服务质量索价的加权平均价格来购买服务。这样，由于顾客无法掌握服务的准确信息，从而其出价并不区分服务质量的好坏，服务质量好的专车会退出市场，服务质量差的专车留在市场上。一旦发生这样的情况，服务质量差的专车比例增加，顾客会进一步降低出价，使服务质量稍好的专车也退出市场，如此循环下去，专车市场就会逐渐萎缩。
+② 缺少管制的互联网专车市场可能会与管制严格的出租车市场产生恶意竞争，出租车市场由于受出租车执照的限制使得成本较高，而专车市场则不存在执照问题，这样专车可以降低服务价格，使服务价格高于专车的服务成本而低于出租车的成本，这样的恶意竞争和不对称管制是对出租车市场的一种伤害，是一种不公平的行为。
+（2）减少管制的理由：
+① 互联网专车市场是一个新兴市场，新兴市场的发展需要政府的保护而不是管制。
+② 管制不利于竞争，会降低市场的效率，从而最终损害公众的福利。
+（3）个人认为应该减少管制。
+互联网专车市场是对传统出租车的颠覆，虽然最初可能损害出租车市场的发展，使一部分人福利减少，但是原来出租车市场的参与者可以转向专车市场，这样不仅可以避免伤害而且可以促进专车市场的发展。同时，虽然从短期来看互联网专车市场的发展可能会减少部分人的福利，但是在长期专车市场的发展将会提高整个经济的效率，提高了资源的利用率，使整个社会的福利增加，使大部分人受益。`,
+                hasImage: false },
+
+            { id: 'w2q9', special: '微观·第二类', qid: '9',
+                question: '"节假日高速免费政策"是指重大节假日免收小型客车通行费。这一政策一直备受争议，比如以下三种现象或观点：\n（1）原本收费的公路在节假日免费，车流量的大幅提升，使得高速公路或许不再高速，甚至拥堵。\n（2）某经济学者认为这一政策提高了居民的出行需求，带动了旅游业和相关行业，降低了航空、铁路客运的压力。\n（3）各个高速公路公司反应重大节假日免通行费政策使公司收入减少。\n用微观经济学的知识分析以上三说法。',
+                answer: `（1）对于免通行费政策导致国庆期间高速公路拥堵的情况，可以从以下几方面来分析：
+① 若将通过高速公路出行看做一种商品，则可知通过高速公路出行对于居民而言是正常品：当高速公路出行的费用降低甚至为零时，居民对于这种"商品"的需求会增加；
+② 排他性是指当某个人使用或消费一种产品和服务时，可以排除与阻止其他人使用或消费该种产品和服务。竞争性是指当某个人使用或消费一种产品和服务时，就减少了其他人使用或消费该种产品和服务的机会。
+具有竞争性但不具有排他性的商品是公共资源，当利用市场来对公共资源进行配置时，它很可能很快会被过度地使用，即所谓的"公地悲剧"现象。当高速公路实施免通行费政策时，高速公路就变得类似于公共资源：它不再能通过通行费用来阻止人们使用，即不再具有排他性；而当高速公路上的车较多时，高速公路将具有竞争性。因此，类似于公共资源，高速公路上的车此时倾向于过多，从而导致了拥堵；
+③ 外部性指一个经济活动的主体对它所处的经济环境的影响。外部性的影响会造成私人成本和社会成本之间，或私人收益和社会收益之间的不一致，因此容易造成市场失灵。
+当高速公路上的车辆已经较多时，增加的车辆会使得高速公路更加拥堵，即此时车辆进入高速公路对其他车辆具有负的外部性，从而新进入的车辆所承受的私人成本小于其所造成的社会成本，此时，公路上的车辆数量相对于"合意"的数量而言过多，即免通行费政策造成了市场失灵。
+（2）某经济学者评价免通行费政策提高了居民的出行需求，带动了旅游业和相关行业，降低了航空、铁路客运压力，这体现了微观经济学中互补品和替代品的相关知识。
+替代商品是指在效用上可以相互代替，满足消费者的同一种欲望的商品。两种商品如果有替代关系，当其中一种商品价格不变时，另一种商品价格提高，就会引起对前一种商品需求量的增加，反之，另一种商品价格下跌，就会引起对前一种商品需求量的减少。
+互补商品是指在效用上互相补充配合，从而满足消费者的同一种欲望的商品，当两种商品为互补商品时，其中一种商品价格保持不变，另一种商品的价格上涨，则会使前一种商品的需求量下降，反之，另一种商品的价格下跌，则会使前一种商品的需求量上升。
+在本题中，居民通过高速公路出行与居民通过铁路或航空出行之间有替代关系，因而当实行免通行费政策时，居民对通过铁路或航空出行的需求减少，即降低了航空、铁路客运的压力；同时，居民通过高速公路出行与居民对旅游业和相关行业的消费存在互补关系，当实行免通行费政策时，居民对旅游及相关行业的消费需求也随之增加，即带动了旅游业和相关行业。
+（3）对于重大节假日免通行费政策使各个高速公路公司收入减少的现象，可做如下分析：
+当高速公路投入运营之后，不考虑政府的补贴或税收，则高速公路公司所获得的收益来自于汽车进入高速公路的通行费，同时，让额外一辆汽车进入高速公路行驶的边际成本很低。但随着车辆的增多，大量车辆给高速公路带来的负荷增加，额外一辆车进入高速公路带来的边际成本也随着增加。
+高速公路公司若追求利润最大化，会在边际收益等于边际成本处确定其通行费；然而在重大节假日时，因实行免通行费政策，高速公路公司并不能获得收益，同时还要承担大量车辆涌入带来的成本（如管理支出和公路维护费用等），导致其利润为负，收入减少。`,
+                hasImage: false },
+
+            { id: 'w2q10', special: '微观·第二类', qid: '10',
+                question: '请阅读以下材料，并运用所学的微观经济学知识加以分析评论：\n材料1：2011年10月10日，淘宝商城宣布将正式升级商家管理系统。在此调整中，消费者一旦买到假货将获得"假一赔五"赔偿，同时其他商家违规行为对消费者补偿幅度也将大大增加。而原有商家需缴纳的每年6000元技术服务年费，提高至3万元和6万元两个档次。由于此次商家管理系统升级，导致很多中小卖家可能由于商城费用的增加退出商城，部分卖家商品及服务跟不上淘宝商城的变革。2011年10月11日，近5万多名网友结集YY语音34158频道，有组织性地对部分淘宝商城大卖家实施"拍商品、给差评、拒付款"的恶意操作行为，导致多家店铺多数商品被迫下架。是为淘宝"10.11事变"。\n材料2：事变发起人和参与者认为，商城建成后，淘宝为了获得更多的上缴年费和保证金，用牺牲集市小卖家的利益，把淘宝绝大部分的顾客流量引导进入淘宝商城，促使更多的人入驻商城，促使更多的中小卖家日销售额急剧下降；但是当中，小卖家想进入商城的时候，淘宝又出新规定了，这让从2003年开始一直支持淘宝网的忠实卖家无所适从，进退两难。\n材料3：淘宝商城对"10.11事变"发布的官方回应中称，"为了给消费者提供更多更好的高品质商品和服务，让市场良性发展，就必须做出改变，淘宝商城和广大商家不会因为威胁、恐吓而放弃原则。"',
+                answer: `（1）垄断
+我国《反垄断法》规定，禁止具有市场支配地位的经营者"以不公平的高价销售商品或者以不公平的低价购买商品"。具有市场支配地位的经营者不一定是典型的垄断企业，只要该企业的市场地位强大到可以保证其市场行为的独立性、不必考虑竞争对手或交易对手的反应，自由做出经营决策时，即可认为该企业具有市场支配地位。
+淘宝在网购市场上所占据的份额极大，作为成功的渠道商，淘宝商城对于众多的中小企业而言，无疑具有支配地位，因而敢于不顾各种反对的声音，强行提高服务费用，缩小了中小企业的利润空间。
+（2）不对称信息
+市场信号是市场外产生并在市场上使用的信息，它可以减轻或消除市场参与者面临的信息不对称及其导致的不确定性。市场信号发挥作用主要通过信号显示。信号显示是在市场上信息优势方通过做出某种承诺（往往是有成本的）向其他市场参与者显示其产品或其他交易对象的品质，从而减少或消除信息的不对称。
+淘宝事件一个很重要的原因在于：没有正规的经济纠纷调解体制和消费者权益保护体系去惩治不法经营商的商家，维护消费者的权利。这最终致使淘宝进入一种"既是裁判员又是运动员"的尴尬角色，它只能通过简单的经济手段，比如提高淘宝商城入城资金门槛的形式，实现高档与低劣的甄别。这样的初衷是好的，但这样的甄别，无疑是粗放与不理性的。
+（3）囚徒困境
+可以把淘宝事件认为是非合作博弈中的纳什均衡，虽然双方知道合作比非合作各自的收益都大，但是因为非合作是各自的占优策略，所以最后的结果只能是两败俱伤的非合作。这场互联网商业战争是一种非正常的经济博弈。中小卖家认为淘宝"挟垄断以令卖家"，首先违背契约原则，坐地起价；而淘宝则认为自己通过商业考量，为互联网商业去伪存真，自己面对的非法攻击者无非是一群侵害消费者权益、信誉极差的"乌合之众"。在这场战争中，不仅双方缺乏顺畅、平等的沟通，更缺乏一套制约、惩罚双方不法行为的起码规则，结果都陷入了"囚徒困境"。
+（4）市场失灵
+市场失灵是指现实的市场经济体制中有很多情况会导致资源不能达到有效的配置。一般来讲，市场失灵主要由以下四种情况引起，即垄断势力、外部影响、公共物品和不完全信息。
+淘宝市场存在着垄断势力和不完全信息等综合因素，出于维系市场安全目的，有效的市场监管是必要的。我国目前市场监管主要依赖政府机构和政府附属机构，非政府机构的监管还未能发挥应有的作用。由于政府监管信息来源受限，也有很强的利益动机，不一定总能保持公正状态。在这种单一的监管体制下，如果又缺乏对监管者的有效监管，极易导致监管失灵。`,
+                hasImage: false },
+
+            { id: 'w2q11', special: '微观·第二类', qid: '11',
+                question: '材料：由阿里巴巴主导的双十一网购狂欢节是中国规模最大的电子商务促销日，双十一销售额不断刷新，2012年191亿元，2013年350亿元……2016年突破1000亿元，2018年突破2000亿元，2019年双十一销售额2684亿。\n问题：双十一网购狂欢节反映了哪些微观经济学原理？',
+                answer: `（1）双十一反映了激励的相关经济学原理。
+从经济学的角度来说，激励是引起一个人做出某种行为的某种东西，诸如惩罚或奖励的预期。理性人会通过比较成本与利益做出决策，因此，他们会对激励做出反应。利用节日做促销其实是一个比较老套的营销手段了。元旦、中秋、国庆、圣诞……只要是个节日，我们都能看到商场里五花八门的打折促销。但是，"双十一"促销之所以比历史上的任何一个节日促销都要成功，就是因为电商们不仅仅采用了传统的价格激励，还非常巧妙地运用了心理激励。简单来说，无非就是类似"把谈恋爱的钱用来给自己买件像样的衣服"这样的宣传。就是在这种全民消费的激励之下，很多人在双十一当日的消费超出了自己的预算约束。
+（2）从消费者的角度看，双十一反映了需求价格弹性的原理。
+需求价格弹性是指某种商品需求量变化的百分比与价格变化的百分比之比，它用来测度商品需求量变动对于商品自身价格变动反应的敏感性程度。如果需求价格弹性较大，表现为需求曲线很平坦，那么价格稍微变化，需求量就会有很大的增加，从而使得总收益增加；如果需求价格弹性较小，表现为需求曲线很陡峭，即使价格有很大的变动，需求量变动也不大，比如一些生活必需品。
+双十一购物狂欢节打折促销的商品琳琅满目，但是还是以衣服、食品、化妆品、日用品等商品为主，这类商品的种类繁多，拥有很多替代品，需求的价格弹性较大，因此，这些商品在促销时，价格下降，销售量会增加很多。
+（3）从生产者的角度看，双十一反映了厂商利润最大化的原理。
+由（2）可知消费者对双十一所促销的大多商品的需求价格弹性都较大，这将导致各个厂商所面临的需求弹性很大，对于这些商品的厂商，其边际收益为：MR=P(1−1/e_d)，其中，e_d 是需求价格弹性。
+因此，当其所面临的需求弹性大于1时，厂商的边际收益也大于0，此时厂商若选择通过打折促销等手段降低价格，提高销量，就可以较大幅度地提高其收益。
+与此同时，很多种商品的厂商多生产一单位商品的成本是较低的，即这些厂商的边际成本较低，此时厂商若选择通过打折促销等手段降低价格，提高销量，其总的生产成本虽然也会提高，但其提高的幅度较小。
+总体而言，若选择降价，这些厂商的收益会以比成本更快的速率提高，其利润会增加。因此，这些厂商会选择较大幅度的降低价格，提高销量，直至其边际收益下降到与其边际成本相等时为止。
+（4）从市场结构的角度看，双十一体现了多种市场结构尤其是垄断竞争市场结构的相关经济学原理。
+垄断竞争市场指的是满足以下条件的市场结构：
+① 生产集团中有大量的企业生产有着差别的同种产品，这些产品彼此之间都有非常接近的替代品。
+② 一个生产集团中的企业数量非常多。
+③ 厂商的生产规模比较小，因而进入和退出一个生产集团比较容易。
+在双十一中，大多数产品市场都属于垄断竞争市场的市场结构，一方面，每一厂商提供的产品都存在某种差别，因而都具有一定的垄断性，垄断程度取决于产品差别程度，产品差别越大，垄断程度越高；另一方面，有差别的产品之间又存在替代性，因而存在着竞争。在垄断竞争市场中，产品差别是厂商进行相互竞争的重要手段，因此，也就不难知道为什么双十一时的各个店家都尽力在宣传自己产品的独特之处和优点了。
+（5）双十一体现了厂商对顾客实行价格歧视的相关经济学原理。
+经济学中价格歧视的概念是指垄断厂商基于同样的产品，对不同的顾客或在不同的市场上索取不同价格的行为。一般情况下，价格歧视可以分为三种类型：一级价格歧视、二级价格歧视和三级价格歧视。
+一级价格歧视是指完全垄断厂商根据每一个消费者对买进每一单位产品愿意并能够支付的最高价格逐个确定产品卖价的行为，因此又被称为完全价格歧视。二级价格歧视是指垄断厂商按不同的价格出售不同单位数量的同一产品，而对于每一个购买相同数量商品的消费者则收取相同的金额。三级价格歧视是指垄断厂商在不同的市场对同一商品给出不同的价格，而在同一市场中则给出相同的价格。
+在"双十一"网购狂欢节活动中，在淘宝、天猫等B2C电子商务平台上，销售商面对的是众多的普通个人消费者而非机构消费者或分销商，因而一级价格歧视和三级价格歧视广泛存在，二级价格歧视则较少出现。在淘宝商城，销售商与顾客通过网络讨价还价，同样的商品可以不同的价格向每位用户出售，而销售商也可以获得用户的全部详细资料。此外，经常有销售商推出某种商品进行限时拍卖，对每一单位商品都收取买方愿意支付的最高价格，将消费者剩余全部收归己有。
+（6）除以上几点外，双十一还体现了博弈论的相关原理。
+在双十一中，很多方面都涉及市场个体相互间的博弈：阿里巴巴与京东等其他购物平台之间的博弈、各购物平台与消费者之间的博弈以及购物平台内生产和销售类似商品的厂商之间的博弈等等。`,
+                hasImage: false },
+
+            { id: 'w2q12', special: '微观·第二类', qid: '12',
+                question: '结合现实中的学区房现象，用经济学知识分析：\n（1）义务教育制度的实施与其初衷相违背的经济学原因是什么？\n（2）赞助费择校（或者说收费教育）与学区房择校相比，哪种效率更高？为什么？\n（3）如何才能杜绝学区房价高于非学区房价的现象？',
+                answer: `（1）义务教育制度的实施与其初衷相违背的经济学原因有：
+① 教育作为产品具有特殊性。一方面，教育是一种典型的本地化的公共物品；另一方面，因为人力资本生产过程中的"同群效应"，决定了好的学校不只是取决于其硬件条件，还取决于学校学生的质量。基于以上两点导致政府与家长在对待教育资源方面产生了分歧，政府希望教育资源均等化来实现教育公平，而家长总是希望让自己的孩子去好学校，而且是学生质量普遍更高的好学校，接受更优质的教育。
+② 学区房过热的背后反映了优质教育资源供求不平衡的问题。教育属于稀缺资源，好学校的供给有限，而想上好学校的人众多，导致优质教育的需求量远远大于供给量。供小于求，且较长时间内供给量不能上升，这就会导致价格上涨。
+然而教育作为一种公共物品，政府出于教育资源公平的考虑，会限制价格上涨。限制价格是指政府为了限制某些物品的价格而规定的低于市场均衡价格的最高价格，其目的是为了稳定经济生活。实行限制价格后，市场价格下跌。由于需求量大于供给量，该商品市场将出现短缺。此时，市场就可能出现抢购现象或是黑市交易。这就是学区房过热的原因。
+综上，由于人力资本"同群效应"的存在，使好学校具有一定惯性，从而导致各个学校在教育质量上不可能均等。然而好学校供给是有限的，但潜在需求是整个学生群体，而政府为了教育公平会压低教育的显性价格，最终导致供不应求的价格差只能反映在一些隐性租金里面，比如教育与户口、房产等相绑定，最终会导致绑定物出现价格扭曲，与义务教育的初衷相违背。
+（2）赞助费择校（或者说收费教育）与学区房择校相比，赞助费择校的效率会更高些。在学校质量存在客观差异的情况下，供需不平衡的压力在市场的作用下会体现在价格上。学区房将供不应求的价差反映在隐形价格（学区房溢价）上，而赞助费择校则将供需压力体现在显性价格（择校费）上，一般而言，直接将供需压力体现在显性价格上要比隐性价格上更有效率。
+当然，收费教育需要和补贴反馈机制相结合，形成一种类似高收入者补贴低收入者的机制，最终会大大提高低收入家庭子女获取优质教育资源的机会，从而体现教育公平。但如果是学区房的机制，其中的溢价部分很难补贴到低收入家庭的好学生中去。
+（3）解决措施如下：
+① 扩大学区半径，拓宽家长与学生的择校范围，即增加学区房供给量，缓和学区房供不应求的矛盾；
+② 增加私立收费教育，并配合好奖学金补贴制度，使教育资源的稀缺性体现到显性价格中去。
+总的来说，就是要形成一种公私并存、市场竞争并配合合理的价格机制的教育资源分配方式。`,
+                hasImage: false },
+
+            /* ===================== 第三部分 · 宏观论述题（24道） ===================== */
+            /* ---------- 宏观 · 第一层次（13道） ---------- */
+            { id: 'h1q1', special: '宏观·第一层次', qid: '1',
+                question: '由于中国经济存在下行压力以及一些结构性问题，例如居民消费不足、投资过多和产能过剩的现象。为此，我国政府选择赤字发行国债，通过棚户区改造提高政府购买力度，拉动投资。同时，中国人民银行也在银行间市场连续净投放，如加大债券逆回购力度，为经济提供流动性支持，定向降低存款准备金率。\n（1）结合IS-LM模型和AD-AS模型分析以上政策对利率、产出和物价的影响。\n（2）试说明我国居民消费少、投资多的主要原因。\n（3）在IS-LM模型框架下，如果我们要实现"调结构"的目标，应该采取什么样的财政、货币政策组合来增加消费同时减少投资？\n（4）探讨以上"稳增长"和"调结构"的政策措施能否相互兼容。',
+                answer: `（1）扩张性的财政政策导致IS曲线向右移动，产出增加；由于产出增加，导致货币需求增加，利率上升，此时采取较稳健的货币政策配合扩张性财政政策，使得LM曲线下移，防止利率上升对投资的挤出效应，最终利率保持不变，而产出从Y增加到Y2。
+无论是积极的财政政策，还是配合进行的稳健型的货币政策，都属于总需求管理政策。促进了需求扩张，AD曲线向右移动，使得产出上升；但技术、劳动力、资本等因素短期内没有太大变化，总供给曲线没有发生移动，这会导致价格水平上升。
+（2）消费不足的原因：
+① 城乡居民相对收入增长缓慢，实际收入水平呈现逐年下降趋势。我国长期以来居民工资总额占GDP的比重不断下降，而财政收入增长过快，税负高，国有垄断企业以及外资企业挤压吸纳民营中小企业，直接压制了工资收入的增长。
+② 房价、房租等费用大幅上涨，严重挤压了居民消费支出。
+③ 限制甚至禁止粮食出口政策，导致我国粮价远远低于国际市场价格，牺牲了农民利益，限制了农民收入的提高，使农村消费能力长期不足。
+④ 城乡二元分割体制，拖累了城市化进程，使农村人口被甩在消费市场之外。
+⑤ 根据生命周期理论，人们会在更长的时间范围内计划他们的生活消费开支，以达到他们在整个生命周期内消费的最佳配置，由于我国社保体制尚不健全，因此居民储蓄意识较强，当前消费水平较低，以保证老年时期也有一定的消费能力。
+⑥ 传统观念较强，我国居民普遍储蓄意识较高，造成消费不足，储蓄率高导致投资水平较高。
+总体上，我国内部需求特别是消费需求持续不振，除传统观念的影响外，主要反映了整体的经济和社会结构的重大失衡和制度不健全。
+投资过多的原因：
+① 我国过去一直处于贸易顺差状态，获得了大量外汇占款和外汇储备，央行为避免形成严重通货膨胀，将其中的绝大部分用于基建投资和房地产行业，导致我国过去的产能一直过剩。
+② 在我国的投资过程中有一些非市场的因素在发挥作用，阻碍了市场机制优胜劣汰功能的发挥，包括扭曲要素价格，比如在招商引资过程中，一些地方政府为了拉投资、拉项目，给予一些低价，甚至在劳动力的方面都是给予很多优惠政策。对市场竞争机制的作用产生了一定的影响，导致了投资过多的局面。
+③ 企业公平竞争的市场环境建设滞后。由于对以技术、标准、规范等促进产业自主发展的措施研究不够，规范市场公平竞争的规则、环境、秩序建立滞后，对已有的措施监督执行也不到位，导致一些达不到环保、能耗、安全等标准的企业以不公平的方式进行市场竞争，加剧了投资过多的问题。
+（3）调结构的主要目的是降低投资在总需求的比例，提高消费在总需求中的比重，通过扩大内需实现经济健康增长，改变简单依靠投资拉动经济增长的现状。
+应采用减税以刺激消费的扩张性财政政策和不变的货币政策，减税搭配其他政策改革使消费增加，IS曲线右移，产出增加，利率上升，而利率上升反过来又抑制了投资，从而达到了增加消费同时减少投资的目标。
+具体而言，要实现调结构目标，应适当降低政府投资，采取免费发放消费券等方式提供消费补贴，刺激消费；或是进行结构性减税，提高居民可支配收入，鼓励居民消费；同时严格控制地方政府融资平台盲目发展，鼓励金融机构向小微企业、农民、消费者发放贷款，降低小微企业、农民、消费者的融资成本。
+（4）以上"稳增长"和"调结构"的政策有一定的冲突，但是总体上是兼容的。
+① 两者都要求扩张性的财政政策，其中，通过降低税收以刺激消费的扩张性财政政策，能够同时满足稳增长和调结构的目标；
+② 稳增长要求扩张性的货币政策，而调结构要求不变的货币政策，但这并不是完全矛盾的，通过温和的扩张性货币政策，就能实现LM曲线略微向下移动，从而产出有所增加，一定程度上实现了稳增长；同时利率有所上升使得投资减少，也一定程度上实现了调结构。
+所以，只要宏观经济政策保持定力并适时调整，注意平滑两者关系，稳增长、调结构是可以兼容的，能为我国经济发展带来质的提升。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'h1q2', special: '宏观·第一层次', qid: '2',
+                question: '材料1：2012年9月13日，美国联邦公开市场委员会会议发布公告称，为支持经济强劲复苏和确保通胀符合目标，美联储将推行进一步的量化宽松政策（简称QE3），并将目前低利率保持至2015年年中。\n材料2：目前，美国经济正逐步接近所谓"财政悬崖"的威胁。如果美国共和与民主两党组成的跨党派超级委员会未能就削赤达成协议，2013年初便会启动自动削减赤字机制，缩减政府开支，目标是未来十年减少赤字1.2万亿美元，同时税务优惠政策将于2012年底结束，可能不再获得延期，削减财政赤字与加税将造成私人与企业庞大的财政缺口，形成所谓"财政悬崖"。\n根据IS-LM模型并结合以上材料分析：\n（1）如果美国国会不采取任何行动，"财政悬崖"如期发生，将对美国经济产生怎样影响？\n（2）指出美国宏观经济政策将面临的是哪种政策组合？分析这种政策组合的适用范围及可能的结果。\n（3）如果美国希望加速经济复苏而保持利率不变，财政和货币政策如何搭配使用？\n（对外经贸2013年考题）',
+                answer: `（1）增税与减支这两项政策叠加在一起就被称为"财政悬崖"，即财政收入增加和财政支出减少将使得美国财政赤字出现跳崖式的大幅减少。如果美国国会不采取任何行动，"财政悬崖"如期发生，财政赤字减少和税收增加，将会使得美国产出下降，失业率上升，经济难以复苏。
+自动削减赤字机制开启后，政府支出减少，同时税收优惠政策到期，导致政府税率上升，税收收入有所增加，这些都属于紧缩性财政政策，导致IS曲线向左移动，在货币政策保持不变的情况下，产出下降，均衡利率下降。
+（2）美国宏观经济政策将面临扩张性的货币政策与紧缩性的财政政策这样的政策组合，用紧缩性财政政策压缩总需求，又用扩张性货币政策降低利率，以免财政过度紧缩而引起衰退。这种政策组合的适用范围是财政扩张政策受到约束，经济增长速度较为缓慢。
+假定初始经济位于点E，此时利率为i₀，产出为Y₀。为支持经济强劲复苏和确保通胀符合目标，美联储将推行进一步的量化宽松货币政策，使LM曲线右移，经济均衡点变为E'，产出增加为Y'，同时为了缩减赤字，IS曲线左移，经济均衡点变为E''，产出下降为Y''。最终产出变为Y''，利率下降到i''。
+（3）如果美国希望加速经济复苏而保持利率不变，则可以使用扩张性的财政政策与扩张性的货币政策搭配使用。一方面可以通过减税等扩张性的财政政策，增加社会总需求，使产出增加，但使利率上升；另一方面利用扩张性的货币政策，增加货币供给，降低利率，从而促进投资和消费，使社会总需求增加，最终使产出进一步增加，但利率保持不变，避免挤出效应。
+假定初始经济位于点E，此时利率为i₀，产出为Y₀。政府使用扩张性财政政策使得IS曲线右移到IS'，LM曲线保持不变，经济均衡点变为E'，此时利率上升为i'，产出增加到Y'。为了使利率保持不变，美国政府可以通过扩张性的货币政策，使LM曲线右移到LM'，此时经济均衡点由E'变为E''，利率由i'回到i₀，产出进一步增加到Y''。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'h1q3', special: '宏观·第一层次', qid: '3',
+                question: '2020年5月22日，国务院总理李克强在发布的2020年国务院政府工作报告中提出，要加大减税降费力度。近年来，"减税降费"政策持续实施，2025年2月28日，国家统计局统计公报显示：2024年全年现行支持科技创新和制造业发展的主要政策减税降费及退税金额26293亿元。\n（1）用IS-LM模型说明减税的成效，以及在什么货币环境下，该政策最有效。\n（2）用AS-AD模型分析，减税降费一定会带来通货膨胀吗？\n（3）根据李嘉图理论，减税降费有效吗？你认为该理论在现实中成立吗，为什么？',
+                answer: `（1）减税就是积极的财政政策，会增加居民可支配收入，导致私人消费增加，IS曲线右移。在常规情形下，IS曲线右移会导致利率上升，挤出私人投资和私人消费，此时存在挤出效应。
+在两种货币环境下，该政策最有效：
+① 当经济处于流动性陷阱时，减税的政策最有效。
+当经济处于凯恩斯陷阱情形时，LM曲线水平，如果政府实施减少税收的扩张性财政政策，导致IS曲线右移，产出增加。产出增加引起货币需求增加，但流动性陷阱下并不会引起利率上升而发生挤出效应，于是在此条件下扩张性财政政策刺激经济非常有效。
+② 在适应性货币政策下，也最有效。
+减税政策导致IS曲线右移，如果此时货币供给的增加，表现为LM曲线右移，则产出增加的会更多，可以使挤出效应为零。
+（2）不一定带来通货膨胀，分两种情况：
+① 如果短期价格不能调整，则短期内不会通胀，但长期会通胀。
+由于在短期价格不能调整，此时价格有刚性，所以短期AS曲线水平。减税降费使AD曲线向右移动，此时经济沿着短期总供给曲线从A移动到B。在新的均衡点B，产出与就业高于其自然水平，这意味着经济处于繁荣中。在长期，随着时间的推移，高需求逐渐引起工资与价格水平上升。价格水平逐渐上升，使经济沿着新的总需求曲线AD，向上移动到C点。在新的长期均衡点C，产出和就业又回到其自然率水平，但价格比在原先的长期均衡（A点）时高了。
+② 如果短期价格有黏性，并且伴随着供给侧改革（有利的供给冲击等），也不会带来通货膨胀。
+由于价格黏性，短期AS曲线向右上方倾斜，减税降费使AD曲线向右移动，如果此时伴随有供给侧结构性改革，将使得SAS曲线向右移动，最终价格水平不变，此时减税降费政策没有带来通胀的提高。
+（3）根据李嘉图等价原理，减税降费政策可能是无效的。因为李嘉图等价定理认为，在政府支出一定的情况下，政府采取征税或发行公债来为政府筹措资金，其效果是等价的或相同的。根据这一定理，政府因减税措施而增发的公债会被人们作为未来潜在的税收考虑到整个预算约束中去，在不存在流动性约束的情况下，公债和潜在税收的现值是相等的。这样，变化前后两种预算约束本质上是一致的，从而不会影响人们的消费和投资。
+李嘉图等价定理在现实中可能不成立，原因有：
+① 定理成立的前提条件太苛刻。李嘉图等价定理若成立，需具备以下前提条件：a.无论是用税收还是用公债融资，初始时期的政府支出不变；b.初始时期发行的公债必须用以后时期课征的税收收入偿还；c.资本市场是完全的，即不存在流动性约束，而且个人与政府的借贷利率是相同的；d.个人对现在和将来的收入具有理性预期；e.个人作为现行纳税人和将来的潜在纳税人，其行为就好像能永远生存下去一样；f.个人能完全预见包含在公债发行中的将来时期的纳税义务；g.征收的是总税额，并且减税及税负下降是均等地落在每一个消费者身上，每个消费者具有相同的边际消费倾向；h.公债持有者的数额与未来纳税额的负担是对称的。这些前提条件现实经济很难满足。
+② 普通人的远见不够。李嘉图等价定理认为政府发行债券融资造成的赤字会引起未来税收上升，这种上升一定会被具有完全理性的居民预期到，居民为了不使后代税负过重必然相应地调整目前的消费。但普通人的远见不够，很可能无法预期到赤字会引起未来税收上升。
+③ 普通人是利己的。人的生命有限，利己的人未必关心下一代的还债情况，也就不会因为未来税收上升的预期而调整当前的消费。
+④ 借款约束。根据李嘉图学派的观点，消费者的支出不是基于现期收入，而是基于其一生收入，既包括现期收入又包括预期的未来收入。用债务融资的减税增加了现期收入，但并没有改变一生收入或消费。但对那些面临紧的借款约束的消费者来说，现期收入比一生收入更重要。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'h1q4', special: '宏观·第一层次', qid: '4',
+                question: '2016年中国政府工作报告中强调，积极的财政政策要加大力度，稳健的货币政策要灵活适度。为"稳增长"，财政政策方面采取包括全面实施营改增，减税降费，适当增加必要的财政支出和政府投资，加大对民生等薄弱环节的支持等措施。货币政策方面要统筹运用公开市场操作、利率、准备金率、再贷款等各类货币政策工具，保持流动性合理充裕，疏通传导机制，降低融资成本，加强对实体经济特别是小微企业、"三农"等的支持。请运用宏观经济理论结合以上内容回答下列问题：\n（1）请阐述这些宏观经济政策对我国经济带来的影响。\n（2）说明采取财政和货币政策可能存在的局限性。',
+                answer: `（1）宏观经济政策对我国经济带来的影响
+① 积极的财政政策与稳健的货币政策
+积极的财政政策就是扩张性的财政政策，增加政府购买支出和政府投资能够通过乘数效应增加国民收入扩大总需求；减税降费，全面实施营改增能够增加居民可支配收入和降低企业经营压力，从而拉动私人消费与私人投资。
+稳健的货币政策灵活适度，货币政策保持流动性合理充裕，疏通传导机制和降低融资成本，可以更好地引导资金流入实体经济，降低私人和企业借贷成本，从而鼓励居民消费和企业投资。
+积极的财政政策能够带动私人消费、投资和政府购买支出，导致IS曲线从IS右移，货币政策保持合理充裕使得LM曲线小幅度右移，最终经济的产出增加，而利率的变动取决于财政与货币政策的大小。积极的财政政策和稳健的货币政策都会导致AD曲线右移，经济的物价水平会有所上升。
+② 支持实体经济
+实体经济就是指那些关系到国计民生的部门或行业，实体经济始终是人类社会赖以生存和发展的基础。加大力度扶持实体经济，可以为人民提供基本生活资料，提高人民的生活水平，还可以增强人的综合素质。
+③ "三农"政策
+在宏观调控中注重加强农业，实行一系列更直接、更有力的政策措施。各地区各部门认真贯彻落实中央决策，保护和调动了农民积极性，农村呈现出良好的发展局面。粮食生产出现重要转机，农民收入实现较快增长，农村改革迈出重大步伐，农村社会事业取得新的进展。这对促进国民经济发展和保持社会稳定发挥了至关重要的作用。
+（2）① 使用财政政策进行需求管理的局限性
+第一，财政政策的"挤出效应"。政府支出增加会导致利率上升，从而挤出私人投资，对国民收入的影响大打折扣。如果经济已经处于充分就业的状态，增加政府支出就会完全的挤占私人的投资和消费支出。
+第二，时滞问题。对于财政政策而言，主要存在内部时滞。决策者在冲击发生与认识冲击并开始行动之间需要时间，他们首先是认识到冲击已经发生，然后才制定与实施适当政策。可能制定的政策是符合此时的经济状态的，但政策制定到实行时，已经不适用彼时的经济状况。
+第三，不确定性。实行财政政策时，政府主要面临三方面的不确定：第一，乘数大小难以准确地确定；第二，政策必须预测总需求水平通过财政政策作用达到预定目标究竟需要多少时间，而在这一时间内，总需求特别是投资可能发生戏剧性的变化，这就可能导致决策失误；第三，外在的不可预测的随机因素的干扰，也可能导致财政政策达不到预期结果。
+第四，大部分竞争性部门政府投资的效率不如民间投资，政府投资规模太大，持续时间太长，都会造成全社会投资效率的下降。长期使用财政政策还会抑制民间投资的积极性。
+② 使用货币政策进行需求管理的局限性
+第一，在经济衰退时期，实行扩张性货币政策效果不明显。另外，从反通货膨胀看，货币政策的作用主要表现于反对需求拉上的通货膨胀，而对成本推进的通货膨胀，货币政策效果就很小。
+第二，从货币市场均衡的情况看，增加或减少货币供给要影响利率，必须以货币流通速度不变为前提。现实中，短期内，货币流通速度变化，从而货币供给变动对经济的影响就要打折扣。
+第三，货币政策的外部时滞也影响政策效果。货币政策的外部时滞较长，执行后到产生效果要有一个相当长的过程，在此过程中，经济情况有可能发生与人们原先预料的相反的变化。
+第四，在开放经济中，货币政策的效果还因为资金在国际上流动而受到影响。例如，一国实行紧的货币政策时，利率上升，国外资金会流入，若汇率浮动，本币会升值，出口会受抑制，进口会受刺激，从而使本国总需求比在封闭经济情况下有更大的下降。若实行固定汇率，中央银行为使本币不升值，势必抛出本币，按固定汇率收购外币，于是货币市场上本国货币供给增加，使原先实行的紧的货币政策效果大打折扣。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'h1q5', special: '宏观·第一层次', qid: '5',
+                question: '2008年金融危机以来，各国普遍采取宽松的货币政策，有什么经济影响，会造成什么样的后果？',
+                answer: `（1）2008年金融危机时，金融机构融资困难，投资需求萎靡，产出下降，消费者信心下降，消费需求下降，经济进一步衰退。因此，各国普遍采取宽松的货币政策，试图拉低利率，降低投资成本，刺激投资，同时刺激消费。宽松的货币政策本质上是为了增加市场货币供应量，比如直接发行货币，在公开市场上买债券，降低准备金率和贷款利率等。货币供给量增加，需要贷款的企业和个人就更容易贷到款，一般能使经济更快发展，是促进繁荣或者是抵抗衰退的重要措施。
+（2）宽松的货币政策的经济影响
+① 稳定金融体系
+宽松的货币政策对稳定金融体系起到很大作用。宽松的货币政策大幅增加了市场流动性，使短期利率下降，银行有大量资金以应对可能的挤兑。此外，流动性风险的降低和短期利率的下降导致长期利率下降，股票和不动产价格得到支持，抑制了资产价格大幅下跌。
+② 促进经济复苏
+宽松的货币政策对经济复苏起到一定作用。随着不良资产问题的解决，中长期利率保持低水平，企业和个人获得贷款的成本下降，一定程度上刺激投资和消费需求，促进经济复苏。
+短期内，宽松的货币政策导致LM曲线下移，利率下降，经济的均衡产出增加，对应的投资和消费需求增加。对应的，宽松的货币政策导致AD曲线右移，产出增加的同时，价格会有一定幅度的上升。
+长期内，由于总需求超过长期的自然产出水平，所以价格会上升，实际货币供给减少，最终LM曲线上移到初始位置，同时AS曲线左移。宽松的货币政策在长期对经济的影响是产出不变，价格水平上升。
+（3）宽松的货币政策的后果
+① 扭曲微观经济。中央银行直接购买资产，等于是行使了商业银行的职能，一定程度参与微观经济主体如企业的经营中，必然带来对经济的扭曲。目前央行买入国债抬高了国债价格，而未来再卖出国债，其买卖差价可能给各国央行带来损失。如果央行买入长期国债而国人跟随，那么经济风险都集中在中央银行身上。
+② 导致流动性陷阱，传统的货币政策失效。2008年金融危机以后，各国普遍采取宽松的货币政策，导致名义利率接近零利率下限水平，此时经济陷入流动性陷阱，传统的货币政策失效。为进一步刺激经济，美国等主要经济体开始实施非常规货币政策，其目的在于直接影响银行、企业和家庭外部融资的成本和可获得性。如美联储多次实施量化宽松政策，通过大量购买中长期债券，扩大自身资产负债表规模，以稳定市场信心，拉低中长期利率，从而促进投资。
+③ 导致通货膨胀。根据货币数量方程 MV=PY，长期内物价上升的主要原因来自货币供给的增加。各国普遍采取的宽松货币政策和量化宽松政策，导致全球市场中货币供给量大幅增加，加大了未来通货膨胀的风险。
+④ 推高大宗商品价格。宽松的货币政策对大宗商品价格上升提供了动力。大宗商品的供给在短期内基本是既定的，其价格对全球需求极为敏感，全球宽松的货币政策刺激了全球对大宗商品的总需求。另外，投机者在大宗商品市场中的作用越来越重要，这进一步强化了大宗商品价格对货币环境的敏感性。两方面因素共同导致大宗商品价格上升，大宗商品又是国内工业生产的原材料，其价格的上升可能会导致成本推动型通货膨胀，带来国内物价水平的上升。
+⑤ 影响中央银行可信度。如果经济依旧疲弱，潜在的偿付能力和结构性问题仍得不到解决，中央银行将面临越来越大的要求政策干预的压力，或将使中央银行不得不采取进一步的措施。但经济自身存在的问题使中央银行最终退出宽松货币政策越来越困难，这可能会危及中央银行的可信度。如果中央银行的可信度受到侵蚀，通胀预期飙升，恢复价格稳定将相当困难且代价巨大。
+⑥ 影响中央银行独立性。中央银行的资产负债表政策混淆了货币和财政政策的界限。当中央银行运用大规模的资产负债表政策手段时，中央银行的独立性就变得模糊不清了，可能对中央银行独立自主地操作货币政策构成威胁。中央银行庞大的资产负债表的金融风险日益增长，可能削弱其财务独立性。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'h1q6', special: '宏观·第一层次', qid: '6',
+                question: '2010年10月份我国CPI同比增长4.4%，11月份同比增长5.1%，创28个月以来的新高。山东、江苏、浙江等省市民政部门相继宣布发放临时物价补贴，以缓解近期粮食等主要食品价格上涨对低收入群体带来的生活压力，同时，中央银行也在两个月内连续采取了提高存贷款利率和三次提高法定准备金率的政策。根据宏观经济理论分析：\n（1）通货膨胀对我国经济产生什么影响？\n（2）政府采取的经济政策会对我国的消费、投资、国民收入等经济变量产生怎样的影响？\n（对外经贸2011年考题）',
+                answer: `（1）通货膨胀是指一个经济中的大多数商品和劳务的价格在一段时间内持续普遍上涨的现象。近一段时间以来，我国CPI持续上涨，物价水平处于高位，通货膨胀的攀升对我国经济产生了很大的影响。
+① 积极影响
+a. 面对2008年以来全球经济的不景气，我国政府实行扩张的财政政策和宽松的货币政策，增加政府财政支出，制定了4万亿的投资计划，并扩大货币的发行，向金融机构提供充足的流动性支持，这些措施使社会总需求不断上升，在一定程度上引起了温和的通货膨胀的发生，从而增强了经济活力，使得就业增加，产出扩大，刺激了经济的发展。
+b. 由于通货膨胀出现后，居民预期的调整有一个时滞的过程，在此期间，物价水平上涨而名义工资未发生变化，企业的利润率会相应提高，从而刺激私人投资的积极性，增加了总供给，推动经济增长。
+② 不利影响
+a. 影响我国居民的收入分配结构，使收入分配更加不平等。土地、资本和其他财产所有者可以在轮番涨价的通货膨胀中通过提高土地和产品的价格来降低通货膨胀损失，甚至在通货膨胀中获得一些收益。但对于只有工资收入的低收入人群，工资上涨的幅度比不上物价上涨的幅度。随着价格水平的上升，他们货币收入的实际购买力大大下降，即实际收入水平下降，从而导致生活水平的下降。而那些靠变动收入维持生活的人，则会从通货膨胀中得益。
+b. 通货膨胀对储蓄者不利。随着价格上涨，存款的实际价值或购买力就会降低，手中有闲置货币和存款在银行的人受到严重的打击。同样，像保险金、养老金以及其他固定价值的证券财产等，它们本来是作为防患未然和蓄资养老的，在通货膨胀中，其实际价值也会下降。
+c. 给我国投资和消费带来巨大的不确定性。在通货膨胀的情况下，一种商品价格的上涨，并非是由于市场的真正需求的上涨，而只是由于生产者的投机冲动或者消费者对价格进一步上涨的恐慌造成的。但由于我国市场机制的不健全，并不是每一个生产者都能掌握市场的全面信息，因此这种由不确定性带来的投机和恐慌很可能推动进一步的投资冲动，此时消费也可能变得更加混乱。
+d. 通货膨胀还会阻碍我国劳动生产率的提高，降低我国产品的国际竞争力。我国经济是一种外延型的经济，技术含量还不高，在国际上主要靠价格低廉来赚取微薄的利润。通货膨胀会使得我国经济长期无法摆脱在国际分工中的低端地位，甚至有可能使得我国在与其他劳动密集型经济体在争夺国际市场份额的竞争中处于劣势。
+（2）我国政府采取一系列政策以图降低直至消除通货膨胀对我国经济的影响，这些政策包括紧急发放补贴给居民、解决低收入者生活困难的收入政策以及中央银行连续上调存款准备金率的货币政策等。这些政策对我国诸如国民收入、消费和投资等宏观经济变量会产生相应的影响。
+① 向居民发放补贴会增加居民的可支配收入，因此居民消费增加，从而国民收入增加，国民收入的增加会导致货币需求的增加，在货币供给不变的情况下，货币需求曲线向右移动，导致利率增加，而利率的增加又最终导致私人投资的减少，产生"挤出效应"。因此，收入政策会增加消费、增加国民收入、减少投资。
+② 中央银行连续上调存款准备金率的做法属于紧缩的货币政策。根据货币创造乘数，准备金率与货币供给呈反比，上调存款准备金率无疑会大幅度地减少货币供给，这会导致货币供给曲线向左移动。在货币需求不变的情况下，导致利率上升，利率的上升导致投资减少，而投资减少会通过乘数效应导致国民收入的大幅度减少，国民收入的减少会导致消费的减少。因此，紧缩的货币政策会导致投资减少、国民收入减少、消费减少。`,
+                hasImage: false },
+
+            { id: 'h1q7', special: '宏观·第一层次', qid: '7',
+                question: '材料1："通胀"是2022年美国经济最重要的关键词。2022年上半年美国消费者价格指数持续飙升，从汽油到肉蛋奶等生活常备食品，物价全面上涨。通胀持续"高温"，逼迫美联储"紧急救火"：2022年美联储连续七次加息，包括连续四次加息75个基点。联邦基金利率在不足一年内从接近于0快速升至4.25—4.5%之间，创下美联储自上世纪80年代初遏制高通胀以来最为激进的加息行动。\n材料2：美联储主席鲍威尔曾在2021年8月的杰克逊霍尔会议上表示，"历史经验表明，为应对暂时性因素导致的通胀而大幅收紧货币将会是有害的，但也不能想当然的认为暂时性因素导致的通胀会快速消退"。鲍威尔表示，"目前的通胀已远超2%的目标通胀率，央行将谨慎行事，但仍不影响未来会加息，将酌情使用政策工具，以防高通胀演变成长期现象"。请回答以下问题：\n（1）你认为引发美国此轮通胀的原因主要有哪些？请结合总需求-总供给模型加以说明。\n（2）为什么暂时性因素引发的通胀会长时间持续？货币当局公开宣布控制通胀的意义何在？\n（3）你认为美国实施的紧缩性货币政策未能有效抑制通胀的主要原因是什么？',
+                answer: `（1）① 通胀初期主要源于价格冲击。
+疫情期间大宗商品价格和一些关键产品价格的上涨幅度和持续时间都超出预期。美国实行空前规模的财政刺激政策和量化宽松政策，导致强劲的总需求和消费支出结构的变化。同时，一些部门的供应限制，以及大宗商品价格上升和疫情对全球供应链的冲击，使得供需之间的错配比预期的更棘手也更持久。
+疫情期间美国大规模的财政刺激和量化宽松政策导致AD曲线大幅度右移，同时由于大宗商品价格上升导致生产成本的上升，以及全球供应链受损，均使得短期总供给曲线左移，需求冲击与供给冲击叠加导致产出增加，经济出现繁荣，同时价格水平大幅上升。
+② 当前美国通胀的主要原因在于劳动市场紧张。
+直到2023年初，价格冲击对通胀的影响都大于劳动力市场的影响。但随着时间推移，大宗商品价格企稳，供应链恢复，价格冲击逐渐消退，劳动力市场紧张开始对名义工资增长和通胀上行施加更大的影响。
+由于疫情期间大规模刺激政策，经济出现繁荣，导致劳动市场出现紧张，劳动需求增加，带动工资水平上升。一方面，企业成本增加，AS曲线左移；另一方面，工资水平上升和疫情管控恢复正常，带动消费增加，AD曲线右移，价格水平进一步上升。
+（2）① 产出的增加和价格水平的上升会引发新一轮的工资上涨。一方面，当经济出现繁荣和通货膨胀时，劳动力市场进一步紧张带来劳动力需求的增加和工资的上升；另一方面，工人预期未来将发生通货膨胀，也会与厂商谈判要求工资上涨幅度与通货膨胀率保持一致。
+工资上升带来厂商的生产成本增加，叠加工人预期通货膨胀的上升，都将导致AS曲线继续左移。同时，工资这一货币收入的增加导致公众的消费需求进一步增加，AD曲线继续右移。此时通货膨胀将在整个经济中具有不断循环下去的趋势，形成通货膨胀螺旋，暂时性因素引发的通胀将会长时间持续。
+② 货币当局公开宣布控制通货膨胀时，如果公众相信政府的承诺，公众对接下来通货膨胀率的预期就会降低，工人与厂方谈判时也就不会要求更高的工资，厂商成本没有提高，对应的不利的供给冲击消失，AS曲线不再发生移动，同时由于工人的工资稳定，消费需求稳定，AD曲线也不会发生移动，最终价格也不会提高。
+同时，根据附加预期的菲利普斯曲线，当政府公开宣布控制通货膨胀时，如果公众相信政府的承诺，公众对接下来通货膨胀的预期就会降低，附加预期的菲利普斯曲线会向下移动，在失业率不变的情况下实现通货膨胀的降低。
+假设经济初始位于A点，当公众相信美联储未来控制通胀的政策时，预期的通胀水平下降，菲利普斯曲线由PC₁下降到PC₂，对应的经济移动到B点。此时通胀水平下降，但是并没有引起失业的增加，货币当局公开宣布控制通货膨胀的政策能够实现无痛苦反通胀。
+（3）① 美国所实施的紧缩性货币政策作用较小的原因可能是公众不相信这一政策。
+美国此次通货膨胀的原因主要在于供给方面冲击，根据菲利普斯曲线或AD-AS模型，当发生供给冲击时，要想在不增加失业的情况下降低通胀，即实现无痛苦反通胀，必须改变公众的通胀预期，引导短期菲利普斯曲线下移或AS曲线右移，这也是美联储公开宣布控制通胀的目的。但如果公众不相信政府，通货膨胀预期无法下降，根据菲利普斯曲线或AD-AS模型，供给冲击下实施紧缩性的货币政策会带来一定程度的失业和产出的下降。公众预期到当通货膨胀控制到正常水平时，失业率较高，政府很可能在此时为了降低失业率而背叛之前所做的承诺，即再次实行扩张的货币政策。因此，公众对美联储实行紧缩性货币政策的真实性存在疑虑，他们依然预期比较高的通货膨胀率，所以这一紧缩政策并没有有效地抑制通胀。
+② 供给冲击的大小以及美联储紧缩性货币政策本身的局限性也会对通胀水平下降的效果产生影响。
+第一，受到疫情、俄乌战争的冲击，导致美国供应链中断、劳动力短缺、原材料价格不断上涨，这些因素导致AS曲线大幅度左移，在一定程度上抵消了紧缩性货币政策对通胀的抑制。
+第二，当经济总需求发生变化时，人们认识到这种变化、对这个变化做出反应、实施相应政策、政策生效等都需要时间。一般而言，货币政策从制定到最终影响整个经济活动需要一定的时间，这个过程中会有一定的时滞。虽然政府实施了相应的紧缩性政策，该政策在短期内未必能起效。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'h1q8', special: '宏观·第一层次', qid: '8',
+                question: '2025年中国人民银行工作会议于1月3日到4日召开，会上强调，中国人民银行2025年要实施适度宽松的货币政策，防范化解重点领域金融风险，进一步深化金融改革和高水平对外开放，着力扩大内需、稳定预期、激发活力，为推动经济持续回升向好营造良好的货币金融环境。请结合宏观经济政策的目标、中央银行与商业银行在货币创造中的角色以及货币政策及其效果，谈一谈你对中国人民银行这一会议精神的理解。',
+                answer: `（1）宏观经济政策目标
+宏观经济政策是政府为了增进整体经济福利、改善整体经济运行状况，以达到一定的政策目标而对宏观经济领域进行的有意识的干预。在宏观经济学中，宏观经济政策的目标有四种，即：充分就业、价格稳定、经济持续均衡增长和国际收支平衡。宏观经济政策就是为了达到这些目标而制定的手段和措施。
+中国人民银行召开的工作会议提出下半年实施稳健的货币政策，保持货币流动性合理充裕，有利于促进企业扩大投资，进而刺激消费，增加生产和就业；鼓励金融机构加大支持实体经济的力度，降低实体经济融资成本，有利于推动经济持续均衡增长，提升就业水平。另外，稳定的货币供给有利于保持物价稳定和资金在国际上平稳流动，从而促进国际收支均衡。
+（2）中央银行与商业银行在货币创造中的角色
+货币创造又称为"信用创造"，指在整个银行系统中利用超额准备金进行贷款或投资的过程中，活期存款的扩大引起货币供给量增加的一种经济现象。货币创造的程度取决于货币创造乘数的大小，即指中央银行创造一单位的基础货币所能增加的货币供应量。
+货币供给量 M=[(r_c+1)/(r_c+r_d+r_e)]·B，其中 B 为基础货币，包括通货与准备金；[(r_c+1)/(r_c+r_d+r_e)] 为货币乘数，影响其大小的因素有：通货存款比 r_c、法定准备金率 r_d、超额准备金率 r_e。
+中央银行可以通过规定法定准备金率 r_d 的大小来影响货币创造过程。而追求利润最大化的商业银行会把法定准备金以上的那部分存款当作超额准备金贷放出去，因此商业银行通过影响超额准备金率 r_e 来影响货币创造的程度。
+（3）货币政策及其效果
+① 货币政策是货币当局（即中央银行）通过银行体系变动货币供给量来调节总需求的政策。例如，在经济萧条时增加货币供给，一方面可降低利率，刺激私人投资，另一方面货币供给增加可直接支持企业扩大投资，进而刺激消费，使生产和就业增加。
+② 货币政策的三大工具：
+第一，调整再贴现率。再贴现率是商业银行向中央银行借款时的利率。提高再贴现率，商业银行向央行借款减少，从而货币供给量就会减少，反之，货币供给量增加。改变再贴现率是一项被动的政策，取决于商业银行是否配合。
+第二，公开市场操作。公开市场操作是指央行通过在金融市场上买进或卖出政府债券来调节货币供给量。当需要刺激经济时，央行可买进政府债券，这样基础货币数量增加，从而货币供给增加；当需要遏制通货膨胀以防止经济过热时，可进行反向操作。公开市场操作是中央银行最常使用的政策工具，具有主动灵活的优点。
+第三，变动法定准备金率。法定准备金率是中央银行规定的应付提款需要的准备金在商业银行存款中所占的比例。提高（降低）法定准备金率会降低（扩大）货币乘数，引起银行信用的多倍紧缩（扩张）。调整法定准备金率对金融市场是一种强有力的调节措施，见效也快，但易引起宏观经济的剧烈波动。
+③ 货币政策的效果指变动货币供给量的政策对总需求的影响。假定增加货币供给能使国民收入有较大增加，则货币政策效果就大；反之，则小。
+货币政策效果取决于IS和LM曲线的斜率。
+当IS曲线斜率不变时，LM曲线越平坦，货币政策效果就越小。这是因为，LM曲线较平坦，表示货币需求受利率的影响较大，即利率稍有变动就会使货币需求变动很多，因而货币供给量变动对利率变动的作用较小，从而增加货币供给量的货币政策就不会对投资和国民收入有较大影响。
+当LM曲线斜率不变时，IS曲线越平坦，货币政策效果越大。这是因为，IS曲线越平坦，投资需求对利率的变动越敏感，当货币供给增加导致利率下降时，投资的增加量越多，对应的国民收入增加量越多。
+中国人民银行召开下半年工作会议，提出下半年将实施稳健的货币政策，合理地运用货币政策工具调节货币量的供给，使货币流动性合理充裕，达到货币政策实施的效果，以稳定物价，抑制通货膨胀，从而使得我国经济健康平稳发展。`,
+                hasImage: false },
+
+            { id: 'h1q9', special: '宏观·第一层次', qid: '9',
+                question: '以往我国运用货币政策进行宏观调控中更多选择了准备金率而非利率手段，当前准备金率较高，实际利率较低。\n（1）说明两种货币工具对货币供应量及经济的不同影响机制\n（2）分析该调控模式对投资-消费结构、国企-民营经济结构、就业及收入分配的影响。\n（3）十八届三中全会提出改善经济结构并逐步推进利率市场化改革，试讨论该改革对（2）中提到的结构性问题的可能影响。\n（对外经贸2014年考题）',
+                answer: `（1）① 调整准备金率会直接影响货币乘数，进而影响货币供给量，会使利率发生变动，影响人们的投资需求，其调节机制是：
+调整准备金率 → 货币乘数 → 货币供应量 → 利率水平 → 投资需求 → 社会总需求
+② 调节利率会直接影响人们的投资成本，进而影响投资需求，其调节机制是：
+调整利率 → 利率水平 → 投资需求 → 社会总需求
+（2）当前准备金率较高，实际利率较低，这种调控模式对投资-消费结构、国企-民营经济结构、就业及收入分配产生重大影响。具体来说：
+① 对投资-消费结构的影响
+总体来看，这种调控模式刺激了大量无效率投资特别是政府主导的投资，抑制了消费。由于实际利率较低，而政府和大型国企等能够很容易获得贷款，从而一定程度上刺激了投资行为。而低的实际利率（考虑到较高的通货膨胀率，某些时候实际利率甚至为负值），使得民众财富缩水，极大地抑制了民众消费。
+② 对国企-民营经济结构的影响
+基于目前的金融体系，政府和大型国企等机构能够很容易获得贷款，享受到低实际利率带来的福利。但是，由于民营企业很难从银行获得贷款，只能以较高利率从民间甚至地下钱庄借贷，借贷成本非常高，使得民营企业运行环境恶化，极大地抑制了民间投资。
+③ 对就业及收入分配的影响
+相对于政府部门和大型国企等来说，民营企业是吸收就业的主力军，也是缓解我国收入差距过大矛盾的有生力量。考虑到目前的这种调控模式不利于民营企业的发展，从而一定程度上使得就业问题突出，并影响到收入分配。
+（3）利率市场化改革有利于进一步发挥经济手段在资源配置和宏观调控中的作用，缓解部分企业特别是民营企业流动资金紧张状况。实行利率市场化改革后，对投资-消费结构、国企-民营经济结构、就业及收入分配产生重大影响。具体来说：
+① 对投资-消费结构的影响
+利率市场化改革一定程度上将提高资本的成本，使得利率上升。利率上升会抑制投资，特别是无效率投资，从而使得我国投资更有效率。另外，由于利率上升，民众财富增值，一定程度上刺激消费。
+② 对国企-民营经济结构的影响
+实行利率市场化后，民营企业将可能与政府和大型国企以平等的身份从银行获得贷款，使得实际贷款成本降低（主要是由于目前的金融体系下，民营企业的贷款成本比银行公布的利率水平高很多），从而有助于促进民营经济健康发展。另外，实行利率市场化后，国有企业也会成为对利率变动反映灵敏的市场主体，有利于深化国有企业改革。
+③ 对就业及收入分配的影响
+结合上述分析可以看出，实行利率市场化改革，有助于扩大就业，因为获得发展的民营经济将吸收大量的就业，并有助于我国经济摆脱目前的低速增长，从而有助于我国收入分配的改善。`,
+                hasImage: false },
+
+            { id: 'h1q10', special: '宏观·第一层次', qid: '10',
+                question: '调整利率与调整准备金有什么区别？之前一些年我国为什么倾向于后者？结合当前形势，谈谈我国应该采取哪一个政策？',
+                answer: `（1）调整利率与调整准备金的区别
+货币政策工具可以被分成两大类：一类影响基础货币，另一类影响存款准备金率从而影响货币乘数。调整利率主要是通过影响基础货币的公开市场操作和再贴现率政策实现的，调整准备金主要是通过调整法定准备金率实现的。
+① 公开市场操作是指中央银行在金融市场上公开买卖政府债券以控制货币供给和利率的政策行为。当中央银行从公众手中购买债券时，它为债券支付的货币就增加了基础货币，从而增加了货币供给。当中央银行向公众出售债券时，它回笼货币就减少了基础货币，从而减少了货币供给。
+② 再贴现率是中央银行对商业银行及其他金融机构的贷款或者说放款利率。再贴现率越低，所借的准备金越便宜，银行在中央银行贴现窗口所借的资金就越多。因此，贴现率的下降增加了基础货币和货币供给，贴现率的上升减少了基础货币和货币供给。中央银行作为最后贷款人，通过将储备金借给银行来改变基础货币和货币供给。
+③ 法定准备金率是中央银行为保护存款人和商业银行本身的安全，控制或影响商业银行的信用扩张，以法律形式所规定的商业银行及其他金融机构提取的存款准备金的最低比率。中央银行有权决定商业银行和其他存款机构的法定准备金率，如果中央银行认为需要增加货币供给，就可以降低法定准备金率，使所有的存款机构对每一笔客户存款只需留出更少的准备金。
+（2）我国倾向于调整准备金的原因
+降低法定准备金率，实际上等于增加了银行准备金，从而直接增加了货币供给，而提高法定准备金率，就等于减少了银行准备金，从而直接减少了货币供给。因此，从理论上说，变动法定准备金率是中央银行调整货币供给最简单的办法。我国属于金融市场尚不发达的国家，通过调整存款准备金率控制货币供给量还是主要的工具。
+我国法定存款准备金率的频繁调整主要是上调。法定存款准备金率频繁上调主要针对我国经济中长期存在的货币供给量过多以及由此引发的通货膨胀问题，而货币供给量过多的根源在于外汇占款带来的基础货币过度投放。央行虽然采取了其他政策工具回收流动性，但并没有完全抵消外汇占款的影响，我国通货膨胀压力持续存在，央行不得不使用被国外已经摒弃的法定存款准备金率作为主要的调控工具。
+（3）我国应该采取调整利率的政策
+变动法定准备金率以调节法定准备金的作用十分猛烈，一旦准备金率变动，所有银行的信用就都扩张或收缩。因此，这一政策工具须谨慎使用。
+当前我国经济进入新常态，经济增速放缓，要追求经济增长速度适宜、结构优化，就要实行稳健的货币政策，因而应该更多通过影响基础货币的公开市场操作和再贴现率政策以调整利率，进而调整投资和消费以影响总需求。具体地，当前我国一方面在中美贸易摩擦影响下净出口减少，另一方面国内投资放缓，因此应该通过降低贴现率政策，增加货币供给，降低利率以刺激投资和消费需求，从而推动经济增长。`,
+                hasImage: false },
+
+            { id: 'h1q11', special: '宏观·第一层次', qid: '11',
+                question: '同样是为了得到向右上方倾斜的短期总供给曲线，新古典主义经济理论和新凯恩斯经济理论讲述了两个不同的微观故事。\n（1）结合数学公式，推导卢卡斯总供给曲线，说明其向上斜率。\n（2）结合卢卡斯总供给曲线，讨论总需求冲击。\n（3）结合图形，推导新凯恩斯总供给曲线，说明其向上斜率。\n（4）结合新凯恩斯总供给曲线，讨论总需求冲击。\n（东财、人大考题）',
+                answer: `（1）20世纪70年代的滞胀导致传统凯恩斯主义不能够进行解释，于是促进了货币主义和理性预期的发展，形成了以卢卡斯为首的新古典经济学派。新古典主义短期总供给曲线的推导如下：
+假设一个典型的企业 i 的供给函数为：y_i = h(P_i − P) + y_i* ①
+其中，y_i 是企业的产量，P_i 是其产品的价格，P 为反映市场价格总状况的总价格水平，y_i* 是企业潜在的或正常的产量，h>0。在以 P_i 为纵坐标，y_i 为横坐标的坐标系中，①式表示为一条正斜率的供给曲线。在实际中，企业并不知道价格水平 P，而只能对其加以估计，用 P* 表示企业对价格总水平 P 的估计，则①式变为：y_i = h(P_i − P*) + y_i* ②
+企业对价格总水平的估计可按下述方程来进行：P* = P̂ + b(P_i − P̂) ③
+其中，P̂ 表示社会上有关机构预测并公布的价格预测值，b 为企业根据其经验对预测值 P̂ 的调整系数。将③式代入②式并整理，可得：y_i = h(1−b)(P_i − P̂) + y_i*。
+整个经济的总供给曲线是通过对所有典型企业的供给曲线加总而得到的。设整个经济的生产由 n 个像企业 i 组成，则经济的总供给函数变为：y = n h(1−b)(P − P̂) + y* ④
+④式就是新古典主义短期总供给曲线，其中 y 为总产出，P 为总价格水平，y* 为经济的潜在产量，将④式中的参数 nh(1−b) 用字母 γ 表示，新古典主义短期总供给曲线可改写为：y = y* + γ(P − P̂)，式中，参数 γ>0，P̂ 为公众对价格的预期。
+新古典主义短期总供给曲线向右上方倾斜的主要原因是其前提假设中的理性预期和自然率假说：当市场中的价格水平 P=P̂ 时，总供给等于自然率的水平；当现实价格水平超过预期的价格水平时（即 P>P̂），产出就会增加到自然率水平之上。
+（2）经济起初在总需求曲线AD₀、总供给曲线SAS₀和LAS三条线的交点A点处运行。
+① 在A点，价格水平P₀可以被准确预测到，即实际和预期的价格水平一致，产出和就业保持在长期均衡水平上。
+② 当经济受到有利的总需求冲击，这时理性的当事人会根据这个信息来形成他们的预期，并完全预测到货币供给的提高对一般价格水平的影响，产量和就业停留在自然率水平上不发生变动。
+③ 当价格预期向上时，货币工资会提高，总需求曲线从AD₀向右移到AD₁的效果就被总供给曲线从SAS₀到SAS₁的向左移动所抵消。在这种情况下，经济将从A点直接移动到C点，停留在垂直的长期供给曲线LAS上，即使在短期，产量和就业也没有变化。
+（3）新凯恩斯理论认为，名义工资短期是固定的，实际工资会随着价格水平的变化而变化。当价格水平上升时，实际工资下降，就会提高劳动需求，进而增加产出；当价格水平下降时，实际工资上升，就会降低劳动需求，进而减少产出。所以，当价格上升时，产出增加，曲线斜率向上，即新凯恩斯总供给曲线是向右上方倾斜的。
+（4）新凯恩斯主义在政策方面主张，受价格和工资的黏性影响，经济在遭受到总需求冲击后（例如导致经济衰退），从非充分就业的均衡状态恢复到充分就业的均衡状态是缓慢的，如果等待工资和价格向下的压力带来经济恢复，将是一个长期的、痛苦的过程。因此，用政策来刺激总需求是必要的。
+假定经济最初处于A点的充分就业状态，即总需求曲线AD₀和总供给曲线AS的交点，此时收入和价格水平分别为Y₀和P₀。假设签订为期一年的劳动合同后的某一天，经济遭受总需求冲击，使得总需求曲线从AD₀移动到AD₁的位置，此时，在总需求曲线AD₁与总供给曲线AS相交处，实际收入下降到Y₁，价格水平下降到P₁。这时，政府采取旨在刺激总需求的政策，使得总需求曲线又从AD₁恢复到原来AD₀的位置，从而经济又恢复到原来充分就业的状态上，因此上述稳定化政策是必要的。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'h1q12', special: '宏观·第一层次', qid: '12',
+                question: '2020年新冠肺炎疫情爆发以来，甲乙两国采取了不同的防控措施：甲国通过封城、封小区、严格管控公共场合人员流动等方式，使疫情得到了较快的控制；乙国则采取了较为宽松的防控措施，结果疫情泛滥全国。\n（1）针对甲乙两国不同的防控措施，请利用总需求-总供给（AD-AS）模型分析疫情对两国经济可能带来的不同影响。\n（2）面对疫情影响，甲国实施了较为广泛的减税降费政策。据该国2020年《政府工作报告》，减税降费在2020年将高达2.5万亿，其中有1.7万亿涉及到社保费的减免。请运用IS-LM模型，图示分析1.7万亿社保费减免的作用。\n（3）受疫情影响，乙国股市在2020年3月出现4次熔断。面对极度低迷的市场信心，该国推出了高达2万亿的经济救助计划，并启动无限量宽松货币政策。请运用IS-LM模型，图示分析这些政策的作用。\n（4）两国实施的上述政策让学者们担心会引发通货膨胀。但事实上，甲国在2020年上半年呈现出通货紧缩，下半年通货膨胀率才开始转正；而乙国的通货膨胀率虽然一直为正，但全年都维持在低于上年同期的水平。请利用总需求-总供给（AD-AS）模型说明为什么学者们会担心出现通货膨胀，并解释甲乙两国该年通货膨胀率的表现。\n（对外经贸2021年考题）',
+                answer: `（1）① 甲国经济变化：假设甲国经济一开始处于充分就业产出水平Y*。由于甲国采用了严格的疫情管控策略，在短期内生产活动受到抑制，旅游、酒店、交通等消费同样受到抑制，故对于甲国而言此时经济受到了不利的需求冲击与供给冲击，总需求与总供给曲线分别左移到AD₁和AS₁，经济将从均衡点E₀移动到E₁。在严格的防疫政策下疫情得到了控制，经济积极复工复产，总供给和总需求曲线逐渐回到初始水平，最终经济将由E₁移动到E₀。
+② 乙国经济变化：假设乙国经济一开始处于充分就业产出水平Y*。由于乙国采取较为宽松的防控措施，在疫情蔓延全国前对经济的影响尚不明显。但随着疫情的蔓延，大量的感染者无法正常劳动与消费，同时，疫情蔓延也会导致大量人员死亡，劳动力数量减少，对经济产生长期影响，主要表现为总需求和短期总供给曲线左移到AD₁和AS₁，同时长期总供给曲线左移到LAS₁，经济均衡由E₀移动到E₁。
+（2）减税降费政策属于积极的财政政策，可以有效增加居民可支配收入和减轻企业经营负担，从而拉动消费与投资，导致IS曲线右移。同时，由于受疫情影响，居民对未来经济预期的不确定增加，此时居民更愿意持有货币，因此货币需求对利率的敏感性较高，LM曲线较平坦。此时财政政策极其有效，挤出效应较小。
+（3）经济救助计划属于积极的财政政策，无限量宽松货币政策属于非常规货币政策。
+由于乙国股市出现多次熔断，市场信心极度低迷，所以货币需求对利率非常敏感，此时经济陷入流动性陷阱。经济救助计划导致IS曲线右移到IS₁，此时财政政策对经济具有一定的刺激作用。
+此时传统的货币政策的效果非常有限，而量化宽松这一非常规货币政策可以发挥一定作用。量化宽松政策是指中央银行在隔夜拆借利率为零时通过购买大规模的金融资产来降低长期利率的一种政策策略，是在经济进入流动性陷阱，传统的货币政策失效的情况下，为刺激经济而采取的一种非常规的货币政策。流动性陷阱的本质是人们的预期在起作用，而量化宽松正是通过影响人们对债券市场的预期，以此带动投资和消费，进而促进经济复苏。因此，流动性陷阱下量化宽松政策依然有效。
+（4）① 甲国实施减税降费政策，乙国实施经济救助计划和量化宽松政策，这些政策都会导致总需求增加，从而价格水平上升，所以经济学家担心以上政策可能会导致通胀。
+② 对甲国的分析：在上半年，由于甲国对疫情的严格管控，导致短期内经济受到了不利的供给冲击和需求冲击，其中需求冲击直接导致了总需求曲线的左移，而对供给的冲击的原因主要是员工无法正常工作生产，短期总供给曲线左移，经济的产出和价格水平均下降，从而导致了甲国上半年的通缩，在图中表现为均衡由E₀移动到E₁。到了下半年，减税降费的扩张性财政政策逐渐发挥作用，消费与投资迎来报复性反弹，总需求曲线由AD₁大幅度右移到AD₂，同时随着疫情得到良好的控制，社会开始复工复产，短期总供给曲线由AS₁右移到AS₀。经济由E₁点移动到E₂点，此时价格水平上升，出现一定的通胀。
+③ 对乙国的分析：由于乙国采用宽松的疫情政策，所以经济受到的影响是逐步显现的。乙国的通货膨胀率虽然一直为正，但全年都维持在低于上年同期的水平，这说明乙国同样也受到了不利的供给冲击与需求冲击，并且不利的供给冲击影响作用更大。随着疫情的快速蔓延，总需求和短期总供给曲线大幅度左移，同时由于人员死亡劳动力减少，长期总供给曲线也左移，经济从E₀移动到E₁，价格水平小幅度上升。由于乙国采取的经济救助计划和量化宽松政策，导致总需求增加，AD曲线由AD₁移动到AD₂，经济由E₁变动到E₂，价格水平进一步小幅度上升。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'h1q13', special: '宏观·第一层次', qid: '13',
+                question: '请根据货币数量方程式 MV=PY（M、V、P、Y分别为货币数量、货币流通速度、价格水平、真实产出），分析以下问题：\n（1）若政府的目标是保持真实产出相对稳定，则在货币流通速度不变条件下，政府如何保持价格水平的稳定？\n（2）当真实货币需求函数可以表示为 L(Y,i)=Y×L(i)（L、Y、i分别为真实货币需求、真实产出、名义利率）时，货币流通速度的本质是什么？\n（3）有哪些因素可能导致货币流通速度不稳定？为什么？\n（4）请利用IS-LM模型说明，当货币流通速度稳定但产品市场均衡变得不定时，货币政策的中间目标应当是盯住利率还是盯住货币数量？为什么？\n（5）请利用IS-LM模型说明，当货币流通速度变得不稳定但产品市场均衡确定时，货币政策的中间目标应当是盯住利率还是盯住货币数量？为什么？\n（对外经贸2023年考题）',
+                answer: `（1）根据数量方程 MV=PY 可得 ΔM/M + ΔV/V = ΔP/P + ΔY/Y，当货币流动速度不变时，ΔV/V=0，此时 ΔM/M = ΔP/P + ΔY/Y，为了保证价格水平稳定，政府应该采取固定规则的货币政策，如采取单一规则的货币政策。
+单一规则的货币政策是货币主义学派提出的政策主张，是指排除利息率、信贷流量、自由准备金等因素，仅以一定的货币存量作为控制经济唯一因素的货币政策。货币主义认为，在没有通货膨胀的情况下（即价格水平保持稳定），货币供给应该是稳定增长的，货币当局应该将货币供应量作为货币政策的目标，货币供应量始终不变地以一种固定的比率增加，并大致与经济产出增长率相适应。
+（2）根据数量方程 MV=PY 可得实际货币余额供给 M/P=(1/V)Y，货币市场均衡时实际货币余额供给等于实际货币余额需求，即：(1/V)Y=Y×L(i)，所以货币流通速度 V=1/L(i)，即货币流通速度本质上是由利率决定的货币需求的倒数，此时高流通速度意味着低货币需求。
+（3）由货币数量方程以及（2）可知，货币流通速度 V=PY/M=1/L(i)，所以名义产出或名义货币供给的变动会导致货币流通速度变动，持有货币机会成本（即名义利率i）的变动也会导致货币流通速度变动。
+【补充】以下因素的变动也会引起货币流通速度的变动：
+① 宏观经济政策：政府的财政政策和货币政策，如税收、支出、利率调整等，都会影响货币流通速度。例如，扩张性的财政政策可以刺激经济增长，提高货币流通速度；
+② 经济周期：经济周期的不同阶段会影响企业和个人的投资和消费行为，从而影响货币流通速度。在经济繁荣期，企业和个人倾向于增加投资和消费，货币流通速度较快；而在衰退时期，投资和消费减少，货币流通速度则会变慢；
+③ 社会心理因素：公众对未来经济走势的预期也会影响货币流通速度。如果公众预期未来经济将会恶化，他们可能倾向于增加储蓄、减少消费，从而降低货币流通速度；相反，如果人们预期未来经济好转，公众可能更愿意增加消费、减少储蓄，从而提高货币流通速度；
+④ 技术进步：支付技术的革新，如移动支付、数字货币等，可以提高交易的便利性和效率，从而提高货币流通速度。
+（4）当货币流通速度稳定但产品市场均衡变得不定时，货币政策的中间目标应当是盯住货币数量，原因分析如下：
+LM(M) 为控制固定货币供给量的LM曲线，LM(i) 为固定利率的LM曲线，它是一条水平线。如果中央银行的目标是将产出稳定在Y*。
+当不确定性来自产品市场，此时IS曲线位置无法确定，IS曲线可能为IS'或IS''。如果控制货币供给量不变，此时经济的产出偏离较小；如果控制利率不变，产出偏离更大。此时控制利率不变会导致产出更多地偏离目标产出Y*，因此中央银行应该选择控制货币供给。
+（5）当货币流通速度变得不稳定但产品市场均衡确定时，货币政策的中间目标应当是盯住利率，原因分析如下：
+当货币流通速度不稳定但产品市场确定，此时不确定性来自货币市场，LM曲线位置无法确定，IS曲线位置确定。当货币供给给定时，货币需求的变动导致LM曲线可能为LM'或LM''。如果控制货币供给量不变，此时经济的产出可能偏离目标产出Y*；如果此时将利率控制在i*，可以保证产出为Y*。所以，此时中央银行应该选择控制利率。
+【本题有图示】`,
+                hasImage: true },
+
+            /* ---------- 宏观 · 第二层次（5道） ---------- */
+            { id: 'h2q1', special: '宏观·第二层次', qid: '1',
+                question: '美元是全球主要储备货币，美联储掌握着全球流动性的阀门，历史上每次美元周期均会带来全球金融市场、资本流动、大宗商品、通胀、就业、房地产等动荡。今年美联储开启40年来最大力度的加息进程，堪称史诗级加息周期。11月美联储加息75bp，将联邦基金利率抬升至3.75%—4.00%区间，这也是美联储年内连续四次加息75bp，为过去40年来最大力度。其他方面，美国通胀水平居高不下，失业率仍然处于历史低位，三季度实际GDP环比增长2.6%。请结合以上信息和宏观经济学知识回答以下问题：\n（1）美联储加息短期内对美国经济有何影响？\n（2）如果一个小型国家采取的是浮动汇率，该国经济将会受到什么影响？\n（3）如果该小型国家采取的是固定汇率制度，你认为该国政府应该采取怎样的措施应对？',
+                answer: `（1）美元作为全球货币体系的主导货币，美联储紧缩货币会造成本国利率上升，对其他国家的资本流动造成冲击，美元升值，其他国家投资项目的预期收益率将会下降，跨国资本回流美国。同时美联储加息会在一定程度上缓解由于此前无限量量化宽松政策所导致的经济过热现象，降低通胀水平。
+紧缩的货币政策导致总需求曲线由AD移动到AD'，可以有效降低总需求，缓解经济过热的现象，同时市场价格水平相应下降至P₂。
+美联储加息的政策减少了货币市场上货币的供给，使LM₁曲线向左移动到LM₂，收入从Y₁下降到Y₂，同时利率从r₁上升到r₂；利率上升引起资本净流出从CF₁减少为CF₂，美元回流到美国；资本净流出的下降减少了外汇市场上美元的供给，这导致汇率从e₁升值为e₂，美元升值。
+（2）由于美国属于大型开放经济，其国内利率可影响世界利率，因此美联储加息将导致美国国内利率和世界利率r*上升。此时，若小型开放经济实行浮动汇率制，由于r*上升，投资减少，故IS*曲线左移，同时LM*曲线由于更高的利率减少货币需求从而实际货币余额供给相对增加而右移。故新的均衡点将使总产出Y增加、汇率e下降、净出口NX增加。
+（3）美联储加息导致世界利率上升，由于世界利率r*上升，小型开放经济中IS*曲线左移。此时货币有贬值的压力，由于固定汇率制，央行必须买进本国货币以维持汇率稳定，结果导致货币供给量下降从而LM*曲线左移。故新的均衡点将使总产出Y减少、汇率e不变、净出口NX不变。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'h2q2', special: '宏观·第二层次', qid: '2',
+                question: '美联储在2019年预防性降息三次累计降息75基点，新冠疫情后，在2020年又降息两次，累计降息150基点，借此来刺激经济发展。伴随着美国经济的逐步复苏，2022年开始美联储进入加息周期，到2023年加息11次，基准利率从0—0.25%上调至5.25—5.5%。\n（1）假设经济中所有个体都是理性预期的，如果美国的货币政策是可预期的，用AD-AS模型和菲利普斯曲线来分析美国这一系列政策变化前后对美国经济的影响。\n（2）如果美国货币政策的变化是不可预期的，与可预期的货币政策进行比较，对美国经济的影响有何差别？\n（3）试用开放经济模型来分析美国可预期的货币政策变化对我国经济的影响。',
+                answer: `（1）理性预期指的是在有效利用一切信息的前提下，对经济变量做出的在长期中平均说来最为准确的，而又与所使用的经济理论、模型相一致的预期。
+如果美国的货币政策是可预期的：
+① AD-AS模型分析
+经济起初在A点，该点是总需求曲线AD₀、总供给曲线SAS₀和LAS三条线的交点。在A点，价格水平P₀被完全预期到（即实际和预期的价格水平一致），产出和就业在其长期均衡的水平上。
+当美联储降息（宽松的货币政策）时，理性的当事人在形成他们的预期时会考虑这个信息并完全预期到货币供给的提高对一般价格水平的影响，结果，产量和就业会停留在自然率水平上不发生变动。当货币工资在一个向上的价格预期之下提高时，总需求曲线从AD₀向右移到AD₁的效果就被总供给曲线从SAS₀到SAS₁的向左移动所抵消。在这种情况下，经济将从A点直接移动到C点，停留在垂直的长期总供给曲线LAS上，产量和就业没有变化，而预期价格水平和实际价格水平上升。
+当美联储宣布加息（紧缩的货币政策）时，总需求曲线从AD₁向左移到AD₀的效果就被总供给曲线从SAS₁到SAS₀的向右移动所抵消。在这种情况下，经济将从C点直接移动到A点，停留在垂直的长期总供给曲线LAS上，产量和就业没有变化，而预期价格水平和实际价格水平下降。
+② 菲利普斯曲线分析
+经济起初在A点处运行。由于理性预期，预期的通货膨胀与实际通货膨胀是一致的，菲利普斯曲线垂直。
+当美联储宣布降息时，预期价格水平和实际价格水平上升了，而就业和产出不变。
+当美联储宣布加息时，预期价格水平和实际价格水平下降了，而就业和产出不变。
+（2）① AD-AS模型分析
+当美联储宣布降息时，厂商和工人把一般价格水平上升的结果错误地当作相对价格的上升，他们做出的反应是提高产量和增加劳动供给，总需求曲线将从AD₀移动到AD₁，在B点与SAS₀相交。此时，经济的产量为Y₁，它偏离了产出的自然率水平Y_N，即降息提高了美国的产出，降低了失业率。
+当美联储宣布加息时，总需求曲线将从AD₁移动到AD₀，经济恢复到A点。此时，经济的产量为产出的自然率水平Y_N，即加息政策降低了美国的产出，提高了美国的失业率。
+② 菲利普斯曲线分析
+经济起初在A点处运行。由于美国货币政策的变化是不可预期的，短期菲利普斯曲线向右下方倾斜。
+当美联储宣布降息时，总需求增加，导致价格水平上升，实际的通货膨胀率高于预期的通货膨胀率，使实际工资下降，从而会增加生产，增加就业，失业率减少，经济由A点运行到B点。
+当美联储宣布加息时，总需求下降，导致价格水平下降，实际的通货膨胀率低于预期的通货膨胀率，使实际工资上升，从而会减少生产，增加失业，失业率增加，经济由B点恢复到A点。
+③ 比较可预期的货币政策和不可预期的货币政策对美国经济的影响：
+第一，对产出和失业的影响：可预期的货币政策对产出和失业无影响；不可预期的货币政策会影响产出和失业，采取降息政策导致产出上升，失业减少，加息政策导致产出下降，失业增加。
+第二，对通货膨胀的影响：无论货币政策是否可预期，采取降息都会导致通货膨胀率上升，加息政策都会导致通货膨胀率下降。
+（3）根据（1），美国可预期的货币政策对美国产出和失业无影响，但是降息政策会造成美国通货膨胀，加息政策会导致美国通货膨胀率下降。对我国经济的影响有：
+① 降息政策对我国经济的影响
+降息政策导致美国市场利率下降，中国市场利率相对上升，更多资金流入中国楼市和股市，推高资本品价格，产生通货膨胀压力。降息政策造成美国通货膨胀，同时美元相对贬值，人民币相对升值，中国产品国际竞争力下降，出口减少。
+美国实行降息政策，美国利率相对中国利率更低，资本由美国流入中国，中国的资本净流出曲线向左移动，对应的IS曲线也向左移动，新的均衡下中国国内利率下降，产出下降，资本净流出减少，外汇市场上人民币供给相对减少，人民币升值，净出口下降。
+② 加息政策对我国经济的影响
+加息政策导致美国市场利率上升，中国市场利率相对下降，更多资金流出中国，流入美国，中国资本品价格下降，通货膨胀压力得以缓解；加息政策造成美国通货膨胀率下降，美元升值，人民币相对贬值，中国产品国际竞争力上升，出口增加。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'h2q3', special: '宏观·第二层次', qid: '3',
+                question: '为应对金融危机，美国政府实施了财政刺激计划，国债纪录屡创新高。2011年5月16日，美国国债终于触及国会所允许的14.29万亿美元上限。2011年8月2日美国国会通过了债务上限协议，同意将债务上限从2.1万亿美元提高至2.4万亿美元，但代价是未来十年内需削减1.2万亿美元规模的财政赤字。请根据宏观经济理论分析：\n（1）美国债务危机产生的原因？\n（2）试说明美国政府应该怎样选择债务融资与货币融资来弥补赤字？\n（3）美国债务危机对中国经济的影响。\n（对外经贸2012年考题）',
+                answer: `（1）美元的国际地位是诱发债务危机的根本原因。
+美元是世界货币，具有储备和投资的功能，美国国债实际上也是世界各国竞相购买以获取稳定收益的投资对象。在这种情况下，美国国债的发行虽然是其国内行为，却具有世界影响。一方面，世界需要美国以财政和贸易双赤字为条件向全球输出美元货币，世界则每年向美国支付数百亿美元的"铸币税"；另一方面，由于缺乏美元币值稳定的有效机制以及美国长期举债过日，客观上诱使美国通过增发美元来稀释其负债。当美国财政赤字和公共债务累积到难以为继的程度时，市场必然对美元币值以及美国国债的投资价值产生怀疑，这是美国债务危机产生的根本原因。具体而言：
+① 预算赤字。联邦债务是每年的预算短缺和盈余的总和。
+② 储蓄赤字。"储蓄"一词在美国公民的生活中几乎不出现，因为美国公民几乎不储蓄，取而代之的是信贷，他们习惯于使用信用卡，提前支出自己将来的收入用于当前的消费。
+③ 贸易逆差。近年来，美国在全世界的贸易当中贸易逆差越来越大，进口远大于出口。
+④ 领导能力缺乏。对于美国的债务问题，联邦政府所体现出的是领导能力的缺乏。面对如此巨额的账单，联邦政府决定大量印制美元来支付，然而这样做的后果是导致美元的快速贬值。
+（2）债务融资和货币融资的区别表现在：
+① 对货币发行量的不同效应。
+如果财政是向公众借贷，则公众手里会持有更多债券，但他们持有的高能货币数量不会变化，因为政府卖掉公债的货币最终又会通过公共支出回到公众手里。
+如果政府财政向中央银行借款或出售公债，那么公众手里的国库券或公债数额不会发生变化，但他们持有的高能货币会增加，原因在于政府赤字的弥补是通过中央银行增发货币实现的。
+② 对投资的不同效应。
+货币融资法会增加名义货币存量，而债务融资法由于不可能改变名义货币存量，就不会产生这种效应。而短期内由于货币存量增加，利率下降，因而货币融资法会刺激投资。
+③ 对价格水平的不同效应。
+与债务融资法相比，货币融资法会使价格上升得更高。因为货币融资法会增加货币存量，而货币存量的上升显然会提高价格水平。
+综上所述，货币融资的三种效应归根结底是增发高能货币的效应。而债务融资虽然可以避免眼前的通货膨胀，却会增加未来的债务。这种债务会越背越重，从而产生未来的通货膨胀或税负压力。因此，针对美国严重的债务危机，应该选择货币融资法来弥补赤字。
+（3）爆发的美国债务危机给世界经济特别是对以中国为首的发展中国家的经济发展带来深刻影响。这种影响既有积极的一面，如加强中国在国际货币体系中的话语权，但更多的是不利的一面，具体体现为：
+① 美国债务危机将给世界市场增加不确定性及风险，将冲击包括中国在内的各国对外投资决策与现有经济政策。因为美国债务危机引发的全球性危机，可能导致美欧经济出现第二次衰退，这将严重影响到我国的出口，国内出口型产业面临洗牌，继而影响我国以出口带动经济增长的模式。
+② 美国债务危机可能导致中国的房地产崩溃，进而银行坏账急剧增加，金融系统崩溃。
+③ 面对欧美各国经济衰退的风险，中国货币政策也到了是否要调整的十字路口。一旦美国债务危机爆发，国际货币美元必然大幅贬值，人民币对美元升值，会造成人民币对内的大幅贬值，这将使中国国内产生通货膨胀。`,
+                hasImage: false },
+
+            { id: 'h2q4', special: '宏观·第二层次', qid: '4',
+                question: '关于总供给与总需求。\n（1）为什么总供给曲线会有垂直与倾斜两种？哪一种是正确的？\n（2）如果美国和欧洲政府开始"退市"，即不再采取由政府主导刺激需求的政策，请问它对全球经济会产生什么样的影响？请分别用曲线分析和用经济学原理直观地解释。\n（3）请用总供给与总需求曲线分析次贷危机是如何引发全球经济衰退的。并用经济学原理解释其背后的机制。\n（4）如我们所知道的，中国政府用4万亿元人民币的刺激需求政策应对金融危机对中国经济的影响。请问该政策能够刺激的GDP生产是4万亿元还是比4万亿元多？为什么？请利用乘数原理解释其刺激程度受到哪些因素的影响。\n（5）假设在遭遇次贷危机引发的全球金融危机时，包括中国在内，全球都没有采取任何刺激需求的政策，请问中国经济（或全球经济）在短期内和长期内分别会受到什么样的影响？用总供给与总需求如何分析？',
+                answer: `（1）因为所涉及的时期长短不同，所以总供给曲线会有垂直和倾斜两种。在长期中，一个经济的物品与劳务生产取决于它的劳动、资本和自然资源的供给。因此，长期总供给曲线是垂直的。
+在短期中，物价水平确实影响经济的产量，至少有三种理论可解释总供给曲线向右上方倾斜：
+① 黏性工资理论：未预期到的低物价水平增加了真实工资，这引起企业减少雇用工人并减少生产的物品与劳务量。
+② 黏性价格理论：未预期到的低物价水平使一些企业的价格高于合意的水平，这就抑制了它们的销售，并引起他们生产的减少。
+③ 不完全信息理论：未预期到的低物价水平使一些供给者认为自己的相对价格下降了，这引起生产减少。
+两种总供给曲线都是正确的，长期垂直的总供给曲线建立在价格是完全可伸缩的基础上，而短期向右上方倾斜的总供给曲线建立在价格黏性的基础之上。
+（2）将世界看作一个封闭经济体。欧盟和美国作为世界主要的经济体，其政策变化会对世界的总需求产生影响。欧盟的财政缩减计划以及美国开始退出量化宽松货币政策将会对全球的总需求造成巨大的负面冲击，短期内，导致总需求曲线向左移动，在总供给不变的情况下，均衡物价下降，产出下降。长期内，随着预期物价水平的调整，短期总供给曲线向右移动，产出最终恢复到充分就业水平。
+（3）次贷危机开始于住房市场的价格下降，住房价格的大幅度下降导致金融机构出现亏损，金融机构的亏损和倒闭风潮导致了大量的失业、股价的下跌和房地产市场的低迷又使人们的财产缩水，这些都使社会总体消费水平下降，另一方面，银行业的亏损使得银行业产生严重的借贷情绪，企业无法获得贷款，私人投资水平下降，打击了实体经济的发展。由于这些事件，经济的总需求的大幅度收缩。
+美国是全世界第一大经济体，在全球化和开放经济的前提下，其所面临的负向需求冲击对世界经济的总需求也产生了收缩的作用。总需求的下降使得总需求曲线向左移动，降低了短期全球经济的总产出水平，同时使得价格下降，工资下降，经济衰退，引发全球性的经济危机。
+（4）该政策能够刺激的GDP生产比4万亿元多。该政策的具体表现是政府购买支出增加以及减税。假定消费边际倾向为β，不考虑减税的情况下，则政府购买支出乘数为 1/(1−β)，由于边际消费倾向 0<β<1，所以政府购买乘数大于1，此时GDP的增加量为 4/(1−β) 万亿，因此超过了4万亿元。
+中国政府4万亿的刺激需求的政策的刺激程度主要受到以下因素的影响：
+① 社会中过剩生产能力的大小。如果没有过剩生产能力，没有闲置资源，则投资增加及由此造成的消费支出增加，并不会引起生产增加，只会刺激物价水平上升。
+② 投资和储蓄决定的相互独立性。要假定它们相互独立，否则，乘数作用要小得多，因为增加投资所引起的对货币资金需求的增加会使利率上升，而利率上升会部分地抵消由于投资增加引起收入的增加。
+③ 货币供给量增加能否适应支出增加的需要。假使货币供给受到限制，则投资和消费支出增加时，货币需求的增加就得不到货币供给相应增加的支持，利率会上升，抑制投资，产生挤出效应，使总需求降低。
+④ 增加的收入不能用于购买进口货物，否则GDP增加会受到限制。
+⑤ 对政府增加的公共工程支出，也可能存在一些抵消作用。
+（5）在短期内，中国经济或全球经济都会陷入衰退甚至萧条状态，但在长期内，经济会自行恢复到充分就业水平。
+假定初始经济位于均衡点A，此时产出为Y₁，物价水平为P₁。当经济受到负向的需求冲击，那么总需求曲线向左移动到AD₂，短期总产出下降到Y₂，价格下降到P₂。此时，由于价格水平下降，人们会对价格预期进行调整，即公众的预期价格水平下降，短期总供给曲线右移。最终预期价格等于实际价格，产出恢复到潜在产出的水平，即经济最终恢复到C点。相对于政策干预，经济自行恢复到充分就业水平需要一段较长的时间。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'h2q5', special: '宏观·第二层次', qid: '5',
+                question: '2022年7月以来，在国内经济修复放缓、美联储坚定收紧货币政策、欧洲能源危机加剧的背景之下，美元指数大幅上行，人民币持续走贬，并引发央行下调外汇存款准备金率以引导市场预期。2022年9月7日银行间外汇市场人民币汇率中间价为1美元对人民币6.9160元，较上一交易日下调64个基点。在岸人民币对美元汇率跌破6.97元关口，离岸人民币对美元汇率跌破6.99元关口。\n请结合以上信息回答如下问题：\n（1）人民币贬值的原因是什么？\n（2）面对人民币贬值，我国应该如何应对？',
+                answer: `（1）① 美元是全球主要储备货币，美联储掌握着全球流动性的阀门，历史上每次美元周期均会导致全球跨国资本流动的动荡。为解决当前美国市场面临的高通胀以及稳定民众的通胀预期，今年美联储开启40年来最大力度的加息进程。美联储紧缩预期叠加欧元区滞胀风险上升，导致美元走势较强，推动美元指数重新升至二十年新高。跨国资本从我国回流至美国，人民币相对贬值。
+② 国内经济反弹受阻。经济恢复不及市场预期，我国经济正面临需求收缩、供给冲击和预期转弱三重压力。当前我国居民消费持续走弱，基建投资虽保持稳健增长，但房地产投资继续下探，世界经济下行压力下海外需求走弱。在市场信心不足的情况下，跨国资本回流至当前经济表现更好的美国，人民币相对贬值。
+③ 中美利差倒挂加深，中美货币政策分化加剧。在美联储不断加息，联邦基金利率不断上调，其他发达国家和新兴市场国家追随美联储脚步进行加息的背景下，我国为应对市场经济疲软，央行采取一系列措施恢复信贷规模，银行间市场流动性持续宽松，资金利率持续下行。
+④ 贸易顺差能够增加外汇市场上对于人民币的需求，对汇率具有支撑作用。但当前贸易顺差对汇率的支撑作用有所减弱，因为贸易顺差能否支持人民币汇率走强取决于三点：一是海关贸易顺差本身的规模，二是贸易顺差转化为结售汇顺差的能力，三是贸易结售汇顺差被其他渠道结售汇逆差对冲的程度。
+⑤ 但是，从经济基本面看，人民币汇率不具有单边持续贬值的基础。近期汇率波动反映了美元的强势，在美元强势的大背景下，人民币短期或仍将承压，但是从长期来看，人民币走势将回归人民币的基本供需。
+（2）① 真正决定汇率中长期走势的是经济的基本面，因此就我国而言，现阶段政策的关键是稳增长。
+a. 积极的财政政策要提升效能，更加注重精准、可持续。财政直达消费，比如给受疫情影响的人群、低收入人群直接发放补助，可以直接拉动需求；用好政策性金融工具和政府专项债，加大新基建和新能源的投资力度，短期有助于稳增长、稳就业，长期有助于打造中国经济的新引擎。
+b. 稳健的货币政策要灵活适度，保持流动性合理充裕。发挥货币政策工具的总量和结构双重功能，为实体经济提供更有力支持；扩大新增贷款规模；疏通货币政策传导机制，引导资金更多流向重点领域和薄弱环节，扩大普惠金融覆盖面；提振民营经济信心，解决当前宽信用和资金"堰塞湖"堵点问题，促进稳增长、带动就业、激发创新、释放市场活力。
+c. 把实施扩大内需战略同深化供给侧结构性改革有机结合起来，加快构建以国内大循环为主体、国内国际双循环相互促进的新发展格局，把发展的基点牢牢放在自己力量的基础上。统筹谋划扩大内需和优化供给，充分发挥超大规模市场优势，提升供给体系对国内需求适配性，打通经济循环卡点堵点，推动供需良性互动，在实现自身高质量发展的同时为世界经济注入新动力。
+② 加快汇率形成机制改革，扩大汇率弹性。当汇率的形成是通过市场供求关系确定时，汇率的灵活变动就能够在一定程度上吸收发达国家货币政策的溢出效应，既确保不会形成持续的价格错配，弱化跨国资金大规模投机的行为动机，又能够有效稳定经济金融运行，降低对实体经济的负面冲击。
+③ 加强宏观审慎政策对资本账户的监管。将资本管制纳入到宏观审慎政策框架中，如对跨境银行的借贷规模和借贷行为进行实时监测，有需要的情况下可以加大管制力度，规定借贷规模限额和设定借贷行为门槛，降低跨境资金过度流动，促使跨境交易主体主动调整跨境投资行为。`,
+                hasImage: false },
+
+            /* ---------- 宏观 · 第三层次（6道） ---------- */
+            { id: 'h3q1', special: '宏观·第三层次', qid: '1',
+                question: '讨论有关经济增长的问题。\n（1）请指出经济增长的源泉有哪些，并说明促成人均GDP增长的动力是什么。\n（2）中国已经经历了持续28年的高速经济增长，请利用经济增长理论和GDP核算理论说明，中国经济增长的隐忧是什么？应该如何消除这些隐忧？\n（3）是总供给方面的因素还是总需求方面的因素促进了经济增长？\n（武汉大学2007年考题）',
+                answer: `（1）① 根据经济增长核算方程 ΔY/Y = α(ΔK/K) + (1−α)(ΔL/L) + ΔA/A，经济增长的源泉主要有：
+第一，资本存量的增加，如储蓄率的提高等。中国的高储蓄率支撑了高速增长所需要的资本。对外开放，招商引资，引进国外资本，大大解决了资本不足的问题，同时带来了国外先进技术，提高了生产率。此外金融机构的崛起，规范化，规模化的发展，使得很多企业解决了资本不足的问题。
+第二，劳动数量增加和质量提高，即人力资本的增长。改革开放，对内改革，释放了广大人口劳动力的积极性，人口的增长，使越来越多的人进入到市场经济中来，增大了产出。同时，人口流动性加强，大量人口从农村转移到城市，从农田转移到工厂，使得人均生产率大幅跃升。此外国家重视教育，人力资源得到极大培育，人口红利进一步展现。
+第三，技术进步，这里是广义概念，包括采用新技术、新产品、先进管理手段以及资源配置的高效率等。处于计算机高速发展的年代，经济全球化，信息化，知识水平的提高，管理水平的增长，国家建设创新型国家的决策，这些进一步促进了我国的企业发展，使增长加快。
+第四，经济制度的完善。保证了一个良好的市场运行环境，企业家的合法利润得到保证，经济运行的外在阻力进一步减少，审核制度，权利寻租现象的减少，也让企业的发展更加长久和高效。
+② 促成人均GDP增长的动力主要来自于技术进步和资本深化。
+第一，由索洛模型的稳态条件 Δk = s f(k) − (δ+n+g)k = 0，稳态时有效人均资本和有效人均产出增长率为0，而人均产出增长率 ΔY/Y = ΔA/A + Δy/y = g，因此技术进步可以带来稳态人均产出的持续增加。
+第二，由有效人均资本的动态方程 Δk = s f(k) − (δ+n+g)k 可知，当资本深化不断增加，即 Δk>0 时，有效人均资本存量不断增加，导致有效人均产出和人均产出不断增加。
+（2）经济增长理论说明了资本深化（新古典增长理论）以及技术进步（新经济增长理论）对于经济增长的贡献。【长期，供给端】
+GDP核算理论则说明，经济增长直观地来源于消费、投资、政府购买以及国外需求等方面。【短期，需求端】
+中国经济已经持续30多年高速增长，但是存在着隐忧：
+① 从增长理论方面来看：
+第一，过去很多年中，我国经济增长主要发挥了廉价劳动力优势。农村富余劳动力向城市转移是典型的现象，这些劳动力为城市基础设施建设以及劳动密集型产业的发展提供了支持，我国城市化进程迅速加快，同时纺织业、电子工业等制造业产业的产品在国际上获得了竞争优势。
+但是随着我国计划生育政策周期性结果的产生以及老龄化进程的加快，人口金字塔结构已经发生了变化。农村空巢以及"民工荒"等现象屡屡出现，我国"人口红利"即将耗尽的问题正在逐渐成为热点问题。
+第二，要素供应效率下降。劳动投入、资本形成、科技进步是实体经济发展的三个要素。过去这几十年里，中国奇迹的出现靠的就是劳动和资本投入的不断增加以及科技的不断进步，但现在这两个要素供应效率在下降，科技进步同样缓慢。
+第三，科技创新能力滞后。很多因素导致我国无法继续在引进、模仿基础上进行创新，所以创新已经成为中国经济发展的首要任务。现在全世界正酝酿第三次工业革命，主要内容就是数字化、服务化、网络化等，但这些内容大部分都被发达经济体掌握，他们依然引领技术潮流，我们目前在科技创新方面是落后的。
+第四，环境资源约束。雾霾、饮用水污染、重金属超标等环境污染问题已经对生产形成硬约束，如果生产函数中考虑环境污染因素，将其作为负因素纳入生产函数中，那么估算的劳动生产率很可能是下降的。
+② 从GDP核算方面来看：
+在前几年的发展过程中，投资和外贸是经济增长的主要贡献力量。我国投资率长期处于较高水平，其中又以政府投资居多。另一方面，国际市场对中国廉价产品的需求十分旺盛，我国制造业产品持续多年保持强劲的出口态势，由此产生了巨额贸易顺差，带来了大量的外汇储备。
+然而，政府投资项目主要是公共产品，居民消费水平的提高远远滞后于经济发展速度，作为经济增长"三驾马车"之一的消费始终疲软，成为阻碍经济增长的重要原因。同时，我国的制造业产品在欧美市场遭遇了越来越严重的贸易壁垒，反倾销、反补贴、配额、关税等等手段的同时使用阻碍了产品的出口，给外贸企业造成了利益损失。巨额的外汇储备也使人民币面临升值压力，而外汇管理制度改革的滞后使得中央银行必须发行人民币来购买外汇，国内流动性过剩问题难以有效解决。此外，近年来的发展很大程度上牺牲了环境与资源，而这一些因素尚未进入GDP统计。粗放型经济增长方式亟待转变。
+（3）消除这些隐忧的主要办法是：
+第一，树立重视人力资本和新知识的观念。新经济增长理论的专业化知识和人力资本积累是经济增长持续和永久的源泉与动力的观点对具有丰富人力资源的我国经济发展具有重大的现实意义。以教育培训为主体，加大的人力资本投入以及提高新知识积累效应对我国经济增长率和收入水平的提高是巨大的推动作用。【供给角度】
+第二，加强国际间的交流与合作，进行知识的传递与交换。新经济增长理论还认为，开放经济有利于知识的积累，从而促使经济发展。【供给角度】
+第三，促进创新，提高技术进步率。通过技术进步获得高效的生产能力，由此取得竞争优势，弥补劳动力在未来可能出现的短缺所造成的经济增长隐忧。【供给角度】
+第四，拉动国内消费需求。发展消费信贷市场，更新消费观念；发展农村消费品市场，挖掘产品销售潜力等办法可以提高消费水平，使之成为促进我国经济增长的又一重要源泉；建立健全社会保障体系。【需求角度】
+第五，发展绿色GDP核算。在经济发展的同时考虑环境保护和资源使用效率，由粗放型增长转变为集约型增长，树立科学发展观。
+（4）从以上的分析可以看出，促进我国经济增长的主要动力既有总供给方面的因素，也有总需求方面的因素：我国经济增长一部分是来自劳动力供给和技术革新（工业化改造），另外一部分是来自投资需求，出口需求以及政府公共支出的增长。`,
+                hasImage: false },
+
+            { id: 'h3q2', special: '宏观·第三层次', qid: '2',
+                question: '论述我国宏观经济下行压力加大的原因，应如何实现经济增长动力转变。',
+                answer: `（1）中国宏观经济下行压力加大既有供给方面的因素，也有需求方面的因素，具体包括：
+从增长理论方面来看，要从人口、技术、资源等支撑经济发展的实体因素去看，即供给角度分析。
+① 资源配置效率下降。从过去几十年看，经济能够得到较好的发展主要是人口、技术、资源等生产要素配置从第一产业转向第二产业。根据研究，中国制造业的劳动力生产力是第一产业的十倍。也就是说，人口和资源从第一产业转向第二产业时，中国整体劳动生产率是跳跃式增长的。但现在制造业产能过剩，就业出现饱和，人口和资源又从制造业转到第三产业，而中国第三产业劳动生产率比第二产业要低得多。
+② 要素供应效率下降。劳动投入、资本形成、科技进步是实体经济发展的三个要素。过去这几十年里，中国奇迹的出现靠的就是劳动和资本投入的不断增加以及科技的不断进步，但现在这三个要素供应效率在下降。科技进步同样缓慢。
+③ 科技创新能力滞后。很多因素导致我国无法继续在引进、模仿基础上进行创新，所以创新已经成为中国经济发展的首要任务。现在全世界正酝酿第三次工业革命，主要内容就是数字化、服务化、定制化、网络化等，但这些内容大部分被发达经济体掌握，他们依然引领着技术潮流，我们在科技创新方面是落后的。
+④ 环境资源约束。雾霾、饮用水污染、重金属超标等环境污染问题已经对生产形成硬约束，今后在做生产函数时，应增加环境污染因素，这个因素将作为负因素存在，那么计算的结果就是劳动生产率下降。
+从GDP核算方面来看，要从消费、投资和净出口这些需求角度进行分析。
+在前几年的发展过程中，投资和外贸是经济增长的主要贡献力量。我国投资率长期处于较高水平，其中又以政府投资居多。另一方面，国际市场对中国廉价产品的需求十分旺盛，我国制造业产品持续多年保持强劲的出口态势，由此产生了巨额贸易顺差，带来了大量的外汇储备。
+然而，政府投资项目主要是公共产品，居民消费水平的提高远远滞后于经济发展速度，作为经济增长"三驾马车"之一的消费始终疲软，成为阻碍经济增长的重要原因。同时，我国的制造业产品在欧美市场遭遇了越来越严重的贸易壁垒，反倾销、反补贴、配额、关税等等手段的同时使用阻碍了产品的出口，给外贸企业造成了利益损失。巨额的外汇储备也使人民币面临升值压力，而外汇管理制度改革的滞后使得中央银行必须发行人民币来购买外汇，国内流动性过剩问题难以有效解决。此外，近年来的发展很大程度上牺牲了环境与资源，而这一些因素尚未进入GDP统计。粗放型经济增长方式亟待转变。
+（2）宏观经济下行压力下政府应采取的主要办法
+① 树立重视人力资本和新知识的观念。新经济增长理论的专业化知识和人力资本积累是经济增长持续和永久的源泉与动力的观点对具有丰富人力资源的我国经济发展具有重大的现实意义。以教育培训为主体，加大的人力资本投入以及提高新知识积累效应对我国经济增长率和收入水平的提高是巨大的推动作用。
+② 加强国际间的交流与合作，进行知识的传递与交换。新经济增长理论还认为，开放经济有利于知识的积累，从而促使经济发展。
+③ 促进创新，提高技术进步率。通过技术进步获得高效的生产能力，由此取得竞争优势，弥补劳动力在未来可能出现的短缺所造成的经济增长隐忧。
+④ 拉动国内消费需求。发展消费信贷市场，更新消费观念；发展农村消费品市场，挖掘产品销售潜力等办法可以提高消费水平，使之成为促进我国经济增长的又一重要源泉。
+⑤ 发展绿色GDP核算。在经济发展的同时考虑环境保护和资源使用效率，由粗放型增长转变为集约型增长，树立科学发展观。`,
+                hasImage: false },
+
+            { id: 'h3q3', special: '宏观·第三层次', qid: '3',
+                question: '近年来，中国经济增速开始下降并进入增长"新常态"。请用IS-LM模型图示和文字说明如果政府继续采用传统的经济刺激政策，经济在短期内和长期内应该如何调整？',
+                answer: `"新常态"意味着经济增长从高速转为中高速，从规模速度型粗放增长转向质量效率型集约增长，从要素投资驱动转向创新驱动。传统的经济刺激政策指的是凯恩斯主义的需求管理政策，主要包括扩张性财政政策与扩张性货币政策。
+（1）短期传统经济刺激政策效果
+若政府采取扩张性财政政策，如增加政府支出，短期内可以使IS曲线右移，虽然推高利率，挤出了私人投资，但是总需求增加，短期GDP上升。
+若政府采取扩张性货币政策，如增发货币，降低基准利率，短期内可以使LM曲线右移，降低利率，鼓励私人投资，从而总需求增加，短期GDP上升。
+（2）长期传统经济刺激政策效果
+"新常态"时期造成中国经济增速回落的原因是多方面的，其中主导因素是阶段性的结构因素，但同时也存在着短期因素和周期性因素的作用。
+短期传统经济刺激政策效果，无论是扩张性财政政策还是扩张性货币政策，本质上都是凯恩斯主义需求管理政策，只能作用于总需求。这种需求管理政策在应对以周期的短期波动为核心的经济下滑时往往能起到不错的效果，但如果经济回落的核心是结构性的，那这种政策调整不仅不能防止经济增速的持续回落，反而可能会成为经济波动和经济扭曲的新源泉，这表现为：
+① 财政赤字
+扩张性财政政策会带来财政赤字。近年来，我国地方和中央的政府债务余额逐年上升，政府部门杠杆率明显提高，沉重的公共债务必将推高长期利率，增加整体经济运行的成本。
+同时政府债务会加重家庭和企业的纳税负担，因为政府不创造财富，只是分配财富。政府的国内债务最终不论是地方政府自行还贷还是中央财政救助，还债的始终是纳税人。政府目前欠债越多，未来家庭和企业纳税负担越重。
+② 通货膨胀
+扩张性政策推高总需求，带来巨大的通货膨胀压力。过剩的流动性还会流入大宗商品、固定资本及原材料市场，造成该类资产的上涨，从而导致下游成品价格的上涨，最终导致物价的不断上涨。同时，实体经济的发展不容乐观：一面是货币供应量大增，另一面是制造业不断衰退，此消彼长，通货膨胀率上升压力增大。
+③ 结构化问题积聚
+在我国经济结构性调整尚不全面、产业结构优化升级尚未取得明显成效之时，如果政府盲目实行扩张性政策，投入大量资金进行项目开发，这些项目、资金很可能流入产能过剩行业，不仅没有形成效益，而且养活了本该被淘汰的"僵尸企业"，使产能过剩问题积重难返。
+④ 长期贸易条件恶化
+当一国长期实行扩张性的财政政策时，国民储蓄下降，本国利率上升，导致资本净流出下降，甚至出现资本净流入，本国成为净债务国，这意味着本国国际债务负担加重。资本净流出下降使得外汇市场上本币供给减少，本币升值，净出口下降，贸易条件恶化。
+除此之外，扩张性财政政策会带来财政赤字，如果财政过度负债，就可能引发国际市场对政府债务可持续性的信心危机，国家主权债的信用评级可能因此下降，融资成本上升。
+⑤ 长期增长乏力
+传统经济刺激政策更注重于在短期内通过扩张性政策刺激市场活力，抬高总需求，以达到逆周期消除经济增长波动的效果，在长期来看缺乏刺激经济增长新动力的长期机制。一方面，扩张性财政政策对私人投资产生挤出效应，不利于建立规范、稳定的市场秩序。另一方面，扩张性财政政策使得国民储蓄减少，进而会使经济中的资本积累下降，从而对长期内的经济增长带来不利影响。更高的财政赤字带来更少的未来投资，从而导致更低的未来产出。
+【本题有图示】`,
+                hasImage: true },
+
+            { id: 'h3q4', special: '宏观·第三层次', qid: '4',
+                question: '有的学者认为中国有后发优势，有的学者认为由于经济发展存在着路径依赖问题，所以中国有后发劣势，你如何看待这个争论？为什么？',
+                answer: `（1）后发优势是指落后国家或后发展的经济体可以借鉴先进国家的经验、技术、管理等，从而在较短的时间内实现经济跨越式发展。后发优势具体表现在以下三个方面：
+① 技术引进和技术模仿优势。后发展的经济体通过从发达国家引进先进技术，并经过模仿、消化、吸收、改进、提高，从而使其在更高的技术层次上开始发展经济。
+② 制度学习和制度模仿优势。后发展的经济体通过从先进国家引进各种先进的制度并经过本土化改造，从而极大的促进本国经济的发展。
+③ 社会意识优势。后发展的经济体因受自身相对落后的经济限制，以及受到发达国家经验的刺激和启迪的影响，从而激发了它们赶超发达国家的强烈的社会意识，而且一国落后程度愈大，这种意识及其功能就越显著。
+但是，后发优势只是潜在的，要把这些潜在的优势转化为实际的优势，还需具备一定的条件：① 稳定的政权结构和稳定的制度环境；② 政府要发挥积极作用；③ 稳定的国际政治经济环境。
+（2）路径依赖是指一旦一国经济在发展初始阶段走上某一路径，那么它的既定方向会在以后的发展中得到自我强化。
+如果一国在起始阶段时能使制度步入一条良性的发展轨迹，并在以后的发展过程中，使这种规模收益普遍发生，则经济就有可能步入一条良性的发展轨迹，这被称之为"路径依赖I"；反之，如果这种收益递增不能普遍发生，则制度变迁会朝着无效的方向发展，甚至可能被锁定在某种无效状态，这被称之为"路径依赖II"。
+（3）改革开放以来，我国经济快速发展，人民生活水平和综合国力都得到了大幅度提高，到2007年，我国已成为继美国、日本之后的世界第三大经济体，我国只用了短短几十年的时间就走完了发达国家上百年的路，这自然与我国人民的勤劳智慧息息相关，但同时也得益于我国的后发优势，即大力学习发达国家的先进的技术、经验、管理等，从而使我国发生了跨越式的发展。
+（4）在经济增长的同时，我们也应该清醒的认识到我国在经济发展中的路径依赖问题。由于我国几千年来的封建思想、文化、意识形态根深蒂固，使我国在制度演进中存在一定的路径依赖，比如，人们的竞争意识淡薄导致市场制度步履维艰，官本位思想严重导致民主政治制度改革任重道远。`,
+                hasImage: false },
+
+            { id: 'h3q5', special: '宏观·第三层次', qid: '5',
+                question: '在供给侧结构性改革中为什么要减税？减税的经济效应有哪些？',
+                answer: `（1）供给侧结构性改革中减税的原因
+供给侧结构性改革，就是从提高供给质量出发，用改革的办法推进结构调整，矫正要素配置扭曲，扩大有效供给，提高供给结构对需求变化的适应性和灵活性，提高全要素生产率，更好满足广大人民群众的需要，促进经济社会持续健康发展。
+我国提出供给侧结构性改革的背景是在产能过剩和需求结构升级矛盾突出，经济增长内生动力不足，金融风险有所集聚，部分地区困难增多等突出矛盾和问题的背景下开展的，这些问题的根源在于重大结构性失衡。要解决这些矛盾和问题，周期性总量性的宏观调控政策显然难以奏效，收缩供给侧也只能作为基础，必须依靠供给侧结构性改革来解决深层次的矛盾和问题。只有通过减税，提高供给质量，才能实现供求关系新的动态均衡。在经济下行压力不容忽视和结构性矛盾近期难以根本解决的前提下，就必须通过减税的政策实现"稳中求进"的政策目标——既推进结构改革，又保持经济健康稳定发展。
+（2）减税的经济效应
+① 企业：减税直接减少企业的负担，降低市场运行成本，有利于改善企业的预期，稳定企业家的信心，从微观上激发企业的生产积极性和创新热情，增强经济的供给能力。
+② 家庭：减少个人所得税，增加家庭的可支配收入，激励家庭扩大消费，从而增加社会总支出，促进经济增长。
+③ 社会：减税或是意味着公共服务水平的下降，导致某些公众的福利水平下降，或是带来财政赤字的增长，引发税收负担的代际传递。
+从根本上来说，减税政策是以一种收入再分配的方式，激发部分社会成员的生产动力和创造激情，以此恢复经济的动力。`,
+                hasImage: false },
+
+            { id: 'h3q6', special: '宏观·第三层次', qid: '6',
+                question: '如何理解中国经济的"新常态"，并分析"新常态"对中国和世界经济可能产生的影响。',
+                answer: `（1）中国经济的"新常态"
+经济"新常态"是由习近平主席首次提出，首先经济的超高速增长是"非常态"的，新常态的提出，意味着中国经济要摆脱"旧常态"。旧常态，是指一段时期增长速度偏高、经济偏热、经济增长不可持续的因素累积，并带来环境污染加剧、社会矛盾增加以及国际压力变大的严峻挑战，也给国际经济危机带来了外部风险。
+经济新常态的三大特点是：从高速增长转为中高速增长；经济结构不断优化升级；从要素驱动、投资驱动转向创新驱动。新常态要求国民经济运行总体平稳、稳中有进、稳中提质。相比发展速度，更加注重效益，新常态之下，其明显特征就是增长速度实现转换，经济结构实现再平衡。新常态之"新"，意味着不同以往；新常态之"常"，意味着相对稳定，主要表现为经济增长速度适宜、结构优化、社会和谐；转入新常态，意味着我国经济发展的条件和环境已经或即将发生诸多重大转变，经济增长将摆脱过去30多年10%左右的高速度，与传统的不平衡、不协调、不可持续的粗放增长模式。
+因此，新常态绝不只是增速降了几个百分点，转向"新常态"也不会只是一次短期的调整。
+（2）新常态下的明显特征是增长动力实现转换，经济结构实现再平衡。突出表现为：
+① 生产结构中的农业和制造业比重明显下降，服务业比重明显上升，服务业取代工业成为经济增长主要动力。
+② 需求结构中的投资率明显下降，消费率明显上升，消费成为需求增长的主体。
+③ 收入结构中的企业收入占比明显下降，居民收入占比明显上升。
+④ 动力结构中的人力、资源粗放投入明显下降，技术进步和创新成为决定成败的决定因素。
+（3）"新常态"的影响
+① "新常态"将给中国带来新的发展机遇包括：
+第一，经济增速虽然放缓，实际增量依然可观。
+第二，经济增长更趋平稳，增长动力更为多元。我们正在协同推进新型工业化、信息化、城镇化、农业现代化，中国经济更多依赖国内消费需求拉动，避免依赖出口的外部风险。
+第三，经济结构优化升级，发展前景更加稳定。2014年，习近平以前三季度消费对经济增长的贡献率超过投资、服务业增加值占比超过第二产业、高新技术产业和装备制造业增速高于工业平均增速、单位GDP能耗下降等数据指出，中国经济结构"质量更好，结构更优"。
+第四，政府大力简政放权，市场活力进一步释放。
+② "新常态"给世界带来的影响
+进入新常态后，由于总量规模大，中国经济对世界经济的拉动作用不会降低，对世界市场的需求不会减弱。同时，中国经济走向新常态，意味着经济结构不断优化，这对全球经济的再平衡和健康发展都有重大的正面效应。
+从资源配置模式和宏观调控方式看，全面刺激政策的边际效果明显递减，既要全面化解产能过剩，也要通过发挥市场机制作用探索未来产业发展方向，必须全面把握总供求关系新变化，科学进行宏观调控。
+我国经济正在向形态更高级、分工更复杂、结构更合理的阶段演化，经济发展进入新常态，正从高速增长转向中高速增长，经济发展方式正从规模速度型粗放增长转向质量效率型集约增长，经济结构正从增量扩能为主转向调整存量、做优增量并存的深度调整，经济发展动力正从传统增长点转向新的增长点。认识新常态，适应新常态，引领新常态，是当前和今后一个时期我国经济发展的大逻辑。`,
+                hasImage: false }
+        ];
+
+        // ============================================================
+        // 应用状态
+        // ============================================================
+        let currentData = [...cardData];
+        let favorites = JSON.parse(localStorage.getItem('essay_favs') || '[]');
+        let notes = JSON.parse(localStorage.getItem('essay_notes') || '{}');
+        let edits = JSON.parse(localStorage.getItem('essay_edits') || '{}');
+
+        let singleModeId = null;
+        let history = [];
+        let historyIndex = -1;
+
+        const grid = document.getElementById('cardGrid');
+        const totalSpan = document.getElementById('totalCards');
+        const favSpan = document.getElementById('favCount');
+        const filterSpecial = document.getElementById('filterSpecial');
+        const filterFav = document.getElementById('filterFav');
+        const filterSearch = document.getElementById('filterSearch');
+        const clearBtn = document.getElementById('clearFilterBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        const toast = document.getElementById('toast');
+        const singleModeBar = document.getElementById('singleModeBar');
+        const singleCardBadge = document.getElementById('singleCardBadge');
+        const exitSingleBtn = document.getElementById('exitSingleBtn');
+        const prevCardBtn = document.getElementById('prevCardBtn');
+        const nextCardBtn = document.getElementById('nextCardBtn');
+        const filterBar = document.getElementById('filterBar');
+
+        let toastTimer = null;
+
+        function showToast(msg) {
+            clearTimeout(toastTimer);
+            toast.textContent = msg;
+            toast.classList.add('show');
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        function saveFavs() {
+            localStorage.setItem('essay_favs', JSON.stringify(favorites));
+        }
+
+        function saveNotes() {
+            localStorage.setItem('essay_notes', JSON.stringify(notes));
+        }
+
+        function saveEdits() {
+            localStorage.setItem('essay_edits', JSON.stringify(edits));
+        }
+
+        // ---- 答案段落渲染 ----
+        function renderAnswerParagraphs(text) {
+            if (!text) return '';
+            const paragraphs = text.split('\n');
+            const filtered = paragraphs.filter(p => p.trim() !== '');
+            if (filtered.length === 0) return '';
+            return filtered.map(p => `<p>${p.trim()}</p>`).join('');
+        }
+
+        // ---- 获取卡片数据（含编辑） ----
+        function getCardData(id) {
+            const original = currentData.find(d => d.id === id);
+            if (!original) return null;
+            if (edits[id]) {
+                return {
+                    ...original,
+                    question: edits[id].question || original.question,
+                    answer: edits[id].answer || original.answer,
+                };
+            }
+            return { ...original };
+        }
+
+        function exitSingleMode() {
+            if (singleModeId === null) return;
+            singleModeId = null;
+            history = [];
+            historyIndex = -1;
+            singleModeBar.classList.remove('show');
+            filterBar.classList.remove('disabled');
+            render();
+            showToast('📋 已退出抽查模式');
+        }
+
+        function enterSingleMode(id) {
+            if (!id) return;
+            if (singleModeId !== null) {
+                if (singleModeId === id) return;
+                exitSingleMode();
+                setTimeout(() => { enterSingleMode(id); }, 100);
+                return;
+            }
+            const card = getCardData(id);
+            if (!card) {
+                showToast('😅 卡片不存在');
+                return;
+            }
+            singleModeId = id;
+            const existIdx = history.indexOf(id);
+            if (existIdx !== -1) {
+                historyIndex = existIdx;
+            } else {
+                history.push(id);
+                historyIndex = history.length - 1;
+            }
+            singleModeBar.classList.add('show');
+            filterBar.classList.add('disabled');
+            updateSingleBadge(id);
+            updateNavButtons();
+            render(id);
+            showToast(`🎯 抽查: ${card.special} · ${card.qid}`);
+        }
+
+        function updateSingleBadge(id) {
+            const card = getCardData(id);
+            if (card) {
+                singleCardBadge.textContent = `${card.special} · ${card.qid}`;
+            } else {
+                singleCardBadge.textContent = id;
+            }
+        }
+
+        function updateNavButtons() {
+            prevCardBtn.classList.toggle('disabled', historyIndex <= 0);
+            const ids = getFilteredIds();
+            nextCardBtn.classList.toggle('disabled', ids.length <= 1);
+        }
+
+        function goPrevCard() {
+            if (singleModeId === null) return;
+            if (historyIndex <= 0) {
+                showToast('已经是第一张了');
+                return;
+            }
+            historyIndex--;
+            const id = history[historyIndex];
+            if (id) {
+                singleModeId = id;
+                updateSingleBadge(id);
+                updateNavButtons();
+                render(id);
+            } else {
+                exitSingleMode();
+            }
+        }
+
+        function goNextCard() {
+            if (singleModeId === null) return;
+            const ids = getFilteredIds();
+            if (ids.length <= 1) {
+                showToast('😅 没有更多卡片可抽查');
+                return;
+            }
+            const available = ids.filter(id => id !== singleModeId);
+            if (available.length === 0) {
+                showToast('😅 没有更多卡片可抽查');
+                return;
+            }
+            const randomId = available[Math.floor(Math.random() * available.length)];
+            history = history.slice(0, historyIndex + 1);
+            history.push(randomId);
+            historyIndex = history.length - 1;
+            singleModeId = randomId;
+            updateSingleBadge(randomId);
+            updateNavButtons();
+            render(randomId);
+            const card = getCardData(randomId);
+            if (card) {
+                showToast(`▶ 下一张: ${card.special} · ${card.qid}`);
+            }
+        }
+
+        function doRandom() {
+            const ids = getFilteredIds();
+            if (ids.length === 0) {
+                showToast('😅 当前没有卡片可抽查，请调整筛选条件');
+                return;
+            }
+            if (singleModeId !== null) {
+                exitSingleMode();
+                setTimeout(() => { doRandom(); }, 150);
+                return;
+            }
+            const randomId = ids[Math.floor(Math.random() * ids.length)];
+            enterSingleMode(randomId);
+        }
+
+        // ---- 编辑功能 ----
+        const editBackups = {};
+
+        function enterEditMode(id) {
+            const card = getCardData(id);
+            if (!card) return;
+
+            const questionEl = document.querySelector(`.card-question[data-id="${id}"] .q-text`);
+            const answerInner = document.querySelector(`.card-answer[data-id="${id}"] .answer-inner`);
+            const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+
+            if (!questionEl || !answerInner || !editBtn) return;
+            if (editBtn.classList.contains('is-editing')) return;
+
+            const currentQ = questionEl.textContent.trim();
+            const pNodes = answerInner.querySelectorAll('p');
+            let currentA = '';
+            if (pNodes.length > 0) {
+                currentA = Array.from(pNodes).map(p => p.textContent.trim()).join('\n');
+            } else {
+                currentA = answerInner.textContent.trim();
+            }
+            editBackups[id] = { question: currentQ, answer: currentA };
+
+            const editQ = document.createElement('div');
+            editQ.contentEditable = true;
+            editQ.className = 'q-text editable';
+            editQ.textContent = currentQ;
+            editQ.style.cssText =
+                'display:inline-block;min-width:60px;outline:none;border-bottom:2px solid #6a9e9e;padding:2px 4px;white-space:pre-wrap;';
+            questionEl.replaceWith(editQ);
+
+            const editA = document.createElement('div');
+            editA.className = 'answer-inner editable';
+            editA.contentEditable = true;
+            const paragraphs = currentA.split('\n').filter(p => p.trim() !== '');
+            if (paragraphs.length === 0) {
+                editA.innerHTML = '<p><br></p>';
+            } else {
+                editA.innerHTML = paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+            }
+            editA.style.cssText =
+                'background:transparent;border-left:none;padding:4px 6px;min-height:40px;outline:none;border:2px dashed #6a9e9e;border-radius:8px;';
+            answerInner.replaceWith(editA);
+
+            editBtn.classList.add('is-editing');
+            editBtn.textContent = '💾';
+            editBtn.title = '保存修改';
+
+            let cancelBtn = document.querySelector(`.btn-cancel-edit[data-id="${id}"]`);
+            if (!cancelBtn) {
+                cancelBtn = document.createElement('button');
+                cancelBtn.className = 'btn-cancel-edit';
+                cancelBtn.dataset.id = id;
+                cancelBtn.textContent = '❌';
+                cancelBtn.title = '取消编辑';
+                cancelBtn.style.cssText =
+                    'font-size:18px;padding:4px 6px;background:transparent;border:none;cursor:pointer;border-radius:10px;color:#8a4a4a;transition:background 0.15s,transform 0.1s;';
+                editBtn.parentNode.insertBefore(cancelBtn, editBtn.nextSibling);
+                cancelBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    cancelEdit(id);
+                });
+                cancelBtn.addEventListener('mouseenter', function() {
+                    this.style.background = '#f0e0e0';
+                });
+                cancelBtn.addEventListener('mouseleave', function() {
+                    this.style.background = 'transparent';
+                });
+            } else {
+                cancelBtn.style.display = 'inline-block';
+            }
+
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                saveEdit(id);
+            };
+
+            showToast('✏️ 正在编辑，点击 💾 保存 或 ❌ 取消');
+        }
+
+        function saveEdit(id) {
+            const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+            if (!editBtn || !editBtn.classList.contains('is-editing')) return;
+
+            const editQ = document.querySelector(`.card-question[data-id="${id}"] .q-text.editable`);
+            const editA = document.querySelector(`.card-answer[data-id="${id}"] .answer-inner.editable`);
+
+            if (!editQ || !editA) {
+                showToast('⚠️ 编辑内容不存在');
+                return;
+            }
+
+            const newQ = editQ.textContent.trim();
+            const pNodes = editA.querySelectorAll('p');
+            let newA = '';
+            if (pNodes.length > 0) {
+                newA = Array.from(pNodes).map(p => p.textContent.trim()).join('\n');
+            } else {
+                newA = editA.textContent.trim();
+            }
+
+            if (!newQ || !newA) {
+                showToast('⚠️ 题目和答案不能为空');
+                return;
+            }
+
+            edits[id] = { question: newQ, answer: newA };
+            saveEdits();
+
+            exitEditMode(id, true);
+            showToast('✅ 修改已保存');
+        }
+
+        function cancelEdit(id) {
+            const backup = editBackups[id];
+            if (!backup) {
+                exitEditMode(id, false);
+                return;
+            }
+
+            const editQ = document.querySelector(`.card-question[data-id="${id}"] .q-text.editable`);
+            const editA = document.querySelector(`.card-answer[data-id="${id}"] .answer-inner.editable`);
+
+            if (editQ) {
+                const newSpan = document.createElement('span');
+                newSpan.className = 'q-text';
+                newSpan.textContent = backup.question;
+                editQ.replaceWith(newSpan);
+            }
+
+            if (editA) {
+                const newDiv = document.createElement('div');
+                newDiv.className = 'answer-inner';
+                newDiv.innerHTML = renderAnswerParagraphs(backup.answer);
+                editA.replaceWith(newDiv);
+            }
+
+            delete editBackups[id];
+            exitEditMode(id, false);
+            showToast('↩️ 已取消编辑');
+        }
+
+        function exitEditMode(id, saved) {
+            const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+            const cancelBtn = document.querySelector(`.btn-cancel-edit[data-id="${id}"]`);
+
+            if (editBtn) {
+                editBtn.classList.remove('is-editing');
+                editBtn.textContent = '✏️';
+                editBtn.title = '编辑题目和答案';
+                editBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    enterEditMode(id);
+                };
+            }
+
+            if (cancelBtn) {
+                cancelBtn.style.display = 'none';
+            }
+
+            if (saved) {
+                render(singleModeId || null);
+            }
+
+            delete editBackups[id];
+        }
+
+        // ---- 获取筛选后的ID ----
+        function getFilteredIds() {
+            const specialVal = filterSpecial.value;
+            const favVal = filterFav.value;
+            const searchVal = filterSearch.value.trim().toLowerCase();
+
+            return currentData
+                .filter(d => {
+                    if (specialVal !== 'all' && d.special !== specialVal) return false;
+                    if (favVal === 'fav' && !favorites.includes(d.id)) return false;
+                    if (searchVal) {
+                        const q = d.question.toLowerCase();
+                        const a = d.answer.toLowerCase();
+                        if (!q.includes(searchVal) && !a.includes(searchVal)) return false;
+                    }
+                    return true;
+                })
+                .map(d => d.id);
+        }
+
+        // ---- 渲染 ----
+        function render(singleId = null) {
+            if (singleId !== null && singleModeId === null) {
+                const ids = getFilteredIds();
+                if (ids.includes(singleId)) {
+                    singleModeId = singleId;
+                    if (history.length === 0 || history[history.length - 1] !== singleId) {
+                        history.push(singleId);
+                        historyIndex = history.length - 1;
+                    }
+                    singleModeBar.classList.add('show');
+                    filterBar.classList.add('disabled');
+                    updateSingleBadge(singleId);
+                    updateNavButtons();
+                } else {
+                    singleId = null;
+                }
+            }
+            if (singleId === null && singleModeId !== null) {
+                exitSingleMode();
+                return;
+            }
+
+            const isSingleMode = singleModeId !== null;
+            let filtered;
+
+            if (isSingleMode) {
+                const card = getCardData(singleModeId);
+                filtered = card ? [card] : [];
+                if (filtered.length === 0) {
+                    exitSingleMode();
+                    return;
+                }
+                updateSingleBadge(singleModeId);
+            } else {
+                const specialVal = filterSpecial.value;
+                const favVal = filterFav.value;
+                const searchVal = filterSearch.value.trim().toLowerCase();
+
+                filtered = currentData
+                    .map(d => getCardData(d.id))
+                    .filter(d => {
+                        if (!d) return false;
+                        if (specialVal !== 'all' && d.special !== specialVal) return false;
+                        if (favVal === 'fav' && !favorites.includes(d.id)) return false;
+                        if (searchVal) {
+                            const q = d.question.toLowerCase();
+                            const a = d.answer.toLowerCase();
+                            if (!q.includes(searchVal) && !a.includes(searchVal)) return false;
+                        }
+                        return true;
+                    });
+            }
+
+            totalSpan.textContent = currentData.length;
+            favSpan.textContent = favorites.length;
+
+            grid.classList.toggle('single-mode', isSingleMode);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="no-result">🌿 没有找到匹配的卡片，试试调整筛选条件吧</div>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(d => {
+                const isFav = favorites.includes(d.id);
+                const note = notes[d.id] || '';
+                const noteHtml = note || '';
+                const qText = d.question;
+                const aHtml = renderAnswerParagraphs(d.answer);
+
+                html += `
+                    <div class="card-item ${isFav ? 'favorited' : ''}" data-id="${d.id}">
+                        <div class="card-header">
+                            <div class="label">
+                                <span class="tag">${d.special}</span>
+                                <span class="qid">${d.qid}</span>
+                                ${d.hasImage ? '<span class="has-img">📐 有图示</span>' : ''}
+                            </div>
+                            <div class="card-actions" data-id="${d.id}">
+                                <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${d.id}" title="收藏">${isFav ? '⭐' : '☆'}</button>
+                                <button class="btn-note ${note ? 'active' : ''}" data-id="${d.id}" title="笔记">📝</button>
+                                <button class="btn-edit" data-id="${d.id}" title="编辑题目和答案">✏️</button>
+                            </div>
+                        </div>
+                        <div class="card-question" data-id="${d.id}">
+                            <span class="q-text">${qText}</span>
+                            <span class="toggle-hint">(点击展开答案)</span>
+                        </div>
+                        <div class="card-answer" data-id="${d.id}">
+                            <div class="answer-inner">${aHtml}</div>
+                        </div>
+                        <div class="card-note-area" data-id="${d.id}">
+                            <div class="note-editor" contenteditable="true" data-id="${d.id}">${noteHtml}</div>
+                            <div class="img-resize-control" data-id="${d.id}">
+                                <span>📐 大小</span>
+                                <input type="range" min="10" max="200" value="100" step="2" />
+                                <span class="size-val">100%</span>
+                                <button class="btn-reset-size" data-id="${d.id}">重置</button>
+                            </div>
+                            <div class="note-actions">
+                                <button class="btn-insert-img" data-id="${d.id}">🖼️ 插入图片</button>
+                                <button class="note-save" data-id="${d.id}">💾 保存笔记</button>
+                                <button class="note-clear" data-id="${d.id}">🗑️ 清空</button>
+                                <span class="note-size-hint">支持粘贴图片 · 点击图片调大小</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+
+            // ---- 事件绑定 ----
+
+            // 1. 点击题目切换答案
+            document.querySelectorAll('.card-question').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    if (this.classList.contains('editable')) return;
+                    const id = this.dataset.id;
+                    const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
+                    const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                    const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+
+                    if (!answerDiv) return;
+
+                    const isOpen = answerDiv.classList.contains('open');
+                    if (isOpen) {
+                        answerDiv.classList.remove('open');
+                        if (noteArea) {
+                            noteArea.classList.remove('open');
+                            if (noteBtn) noteBtn.classList.remove('active');
+                        }
+                    } else {
+                        answerDiv.classList.add('open');
+                        if (noteArea) {
+                            const hasContent = notes[id] && notes[id].trim().length > 0;
+                            if (hasContent) {
+                                noteArea.classList.add('open');
+                                if (noteBtn) noteBtn.classList.add('active');
+                            }
+                        }
+                    }
+                });
+            });
+
+            // 2. 收藏
+            document.querySelectorAll('.btn-fav').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const idx = favorites.indexOf(id);
+                    if (idx > -1) {
+                        favorites.splice(idx, 1);
+                        this.classList.remove('active');
+                        this.textContent = '☆';
+                    } else {
+                        favorites.push(id);
+                        this.classList.add('active');
+                        this.textContent = '⭐';
+                    }
+                    saveFavs();
+                    const card = this.closest('.card-item');
+                    if (card) {
+                        if (favorites.includes(id)) {
+                            card.classList.add('favorited');
+                        } else {
+                            card.classList.remove('favorited');
+                        }
+                    }
+                    favSpan.textContent = favorites.length;
+                });
+            });
+
+            // 3. 笔记按钮
+            document.querySelectorAll('.btn-note').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                    const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
+
+                    if (!noteArea) return;
+
+                    const isOpen = noteArea.classList.contains('open');
+                    if (isOpen) {
+                        noteArea.classList.remove('open');
+                        this.classList.remove('active');
+                    } else {
+                        if (answerDiv && !answerDiv.classList.contains('open')) {
+                            answerDiv.classList.add('open');
+                        }
+                        noteArea.classList.add('open');
+                        this.classList.add('active');
+                        const editor = noteArea.querySelector('.note-editor');
+                        if (editor) setTimeout(() => editor.focus(), 100);
+                    }
+                });
+            });
+
+            // 4. 插入图片
+            document.querySelectorAll('.btn-insert-img').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (!editor) return;
+
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'image/*';
+                    fileInput.style.display = 'none';
+                    document.body.appendChild(fileInput);
+
+                    fileInput.onchange = function() {
+                        const file = this.files[0];
+                        if (!file) { document.body.removeChild(fileInput); return; }
+                        const reader = new FileReader();
+                        reader.onload = function(ev) {
+                            const img = document.createElement('img');
+                            img.src = ev.target.result;
+                            img.alt = '笔记图片';
+                            img.style.maxWidth = '100%';
+                            img.style.maxHeight = '300px';
+                            img.style.borderRadius = '10px';
+                            img.style.margin = '6px 0';
+                            img.style.display = 'block';
+                            img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                            img.dataset.noteImg = 'true';
+                            const sel = window.getSelection();
+                            if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+                                const range = sel.getRangeAt(0);
+                                range.insertNode(img);
+                                range.setStartAfter(img);
+                                range.collapse(true);
+                                sel.removeAllRanges();
+                                sel.addRange(range);
+                            } else {
+                                editor.appendChild(img);
+                            }
+                            showToast('🖼️ 图片已插入，点击图片可调大小');
+                            document.body.removeChild(fileInput);
+                            bindImgClick(editor);
+                        };
+                        reader.readAsDataURL(file);
+                    };
+                    fileInput.click();
+                });
+            });
+
+            // 5. 保存笔记
+            document.querySelectorAll('.note-save').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (!editor) return;
+
+                    let content = editor.innerHTML.trim();
+                    if (content === '<br>' || content === '') {
+                        content = '';
+                    }
+                    if (content) {
+                        notes[id] = content;
+                    } else {
+                        delete notes[id];
+                    }
+                    saveNotes();
+                    const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+                    if (noteBtn) {
+                        if (content) {
+                            noteBtn.classList.add('active');
+                        } else {
+                            noteBtn.classList.remove('active');
+                        }
+                    }
+                    if (content) {
+                        const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                        if (noteArea) noteArea.classList.add('open');
+                    }
+                    const orig = btn.textContent;
+                    btn.textContent = '✅ 已保存';
+                    setTimeout(() => { btn.textContent = orig; }, 1200);
+                });
+            });
+
+            // 6. 清空笔记
+            document.querySelectorAll('.note-clear').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    if (!confirm('⚠️ 确定要清空这条笔记吗？')) return;
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (editor) {
+                        editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                        delete notes[id];
+                        saveNotes();
+                        const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+                        if (noteBtn) noteBtn.classList.remove('active');
+                        const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                        if (noteArea) noteArea.classList.remove('open');
+                        const rc = document.querySelector(`.img-resize-control[data-id="${id}"]`);
+                        if (rc) rc.classList.remove('show');
+                        showToast('🗑️ 笔记已清空');
+                    }
+                });
+            });
+
+            // 7. 粘贴图片到笔记
+            document.querySelectorAll('.note-editor').forEach(editor => {
+                editor.addEventListener('paste', function(e) {
+                    const items = e.clipboardData && e.clipboardData.items;
+                    if (!items) return;
+                    for (let item of items) {
+                        if (item.type && item.type.startsWith('image/')) {
+                            e.preventDefault();
+                            const file = item.getAsFile();
+                            const reader = new FileReader();
+                            reader.onload = function(ev) {
+                                const img = document.createElement('img');
+                                img.src = ev.target.result;
+                                img.alt = '粘贴图片';
+                                img.style.maxWidth = '100%';
+                                img.style.maxHeight = '300px';
+                                img.style.borderRadius = '10px';
+                                img.style.margin = '6px 0';
+                                img.style.display = 'block';
+                                img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                                img.dataset.noteImg = 'true';
+                                const sel = window.getSelection();
+                                if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+                                    const range = sel.getRangeAt(0);
+                                    range.insertNode(img);
+                                    range.setStartAfter(img);
+                                    range.collapse(true);
+                                    sel.removeAllRanges();
+                                    sel.addRange(range);
+                                } else {
+                                    editor.appendChild(img);
+                                }
+                                showToast('🖼️ 图片已粘贴，点击可调整大小');
+                                bindImgClick(editor);
+                            };
+                            reader.readAsDataURL(file);
+                            break;
+                        }
+                    }
+                });
+            });
+
+            // 8. 笔记编辑器占位
+            document.querySelectorAll('.note-editor').forEach(editor => {
+                const id = editor.dataset.id;
+                const content = notes[id] || '';
+                if (!content || content.trim() === '') {
+                    editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                }
+                editor.addEventListener('focus', function() {
+                    const placeholder = this.querySelector('.note-placeholder');
+                    if (placeholder) {
+                        this.innerHTML = '';
+                    }
+                });
+                editor.addEventListener('blur', function() {
+                    if (this.innerHTML.trim() === '' || this.innerHTML === '<br>') {
+                        this.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                    }
+                });
+            });
+
+            // 9. 图片点击 + 滑块控制
+            document.querySelectorAll('.note-editor').forEach(editor => {
+                bindImgClick(editor);
+            });
+
+            // 10. 重置图片大小
+            document.querySelectorAll('.btn-reset-size').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (!editor) return;
+                    const imgs = editor.querySelectorAll('img');
+                    imgs.forEach(img => {
+                        img.style.width = '';
+                        img.style.maxWidth = '100%';
+                        img.dataset.origWidth = '100';
+                    });
+                    const slider = document.querySelector(
+                        `.img-resize-control[data-id="${id}"] input[type="range"]`);
+                    if (slider) {
+                        slider.value = 100;
+                        const valSpan = slider.closest('.img-resize-control').querySelector('.size-val');
+                        if (valSpan) valSpan.textContent = '100%';
+                    }
+                    showToast('📐 图片大小已重置');
+                });
+            });
+
+            // 11. 滑块调整图片大小
+            document.querySelectorAll('.img-resize-control input[type="range"]').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const id = this.closest('.img-resize-control').dataset.id;
+                    const val = parseInt(this.value);
+                    const valSpan = this.closest('.img-resize-control').querySelector('.size-val');
+                    if (valSpan) valSpan.textContent = val + '%';
+                    const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+                    if (!editor) return;
+                    const imgs = editor.querySelectorAll('img');
+                    imgs.forEach(img => {
+                        if (img.classList.contains('selected')) {
+                            img.style.width = val + '%';
+                            img.style.maxWidth = val + '%';
+                        }
+                    });
+                });
+            });
+
+            // 12. 编辑按钮
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.onclick = function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    if (this.classList.contains('is-editing')) return;
+                    enterEditMode(id);
+                };
+            });
+
+            // 13. 有笔记内容自动展开
+            document.querySelectorAll('.card-note-area').forEach(area => {
+                const id = area.dataset.id;
+                const hasContent = notes[id] && notes[id].trim().length > 0;
+                if (hasContent) {
+                    const btn = document.querySelector(`.btn-note[data-id="${id}"]`);
+                    if (btn && btn.classList.contains('active')) {
+                        area.classList.add('open');
+                    }
+                }
+            });
+
+            if (isSingleMode) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // ---- 图片点击 ----
+        function bindImgClick(editor) {
+            const imgs = editor.querySelectorAll('img');
+            imgs.forEach(img => {
+                img.removeEventListener('click', imgClickHandler);
+                img.addEventListener('click', imgClickHandler);
+            });
+        }
+
+        function imgClickHandler(e) {
+            e.stopPropagation();
+            const img = this;
+            const editor = img.closest('.note-editor');
+            if (!editor) return;
+            const id = editor.dataset.id;
+
+            const allImgs = editor.querySelectorAll('img');
+            allImgs.forEach(i => i.classList.remove('selected'));
+            img.classList.add('selected');
+
+            const rc = document.querySelector(`.img-resize-control[data-id="${id}"]`);
+            if (!rc) return;
+            rc.classList.add('show');
+
+            const slider = rc.querySelector('input[type="range"]');
+            const valSpan = rc.querySelector('.size-val');
+            if (!slider) return;
+
+            let currentPct = 100;
+            if (img.style.width) {
+                const w = parseInt(img.style.width);
+                if (w > 0 && w <= 200) currentPct = w;
+            }
+            slider.value = currentPct;
+            if (valSpan) valSpan.textContent = currentPct + '%';
+
+            slider.oninput = function() {
+                const val = parseInt(slider.value);
+                if (valSpan) valSpan.textContent = val + '%';
+                img.style.width = val + '%';
+                img.style.maxWidth = val + '%';
+                img.dataset.origWidth = val;
+            };
+
+            const resetBtn = rc.querySelector('.btn-reset-size');
+            if (resetBtn) {
+                resetBtn.onclick = function(e2) {
+                    e2.stopPropagation();
+                    img.style.width = '';
+                    img.style.maxWidth = '100%';
+                    img.dataset.origWidth = '100';
+                    slider.value = 100;
+                    if (valSpan) valSpan.textContent = '100%';
+                    showToast('📐 已重置');
+                };
+            }
+        }
+
+        // ---- 筛选 ----
+        function onFilterChange() {
+            if (singleModeId !== null) {
+                exitSingleMode();
+            } else {
+                render();
+            }
+        }
+
+        filterSpecial.addEventListener('change', onFilterChange);
+        filterFav.addEventListener('change', onFilterChange);
+        filterSearch.addEventListener('input', onFilterChange);
+
+        clearBtn.addEventListener('click', function() {
+            filterSpecial.value = 'all';
+            filterFav.value = 'all';
+            filterSearch.value = '';
+            if (singleModeId !== null) {
+                exitSingleMode();
+            } else {
+                render();
+            }
+        });
+
+        exitSingleBtn.addEventListener('click', exitSingleMode);
+        prevCardBtn.addEventListener('click', goPrevCard);
+        nextCardBtn.addEventListener('click', goNextCard);
+        randomBtn.addEventListener('click', doRandom);
+
+        // ---- 键盘快捷键 ----
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'r' || e.key === 'R') {
+                if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+                    const target = e.target;
+                    if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA' && target.contentEditable !== 'true') {
+                        e.preventDefault();
+                        doRandom();
+                    }
+                }
+            }
+            if (e.key === 'Escape') {
+                if (singleModeId !== null) {
+                    e.preventDefault();
+                    exitSingleMode();
+                }
+            }
+            if (singleModeId !== null) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    goPrevCard();
+                }
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    goNextCard();
+                }
+            }
+        });
+
+        // ---- 初始渲染 ----
+        render();
+
+        setTimeout(() => {
+            document.querySelectorAll('.note-editor').forEach(editor => {
+                const id = editor.dataset.id;
+                const content = notes[id] || '';
+                if (!content || content.trim() === '') {
+                    editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                }
+                bindImgClick(editor);
+            });
+        }, 100);
+    </script>
+</body>
+</html>

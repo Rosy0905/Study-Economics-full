@@ -1,0 +1,3237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>南开经济学 · 历年真题 · 记忆卡</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+        background: #f0f7f0; color: #1e3a2a; padding: 20px;
+    }
+    .app-header {
+        max-width: 1200px; margin: 0 auto 20px auto; background: #d9edd9;
+        padding: 18px 28px; border-radius: 18px;
+        box-shadow: 0 4px 12px rgba(60, 110, 60, 0.12);
+        display: flex; justify-content: space-between; align-items: center;
+        flex-wrap: wrap; gap: 12px;
+    }
+    .app-header h1 { font-size: 24px; font-weight: 600; color: #1e4a2a; letter-spacing: 0.5px; }
+    .app-header .stats {
+        display: flex; gap: 20px; font-size: 14px; background: #c4e0c4;
+        padding: 6px 18px; border-radius: 40px;
+    }
+    .app-header .stats span { font-weight: 500; }
+    .app-header .stats .num { color: #1f6b3a; font-weight: 700; }
+
+    .filter-bar {
+        max-width: 1200px; margin: 0 auto 20px auto; display: flex;
+        flex-wrap: wrap; gap: 10px; align-items: center;
+        background: #e6f3e6; padding: 12px 20px; border-radius: 14px;
+        transition: opacity 0.3s;
+    }
+    .filter-bar.disabled { opacity: 0.5; pointer-events: none; }
+    .filter-bar label { font-size: 14px; font-weight: 500; color: #1f4a2a; }
+    .filter-bar select, .filter-bar input {
+        padding: 6px 14px; border-radius: 30px; border: 1px solid #b3d9b3;
+        background: #fafffa; font-size: 14px; color: #1e3a2a; outline: none;
+    }
+    .filter-bar select:focus, .filter-bar input:focus {
+        border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.2);
+    }
+    .filter-bar select optgroup { font-style: normal; font-weight: 600; }
+    .filter-bar .btn-clear-filter {
+        background: #cfe2cf; border: none; padding: 6px 18px; border-radius: 30px;
+        font-size: 13px; cursor: pointer; color: #1e4a2a; font-weight: 500; transition: background 0.2s;
+    }
+    .filter-bar .btn-clear-filter:hover { background: #b8d4b8; }
+    .filter-bar .btn-random {
+        background: #d4c49a; border: none; padding: 6px 22px; border-radius: 30px;
+        font-size: 14px; cursor: pointer; color: #3f3a1a; font-weight: 600;
+        transition: background 0.2s, transform 0.1s;
+    }
+    .filter-bar .btn-random:hover { background: #c9b888; transform: scale(1.02); }
+    .filter-bar .btn-random:active { transform: scale(0.96); }
+
+    .single-mode-bar {
+        max-width: 1200px; margin: 0 auto 16px auto; background: #f5efe0;
+        border: 2px solid #d4a24e; border-radius: 14px; padding: 8px 20px;
+        display: none; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 10px; animation: fadeSlide 0.3s ease;
+    }
+    .single-mode-bar.show { display: flex; }
+    .single-mode-bar .mode-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .single-mode-bar .mode-left .btn-nav {
+        background: transparent; border: none; font-size: 22px; cursor: pointer;
+        padding: 2px 10px; border-radius: 8px; color: #7a5a2a;
+        transition: background 0.15s, transform 0.1s; line-height: 1;
+    }
+    .single-mode-bar .mode-left .btn-nav:hover { background: #e8ddd0; transform: scale(1.05); }
+    .single-mode-bar .mode-left .btn-nav:active { transform: scale(0.92); }
+    .single-mode-bar .mode-left .btn-nav.disabled { opacity: 0.35; pointer-events: none; }
+    .single-mode-bar .card-id-badge {
+        font-size: 15px; font-weight: 600; color: #5a4a2a; background: #e8ddd0;
+        padding: 4px 18px; border-radius: 30px; white-space: nowrap;
+    }
+    .single-mode-bar .mode-hint { font-size: 13px; color: #8a7a5a; margin-left: 4px; }
+    .single-mode-bar .btn-exit-single {
+        background: transparent; border: none; font-size: 20px; cursor: pointer;
+        padding: 2px 10px; border-radius: 8px; color: #8a5a4a;
+        transition: background 0.15s, transform 0.1s; line-height: 1;
+    }
+    .single-mode-bar .btn-exit-single:hover { background: #e8d5d0; transform: scale(1.05); }
+    .single-mode-bar .btn-exit-single:active { transform: scale(0.92); }
+
+    .card-grid {
+        max-width: 1200px; margin: 0 auto; display: grid;
+        grid-template-columns: 1fr; gap: 18px;
+    }
+    .card-grid.single-mode { max-width: 860px; }
+    .card-grid.single-mode .card-item {
+        box-shadow: 0 8px 32px rgba(60, 100, 60, 0.18); border-left-width: 8px;
+    }
+
+    .card-item {
+        background: #ffffff; border-radius: 18px;
+        box-shadow: 0 4px 14px rgba(60, 100, 60, 0.08);
+        border-left: 6px solid #8fbe8f; transition: box-shadow 0.25s, transform 0.15s, border-color 0.3s;
+        overflow: hidden; position: relative;
+    }
+    .card-item:hover { box-shadow: 0 8px 24px rgba(50, 100, 50, 0.13); }
+    .card-item.favorited { border-left-color: #d4a24e; background: #fcf9f0; }
+    .card-item.note-type { border-left-color: #7ea8c4; background: #f7fbfd; }
+    .card-item.note-type.favorited { border-left-color: #d4a24e; }
+
+    .card-header {
+        padding: 16px 22px 8px 22px; display: flex;
+        justify-content: space-between; align-items: flex-start;
+        gap: 12px; flex-wrap: wrap;
+    }
+    .card-header .label { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .card-header .label .tag {
+        background: #dcebd9; padding: 2px 14px; border-radius: 40px;
+        font-size: 12px; font-weight: 600; color: #1a4a2a; white-space: nowrap;
+    }
+    .card-header .label .paper-tag {
+        background: #e8e0cc; padding: 2px 12px; border-radius: 40px;
+        font-size: 12px; font-weight: 600; color: #6a5620; white-space: nowrap;
+    }
+    .card-header .label .type-tag {
+        background: #d6e4f0; padding: 2px 12px; border-radius: 40px;
+        font-size: 12px; font-weight: 600; color: #2a4a6a; white-space: nowrap;
+    }
+    .card-header .label .qid { font-weight: 600; font-size: 15px; color: #1f5a2f; }
+    .card-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+    .card-actions button {
+        background: transparent; border: none; font-size: 20px; cursor: pointer;
+        padding: 4px 6px; border-radius: 10px;
+        transition: background 0.15s, transform 0.1s; line-height: 1; color: #3f6a3f;
+    }
+    .card-actions button:hover { background: #e6f0e6; transform: scale(1.05); }
+    .card-actions .btn-fav { color: #b8a06a; }
+    .card-actions .btn-fav.active { color: #d4a24e; }
+    .card-actions .btn-note { color: #4f7a4f; }
+    .card-actions .btn-note.active { color: #2b6b2b; }
+    .card-actions .btn-edit { color: #4f6a8f; }
+    .card-actions .btn-edit.is-editing { color: #2b6b2b; }
+
+    .card-question {
+        padding: 6px 22px 16px 22px; font-size: 15px; line-height: 1.75;
+        color: #1c3322; cursor: pointer; user-select: none; position: relative;
+    }
+    .card-question .q-text { display: inline; white-space: pre-wrap; word-break: break-word; }
+    .card-question .toggle-hint {
+        font-size: 13px; color: #5f8a5f; margin-left: 10px; font-weight: 400;
+        opacity: 0.7; white-space: nowrap;
+    }
+    .card-question.editable {
+        cursor: text; user-select: text; border: 2px dashed #6a9e9e;
+        border-radius: 10px; padding: 10px 18px; background: #fafffe;
+    }
+    .card-question.editable:focus {
+        border-color: #2b6b6b; outline: none;
+        box-shadow: 0 0 0 3px rgba(60, 150, 150, 0.15);
+    }
+
+    .card-note-area {
+        padding: 0 22px 18px 22px; display: none; animation: fadeSlide 0.3s ease;
+    }
+    .card-note-area.open { display: block; }
+    .card-note-area .note-editor {
+        background: #f8fcf8; border: 1px solid #c2ddc2; border-radius: 14px;
+        padding: 12px 16px; min-height: 80px; max-height: 360px; overflow-y: auto;
+        font-size: 14px; line-height: 1.7; color: #1c3322; outline: none;
+        transition: border 0.2s, box-shadow 0.2s; word-break: break-word; position: relative;
+    }
+    .card-note-area .note-editor:focus {
+        border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.15);
+    }
+    .card-note-area .note-editor img {
+        max-width: 100%; max-height: 300px; border-radius: 10px; margin: 6px 0;
+        display: block; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        background: #f0f5f0; border: 2px solid transparent;
+        transition: border 0.2s, box-shadow 0.2s; cursor: pointer;
+    }
+    .card-note-area .note-editor img.selected {
+        border-color: #4f8a4f;
+        box-shadow: 0 0 0 3px rgba(79, 138, 79, 0.25), 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+    .card-note-area .note-editor .note-placeholder {
+        color: #8aaa8a; font-style: italic;
+    }
+
+    .card-note-area .img-resize-control {
+        display: none; align-items: center; gap: 12px; margin-top: 8px;
+        padding: 6px 14px; background: #edf5ed; border-radius: 30px;
+        border: 1px solid #c2ddc2; font-size: 13px; color: #2a5a2a; flex-wrap: wrap;
+    }
+    .card-note-area .img-resize-control.show { display: flex; }
+    .card-note-area .img-resize-control input[type="range"] {
+        flex: 1; min-width: 80px; accent-color: #4f8a4f; height: 4px; cursor: pointer;
+    }
+    .card-note-area .img-resize-control .size-val {
+        font-weight: 600; min-width: 44px; text-align: center;
+    }
+    .card-note-area .img-resize-control .btn-reset-size {
+        background: #dcebd9; border: none; padding: 2px 14px; border-radius: 30px;
+        font-size: 12px; cursor: pointer; color: #1e4a2a; transition: background 0.2s;
+    }
+    .card-note-area .img-resize-control .btn-reset-size:hover { background: #c2ddc2; }
+
+    .card-note-area .note-actions {
+        display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: center;
+    }
+    .card-note-area .note-actions button {
+        background: #dcebd9; border: none; padding: 4px 18px; border-radius: 30px;
+        font-size: 13px; cursor: pointer; color: #1e4a2a; font-weight: 500;
+        transition: background 0.2s, transform 0.1s;
+    }
+    .card-note-area .note-actions button:hover { background: #c2ddc2; }
+    .card-note-area .note-actions button:active { transform: scale(0.96); }
+    .card-note-area .note-actions .btn-insert-img { background: #d4d9c4; color: #2f4a2f; }
+    .card-note-area .note-actions .btn-insert-img:hover { background: #c4cdb0; }
+    .card-note-area .note-actions .note-save { background: #a8c8a8; color: #1a3a1a; }
+    .card-note-area .note-actions .note-save:hover { background: #94b894; }
+    .card-note-area .note-actions .note-clear { background: #e6d6d6; color: #6a3a3a; }
+    .card-note-area .note-actions .note-clear:hover { background: #dcc4c4; }
+    .card-note-area .note-actions .note-size-hint {
+        font-size: 12px; color: #6f8f6f; margin-left: auto; opacity: 0.7;
+    }
+
+    @keyframes fadeSlide {
+        0% { opacity: 0; transform: translateY(-6px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    .no-result {
+        text-align: center; padding: 50px 20px; color: #4f7a4f; font-size: 17px;
+        background: #e6f3e6; border-radius: 24px;
+    }
+    .footer-note {
+        max-width: 1200px; margin: 30px auto 10px auto; text-align: center;
+        font-size: 13px; color: #5f7f5f; border-top: 1px solid #cce0cc; padding-top: 18px;
+    }
+    .footer-note kbd {
+        background: #dce8dc; padding: 0 8px; border-radius: 4px; font-size: 12px;
+    }
+    .toast {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+        background: #2a4a2a; color: #f0faf0; padding: 10px 28px; border-radius: 40px;
+        font-size: 14px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); z-index: 999;
+        opacity: 0; transition: opacity 0.4s, transform 0.4s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 640px) {
+        .app-header { flex-direction: column; align-items: stretch; padding: 14px 18px; }
+        .app-header h1 { font-size: 20px; }
+        .filter-bar { flex-direction: column; align-items: stretch; }
+        .single-mode-bar { flex-direction: column; align-items: stretch; text-align: center; padding: 10px 14px; }
+        .single-mode-bar .mode-left { justify-content: center; }
+        .card-header { padding: 14px 16px 4px 16px; }
+        .card-question { padding: 4px 16px 12px 16px; font-size: 14.5px; }
+        .card-note-area { padding: 0 16px 14px 16px; }
+        .card-note-area .note-editor { min-height: 60px; max-height: 260px; }
+        .card-grid.single-mode { max-width: 100%; }
+        .card-note-area .img-resize-control { flex-wrap: wrap; gap: 6px; }
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #dce8dc; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #8fbe8f; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6f9e6f; }
+/* ================= 返回主页按钮 ================= */
+.app-header .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 15px 7px 11px;
+    border-radius: 30px;
+    background: #c4e0c4;
+    color: #1e4a2a;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(60, 110, 60, 0.10);
+    transition: background .2s, transform .2s, box-shadow .2s;
+}
+.back-home:hover {
+    background: #a8d0a8;
+    transform: translateX(-2px);
+    box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+}
+.back-home .arrow {
+    font-size: 15px;
+    line-height: 1;
+    transition: transform .2s;
+}
+.back-home:hover .arrow {
+    transform: translateX(-3px);
+}
+
+/* 移动端微调 */
+@media (max-width: 640px) {
+    .app-header .header-left { gap: 10px; }
+    .back-home { padding: 6px 13px 6px 10px; font-size: 12.5px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+    <div class="header-left">
+    <a href="../index.html" class="back-home" title="返回主页">
+        <span class="arrow">⬅</span><span>主页</span>
+    </a>
+    <h1>📜 南开经济学 · 历年真题记忆卡</h1>
+</div>
+    <div class="stats">
+        <span>📚 总题 <span class="num" id="totalCards">0</span></span>
+        <span>⭐ 收藏 <span class="num" id="favCount">0</span></span>
+    </div>
+</div>
+
+<div class="filter-bar" id="filterBar">
+    <label for="filterSubject">专业</label>
+    <select id="filterSubject">
+        <option value="all">全部专业</option>
+    </select>
+
+    <label for="filterPaper">套卷</label>
+    <select id="filterPaper">
+        <option value="all">全部套卷</option>
+    </select>
+
+    <label for="filterType">题型</label>
+    <select id="filterType">
+        <option value="all">全部题型</option>
+        <option value="说明">真题说明</option>
+        <option value="简答">简答题</option>
+        <option value="计算">计算题</option>
+        <option value="计量">计量题</option>
+        <option value="论述">论述题</option>
+    </select>
+
+    <label for="filterFav">⭐ 收藏</label>
+    <select id="filterFav">
+        <option value="all">全部</option>
+        <option value="fav">仅收藏</option>
+    </select>
+
+    <input type="text" id="filterSearch" placeholder="搜索题目关键词…" style="flex:1; min-width:140px;" />
+    <button class="btn-clear-filter" id="clearFilterBtn">重置筛选</button>
+    <button class="btn-random" id="randomBtn">🎲 随机抽查</button>
+</div>
+
+<div class="single-mode-bar" id="singleModeBar">
+    <div class="mode-left">
+        <button class="btn-nav" id="prevCardBtn" title="上一张">◀</button>
+        <span class="card-id-badge" id="singleCardBadge">题目 #1</span>
+        <button class="btn-nav" id="nextCardBtn" title="下一张">▶</button>
+        <span class="mode-hint">抽查中</span>
+    </div>
+    <button class="btn-exit-single" id="exitSingleBtn" title="退出抽查模式">✕</button>
+</div>
+
+<div class="card-grid" id="cardGrid"></div>
+
+<div class="footer-note">
+    点击题目区域可展开/收起作答区 · 点击 ⭐ 收藏 · 点击 📝 添加笔记 · 点击 ✏️ 编辑题目
+    <span style="display:block;font-size:12px;color:#8aaa8a;margin-top:4px;">
+        按 <kbd>R</kbd> 键快速随机抽查 · 抽查模式中 ◀ ▶ 切换卡片 · 点击笔记图片可调大小
+    </span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// 数据
+// ============================================================
+const cardData = [
+/* ==================== 应用经济学 ==================== */
+{ id:'A0', subject:'应用经济学', paper:'真题说明', type:'说明', qid:'1',
+  question:`南开大学应用经济学历年真题说明
+
+（1）南开应用经济学真题代码每年都会变，但考试内容和参考书不变，2025考研最新代码为847经济学，往年还使用过877、880等代码数字。
+
+（2）2024年及之前，经济学院应用经济学、日本研究院、经济与社会发展研究院和国家经济战略研究院的经济学硕均使用847应用经济学这一张卷子；在2025考研，金融学院不再单独命题，也改为和经院应用经济学使用一张卷子，考察847经济学。
+
+（3）应用经济学这套真题的时间跨度是从1995—2025年。更早年份南开的参考书以及题目风格与现在的差别很大，所以本册《真题大全解》完整收录的真题年份为2008—2025年，已足够大家学习使用；2008年以前一些重要的真题是以训练题或例题的形式分布在三大本其他地方。
+
+（4）大家重点关注近十年或近十五年真题即可。早年份的真题可以分题型限时模拟，或当作练习题做即可。但是近五年或近十年的真题，建议大家以套卷的形式进行全真模拟。时间紧张的同学，至少是需要对近三年真题进行全真模拟。
+
+（5）与市面上大多数真题不同，三大本第1册《真题大全解》不只是真题答案和解析。对于真题中难以理解之处或常见题型，学长学姐会进行点睛评注，为大家总结做题思路，帮助考生掌握一类题型的解题方法；重难点题目后附有考点拓展训练，帮助考生巩固拓展、举一反三，加深对考点的理解和掌握。
+
+（6）真题永远是复习备考的最佳指南，一切复习方法的总结和复习计划的制定从根本上说都源自对真题和参考书的研究，并且这些方法和计划的成果最终也交由真题来检验。因此，大家一定要认真做和研究真题。
+
+（7）847已经考过很多年，很多主观题可能考到的知识点真题基本都考过，所以847主观题也是大家背诵的重要语料来源，在做真题时，要对重要的和做错的真题做好标记，可以冲刺阶段进行背诵记忆。报过精品课程的同学以课程附赠的宏微观背诵手册和热点资料为主进行背诵即可，那里已经把要背诵的内容总结好了。` },
+
+/* ---------- 2026年（应经） ---------- */
+{ id:'A2026-S1', subject:'应用经济学', paper:'2026年（应经）', type:'简答', qid:'1',
+  question:`良态偏好的无差异曲线的形状，特点及其蕴含的经济学原理。（5分）` },
+{ id:'A2026-S2', subject:'应用经济学', paper:'2026年（应经）', type:'简答', qid:'2',
+  question:`请分别给出一般均衡和帕累托效率的定义，并阐述二者之间的联系。（5分）` },
+{ id:'A2026-S3', subject:'应用经济学', paper:'2026年（应经）', type:'简答', qid:'3',
+  question:`用博弈论解释为什么单次博弈中会陷入囚徒困境，而重复博弈存在合作的可能性。（5分）` },
+{ id:'A2026-S4', subject:'应用经济学', paper:'2026年（应经）', type:'简答', qid:'4',
+  question:`某厂商的生产活动对周边居民造成了负外部性（污染）。请分析庇古税和科斯定理是如何解决此类外部性问题的，并比较二者的核心差别。（5分）` },
+{ id:'A2026-S5', subject:'应用经济学', paper:'2026年（应经）', type:'简答', qid:'5',
+  question:`运用蒙代尔-弗莱明模型分析，在固定汇率制度下，一国货币政策的有效性。（5分）` },
+{ id:'A2026-S6', subject:'应用经济学', paper:'2026年（应经）', type:'简答', qid:'6',
+  question:`解释什么是存货投资，以及企业为什么持有存货？（5分）` },
+{ id:'A2026-S7', subject:'应用经济学', paper:'2026年（应经）', type:'简答', qid:'7',
+  question:`阐述李嘉图等价定理的基本内容，并解释其内在逻辑。（5分）` },
+{ id:'A2026-S8', subject:'应用经济学', paper:'2026年（应经）', type:'简答', qid:'8',
+  question:`请分别基于资产组合理论和鲍莫尔-托宾模型，分析通货膨胀率上升对货币需求的影响及核心机制。（5分）` },
+{ id:'A2026-C1', subject:'应用经济学', paper:'2026年（应经）', type:'计算', qid:'1',
+  question:`（15分）考虑一个生活在两期（第1期和第2期）的消费者。他的跨期效用函数为：U(c₁,c₂)=lnc₁+0.9lnc₂，其中 c₁ 和 c₂ 分别是两期的消费。他两期的收入禀赋为 y₁=100，y₂=110，市场利率 r=0.1。
+
+（1）写出该消费者的跨期预算约束方程。（5分）
+（2）在利率 r=0.1 时，求解他的两期最优消费量 c₁* 和 c₂*。（5分）
+（3）判断在（2）的最优选择下，该消费者是一个借款者还是一个贷款者（储蓄者）？（2分）
+（4）如果市场利率下降为 r'=0.05，其他条件不变。在新的最优选择下，他更可能成为借款者还是贷款者？请简要说明理由。（3分）` },
+{ id:'A2026-C2', subject:'应用经济学', paper:'2026年（应经）', type:'计算', qid:'2',
+  question:`（10分）一个垄断厂商面临两个市场：成人市场中有100个成人，每个成人的需求函数为 p=50-2q；儿童市场中有80个儿童，每个儿童的需求函数为 p=30-q。厂商的边际成本 MC=10。
+
+（1）如果厂商只服务成人市场，求其最优的入场费 F 和价格 p。（4分）
+（2）如果厂商同时服务成人和儿童市场，且无法进行市场分割，求此时的最优 F 和 p。（4分）
+（3）根据（1）（2）中的结果，厂商会选择只服务成人市场放弃儿童市场，还是同时服务成人和儿童市场，并解释原因。（2分）` },
+{ id:'A2026-C3', subject:'应用经济学', paper:'2026年（应经）', type:'计算', qid:'3',
+  question:`（10分）市场上有两种类型的工人：高技术工人H和低技术工人L。高技术工人的比例为0.4，其边际产品价值为100；低技术工人的比例为0.6，其边际产品价值为60。企业无法直接观测工人的技术水平，只能观察第三方机构给出的评级认证来观测员工技术水平，高技术工人通过评级认证的成本 C_H(e)=e，低技术工人获得评级认证的成本 C_L(e)=2e。
+
+（1）如果企业无法观察到工人的类型，也无法将教育水平作为信号，企业只能根据期望边际产出制定工资，那么企业会支付多少统一的期望工资？（4分）
+（2）企业设定一个 e*，当观察到工人的水平高于 e* 时，则视为高技术工人并支付高工资 w_H，否则支付低工资 w_L，求出 e* 满足分离均衡的条件，以及满足分离均衡的最小 e*。（4分）
+（3）比较（1）和（2）的福利结果，并说明评级这一信号传递对于社会福利的影响。（2分）` },
+{ id:'A2026-C4', subject:'应用经济学', paper:'2026年（应经）', type:'计算', qid:'4',
+  question:`（20分）在索洛经济增长模型中，假设经济的生产函数为 Y=A^(1-α)·K^α·L^(1-α)，其中，A 为技术水平，并以外生速率 g 增长；劳动力 L 以外生速率 n 增长。产出中用于投资的比例为储蓄率 s，资本折旧率为 δ。请解答以下问题：
+
+（1）阐述平衡增长路径的含义。（4分）
+（2）推导并求解平衡增长路径上单位有效劳动的平均资本 k* 和单位有效劳动的平均产出 ȳ*。（6分）
+（3）该经济体按照增长路径是否必然到达黄金律？求解黄金律稳态下所要求的单位有效劳动的资本存量 k_gold 和产出 ȳ_gold。（6分）
+（4）如果当前的储蓄率 s<α（其中 α 为资本的产出弹性），政府应如何调整政策才能使经济达到黄金律的资本水平？请说明理由。（4分）` },
+{ id:'A2026-C5', subject:'应用经济学', paper:'2026年（应经）', type:'计算', qid:'5',
+  question:`（15分）一个行为人身兼消费者和生产者。第一期初始资本禀赋为 k₁，通过生产函数 y₁=f(k₁) 获得产出，行为人可以投资 I 和买卖债券 b（利率为 r）。第二期生产为 y₂=f(k₂)，资本积累方程为 k₂=k₁+I。
+
+行为人效用函数为 U(C₁,C₂)=C₁^(1-θ)/(1-θ)+β·C₂^(1-θ)/(1-θ)，其中 θ>0，β 为效用的贴现因子。
+
+（1）行为人第一期进行一笔投资，调整投资的成本为成本函数 φ(I,k₁)=I·[φ/2·(I/k₁)²]，写出该行为人的跨期预算约束方程。（5分）
+（2）求满足最优消费选择的一阶条件。（7分）
+（3）说明投资的影响因素，给出经济学解释。（3分）` },
+{ id:'A2026-E1', subject:'应用经济学', paper:'2026年（应经）', type:'论述', qid:'1',
+  question:`（20分）材料1：随着数字经济的发展，平台型企业在电商等领域迅速崛起。头部企业利用算法、数据和用户路径依赖影响消费者选择，并通过“二选一”、独家签约协议等手段排挤竞争对手，构筑市场壁垒，导致新企业难以进入。同时，材料中还有“网络外部性”、“差别定价”、“新企业进入市场存在壁垒”、“短期消费者享受低价，但长期会威胁隐私泄露”等关键词。
+
+材料2：介绍了针对平台型企业的监管措施，例如促进多平台信息互通、数据共享，以及规范平台与零工经济从业者（如骑手）之间的关系。
+
+（1）结合材料1，分析为何平台型企业容易形成市场垄断？（5分）
+（2）材料中提到的“差别定价”（大数据“杀熟”）算法，会对消费者剩余以及短期和长期的社会总福利产生怎样的影响？（5分）
+（3）请运用一般均衡理论和瓦尔拉斯法则，解释“骑手多平台接单”和“全平台信息共享”对劳动力市场和产品市场有什么影响？（5分）
+（4）请设计一个既能有效预防数字市场垄断，又能激励企业技术创新的政策方案，并阐述其理论依据和原因。（5分）` },
+{ id:'A2026-E2', subject:'应用经济学', paper:'2026年（应经）', type:'论述', qid:'2',
+  question:`（20分）材料1：阐述了“高质量充分就业”的重要性，指出就业是民生之本，我国当前存在就业结构性矛盾等问题。
+
+材料2：摘录了“十五五”规划中对就业工作的要求，以及国家领导人关于多措并举稳定和扩大就业的指示。
+
+（1）什么是自然失业率？它主要由哪几个部分构成？（4分）
+（2）简述效率工资理论，并说明效率工资如何导致工资刚性进而影响失业？请至少运用两个理论模型来解释工资刚性现象。（5分）
+（3）宏观经济政策如何影响周期性失业？结合当前中国的失业情况，应如何在传统菲利普斯曲线上进行表示？（7分）
+（4）劳动者技能与工作岗位需求不匹配（结构性失业）会如何影响自然失业率？在此情况下，根据工资-通胀传导机制，菲利普斯曲线的形状将发生何种变化？（4分）` },
+
+/* ---------- 2025年（应经） ---------- */
+{ id:'A2025-S1', subject:'应用经济学', paper:'2025年（应经）', type:'简答', qid:'1',
+  question:`“如果市场需求曲线向下倾斜，则每个厂商面对的需求曲线也向下倾斜。”这种说法是否正确，为什么。（5分）` },
+{ id:'A2025-S2', subject:'应用经济学', paper:'2025年（应经）', type:'简答', qid:'2',
+  question:`“一个垄断厂商如果不能够差别定价，那么经济中存在一定的社会净损失。如果它实行了一级价格歧视，那么社会的净损失更多。”这些说法是否正确，为什么。（5分）` },
+{ id:'A2025-S3', subject:'应用经济学', paper:'2025年（应经）', type:'简答', qid:'3',
+  question:`短期内的香烟需求完全缺乏弹性，假定其长期内的需求具有完全的弹性，如果对香烟征税，在短期和长期内分别对消费者和生产者在市场交易中的情况产生什么影响？（5分）` },
+{ id:'A2025-S4', subject:'应用经济学', paper:'2025年（应经）', type:'简答', qid:'4',
+  question:`在完全竞争市场中，长期内厂商的均衡利润为零，为何在位厂商不主动选择退出？（5分）` },
+{ id:'A2025-S5', subject:'应用经济学', paper:'2025年（应经）', type:'简答', qid:'5',
+  question:`请阐述菲利普斯曲线的短期和长期的差异以及政策含义。（5分）` },
+{ id:'A2025-S6', subject:'应用经济学', paper:'2025年（应经）', type:'简答', qid:'6',
+  question:`请简述“支出假说”是如何解释1929—1933年美国经济大萧条。（5分）` },
+{ id:'A2025-S7', subject:'应用经济学', paper:'2025年（应经）', type:'简答', qid:'7',
+  question:`请简要说明政府预算赤字的准确衡量可能面临的问题。（5分）` },
+{ id:'A2025-S8', subject:'应用经济学', paper:'2025年（应经）', type:'简答', qid:'8',
+  question:`请根据新古典企业固定投资模型，解释为什么企业的固定资产投资是实际利率的减函数。（5分）` },
+{ id:'A2025-C1', subject:'应用经济学', paper:'2025年（应经）', type:'计算', qid:'1',
+  question:`（12分）小王拥有16万元财产，其中包括一辆价值12万元的汽车。数据显示小王所在地区汽车的平均失窃率为25%，小王对财富 w>0 的效用函数为 U(w)=w^(1/2)。
+
+（1）计算小王对自身财产的期望效用。（3分）
+（2）根据小王的效用函数分析小王的风险偏好是风险厌恶、风险中性还是风险爱好？（3分）
+（3）如果小王可以为汽车购买保险，一旦汽车被盗，则保险赔付汽车相同的价值，小王愿意接受的这份保险的最高价格 P 是多少万元？（3分）
+（4）如果保险公司为小王提供“公平”保险，保险的价格应该是多少钱？与公平保险相比，保险公司最多能从小王这里获得多少利润？（3分）` },
+{ id:'A2025-C2', subject:'应用经济学', paper:'2025年（应经）', type:'计算', qid:'2',
+  question:`（13分）考虑奶茶和咖啡两种商品的消费市场，小红对奶茶和咖啡消费的效用函数为 U(x_m^H,x_c^H)=x_m^H·x_c^H，小红持有的奶茶和咖啡的禀赋 w^H=(4,6)；小绿对奶茶和咖啡消费的效用函数为 U(x_m^L,x_c^L)=ln x_m^L + ln x_c^L，小绿的禀赋为 w^L=(8,2)。
+
+（1）画出代表奶茶和咖啡消费市场的埃奇沃斯盒状图，标出小红和小绿的初始禀赋配置。（4分）
+（2）写出市场的契约曲线的函数，并在埃奇沃斯盒状图中画出。（4分）
+（3）假设市场是完全竞争市场，将咖啡的价格设定为1，计算在市场出清时奶茶的价格，及小红和小绿对奶茶和咖啡的需求数量。（5分）` },
+{ id:'A2025-C3', subject:'应用经济学', paper:'2025年（应经）', type:'计算', qid:'3',
+  question:`（10分）已知某种产品由一家大厂商 i 和一家小厂商 j 提供，对此产品的总需求可表示为 Q=100-P。大厂商的生产成本函数为 C_i(q_i)=q_i，小厂商的生产成本函数为 C_j(q_j)=q_j²/2。假设大厂商可以通过为此产品制定价格而最大化自己的利润，而小厂商只能接受大厂商制定的价格来决定自己的产量。
+
+（1）求出小厂商的产品供给曲线。（2分）
+（2）求出大厂商面临的市场剩余需求曲线。（2分）
+（3）计算此商品的市场价格，每个厂商的供给数量和总供给数量。（6分）` },
+{ id:'A2025-C4', subject:'应用经济学', paper:'2025年（应经）', type:'计算', qid:'4',
+  question:`（20分）在离散时间的索洛模型中引入政府支出，加入政府支出后最终产品支出设定如下 Y(t)=C(t)+I(t)+G(t)，其中 G(t) 表示 t 期的政府支出。模型中资本积累方程为 K(t+1)=I(t)+(1-δ)K(t)，其中 δ 为资本折旧率。假设模型中没有技术进步率，人口增长率为零。模型中生产函数 Y(t)=F(K(t),L(t))，符合索洛模型中标准假定。假定政府支出 G(t)=σY(t)。
+
+（1）若设定 C(t)=sY(t)，请问在此模型中该设定是否合理；（6分）
+（2）假定政府支出部分来自私人储蓄，C(t)=(s-λσ)Y(t)，λ∈[0,1]。请分析提高政府支出水平（表现为更高的σ），对此索洛模型的人均资本稳态会产生什么样影响？（8分）
+（3）假定使用 G(t) 中的 φ 比例投资于资本存货，则 t 期的社会总投资为 I(t)=[1-s-(1-λ)σ+φσ]Y(t)。证明：如果 φ 足够大，人均资本的稳态水平将随政府支出的提高（σ提高）而增加，并分析这个结论是否合理。（6分）` },
+{ id:'A2025-C5', subject:'应用经济学', paper:'2025年（应经）', type:'计算', qid:'5',
+  question:`（15分）考虑一个由两个消费者组成的经济，其中每个消费者生存两期。消费者1非常没有耐心，对第一期的效用赋予很高的权重，其效用为 U₁(C₁,C₂)=ln(C₁)+0.5ln(C₂)，禀赋为在第一期有2单位消费品，第二期有1单位消费品。消费者2有耐心，第二期的效用权重更大，其效用为 U₂(C₁,C₂)=ln(C₁)+2ln(C₂)，禀赋为在第一期有1单位消费品，第二期有2单位消费品。假定消费品不能被跨期储存，但这两个消费者可以组成一个信贷市场，两个消费者可以互相进行信贷交易。
+
+（1）写出每个消费者的最优化问题以及信贷市场出清条件。（8分）
+（2）求均衡利率水平和每个消费者在每一期的消费。（7分）` },
+{ id:'A2025-E1', subject:'应用经济学', paper:'2025年（应经）', type:'论述', qid:'1',
+  question:`（20分）材料：近年来，眼看拼多多靠低价快速发展，诸多电商平台纷纷加码低价。与京东、淘宝类似，2024年2月，为吸引用户在自家的平台下单，抖音电商也将“价格力”定为2024年优先级最高的任务。然而，绝对低价战略并未推动电商平台业绩飞速攀升。
+
+过去几年，由于追求极致低价，电商平台往往会针对性扶持可海量供应低价商品的白牌商家。然而，出色的实体商品需要兼顾质量、成本和效率，过分追求低价和效率，产生了“劣币驱逐良币”效应，直接导致大部分白牌商品的质量不佳，这也导致电商行业的投诉量飞速飙升。
+
+在此背景下，为了保护消费者的权益，诸多电商平台纷纷上线“仅退款”服务。然而，此服务很大程度上只是亡羊补牢之举，一方面不能彻底扭转价格战引发的电商商品质量不佳的问题，另一方面也诱使部分消费者滥用规则恶意退款“0元购”，进一步恶化了电商环境。
+
+正因为明晰了内卷并非缓解增长压力的良药，2024年618后，电商平台似乎不想继续“内卷”低价，而是希望回归理性发展。当前电商平台纷纷“拆墙”，并上线一系列人性化运营举措，一方面保障高质量品牌商品有一定的生存空间，另一方面致力于为消费者营造全面出色的购物体验，进而释放消费潜力。
+
+（1）运用经济学理论阐释为什么绝对低价战略并没有带来电商平台业绩的提高。（5分）
+（2）运用经济学理论分析为什么会出现部分消费者滥用规则恶意退款“0元购”的现象？（5分）
+（3）电商平台不再内卷绝对低价，做出了什么样的举措来改善电商生态？根据经济学理论，你认为还有什么好的建议？（10分）` },
+{ id:'A2025-E2', subject:'应用经济学', paper:'2025年（应经）', type:'论述', qid:'2',
+  question:`（20分）材料：按照9月26日召开的中央政治局会议部署，财政部在加快落实已确定政策的基础上，围绕稳增长、扩内需、化风险，将在近期陆续推出一揽子有针对性增量政策举措。主要包括以下几个方面：一是加力支持地方化解政府债务风险，较大规模增加债务额度，支持地方化解隐性债务，地方可以腾出更多精力和财力空间来促发展、保民生。二是发行特别国债支持国有大型商业银行补充核心一级资本，提升这些银行抵御风险和信贷投放能力，更好地服务实体经济发展。三是叠加运用地方政府专项债券、专项资金税收政策等工具，支持推动房地产市场止跌回稳。四是加大对重点群体的支持保障力度，国庆节前已向困难群众发放一次性生活补助，下一步还将针对学生群体加大奖优助困力度，提升整体消费能力。
+
+（1）简述财政政策的工具有哪些。根据经济学理论阐述政府扩大开支的政策是如何通过政府支出乘数机制拉动经济的。（6分）
+（2）根据经济学理论阐述财政政策是否存在无效的情况并对具体情况进行说明。（4分）
+（3）根据经济学理论分析财政政策的时滞现象，你认为应该如何解决财政政策时滞问题？（10分）` },
+
+/* ---------- 2024年（应经） ---------- */
+{ id:'A2024-S1', subject:'应用经济学', paper:'2024年（应经）', type:'简答', qid:'1',
+  question:`一般而言，消费者为避免价格变化的福利影响而愿意付出的货币量不同于为补偿价格变化给消费者带来的福利影响而必须支出给他的货币量，即：等价变化不等于补偿变化，为什么？（5分）` },
+{ id:'A2024-S2', subject:'应用经济学', paper:'2024年（应经）', type:'简答', qid:'2',
+  question:`假设供给函数和需求函数均为线性函数，如果向市场征税，请分析税收的转嫁程度与什么有关？（5分）` },
+{ id:'A2024-S3', subject:'应用经济学', paper:'2024年（应经）', type:'简答', qid:'3',
+  question:`请用替代效应和收入效应解释需求法则。（5分）` },
+{ id:'A2024-S4', subject:'应用经济学', paper:'2024年（应经）', type:'简答', qid:'4',
+  question:`为什么说垄断市场是帕累托无效率的？（5分）` },
+{ id:'A2024-S5', subject:'应用经济学', paper:'2024年（应经）', type:'简答', qid:'5',
+  question:`请分析政府转移支付是否可以计入GDP，并说明原因。（5分）` },
+{ id:'A2024-S6', subject:'应用经济学', paper:'2024年（应经）', type:'简答', qid:'6',
+  question:`请阐述挤出效应的定义，分析当存在较大的挤出效应时财政政策和货币政策哪个更有效。（5分）` },
+{ id:'A2024-S7', subject:'应用经济学', paper:'2024年（应经）', type:'简答', qid:'7',
+  question:`请阐述什么是自然失业率，并阐述从政策制定角度看，为什么要核算自然失业率？对提高政策效率有什么意义？（5分）` },
+{ id:'A2024-S8', subject:'应用经济学', paper:'2024年（应经）', type:'简答', qid:'8',
+  question:`请简述造成通货膨胀的因素及有哪些类型的通货膨胀。（5分）` },
+{ id:'A2024-C1', subject:'应用经济学', paper:'2024年（应经）', type:'计算', qid:'1',
+  question:`（15分）设在村里一块公共地上牧羊的总成本为 c(x)=5x²+50，其中 x 为在公共地牧羊的羊总数，且每只羊的售价为500元。
+
+（1）牧场净收益最大时羊的数量 x*；（5分）
+（2）若牧场放牧总成本由村里各户村民平摊，该村有10户村民。此时公共地上总共会养多少只羊？（5分）
+（3）若规定，在公共地上放养的羊总数在达到第（1）问中的 x* 之前，将羊群总数平均分配给每户村民；任何村民在 x*/10 的基础上私自增加放羊数量，每只必须缴税495元。但不管羊群总数为多少，牧场总成本均由每户村民平摊，求此时公地上放羊的羊群总数。（5分）` },
+{ id:'A2024-C2', subject:'应用经济学', paper:'2024年（应经）', type:'计算', qid:'2',
+  question:`（15分）休闲旅客的需求函数为 Q_T=3000-6P，商务旅客的需求函数为 Q_B=2700-3P，每张票的边际成本为100元。
+
+（1）该航空公司如何设定休闲票和商务票的价格？
+（2）如果政府强制要求所有票价必须一致，则该航空公司如何定价？
+（3）假设航空公司最多只能售出1800张票，则分别应当给两类消费者售出多少张票，定价多少？` },
+{ id:'A2024-C3', subject:'应用经济学', paper:'2024年（应经）', type:'计算', qid:'3',
+  question:`（10分）考虑一个由两个消费者(A,B)和两个商品(1,2)的市场交易组成的经济，消费者效用函数与商品禀赋如下：
+
+U^A(x₁^A,x₂^A)=x₁^A·x₂^A+12x₁^A+3x₂^A
+U^B(x₁^B,x₂^B)=x₁^B·x₂^B+8x₁^B+9x₂^B
+w^A=(12,8)  w^B=(10,10)
+
+（1）当两种商品价格分别为 p₁=2，p₂=1 时，对两种商品的超额需求或超额供给分别是多少？
+（2）当市场实现一般均衡时，求此时的 p₁/p₂` },
+{ id:'A2024-C4', subject:'应用经济学', paper:'2024年（应经）', type:'计算', qid:'4',
+  question:`（15分）考虑一个资本可以完全流动的大型开放经济模型如下：
+
+产品市场：Y=C(Y-T)+I(r)+G+NX(E)
+货币市场：M/P=L(Y,r)
+外汇市场：NX(E)=CF(r)
+
+其中，Y 为总产出，消费函数 C(Y-T)=1000+0.8(Y-T)，G 和 T 分别为政府支出和税收，且 G=T=200，投资函数 I(r)=100-50r，净出口函数 NX(E)=1500-100E，E 为汇率；M 为货币供应量，M=1000，P=10；货币需求 L(Y,r)=0.2Y-100r，r 为国内利率，资本净流出 CF(r)=1000-100r。
+
+（1）计算同时满足产品市场、货币市场和外汇市场均衡的总产出 Y*、利率 r* 和汇率 E*。
+（2）当政府实行扩张的财政政策，增加政府购买 G=400 时，新的均衡（产出 Y*、利率 r* 和汇率 E*）是多少？政府购买乘数是多少，存在乘数效应吗？是否存在挤出效应？
+（3）基于(2)，同时实行扩张的货币政策，增加货币供给 M=1100 时，新的均衡产出 Y*、利率 r* 和汇率 E* 是多少？存在政府购买乘数效应吗？为什么说如果没有货币政策的配合，财政政策的效果要打折扣，甚至无效？` },
+{ id:'A2024-C5', subject:'应用经济学', paper:'2024年（应经）', type:'计算', qid:'5',
+  question:`（15分）考虑一个内生增长模型，经济的生产函数为 Y_t=F[K_t,(1-u)E_t·L_t]，生产函数符合规模报酬不变和边际收益递减，u 为研发部门的劳动力比例。Ė(t)=g(u)E(t)，当 0<u<u_max<1 时，g'(u)>0，g''(u)<0；当 0<u_max<u<1 时，g'(u)<0，g''(u)<0。同时，L̇(t)=nL(t)，K̇(t)=sY(t)-δK(t)，其中 Ẋ(t)/X(t)=dlnX(t)/dt。
+
+（1）用有效人均资本 k_t=K_t/(L_t·E_t) 和人均有效产出 y_t=Y_t/(L_t·E_t) 表示生产函数；
+（2）写出 k_t 的变化方程，即 k̇_t 的表达式，并证明经济是否存在稳态；
+（3）写出稳态时人均产出 Y_t/L_t 的增长率，并说明储蓄率 s 和 g(u) 如何影响其稳态增长率。` },
+{ id:'A2024-E1', subject:'应用经济学', paper:'2024年（应经）', type:'论述', qid:'1',
+  question:`（20分）材料：同一平台、同一时段、同款货品，下单价格竟有较大差别，更令人费解的是，多付费者还是平台的熟客。据报道，用户分别使用自己的高级会员和普通会员账号在同一电商平台购买同款商品，结果发现，高级会员账号不仅没享受到优惠，反而需要比普通账号支付更高的价格。近年来，类似大数据“杀熟”现象时有发生，给消费者带来困扰。
+
+大数据“杀熟”更深层次的问题，其实在于平台对用户数据的保护和利用不当。基于便利，用户让渡了自己的部分数据权利。例如，让平台获取自己的消费习惯、消费能力、商品偏好、价格敏感等信息。然而，这并不意味着平台可以随意使用这些用户数据，或者利用信息不对称进行牟利。
+
+为了预防和制止平台经济领域垄断行为，保护市场公平竞争，促进平台经济规范有序创新健康发展，维护消费者利益和社会公共利益，国务院反垄断委员会出台关于平台经济领域的反垄断指南。
+
+（1）“大数据杀熟”行为产生的原因是什么？（5分）
+（2）“大数据杀熟”对消费者会产生什么影响？（5分）
+（3）如何治理“大数据杀熟”？（10分）` },
+{ id:'A2024-E2', subject:'应用经济学', paper:'2024年（应经）', type:'论述', qid:'2',
+  question:`（20分）材料：1970年代后期，美国经济陷入严重的滞胀状态，这一阶段美联储货币政策的首要目标为抑制通胀。同时，在1979年进行了一次重大的货币政策改革，主导思想由凯恩斯主义转向以弗里德曼为代表的货币主义，将货币政策的中介目标由联邦基金利率转向货币供应量M1，实行紧缩性货币政策，后来随着货币供应增长率出现大幅波动，美联储放弃设定狭义货币M1目标，转向广义货币M2。
+
+到了80年代末，M2增长与经济活动之间的关系也越来越弱，美联储最终放弃了以M2作为货币政策中介目标，取而代之的是储备金总量指标，即通过控制储备金总量来调节利率水平，通过公开市场操作来达到储备金总量的目标，这一状况一直维持到1994年。
+
+从1994年开始，泰勒规则代替货币主义成为货币政策制定的理论依据，相应地以实际利率为中介目标的“中性”货币政策取代以货币供应量作为中介目标的政策。泰勒规则的政策含义是联邦基金名义利率要顺应通货膨胀率的变化，以保持实际均衡利率的稳定性。
+
+到2000年末，美国经济发展逐渐放缓，为防止经济停滞，美联储在2001年当年连续11次降低联邦基金利率。连续的降息，低成本的融资，一方面刺激了投资、信贷和消费，经济低迷状态有所好转，但另一方面，连续降息导致经济中出现了大量的资产泡沫。从2004年到2005年，美联储又连续10次提高利息，加息不仅直接刺破了美国的房地产泡沫，还最终引发了2007年的次贷危机，并随后演化为全球性金融与经济危机。
+
+自2007年次贷危机爆发后，美联储开始连续降息，在短时间内将联邦基金利率目标由5.25%下调至0—0.25%之间，实际上启动了零利率政策。美联储无法再通过下调名义利率刺激经济，面对经济形势的恶化，美联储选择了量化宽松的非常规手段。
+
+（1）自由主义货币政策渠道与凯恩斯主义货币政策渠道的根本差异是什么？（10分）
+（2）美联储的主要货币政策工具除了利率调控，还有哪些？（5分）
+（3）请阐述什么是负利率。（5分）` },
+
+/* ---------- 2023年（应经） ---------- */
+{ id:'A2023-S1', subject:'应用经济学', paper:'2023年（应经）', type:'简答', qid:'1',
+  question:`偏好为凸性的消费者认为两种产品的数量组合（1,4）和（9,2）无差异，那么他是否会更偏好组合（5,3）？（5分）` },
+{ id:'A2023-S2', subject:'应用经济学', paper:'2023年（应经）', type:'简答', qid:'2',
+  question:`用图形说明拟线性偏好的收入—提供曲线和非线性偏好部分的商品的恩格尔曲线。（5分）` },
+{ id:'A2023-S3', subject:'应用经济学', paper:'2023年（应经）', type:'简答', qid:'3',
+  question:`消费者经常会遇到商家推荐关注微信公众号来给予价格优惠的机会，为什么商家不采取对所有消费者同时减价的方式？（5分）` },
+{ id:'A2023-S4', subject:'应用经济学', paper:'2023年（应经）', type:'简答', qid:'4',
+  question:`分析说明需求的价格弹性与厂商收益之间的关系。（5分）` },
+{ id:'A2023-S5', subject:'应用经济学', paper:'2023年（应经）', type:'简答', qid:'5',
+  question:`利用索洛模型分析技术进步率永久性下降以及储蓄率永久性下降在短期与长期对增长率和产出水平的影响。（5分）` },
+{ id:'A2023-S6', subject:'应用经济学', paper:'2023年（应经）', type:'简答', qid:'6',
+  question:`解释和说明什么是“不可能三角形”。（5分）` },
+{ id:'A2023-S7', subject:'应用经济学', paper:'2023年（应经）', type:'简答', qid:'7',
+  question:`简述银行危机对货币供给有什么影响，并分析原因。（5分）` },
+{ id:'A2023-S8', subject:'应用经济学', paper:'2023年（应经）', type:'简答', qid:'8',
+  question:`阐述并分析凯恩斯猜测和“消费之谜”。（5分）` },
+{ id:'A2023-C1', subject:'应用经济学', paper:'2023年（应经）', type:'计算', qid:'1',
+  question:`（12分）三家相同厂商生产相同产品，无固定成本，边际成本为0，市场需求函数为 P=60-Q，其中 Q=q₁+q₂+q₃。
+
+（1）如果三家厂商同时决定产量，求三家厂商的反应函数，以及均衡的产量、价格和利润。（5分）
+（2）如果三家厂商达成合作协议，求均衡的产量、价格和利润，这种合作是有利的吗？（4分）
+（3）如果厂商1先决定产量，厂商2和厂商3进行双寡头垄断竞争，求均衡的产量、价格和利润，与（1）相比，三家厂商的境况是变得更好了还是变得更糟了？（3分）` },
+{ id:'A2023-C2', subject:'应用经济学', paper:'2023年（应经）', type:'计算', qid:'2',
+  question:`（13分）保险公司面对两类消费者，A类消费者的反需求函数为 P=10-X，B类消费者的反需求函数为 P=5-X，提供保险的边际成本为4，无固定成本。
+
+（1）保险市场是完全竞争市场，求均衡时的价格和产量。（3分）
+（2）保险公司可以进行一级价格歧视，并且保险公司完全了解消费者信息，求均衡时的消费者剩余、生产者剩余和无谓损失。（4分）
+（3）保险公司可以进行三级价格歧视，并且保险公司能够区分不同市场的消费者，求均衡时的消费者剩余、生产者剩余和无谓损失。（4分）
+（4）保险公司可以进行三级价格歧视，但保险公司不能区分不同市场的消费者，求均衡时的市场价格和产量。（2分）` },
+{ id:'A2023-C3', subject:'应用经济学', paper:'2023年（应经）', type:'计算', qid:'3',
+  question:`（10分）小英可以选择消费 c 和闲暇 l，其效用函数为 U=c^0.1·l^0.9。c 为消费量，l 为闲暇时间，h 为工作时间，p 为消费价格，T 为时间禀赋，w 为工资，无论小英是否工作都可以得到固定收入 Y。
+
+（1）写出消费者的预算约束。（2分）
+（2）求闲暇时间、工作时间和消费量。（4分）
+（3）如果工资增加5%，闲暇时间怎么变化（用百分比表示）。（4分）` },
+{ id:'A2023-C4', subject:'应用经济学', paper:'2023年（应经）', type:'计算', qid:'4',
+  question:`（20分）经济的总产出函数为 Y=K^(1/2)·(AN)^(1/2)，储蓄率 s=40%，折旧率 δ=10%，人口增长率 g_N=6%，技术进步率 g_A=4%。
+
+（1）求稳态时有效工人的人均资本量、有效工人的产出增长率、人均产出增长率和总产出增长率；（5分）
+（2）求有效人均消费最大化时的储蓄率和有效人均产出；（4分）
+考虑索洛模型中引入新的变量，即政府拿出一部分产出用于政府支出 G，政府收支平衡（T=G），每个工人承担的政府支出 g=G/N 为常数，工人总消费 C=(1-s)(Y-T)，此时假定 A=1，g_N=g_A=0，折旧率 δ 和原来一样。
+（3）写出资本积累方程，并通过图形分析稳态时可能存在两个不同的 k*；（5分）
+（4）如果 k* 取较大值的稳态，因为较小的 k* 是不稳定的，则 g 提高对稳态人均资本 k* 和工人总消费有什么影响？（3分）
+（5）如果政府支出 G=zY，是否有两个稳态解，如果 z 下降，稳态时人均资本和人均消费如何变化？（3分）` },
+{ id:'A2023-C5', subject:'应用经济学', paper:'2023年（应经）', type:'计算', qid:'5',
+  question:`（15分）小型开放经济体的本国利率 r 等于世界利率 r*，消费函数 C=A+a(Y-T)，投资函数 I=I₀-dr，政府购买 G 与税收 T 满足 G=T=400，净出口函数 NX=NX₀-ke，货币需求函数 M/P=Y-hr，名义货币供给量 M=M₁，价格水平不变 P=P̄。
+
+（1）求 IS*、LM*；（6分）
+（2）求均衡时的产出、汇率和净出口量；（3分）
+（3）浮动汇率制下，政府购买增加 ΔG，产出、汇率、净出口和货币供给如何变动？（3分）
+（4）固定汇率制下，政府购买增加 ΔG，产出、汇率、净出口和货币供给如何变动？（3分）` },
+{ id:'A2023-E1', subject:'应用经济学', paper:'2023年（应经）', type:'论述', qid:'1',
+  question:`（20分）原题中给出的是关于污染和污染治理，以及中国环境改革的材料。
+
+（1）根据经济学原理分析环境污染为什么很难由污染者解决，通常需要政府进行管理。（5分）
+（2）解决环境污染可行的三种方法：关闭工厂；制定排污标准并对超标企业罚款；按排污量收费，试从经济学角度分析比较这三种方法。（15分）` },
+{ id:'A2023-E2', subject:'应用经济学', paper:'2023年（应经）', type:'论述', qid:'2',
+  question:`（20分）原题中给出的是关于美国和欧洲通胀的材料。
+
+（1）通货膨胀的成因有哪些？请具体进行阐述。（6分）
+（2）通货膨胀的成本有哪些？请具体进行阐述。（6分）
+（3）根据经济学原理你认为如何使用政策应对通胀？这些政策是否存在局限性？请具体进行阐述。（8分）` },
+
+/* ---------- 2022年（应经） ---------- */
+{ id:'A2022-S1', subject:'应用经济学', paper:'2022年（应经）', type:'简答', qid:'1',
+  question:`对于消费者自己的偏好而言，消费者会有某个最偏爱的消费束，即腰足点，消费者的最终选择一定会落在腰足点上吗？为什么？（5分）` },
+{ id:'A2022-S2', subject:'应用经济学', paper:'2022年（应经）', type:'简答', qid:'2',
+  question:`需求法则表明，如果一种商品的需求随收入的增加而增加，那么，这种商品的需求一定会随着价格的上升而下降，请用斯勒茨基方程对其加以解释。（5分）` },
+{ id:'A2022-S3', subject:'应用经济学', paper:'2022年（应经）', type:'简答', qid:'3',
+  question:`在垄断竞争的零利润均衡下，需求曲线必定在平均成本曲线的最低点与其相切吗？请画图说明。（5分）` },
+{ id:'A2022-S4', subject:'应用经济学', paper:'2022年（应经）', type:'简答', qid:'4',
+  question:`如果在古诺均衡中一个厂商变成了斯塔克尔伯格模型中的领导者，那么它的利润会下降吗？请分析证明。（5分）` },
+{ id:'A2022-S5', subject:'应用经济学', paper:'2022年（应经）', type:'简答', qid:'5',
+  question:`什么是自然失业率，为什么会有自然失业率？（5分）` },
+{ id:'A2022-S6', subject:'应用经济学', paper:'2022年（应经）', type:'简答', qid:'6',
+  question:`请利用 IS-LM 模型推导总需求曲线。（5分）` },
+{ id:'A2022-S7', subject:'应用经济学', paper:'2022年（应经）', type:'简答', qid:'7',
+  question:`根据固定汇率的蒙代尔-弗莱明模型，当世界利率下降时，总收入、汇率和出口会发生什么变动？（5分）` },
+{ id:'A2022-S8', subject:'应用经济学', paper:'2022年（应经）', type:'简答', qid:'8',
+  question:`根据理性预期假设，如果个人相信政策执行者，降低通货膨胀的成本会小很多，为什么？如何产生这种信任？（5分）` },
+{ id:'A2022-C1', subject:'应用经济学', paper:'2022年（应经）', type:'计算', qid:'1',
+  question:`小王将自己的收入消费在买书（B）和买食物（F）上，他对书和食物的偏好可以用效用函数 U(B,F)=4lnB+6lnF 表示。
+
+（1）小王对书和食物的边际替代率是多少（书在无差异曲线纵轴上）？
+（2）给定小王的收入为 M，书的价格为 P_B，食物价格为 P_F，求小王对书的需求曲线及对食物的需求曲线。
+（3）求小王对食物的自身价格弹性，并说明小王对书和食物的需求分别具有何种弹性。
+（4）假设书的需求为（2）中的需求函数，其成本为 C(B)=2B，求价格上升时其利润怎样变化，为什么？` },
+{ id:'A2022-C2', subject:'应用经济学', paper:'2022年（应经）', type:'计算', qid:'2',
+  question:`市场中存在两个寡头垄断厂商，市场的需求函数为 Q=100-0.5P，厂商1的边际成本为100，厂商2的边际成本为80，求：
+
+（1）两个厂商的反应函数，并在图上表示。
+（2）若是古诺均衡，求两个厂商的利润和产量，市场价格。
+（3）若两个厂商的边际成本均为90，且两个厂商合并为卡特尔，求均衡时的厂商的利润、产量、市场价格。` },
+{ id:'A2022-C3', subject:'应用经济学', paper:'2022年（应经）', type:'计算', qid:'3',
+  question:`小红和小绿公用一台电脑，他们分享相同的一个音乐库。假设下载一首歌需要支付1元钱。如果小红下载 x_H 首歌，小绿下载 x_L 首歌，则音乐库中共有 (x_H+x_L) 首歌，小红从音乐库听歌中获得的效用为 U_H=200ln(x_H+x_L)，而小绿从音乐库听歌中获得的效用为 U_L=100ln(x_H+x_L)。
+
+（1）小红和小绿对各自的反应函数，并作图表示。
+（2）求小红和小绿的纳什均衡数量，此时是否存在搭便车问题。
+（3）求帕累托有效的总下载歌曲数目。
+（4）求 Pareto 有效的总下载歌曲数目。均衡时的总下载歌曲数目和 Pareto 有效的总下载歌曲数目相比哪个更多，为什么？` },
+{ id:'A2022-C4', subject:'应用经济学', paper:'2022年（应经）', type:'计算', qid:'4',
+  question:`社会的总产出函数为 Y=√L，其劳动力提供量 L_s=100，社会的总需求函数为 Y=M/P，其中货币供给量 M=1000。
+
+（1）求劳动力市场出清，市场均衡时的价格、产量和名义工资。
+（2）如果政府将最低工资 W_min 定为6.05，求劳动力供给曲线。
+（3）在（2）的情况下，求均衡价格、产量和失业率。` },
+{ id:'A2022-C5', subject:'应用经济学', paper:'2022年（应经）', type:'计算', qid:'5',
+  question:`社会的总产出函数为 Y_t=K_t^θ·(A_t L_t)^(1-θ)，其中 A_t、L_t 分别代表社会的技术水平和劳动力数量，其关于时间 t 的函数为 A_t=A₀e^{gt}，L_t=L₀e^{gt}，整个社会的储蓄率和折旧率分别为 s、σ。求：
+
+（1）稳态时人均有效资本；
+（2）稳态时人均有效收入；
+（3）稳态时资本产出比；
+（4）资本的边际生产率/资本的边际报酬；
+（5）资本收入占总收入的份额。` },
+{ id:'A2022-E1', subject:'应用经济学', paper:'2022年（应经）', type:'论述', qid:'1',
+  question:`（20分）碳排放权交易市场建设，是利用市场机制控制和减少温室气体排放的重大举措。碳市场一方面控制排放总量，另一方面通过碳定价促进低碳转型。碳市场的重要性愈加凸显，在未来的碳中和之路上将发挥更大作用。
+
+国际碳行动伙伴组织最新发布的《2021年度全球碳市场进展报告》指出，疫情防控期间，全球碳排放权交易市场（碳市场）展现出韧性。各国更具雄心的气候目标和净零排放承诺，提升了政策稳定性和市场信心。目前，全球已建成的碳交易系统达24个，22个国家和地区正在考虑或积极开发碳交易系统。
+
+请根据以上材料回答下面问题：
+（1）碳排放权交易是什么？
+（2）碳排放权交易解决的是什么样的市场失灵？
+（3）市场机制在碳排放权交易中起什么作用？` },
+{ id:'A2022-E2', subject:'应用经济学', paper:'2022年（应经）', type:'论述', qid:'2',
+  question:`（20分）材料有关三胎政策，并根据材料回答下面问题：
+
+（1）用索罗模型解释人口对经济增长的作用。
+（2）用内生增长模型解释人口的作用。
+（3）如果三胎开放后，人口并没有明显增长，请提出应对措施以促进经济增长。` },
+
+/* ---------- 2021年（应经） ---------- */
+{ id:'A2021-S1', subject:'应用经济学', paper:'2021年（应经）', type:'简答', qid:'1',
+  question:`经济利润和生产者剩余之间有什么不同？（5分）` },
+{ id:'A2021-S2', subject:'应用经济学', paper:'2021年（应经）', type:'简答', qid:'2',
+  question:`消费者认为消费组合(2,6)和(8,4)一样好而且凸偏好，消费者是否更偏好(5,5)？（5分）` },
+{ id:'A2021-S3', subject:'应用经济学', paper:'2021年（应经）', type:'简答', qid:'3',
+  question:`画图说明垄断者的价格歧视能否导致经济有效率？（5分）` },
+{ id:'A2021-S4', subject:'应用经济学', paper:'2021年（应经）', type:'简答', qid:'4',
+  question:`简述公共地的悲剧的成因和解决措施。（5分）` },
+{ id:'A2021-S5', subject:'应用经济学', paper:'2021年（应经）', type:'简答', qid:'5',
+  question:`规模报酬递增与边际要素报酬递减能否并存？（5分）` },
+{ id:'A2021-S6', subject:'应用经济学', paper:'2021年（应经）', type:'简答', qid:'6',
+  question:`简述恶性通货膨胀的原因。（5分）` },
+{ id:'A2021-S7', subject:'应用经济学', paper:'2021年（应经）', type:'简答', qid:'7',
+  question:`Hall 的自然失业率决定和公式。（5分）` },
+{ id:'A2021-S8', subject:'应用经济学', paper:'2021年（应经）', type:'简答', qid:'8',
+  question:`简述凯恩斯消费函数。（5分）` },
+{ id:'A2021-C1', subject:'应用经济学', paper:'2021年（应经）', type:'计算', qid:'1',
+  question:`假设市场中存在两个生产相同产品的厂商，厂商面临的需求函数为 P=30-(Q_A+Q_B)，并且两个厂商的边际成本都为6。
+
+（1）求古诺均衡时厂商的产量、利润和市场价格。
+（2）若厂商A为领导者，求斯塔克尔伯格均衡时厂商的产量、利润和市场价格。` },
+{ id:'A2021-C2', subject:'应用经济学', paper:'2021年（应经）', type:'计算', qid:'2',
+  question:`消费者的效用函数为 u=x^a·y^b，商品 x 和商品 y 的价格分别为 p_x、p_y，消费者的收入为 m，请证明：
+
+（1）需求收入弹性为1。
+（2）需求交叉价格弹性为0。` },
+{ id:'A2021-C3', subject:'应用经济学', paper:'2021年（应经）', type:'计算', qid:'3',
+  question:`某地区有一家炼钢厂和一个渔场。这两个企业都是价格接受者。钢铁和水产品的市场价格分别为16元和12元。炼钢厂需要决定钢铁产量 s 和污水排放量 x，炼钢厂的成本函数为 C_s(s,x)=s²+(x-4)²。渔场需要决定水产品产量 f，渔场的成本函数为 C_f(f,x)=f²+fx。
+
+（1）求钢厂和渔场各自决策时的均衡解。
+（2）设两个企业合并成一家企业，且合并后两种产品的产出函数均不变，那么均衡时两种产品的产量、污水排放量和企业利润分别是多少？` },
+{ id:'A2021-C4', subject:'应用经济学', paper:'2021年（应经）', type:'计算', qid:'4',
+  question:`考虑下述某宏观经济模型：
+
+Y=C+I+G+NX
+C=80+0.63Y
+I=350-2000r+0.1Y
+NX=500-0.1Y-100(EP/P*)
+M/P=0.1625Y-1000r
+ε=EP/P*=0.75+5r
+G=750，M=600，P*=1
+
+本国的价格水平开始时定为1。
+
+（1）推导出总需求曲线的数学表达式
+（2）求由模型所决定的 Y、r、C、I、NX 的值。
+（3）计算能使产量保持原有水平，但利率下降2%时所需的货币政策和财政政策的组合，说明这一变化对本币币值、净出口、政府预算赤字和投资的影响。` },
+{ id:'A2021-C5', subject:'应用经济学', paper:'2021年（应经）', type:'计算', qid:'5',
+  question:`索洛模型中的要素支付。假设劳动与资本均按其边际产品支付。令 w 表示 ∂F(K,AL)/∂L，且 r 表示 ∂F(K,AL)/∂K-δ。
+
+（1）证明劳动的边际产品 w 是 A[f(k)-kf'(k)]。
+（2）证明如果资本与劳动均按其边际产品支付，那么不变的规模报酬意味着生产要素的总支付量等于总的净产出，即证明在不变的规模报酬条件下，wL+rK=F(K,AL)-δK。
+（3）随着产出份额被支付给资本与劳动，资本报酬(r)大致也不随时间而变化。处在平衡增长路径上的索洛经济展现这些特征吗？处在均衡增长路径上的 w 与 r 的增长率是多少？` },
+{ id:'A2021-E1', subject:'应用经济学', paper:'2021年（应经）', type:'论述', qid:'1',
+  question:`（20分）材料1：目前，我国商品和服务价格97%以上由市场定价，但土地、劳动力、资本、技术、数据等要素市场发育相对滞后，影响了市场对资源配置决定性作用的发挥，成为高标准市场体系建设的一个突出短板。
+
+材料2：4月9日，中共中央、国务院发布《关于构建更加完善的要素市场化配置的体制机制的意见》。《意见》第一次把数据要素和其它要素并列，明确将数据作为一种新型生产要素写入政策文件。
+
+（1）为什么要进行要素市场化配置。
+（2）政府在要素市场化配置发挥作用。
+（3）如何看待《意见》将“数据”列为新的业态生产要素。` },
+{ id:'A2021-E2', subject:'应用经济学', paper:'2021年（应经）', type:'论述', qid:'2',
+  question:`（20分）宏观论述题是一段疫情影响的材料，疫情下各个国家GDP衰减，然后IMF指出了多少个国家衰减和一些具体数据。
+
+（1）应对疫情的冲击应该采取什么宏观经济政策？
+（2）这种冲击对长期经济有什么影响？
+（3）这种经济政策有什么后果？` },
+
+/* ---------- 2020年（应经） ---------- */
+{ id:'A2020-S1', subject:'应用经济学', paper:'2020年（应经）', type:'简答', qid:'1',
+  question:`说明为什么在完全竞争条件下社会福利最大化。（5分）` },
+{ id:'A2020-S2', subject:'应用经济学', paper:'2020年（应经）', type:'简答', qid:'2',
+  question:`说明垄断的福利损失。（5分）` },
+{ id:'A2020-S3', subject:'应用经济学', paper:'2020年（应经）', type:'简答', qid:'3',
+  question:`说明为什么寡头市场提供的产量比垄断提供的产量更多。（5分）` },
+{ id:'A2020-S4', subject:'应用经济学', paper:'2020年（应经）', type:'简答', qid:'4',
+  question:`论述“伯川德悖论”基本内容。（5分）` },
+{ id:'A2020-S5', subject:'应用经济学', paper:'2020年（应经）', type:'简答', qid:'5',
+  question:`说明国内生产总值的概念，分析为什么政府给公务员发工资计入GDP，而给灾区或困难人群发救济金不计入GDP。（5分）` },
+{ id:'A2020-S6', subject:'应用经济学', paper:'2020年（应经）', type:'简答', qid:'6',
+  question:`分析传统货币政策在经济衰退时不起作用的原因。（5分）` },
+{ id:'A2020-S7', subject:'应用经济学', paper:'2020年（应经）', type:'简答', qid:'7',
+  question:`阐述存货投资的概念，并列出企业持有存货的原因。（5分）` },
+{ id:'A2020-S8', subject:'应用经济学', paper:'2020年（应经）', type:'简答', qid:'8',
+  question:`通货膨胀通常表现为不同商品价格的非同步上涨，简述恶性通货膨胀对宏观经济运行效率将产生哪些不利影响。（5分）` },
+{ id:'A2020-C1', subject:'应用经济学', paper:'2020年（应经）', type:'计算', qid:'1',
+  question:`（15分）反需求函数为：（原题给出猪和牛的反需求函数），其中 p₁、q₁ 为猪的价格和产量，p₂、q₂ 为牛的价格和产量。边际成本都为 c，求：
+
+（1）双方最优产量、价格 (p₁*, q₁*, p₂*, q₂*)
+（2）由于产量决定于养殖量，受到猪瘟影响，猪最终产量为 aq₁*，牛最终产量为 q₂*，求价格。` },
+{ id:'A2020-C2', subject:'应用经济学', paper:'2020年（应经）', type:'计算', qid:'2',
+  question:`（15分）两国(A、B)生产同一产品在第三国(C)卖，边际成本为0，市场需求为 p=a-bq，两国分别进行补贴 S_A、S_B。求：
+
+（1）产量竞争时最优产量；
+（2）已知B国补贴为定值 S_B，求A国的最优补贴量。` },
+{ id:'A2020-C3', subject:'应用经济学', paper:'2020年（应经）', type:'计算', qid:'3',
+  question:`设生产函数为：Y=K^α·(AL)^β·R^(1-α-β)，其中 R 为土地数量。假定 α>0，β>0 且 α+β<1，生产要素按照 K̇(t)=sY(t)-δK(t)，Ȧ(t)=gA(t)，L̇(t)=nL(t) 和 Ṙ(t)=0 变动。
+
+（1）该经济是否有唯一且稳定的平衡增长路径？也就是说，该经济是否收敛于这样一种情形：Y、K、L、A 和 R 均以不变（但不必相同）的速率增长？如果是，其增长率各为多少？如果不是，为什么？
+（2）根据你的答案，以土地为代表的自然资源存量不变，这一事实是否意味着持续增长是不可能的？请解释。` },
+{ id:'A2020-C4', subject:'应用经济学', paper:'2020年（应经）', type:'计算', qid:'4',
+  question:`某经济体的初始状态由如下方程描述：C=500+0.75(Y-T)，I=1000-50r，M/P=Y-200r，G=1000，T=1000，M=6000，P=2。
+
+（1）计算均衡利率和收入水平。
+（2）假定此时减税20%，假设货币供给保持不变，新的均衡利率和收入水平是多少？税收乘数是多少？
+（3）现在假设中央银行调整货币供给以保持利率不变，新的收入水平是多少？新的货币供给必须是多少？税收乘数是多少？
+（4）现在假定中央银行调整货币供给以保持收入不变。新的均衡利率是多少？新的货币供给必须是多少？税收乘数是多少？` },
+{ id:'A2020-C5', subject:'应用经济学', paper:'2020年（应经）', type:'计算', qid:'5',
+  question:`假定总量生产函数为 Y=2K^(1/2)·L^(1/2)，Y 代表实际GDP，K 代表总的资本存量，L 代表雇佣的所有劳动力，再假定 K=100。
+
+（1）试通过总量生产函数对劳动力求导得到劳动边际产品，推导出劳动需求函数，使劳动边际产品等于实际工资率 W/P，并解 L。
+（2）将劳动力需求函数代入总量生产函数中，并写出作为实际工资函数的产出表达式。
+（3）假定名义工资 W 最初等于4，实际的和预期的物价水平均为1.0，且目标实际工资为4。请计算最初的产出水平和自然产出率。
+（4）根据黏性工资模型，假设名义工资固定为 W=4。试将 W=4 代入题（2）中得到的方程，求出总供给方程，并将 Y 表示成 P 的函数。
+（5）交换变量位置，将题（4）中求得的方程表示成 P 对 Y 的函数。画图表示当 P^e=1.0 且 W=4 时的短期总供给曲线。` },
+{ id:'A2020-E1', subject:'应用经济学', paper:'2020年（应经）', type:'论述', qid:'1',
+  question:`（20分）材料1：人工智能连续第三年出现在政府工作报告中，而且相比2017年、2018年的“加快人工智能等技术研发和转化”“加强新一代人工智能研发应用”，今年政府工作报告中使用的是“深化大数据、人工智能等研发应用”，表述方式从“加快”“加强”到“深化”，证明人工智能将加快发展、成为促进新兴产业加快发展的新动能。
+
+材料2：牛津大学马丁学院的 Michael Osborne、Carl Frey 是研究人工智能方面问题的专家，他们在2013年发表了一篇题为《未来职业：工作有多容易被机器取代？》的论文。根据他们的研究结果，BBC列出了一份名单涵盖社会数十个领域的上千份工作，其中最容易被替代的职业包括：电话推销员、打字员、会计、银行职员、保险业务员、政府职员、前台、HR 和客服等，最不容易被替代的则有设计师、教师、月嫂、医生和程序员等。
+
+（1）考虑三类职业：教师H、银行职员M和保姆L，其中，H需要接受研究生教育。M和L则只需要大学教育，而且在人工智能出现之前，三类职业的工资排序如下：银行职员M>教师H>保姆L的工资。请分析人工智能对于工资不平等的影响；
+（2）考虑企业A密集使用机器人和人工进行生产。请分析机器人供给数量增加对企业A劳动力需求的影响。` },
+{ id:'A2020-E2', subject:'应用经济学', paper:'2020年（应经）', type:'论述', qid:'2',
+  question:`（20分）材料1：蒙代尔教授奠定了开放经济中货币与财政政策理论的基石，蒙代尔教授的贡献构成了国际宏观经济学教学的核心内容。
+
+材料2：一位大佬在重要会议中指出，在全球经济普遍下滑背景下，各国运用财政手段支持经济可持续增长至关重要。
+
+材料3：李嘉图在某书中推测，“在某些条件下，政府无论是用债券还是税收筹资，其效果是相同或等价的。”
+
+（1）描述蒙代尔-弗莱明模型。并对比固定汇率制度、资本完全流动下，财政政策、货币政策的效果，何者更好？
+（2）阐述财政政策内涵，并依据 IS-LM 模型分析封闭经济条件下，财政政策影响经济的效果。
+（3）阐述李嘉图学说的含义，并评价。` },
+
+/* ---------- 2019年（应经） ---------- */
+{ id:'A2019-S1', subject:'应用经济学', paper:'2019年（应经）', type:'简答', qid:'1',
+  question:`请简述下列市场条件下，供给曲线的表现。
+
+（1）在完全竞争市场条件下，短期来看，供给曲线与边际成本的关系。
+（2）在完全竞争市场条件下，平均收益与边际收益曲线的关系。
+（3）在完全垄断市场条件下，为什么不存在供给曲线，而在完全竞争市场条件下，供给曲线则存在？` },
+{ id:'A2019-S2', subject:'应用经济学', paper:'2019年（应经）', type:'简答', qid:'2',
+  question:`请简述在一般均衡的条件下，如果除去一个特定市场，其他市场都达到均衡的条件下，那么这个市场也一定是均衡的。` },
+{ id:'A2019-S3', subject:'应用经济学', paper:'2019年（应经）', type:'简答', qid:'3',
+  question:`“对一家垄断厂商征收从量税会使市场价格上涨与税额相等的幅度。”请问上面这句话是对还是错？请用经济学原理解释。` },
+{ id:'A2019-S4', subject:'应用经济学', paper:'2019年（应经）', type:'简答', qid:'4',
+  question:`生产过程中是否会发生一种投入的边际产品递减而同时规模报酬递增的情况？请运用经济学原理具体分析。` },
+{ id:'A2019-S5', subject:'应用经济学', paper:'2019年（应经）', type:'简答', qid:'5',
+  question:`是否可能存在这样一种帕累托有效配置，这时每个人的境况比其在非帕累托有效率配置中的情况更差？请运用经济学原理具体分析。` },
+{ id:'A2019-S6', subject:'应用经济学', paper:'2019年（应经）', type:'简答', qid:'6',
+  question:`凯恩斯主义和供给学派在政策建议上都主张减税，但是二者有着本质的区别，请简述凯恩斯主义的减税与供给学派的减税之间的本质区别。` },
+{ id:'A2019-S7', subject:'应用经济学', paper:'2019年（应经）', type:'简答', qid:'7',
+  question:`请简要说明费雪跨期消费模型中的“消费平滑化”，它对凯恩斯的消费理论意味着什么？` },
+{ id:'A2019-S8', subject:'应用经济学', paper:'2019年（应经）', type:'简答', qid:'8',
+  question:`通货膨胀的社会成本有哪些？为什么现实中通常无法实现零通胀率？` },
+{ id:'A2019-C1', subject:'应用经济学', paper:'2019年（应经）', type:'计算', qid:'1',
+  question:`（15分）假定香肠和面包卷是完全互补品。代表性消费者通常以一根香肠和一个面包卷为比率做一个热狗，假设已知一根香肠的价格等于一个面包卷的价格，求解如下问题：
+
+（1）求香肠的需求价格弹性。（4分）
+（2）求面包卷对香肠价格的需求的交叉弹性。（4分）
+（3）如果香肠价格是面包卷价格的两倍，那么香肠的需求价格弹性和面包卷对香肠价格的需求的交叉弹性各是多少？（7分）` },
+{ id:'A2019-C2', subject:'应用经济学', paper:'2019年（应经）', type:'计算', qid:'2',
+  question:`（15分）一个行业包括一个主导厂商（用 i 表示）和12个次要厂商（用 j 表示）。主导厂商的总成本函数为 C_i=(1/30)q_i³-2q_i²+50q_i，市场需求曲线为 Q=250-p。主导厂商准确的估计出每个小厂商的成本函数为 C_j=2q_j²+10q_j。主导厂商领导市场价格，并管理自己的产出量，使整个市场供给既不短缺也无剩余。主导厂商能够正确的预期次要厂商将接受它定的价格。主导厂商的定价是为了使自己的利润最大化。求解如下问题：
+
+（1）主导厂商的定价为多少？（7分）它的产量和利润分别为多少？（3分）
+（2）每个小企业的产量和利润分别为多少？（5分）` },
+{ id:'A2019-C3', subject:'应用经济学', paper:'2019年（应经）', type:'计算', qid:'3',
+  question:`（15分）假设消费者甲和乙都遵循费雪的跨期消费选择模型，甲和乙具有相同的跨期效用函数 U(C₁,C₂)=lnC₁+αlnC₂，其中 C₁ 为第一期消费，C₂ 为第二期消费，0<α<1。消费者甲在第一期和第二期的收入都是100元。消费者乙在第一期没有收入，而在第二期的收入为205元。他们都可以按利率 r 借款或贷款。初始财富和终止财富均为0。
+
+（1）现观察到甲和乙都在第一期消费了100元，在第二期消费了100元，请计算此时的利率是多少？（5分）
+（2）相比于（1）题的利率，现将利率调整为8%，此时消费者甲第一期的消费 C₁^m 会如何变化？请运用计算加以说明。（5分）
+（3）当利率调整为2%时，比较一下消费者甲的第一期消费 C₁^m 与消费者乙的第一期消费 C₁^m 之间的相对大小。请运用计算加以说明。（5分）` },
+{ id:'A2019-C4', subject:'应用经济学', paper:'2019年（应经）', type:'计算', qid:'4',
+  question:`（10分）对于有人口增长与技术进步的索洛模型：Y=K^a·(L×E)^(1-α)，其中，Y 为总产出，0<α<1，劳动力 L 的增长率为 n，劳动效率 E 的增长率为 g，资本 K 的折旧率为 δ，储蓄率为 s。
+
+（1）请计算稳态下的总资本—总产出比率。（3分）
+（2）请计算稳态下在总产出中资本所赚取的份额。（2分）
+（3）请计算稳态下资本所赚取的收入的增长率。（2分）
+（4）请计算黄金率储蓄率下总资本—总产出的比率。（3分）` },
+{ id:'A2019-C5', subject:'应用经济学', paper:'2019年（应经）', type:'计算', qid:'5',
+  question:`（15分）一个小型开放经济由如下方程描述：C=50+0.75(Y-T)，I=200-20r，NX=200-50E，M/P=Y-40r，G=200，T=200，M=3000，P=3，r*=5。其中变量 E 代表实际汇率，其他变量都约定俗成。
+
+（1）推导 IS* 和 LM* 曲线。（5分）
+（2）计算均衡汇率(E)、收入水平(Y)和净出口(NX)。（5分）
+（3）假设浮动汇率。计算如果政府支出增加50，汇率(E)、收入水平(Y)和净出口(NX)会发生什么变动？（5分）` },
+{ id:'A2019-E1', subject:'应用经济学', paper:'2019年（应经）', type:'论述', qid:'1',
+  question:`（20分）阅读下面材料然后回答问题：
+
+材料1：2015年党中央、国务院专门制定了《生态文明体制改革总体方案》，明确了生态文明体制的“四梁八柱”，设计了“八项制度”。目前生态文明制度体系加快形成，自然资源资产产权制度改革积极推进，国土空间开发保护制度日益加强，空间规划体系改革试点全面启动，资源总量管理和全面节约制度不断强化，资源有偿使用和生态补偿制度持续推进，环境治理体系改革力度加大，环境治理和生态保护市场体系加快构建，生态文明绩效评价考核和责任追究制度基本建立。
+
+材料2：人民网2017年报道指出：“在推动环境保护过程中，既要打攻坚战，又要打持久战。一方面，对于一些违法违规、环境污染的企业零容忍，依法依规严肃处理；另一方面也要按照分类指导的原则，一厂一策，具体问题具体分析。坚决反对不分青红皂白、不分好坏的‘一刀切’。即使对违法违规的企业，也是根据情况，能够整改的给予时间进行整改，并非一棍子打死。只有那些确确实实没有生存价值，又严重污染环境，整治又没有任何希望的企业，才最后关停关闭，也正因如此，环境保护与经济增长在过去这段时间相得益彰。”
+
+材料3：美国在大气污染防治过程中，最有特色的是利用市场经济手段控制污染排放，建立了污染权交易体系。美国是一个市场经济高度发达的国家，20世纪70年代以来，环境保护署借鉴了水污染治理的排污许可证制度，对大气污染企业进行管理，因不同所有者之间排污权的交易必须是有偿的，排污权交易市场应运而生，逐步建立起以气泡、补偿、银行、容量结余为核心内容的排污权交易体系。
+
+阅读上述材料，回答下面问题：
+（1）为了防止污染引进排污权交易体系，请运用经济学原理分析排污权交易的经济学原理。（10分）
+（2）请运用经济学原理分析对污染的控制是否越严越好？请具体阐述。（10分）` },
+{ id:'A2019-E2', subject:'应用经济学', paper:'2019年（应经）', type:'论述', qid:'2',
+  question:`（20分）背景：（1）美国自从布雷顿森林体系崩溃后，国际贸易余额30多年来一直为负，长期存在双赤字。（2）最近几年来，美国在宏观政策上，一面实行扩张性的财政政策，大规模减税和增加政府购买——进行大规模的军工建设和增加军费开支，另一面则采取谨慎偏紧的货币政策，不断提高贴现率，利率不断上升。同时，在国际贸易政策上则奉行单边保护主义，指责其他国家的贸易政策损害美国利益，是造成美国贸易逆差的祸首，并与中国爆发贸易战。
+
+请结合上述材料回答如下问题：实际结果却是美国的贸易逆差并没有缩小，美元升值与利率上升，美国前景并不乐观，为什么？请你运用所学宏观经济理论对此做出分析和评述。` },
+
+/* ---------- 2018年（应经） ---------- */
+{ id:'A2018-S1', subject:'应用经济学', paper:'2018年（应经）', type:'简答', qid:'1',
+  question:`在完全竞争市场中，是否存在这样的情况：即使发生亏损，生产比不生产好。若存在请说明原因。（5分）` },
+{ id:'A2018-S2', subject:'应用经济学', paper:'2018年（应经）', type:'简答', qid:'2',
+  question:`如果消费者只能消费两种商品，并且总是花光所有收入，这两种商品有可能都是低档商品吗？解释原因。（5分）` },
+{ id:'A2018-S3', subject:'应用经济学', paper:'2018年（应经）', type:'简答', qid:'3',
+  question:`简述显示偏好弱公理。（5分）` },
+{ id:'A2018-S4', subject:'应用经济学', paper:'2018年（应经）', type:'简答', qid:'4',
+  question:`对于一般均衡，瓦尔拉斯法则是如何实现的？（5分）` },
+{ id:'A2018-S5', subject:'应用经济学', paper:'2018年（应经）', type:'简答', qid:'5',
+  question:`飓风破坏建筑等，虽然造成了美国严重的经济损失，但GDP可能会出现攀升。请解释原因，并说明GDP反应真实社会福利水平的缺陷。（5分）` },
+{ id:'A2018-S6', subject:'应用经济学', paper:'2018年（应经）', type:'简答', qid:'6',
+  question:`为什么总需求曲线向右下方倾斜？（5分）` },
+{ id:'A2018-S7', subject:'应用经济学', paper:'2018年（应经）', type:'简答', qid:'7',
+  question:`简述适应性预期和理性预期的区别，菲利普斯曲线是基于哪种预期？（5分）` },
+{ id:'A2018-S8', subject:'应用经济学', paper:'2018年（应经）', type:'简答', qid:'8',
+  question:`在资本完全流动的情况下，小型开放经济中决定一国净出口变动的因素有哪些？（5分）` },
+{ id:'A2018-C1', subject:'应用经济学', paper:'2018年（应经）', type:'计算', qid:'1',
+  question:`（15分）在一个完全垄断市场上，垄断厂商的成本函数为 C=Q²-10Q+30，市场需求函数为 P=13-Q。求：
+
+（1）完全垄断厂商实现均衡时的产量、价格与利润。（5分）
+（2）假定完全垄断厂商被拆分成两个厂商，厂商A的成本函数为 C_A=Q_A²-10Q_A+30，厂商B的成本函数为 C_B=Q_B²-4Q_B+10，求古诺均衡下，各自的产量、市场价格，以及两企业的利润。（5分）
+（3）求两厂商发生串谋时，各自的产量、市场价格，以及两企业的利润。（5分）` },
+{ id:'A2018-C2', subject:'应用经济学', paper:'2018年（应经）', type:'计算', qid:'2',
+  question:`（15分）在一个市场中有三个消费者，他们对公共电视节目小时数 T 的需求曲线分别为：W_A=100-T、W_B=150-2T、W_C=200-T。假定公共电视是一种纯粹的公共物品，它能以每小时100美元的不变边际成本生产出来。请求解：
+
+（1）公共电视有效率的小时数是什么？（5分）
+（2）如果电视为私人物品，一个竞争性的私人市场会提供多少电视小时数？（10分）` },
+{ id:'A2018-C3', subject:'应用经济学', paper:'2018年（应经）', type:'计算', qid:'3',
+  question:`（10分）一个市场上有两个厂商，其中厂商2为领导者，市场需求函数为 Q=20-2P，厂商1的边际成本为1，厂商2的边际成本为0.5。请求解：均衡时厂商的产量、利润和价格。` },
+{ id:'A2018-C4', subject:'应用经济学', paper:'2018年（应经）', type:'计算', qid:'4',
+  question:`（10分）日本、美国物价水平以及日元兑美元的名义汇率如下表所示：
+
+年份　日本物价　美国物价　日元/美元
+一　　100　　　100　　　100/1
+二　　120　　　110　　　100/1
+三　　130　　　140　　　110/1
+
+请根据上表中的信息求解：
+（1）第一、二、三年中，日元/美元的实际汇率是多少？与上一年相比，第三年中日元相对美元是升值还是贬值？（5分）
+（2）日本国内利率为5%，美国国内利率为9%，两国当期名义汇率为100/1，对下一年的预期汇率为90/1，两国利率差能否完全决定资本净流入还是净流出美国还是日本？（5分）` },
+{ id:'A2018-C5', subject:'应用经济学', paper:'2018年（应经）', type:'计算', qid:'5',
+  question:`（20分）考虑一个 Solow 增长模型，假设生产函数为 Y_t=A_t·K_t^θ·L_t^(1-θ)，其中 Y_t、K_t 和 L_t 分别表示 t 时期的总产出、资本存量和劳动力存量，θ 为常数且满足 0<θ<1。进一步，假定技术进步 A_t=h_t^(1-θ)，其中 h_t=h₀e^{g_t}；劳动力存量 L_t=L₀e^{m_t}；s 和 δ 分别代表储蓄率和资本折旧率。
+
+（1）请推导稳态条件下有效劳动的人均产出 y*，并分析 s、g、n、δ 对 y* 的影响；（10分）
+（2）请推导黄金律水平下的人均产出 (Y/L)_gold，并分析 s、g、n、δ 对 (Y/L)_gold 的影响。（10分）` },
+{ id:'A2018-E1', subject:'应用经济学', paper:'2018年（应经）', type:'论述', qid:'1',
+  question:`（20分）材料1：垄断竞争是一种介于完全竞争和完全垄断之间的市场组织形式，在这种市场中，既存在着激烈的竞争，又具有垄断的因素。垄断竞争来源于产品的差别性。具体的差别来源于产品本身物质的或法律上的特点，还来源于进行销售的不同条件。前者包括产品的品质、设计、颜色、式样、包装等特点，还包括专利、商标和商店名称在内；后者包括例如在零售交易中，销售者的地点、工作效率、经营方式、公平交易的信誉、店员对顾客的态度等。
+
+材料2：马歇尔在《经济学原理》一书中提出：“大规模生产的利益在工业上表现得最为清楚……大工厂的利益在于：专门机构的使用与改革、采购与销售、专门技术和经营管理工作的进一步划分。”马歇尔还论述了规模经济形成的两种途径，即依赖于个别企业对资源的充分有效利用、组织和经营效率的提高而形成的“内部规模经济”和依赖于多个企业之间因合理的分工与联合、合理的地区布局等所形成的“外部规模经济”。
+
+材料3：钱德勒在1977年出版了《看得见的手——美国企业的管理革命》。他指出，“当管理上的协调比市场机制的协调能带来更大的生产力，较低的成本和较高的利润时，现代各单位的工商企业就会取代传统的小公司。”
+
+阅读上述三段材料，请回答如下问题：
+（1）画图分析垄断竞争行业市场均衡的状态。（10分）
+（2）结合微观理论说明规模报酬递增的原因。（5分）
+（3）说明市场交易中存在的交易成本与资源有效配置的关系。（5分）` },
+{ id:'A2018-E2', subject:'应用经济学', paper:'2018年（应经）', type:'论述', qid:'2',
+  question:`（20分）十九大报告中指出，我国社会的主要矛盾已经由“人民日益增长的物质文化需要同落后的社会生产之间的矛盾”转变为“人民日益增长的美好生活需要与发展不平衡不充分之间的矛盾。”
+
+（1）结合经济增长理论，论述改革开放以来我国经济增长的源泉。（5分）
+（2）为什么我国当前社会主要矛盾是人民日益增长的美好生活需要与发展不平衡不充分之间的矛盾。（5分）
+（3）结合内生增长理论，说明当前我国应该如何转变经济发展方式。（10分）` },
+
+/* ---------- 2017年（应经） ---------- */
+{ id:'A2017-S1', subject:'应用经济学', paper:'2017年（应经）', type:'简答', qid:'1',
+  question:`在两个市场的经济体中，根据瓦尔拉斯法则，当一个市场均衡时，另一个市场将是什么状态？当一个市场存在正超额需求价值时，另一个市场将是什么状态？（5分）` },
+{ id:'A2017-S2', subject:'应用经济学', paper:'2017年（应经）', type:'简答', qid:'2',
+  question:`请说明在完全竞争市场上，如果一个企业的生产技术具有规模报酬不变的特征，那么如果最大利润存在，它一定是零。（5分）` },
+{ id:'A2017-S3', subject:'应用经济学', paper:'2017年（应经）', type:'简答', qid:'3',
+  question:`在斯坦克尔伯格模型中，先决定产量的厂商有一种优势。解释为什么？（5分）` },
+{ id:'A2017-S4', subject:'应用经济学', paper:'2017年（应经）', type:'简答', qid:'4',
+  question:`在保险市场上逆向选择和道德风险有什么区别？（5分）` },
+{ id:'A2017-S5', subject:'应用经济学', paper:'2017年（应经）', type:'简答', qid:'5',
+  question:`什么是生产率？影响生产率的因素？（5分）` },
+{ id:'A2017-S6', subject:'应用经济学', paper:'2017年（应经）', type:'简答', qid:'6',
+  question:`什么是自然失业率？影响自然失业率的因素有哪些？（5分）` },
+{ id:'A2017-S7', subject:'应用经济学', paper:'2017年（应经）', type:'简答', qid:'7',
+  question:`库兹涅茨对凯恩斯消费函数进行检验时发现了问题，提出了消费函数之谜，试述莫迪利亚尼的生命周期假说和弗里德曼的永久收入假说分别是如何对消费函数之谜进行解释的？（5分）` },
+{ id:'A2017-S8', subject:'应用经济学', paper:'2017年（应经）', type:'简答', qid:'8',
+  question:`在一个资本完全流动的小型开放经济中，根据开放经济的 IS-LM 模型，当世界利率提高时，分别分析在固定汇率与浮动汇率制度下，产出、汇率和贸易余额会有什么变化。（5分）` },
+{ id:'A2017-C1', subject:'应用经济学', paper:'2017年（应经）', type:'计算', qid:'1',
+  question:`（15分）对于一个消费者来说，他的效用函数是 u=x₁^(1/3)·x₂^(2/3)，收入为 m，1和2两种商品的价格分别为 p₁ 和 p₂，求：
+
+（1）1和2两种商品的需求函数；（5分）
+（2）这个消费者的间接效用函数；（5分）
+（3）验证罗伊恒等式。（5分）` },
+{ id:'A2017-C2', subject:'应用经济学', paper:'2017年（应经）', type:'计算', qid:'2',
+  question:`（15分）假设一个垄断者正在决定在两个市场之间分配产量，假定两个市场在地理上是分开的（东部和西部）。两个市场的需求曲线为：p₁=15-q₁（东部市场）；p₂=25-2q₂（西部市场）。垄断者的总成本为 c=5+3(q₁+q₂)，请求解：
+
+（1）如果垄断者可以采取价格歧视，请问此种情况下价格、产量、边际收益和利润；（5分）
+（2）如果法律禁止垄断者在两个地区索要不同的价格，请问此种情况下价格、产量、边际收益和利润。（10分）` },
+{ id:'A2017-C3', subject:'应用经济学', paper:'2017年（应经）', type:'计算', qid:'3',
+  question:`（10分）假设 c 和 d 两个生产者各自拥有 l 和 k 两种要素，生产函数分别为：q=2k+3l+lk（c的生产函数）；q=20l^(1/2)·k^(1/2)（d的生产函数）。生产者 c 使用的 l 和 k 分别用 l_c、k_c 表示，生产者 d 使用的 l 和 k 分别用 l_d、k_d 表示。两种要素的总量为 l̄、k̄，即有 l_c+l_d=l̄，k_c+k_d=k̄。根据题目解答：
+
+（1）分别计算生产者 c 和 d 的边际技术替代率；（5分）
+（2）请用生产者 c 使用的 l_c 和 k_c 来表示生产契约线。（5分）` },
+{ id:'A2017-C4', subject:'应用经济学', paper:'2017年（应经）', type:'计算', qid:'4',
+  question:`（15分）生命周期假说。假设小张0岁开始工作，20岁退休，40岁离世。工作时年收入为常数10000元，初始财富 W₀=0，利率也假设为常数0。请根据以上资料作如下计算：
+
+（1）计算0岁时小张的财富边际消费倾向和收入边际消费倾向；（5分）
+（2）计算10岁时小张的财富边际消费倾向和收入边际消费倾向，其消费 C₁₀ 和财富 W₁₀ 各是多少？（5分）
+（3）20岁时，小张的平均消费倾向是否与10岁的平均消费倾向不同？它能解释库兹涅茨的消费之谜吗？（5分）` },
+{ id:'A2017-C5', subject:'应用经济学', paper:'2017年（应经）', type:'计算', qid:'5',
+  question:`（15分）考虑一个 Solow 增长模型，假设生产函数为 Y_t=K_t^θ·[(1-u_n)L_t]^(1-θ)，其中，Y_t、K_t 和 L_t 分别表示 t 时期的总产出、资本存量和劳动力存量，u_n 表示自然失业率，θ 为常数且满足 0<θ<1。假设 L_t 的增长率为 n，s 和 δ 分别代表储蓄率和资本折旧率。
+
+（1）请推导稳态下的人均资本 K_t/L_t 和人均产出 Y_t/L_t，并分析自然失业率对其的影响；（5分）
+（2）假设在稳态下，政府某项政策突然降低了自然失业率水平，请分析该变化对当期以及稳态下的人均产出分别产生什么影响，哪个更大；（5分）
+（3）请推导黄金律人均资本和黄金律储蓄率，并分析自然失业率对黄金储蓄率的影响。（5分）` },
+{ id:'A2017-E1', subject:'应用经济学', paper:'2017年（应经）', type:'论述', qid:'1',
+  question:`（20分）材料1：美国的反垄断立法始于1890年的《谢尔曼法》，《谢尔曼法》的立法背景是托拉斯的出现。标准石油公司是美国最早的托拉斯之一。1870年，洛克菲勒在俄亥俄州创建标准石油公司，到1879年已控制了全美90%的炼油业，1882年创建了世界第一家托拉斯——标准石油托拉斯，1890年垄断了美国95%的炼油能力、90%的输油能力、25%的原油产量。1890年参议员谢尔曼促成国会通过了旨在反对威胁市场自由竞争的法案，即《谢尔曼法》。1892年标准石油公司被俄亥俄州法院下令解散，洛克菲勒将公司重心转移到新泽西州。1906年，美国联邦政府起诉标准石油公司。1911年，美国最高法院判定标准石油公司存在垄断，最终标准石油公司被下令解散，分解成了30多家分公司。
+
+材料2：2015年中国通信工业协会向国家发展和改革委员会举报高通公司，并罗列高通在中国的“七宗罪”：以整机作为计算许可费的基础、将标准必要专利与非标准必要专利捆绑许可、要求被许可人进行免费反许可、对过期专利继续收费、将专利许可与销售芯片进行捆绑、拒绝对芯片生产企业进行专利许可，以及在专利许可和芯片销售中附加不合理的交易条件等。发改委经调查取证和分析论证，高通公司在CDMA、WCDMA、LTE无线通信标准必要专利许可市场和基带芯片市场具有市场支配地位，实施了滥用市场支配地位的行为，对其罚款60.88亿元。高通公司表示接受，既不申请行政复议，也不提起行政诉讼。
+
+材料3：1998年美国司法部对微软采取反垄断行为是为了创造竞争环境，以增加消费者的选择。这种观点得到不少反垄断问题专家的赞同。美国布鲁金斯学会反垄断问题专家罗伯特·利坦认为，在美国的绝大部分行业中，创新是最重要的推动力，因此，微软一案必须具有开创先例的价值。美国著名经济学家、“新增长理论”的创立者保罗·罗默同样支持对微软采取反垄断行动。
+
+阅读上述三段材料，请回答如下问题：
+（1）请指出垄断的定义并分析造成垄断的原因。（10分）
+（2）请指出垄断可能带来的问题，并指出解决措施。（5分）
+（3）对待微软这样重要的科技公司是否要进行反垄断？请说明原因。（5分）` },
+{ id:'A2017-E2', subject:'应用经济学', paper:'2017年（应经）', type:'论述', qid:'2',
+  question:`（20分）近期，两位著名经济学家就产业政策问题展开了辩论，引起了学界的广泛关注，问题的核心是在当下经济体制改革中如何处理好政府与市场的关系问题。
+
+（1）结合新古典理论和增长理论，阐述市场在短期及长期资源配置中的作用。（5分）
+（2）结合新凯恩斯理论和增长理论，阐述政府在短期及长期资源配置中的作用。（5分）
+（3）结合上述理论，结合当前的经济形势，提出你的政策建议。（10分）` },
+
+/* ---------- 2016年（应经） ---------- */
+{ id:'A2016-S1', subject:'应用经济学', paper:'2016年（应经）', type:'简答', qid:'1',
+  question:`请简要介绍“公地悲剧”产生的机理并提出解决方案。（5分）` },
+{ id:'A2016-S2', subject:'应用经济学', paper:'2016年（应经）', type:'简答', qid:'2',
+  question:`请分析劣质品与吉芬商品之间的异同。（5分）` },
+{ id:'A2016-S3', subject:'应用经济学', paper:'2016年（应经）', type:'简答', qid:'3',
+  question:`请分析为什么劳动供给曲线可能是向后完全弯曲的。（5分）` },
+{ id:'A2016-S4', subject:'应用经济学', paper:'2016年（应经）', type:'简答', qid:'4',
+  question:`“假如我们知道一条契约曲线，我们就可以知道任何交易的结果。”请问上面这句话是对还是错？并运用经济学原理解释。（5分）` },
+{ id:'A2016-S5', subject:'应用经济学', paper:'2016年（应经）', type:'简答', qid:'5',
+  question:`简答国民收入核算中的四部门、三市场经济的均衡条件，并用其来说明“双赤字”及其后果。（5分）` },
+{ id:'A2016-S6', subject:'应用经济学', paper:'2016年（应经）', type:'简答', qid:'6',
+  question:`什么是“流动性陷阱”？货币量化宽松会不会导致流动性陷阱？（5分）` },
+{ id:'A2016-S7', subject:'应用经济学', paper:'2016年（应经）', type:'简答', qid:'7',
+  question:`运用 IS-LM 模型和 AS-AD 模型，分析一国中央银行降低存款准备金率对该国的短期和中长期的影响机制。（5分）` },
+{ id:'A2016-S8', subject:'应用经济学', paper:'2016年（应经）', type:'简答', qid:'8',
+  question:`简答新凯恩斯经济学与新古典经济学的主要分歧。（5分）` },
+{ id:'A2016-C1', subject:'应用经济学', paper:'2016年（应经）', type:'计算', qid:'1',
+  question:`（10分）在某个市场上存在（N≥3）个同质的企业，假定它们的成本函数为 c(q_i)=Qq_i，i=1,2,…,N，其中 q_i 是第 i 个厂商的产量，Q 是市场的总供给，即 Q=Σq_i，求：
+
+（1）假定价格固定为 p，在古诺均衡条件下，每家企业的产量和利润，以及市场的总产量和总利润。（5分）
+（2）假如所有企业合并为一家，结果又如何，并且比较和（1）所产生结果的异同。（5分）` },
+{ id:'A2016-C2', subject:'应用经济学', paper:'2016年（应经）', type:'计算', qid:'2',
+  question:`（15分）假定一个竞争性厂商，其生产函数为：q=F(K,L)=AL^α·K^β，生产要素 L 和 K 的价格分别为 w₁ 和 w₂。
+
+（1）试求在 K 为不变投入时厂商的短期成本函数。（5分）
+（2）求厂商的长期成本函数（5分），并讨论不同的规模报酬对平均成本曲线形状的影响。（5分）` },
+{ id:'A2016-C3', subject:'应用经济学', paper:'2016年（应经）', type:'计算', qid:'3',
+  question:`（15分）某个国家的经济可作如下描述：
+
+C=90+0.9Y_d（消费方程）
+I=200-1000r（投资方程）
+MD=Y-10000r（货币需求）
+
+假如个人所得税为1/3，政府购买为710万美元，实际货币供给为500万美元。求：
+（1）投资总额和赤字水平？（10分）
+（2）货币供应量作何种变动才能使该国政府达到预算平衡？（5分）` },
+{ id:'A2016-C4', subject:'应用经济学', paper:'2016年（应经）', type:'计算', qid:'4',
+  question:`（15分）离散索洛模型。设总生产函数为 Y_t=K_t^α·(A_t L_t)^(1-α)，0<α<1，满足规模报酬不变，其中 Y_t、K_t 和 A 分别为总产出、资本、劳动力和技术。投资 I_t=sY_t，s 为储蓄率。为简单假设折旧为0，劳动增长为 L_t=(1+n)L_{t-1}，n 为劳动增长率，技术增长为 A_t=(1+g)A_{t-1}，g 为技术进步率，K_t=K_{t-1}+I_{t-1}。请你给出经济在稳态下的人均产出增长率。` },
+{ id:'A2016-C5', subject:'应用经济学', paper:'2016年（应经）', type:'计算', qid:'5',
+  question:`（15分）假设消费者面对如下跨期选择。消费者共生存两期，第一期收入为 Y₁，消费为 C₁，第二期收入为 Y₂，消费为 C₂。消费者初始财富和终止财富均为0，消费者第一期可选择储蓄 S，以用于第二期消费。若 S 为负，则表示第一期借款，第二期还款。储蓄或借款的利息率为 r，在此约束下，消费者欲实现其一生效用最大化。
+
+假设其一生效用函数为：U(C₁,C₂)=C₁^(1-θ)/(1-θ) + 1/(1+ρ)·C₂^(1-θ)/(1-θ)，其中，ρ≥0 为第二期效用的折现率，0<θ<1 为相对风险回避系数。
+
+（1）假设 r=0，写出该消费者的最优消费额 C₁* 和 C₂* 的表达式。（10分）
+（2）假设 r=ρ>0，写出该消费者的最优消费额 C₁* 和 C₂* 的表达式。（5分）` },
+{ id:'A2016-E1', subject:'应用经济学', paper:'2016年（应经）', type:'论述', qid:'1',
+  question:`（20分）阅读下面的材料回答后面的问题：
+
+材料1：据中国新闻网报道：从2004年至2014年，我国的粮食生产实现了“十一连增”，创造了中国乃至世界粮食史上的奇迹。2014年粮食产量达60710万吨，增产0.9%，预计2015年“十二连增”，粮食产量将达到62000万吨，增产1.76%。从绝对数量上来讲我国的粮食实现了大幅度增长。
+
+材料2：美国从1933年开始使用农产品补贴工具，80多年来农业补贴政策不断演化，一方面绕过WTO规则，另一方面平衡国内外几个关系，保证美国农产品在国际贸易中的价格优势最大化。
+
+材料3：在美国农业政策不断演化的同时，在美国国内对农业补贴的反对声音也不断，反对者认为：这种巨额的农业补贴，干扰了正常的贸易秩序。而且补贴只是让部分大农场主收益，个体农民或小农场主并没有得到真正的好处，另外在执行农产品补贴政策过程中也存在不少漏洞，比如目前国际市场的农产品价格已上涨了许多，但政府仍然为种植玉米的农户提供价格补贴；一些农户已经不再务农，但农业补贴照顾不误。
+
+请回答：
+（1）在粮食连续增产背后可能出现“谷贱伤农”的现象，请分析“谷贱伤农”背后的经济学原因。（10分）
+（2）请根据材料2分析政府在农业领域可以发挥哪些作用？（5分）
+（3）请根据材料3运用经济学原理分析什么时候政府应当干预经济，并给出相应对策。（5分）` },
+{ id:'A2016-E2', subject:'应用经济学', paper:'2016年（应经）', type:'论述', qid:'2',
+  question:`（20分）近年来，我国经济增速放缓，GDP增长率已经从2010年的10.6%降至2014年的7.4%，2015年的年增长率预计跌破7%。
+
+（1）结合凯恩斯理论，从需求角度分析增速放缓的原因；（5分）
+（2）结合经济增长理论，从供给角度分析增速放缓的原因；（5分）
+（3）综合上述理论，提出相应的政策建议。（10分）` },
+
+/* ---------- 2015年（应经） ---------- */
+{ id:'A2015-S1', subject:'应用经济学', paper:'2015年（应经）', type:'简答', qid:'1',
+  question:`“家电行业的制造商发现，为了占有市场份额，他们不得不采取一些竞争策略，包括广告、售后服务、产品外形设计等，其竞争是很激烈的。因此家电行业是完全竞争行业。”请分析上述说法是否正确？（5分）` },
+{ id:'A2015-S2', subject:'应用经济学', paper:'2015年（应经）', type:'简答', qid:'2',
+  question:`对于一个追求利润最大化的竞争性厂商，如果它在长期均衡条件下获得正的利润，那么它是否能够拥有一种规模报酬不变的技术？请说明理由。（5分）` },
+{ id:'A2015-S3', subject:'应用经济学', paper:'2015年（应经）', type:'简答', qid:'3',
+  question:`请问什么是占优策略均衡？什么是纳什均衡？它们之间有什么关系？（5分）` },
+{ id:'A2015-S4', subject:'应用经济学', paper:'2015年（应经）', type:'简答', qid:'4',
+  question:`和完全竞争相比，垄断可能从哪些方面促进经济效率，试举例说明。（5分）` },
+{ id:'A2015-S5', subject:'应用经济学', paper:'2015年（应经）', type:'简答', qid:'5',
+  question:`请结合图形简要说明凯恩斯交叉模型、IS-LM 模型和 AS-AD 模型这三个模型之间的内在联系。（5分）` },
+{ id:'A2015-S6', subject:'应用经济学', paper:'2015年（应经）', type:'简答', qid:'6',
+  question:`总供给曲线与菲利普斯曲线是看待同一宏观经济现象的两种不同方式，请简要说明其原因。（5分）` },
+{ id:'A2015-S7', subject:'应用经济学', paper:'2015年（应经）', type:'简答', qid:'7',
+  question:`请简要说明为什么短期总供给曲线是向右上方倾斜而非垂直的。（5分）` },
+{ id:'A2015-S8', subject:'应用经济学', paper:'2015年（应经）', type:'简答', qid:'8',
+  question:`简要说明自然失业率为什么不为零。（5分）` },
+{ id:'A2015-C1', subject:'应用经济学', paper:'2015年（应经）', type:'计算', qid:'1',
+  question:`（15分）某垄断企业面临政府保护的国内市场以及竞争激烈的国际市场这两个分割的市场。在国内市场，其产品的需求方程为 P_d=120-q_d/10；在国际市场上，其产品的需求方程为 P_e=240-q_e/10。企业的边际成本为 MC=60+Q/10。其中 Q=q_d+q_e。
+
+（1）求出垄断企业的最优产出以及国内国外市场所占的份额。（5分）
+（2）比较两个市场的价格与需求价格弹性。（5分）
+（3）若两个分割的市场合并为一个市场，这时总产出与价格为多少？（5分）` },
+{ id:'A2015-C2', subject:'应用经济学', paper:'2015年（应经）', type:'计算', qid:'2',
+  question:`（15分）有一家钢铁厂，生产成本为 c(s,x)=s²(θ-x)²+s²；有一家渔场，生产成本为 c(f,x)=f²x²，其中 s 为钢产量，f 为鱼产量，x 为污染排放量，θ 为参数，求解：
+
+（1）是否可以通过征收税收 t 达到社会最优化？可以的话，t 为多少？若不可以，说明理由。（7分）
+（2）如果政府现在规定最大排污量为 K，排污权可以自由买卖，问最大排污量为多少？（8分）` },
+{ id:'A2015-C3', subject:'应用经济学', paper:'2015年（应经）', type:'计算', qid:'3',
+  question:`（10分）已知某市场上有 N 家成本一样的企业，单个厂商长期成本函数为 LTC=q³-2q²+6q，整个市场的需求曲线为 Q=20-2P。
+
+（1）如果市场为垄断竞争市场，且每家企业需求为整个市场需求的 1/N。请问当 N 等于8时，该市场是否处于长期均衡，为什么？（5分）
+（2）如果该市场为长期竞争市场，那么长期均衡时市场上企业数量 N 是多少？（5分）` },
+{ id:'A2015-C4', subject:'应用经济学', paper:'2015年（应经）', type:'计算', qid:'4',
+  question:`（15分）假设一个宏观经济的总产出函数为：Y=AK^α·L^(1-α)，0<α<1，其中 Y、K、L 和 A 分别为总产出、资本、劳动力和技术。产出 Y 的价格为 P，资本的租金率为 R，劳动力的工资为 W。假设资本供给为 K̄，劳动力供给为 L̄。
+
+（1）当资本等于 K̄，物价为 P̄ 时，求满足劳动力供需均衡的工资水平 W*，并分析影响该均衡工资的因素。（10分）
+（2）当资本等于 K̄，物价为 P̄，并且劳动力最低工资为 W_min 时（W_min>W*），求此时的劳动力供需缺口，以及产出总供给。（5分）` },
+{ id:'A2015-C5', subject:'应用经济学', paper:'2015年（应经）', type:'计算', qid:'5',
+  question:`（15分）假定对真实货币余额的需求取决于利率 i 和可支配收入 Y-T，货币需求为 M/P=L(i,Y-T)，满足性质 ∂L/∂i=θ<0，∂L/∂(Y-T)=τ>0。总支出为 E=C(Y-T)+I(i)+G，满足性质 0<∂C/∂(Y-T)=c<1，∂I/∂i=k<0。
+
+其中 M 为名义货币需求，P 为物价水平，Y 为国民收入，E 为总支出，C 为消费，I 为投资，G 为政府购买，T 为税收，i 为名义利率，θ、τ、c、k 为参数。
+
+（1）θ、τ、c、k 满足什么条件时，增加税收能够增加需求？（10分）
+考虑一个资本完全流动的开放经济，E=C(Y-T)+I(i)+G+NX(e)，NX 为净出口，e 为名义汇率，∂NX/∂e=δ<0。
+（2）在浮动汇率下，增加税收能否增加总需求？（3分）
+（3）在固定汇率下，增加税收能否增加总需求？（2分）` },
+{ id:'A2015-E1', subject:'应用经济学', paper:'2015年（应经）', type:'论述', qid:'1',
+  question:`（20分）根据下面的材料回答后面的问题：
+
+材料1：帕累托是19世纪初的意大利经济学家，他是福利经济学家的代表人物，以他的名字命名的“帕累托最优”是现代经济学中的一个重要概念，也是经济的一个美好的理想境界。
+
+材料2：米尔顿·弗里德曼曾经说过：“伦纳德·里德《铅笔的故事》一文已经成为一篇经典之作。”大部分人应该都是从未想象过制造一根小小的铅笔竟然需要成千上万的人力，所涉及的行业领域竟如此之多，并且世界上没有一个人能用他的知识完整地描述出铅笔的整个生产过程。伦纳德·里德在其文章《铅笔的故事》中向我们阐述了一个铅笔的制造从原材料的采集到运输，再到生产，整个过程的纷繁复杂，包含了无数人直接参与或间接参与的行业，除了铅笔制造厂的工人外，其他人并不知道他们为制造铅笔出了力，而铅笔制造厂不过是整个生产过程的小部分而已。一根小小的铅笔在生产过程中涉及了庞大的产业链条，所有人进行分工劳作。然而这一庞大的过程中，人们并不因为本人需要铅笔而从事自己的工作，但是大家都被“无形的手”所驱使，使自己的体力和智力有效地自主地结合，从而带来高效、均衡的社会生产。伦纳德·里德试图通过一支铅笔的制造告诉人们人类社会可以在没有政府的干预下自由运转，甚至带来更高效的运转，而“看不见的手”在均衡中起着关键性的作用。
+
+材料3：法国经济学家托马斯·皮凯蒂的新著《21世纪资本论》一经出版便引发东西方各国的热议和争论。作者提出近十余年来，世界的贫富差距正在严重恶化，而且根据预测将会继续恶化下去。当前在美国，前10%的掌握50%的财富，而前1%的人掌握了20%的财富。现有的市场经济制度只会让富人更富，穷人更穷。
+
+阅读上述三段材料，回答下列问题：
+（1）请阐述“帕累托改进”和“帕累托最优”的概念。（5分）
+（2）请运用所学微观经济学知识分析《铅笔的故事》所蕴含的经济学理论。（10分）
+（3）材料3中提出了目前全球收入分配差距正在恶化，经济学理论“帕累托最优”的资源配置状态是否意味着资源配置是平均的？请运用微观理论分析。（5分）` },
+{ id:'A2015-E2', subject:'应用经济学', paper:'2015年（应经）', type:'论述', qid:'2',
+  question:`（20分）请运用经济增长模型总结我国过去三十年高速增长的主要源泉。` },
+
+/* ---------- 2014年（应经） ---------- */
+{ id:'A2014-S1', subject:'应用经济学', paper:'2014年（应经）', type:'简答', qid:'1',
+  question:`请说明为什么外部性会导致资源配置的低效率。（5分）` },
+{ id:'A2014-S2', subject:'应用经济学', paper:'2014年（应经）', type:'简答', qid:'2',
+  question:`设有两种商品 X 和 Y，其中 Y 为正常商品。请用收入效应和替代效应描述（1）当 X 为正常商品；（2）X 为劣等商品；（3）X 为吉芬商品时，X 价格下降消费者对 X 和 Y 最佳配置的影响，请画图分析。（5分）` },
+{ id:'A2014-S3', subject:'应用经济学', paper:'2014年（应经）', type:'简答', qid:'3',
+  question:`你认为花钱做广告宣传是完全竞争厂商获取更大利润的手段吗？请分析原因。（5分）` },
+{ id:'A2014-S4', subject:'应用经济学', paper:'2014年（应经）', type:'简答', qid:'4',
+  question:`有人说：“由于长期内经济利润为零，厂商在完全竞争市场中没有利益驱动去生产产品，但却有人认为在不盈利的情况下继续进行生产和销售”。请分析原因。（5分）` },
+{ id:'A2014-S5', subject:'应用经济学', paper:'2014年（应经）', type:'简答', qid:'5',
+  question:`请简述凯恩斯消费函数的特征及缺陷。（5分）` },
+{ id:'A2014-S6', subject:'应用经济学', paper:'2014年（应经）', type:'简答', qid:'6',
+  question:`请用托宾 q 理论简要说明股票价格与经济活动同时波动的原因。（5分）` },
+{ id:'A2014-S7', subject:'应用经济学', paper:'2014年（应经）', type:'简答', qid:'7',
+  question:`简要叙述在固定汇率制度与浮动汇率制度下，财政政策和货币政策各自的有效性。（5分）` },
+{ id:'A2014-S8', subject:'应用经济学', paper:'2014年（应经）', type:'简答', qid:'8',
+  question:`请简要说明短期菲利普斯曲线和长期菲利普斯曲线之间的关系。（5分）` },
+{ id:'A2014-C1', subject:'应用经济学', paper:'2014年（应经）', type:'计算', qid:'1',
+  question:`（15分）假设企业1和2生产相同的产品且成本函数一样。其边际成本恒定且没有固定成本，即 AC=MC=10。整个市场的需求函数为 Q=200-P。请分别算出古诺模型和斯塔克尔伯格模型下的社会福利，比较哪个更大。` },
+{ id:'A2014-C2', subject:'应用经济学', paper:'2014年（应经）', type:'计算', qid:'2',
+  question:`（15分）设某消费者的效用函数为柯布-道格拉斯类型的，即 u=x^α·y^β，商品 x 和商品 y 的价格分别为 p_x 和 p_y，消费者的收入为 M，α 和 β 为常数，且 α+β=1。
+
+（1）求解消费者关于商品 x 和商品 y 的消费函数。（5分）
+（2）证明当商品 x 和商品 y 的价格以及消费者的收入同时变动一个比例的时候，消费者对两种商品的需求关系维持不变。（5分）
+（3）证明消费者的效用函数中的 α 和 β 分别为商品 x 和商品 y 的消费支出占消费者收入的份额。（5分）` },
+{ id:'A2014-C3', subject:'应用经济学', paper:'2014年（应经）', type:'计算', qid:'3',
+  question:`（15分）设李四仅消费 x 和 y 两种商品，他的效用函数为 U=L^0.57·x^0.06·y^0.09，其中 L 是李四每周的闲暇小时数。假定李四的工资为每小时 w，商品 x 和商品 y 的价格分别为 p_x 和 p_y，每周7天，每天24小时，劳动工资是其收入的全部来源，求当他每周最大化其效用函数时：
+
+（1）李四将选择每周工作多少小时？（2分），并将其收入的多大比例用于购买 x。（3分）
+（2）李四消费 x 的需求价格弹性。（5分）
+（3）如果李四的收入下降了30%，y 的价格下降了50%，他将过得更好还是更坏？（5分）` },
+{ id:'A2014-C4', subject:'应用经济学', paper:'2014年（应经）', type:'计算', qid:'4',
+  question:`（15分）考虑一个经济体由下面几个方程式描述：
+
+菲利普斯曲线：π_t=E_{t-1}π_t+(Y_t-100)+ν_t
+产品市场：Y_t=100-(r_t-2)+ε_t
+央行的货币政策规则：i_t=π_t+2+(2/3)(π_t-2)+(1/3)(Y_t-100)
+费雪方程式：r_t=i_t-E_tπ_{t+1}
+预期形成机制：E_tπ_{t+1}=π_t+η_t
+
+其中 Y_t 为 t 时期的总产出，π_t 为 t 时期的通货膨胀率，i_t 为 t 时期的名义利率，r_t 为 t 时期的实际利率，ε_t、ν_t、η_t 分别为 t 时期的需求冲击、供给冲击及预期冲击。
+
+（1）请写出动态供给线方程和动态需求线方程，并计算长期均衡时的产出和通货膨胀率。（5分）
+（2）假设经济在 t 期以前处于长期均衡点。考虑在 t 期人们对通货膨胀产生恐慌，使得 η_t=1，但这种恐慌只发生在 t 期，t 期后恐慌消失。请计算 t 期的产出、通货膨胀率、名义利率、实际利率。（5分）
+（3）请计算出 t+1 期的产出、通货膨胀率、名义利率、实际利率，并解释为什么通货膨胀是预期自我实现的。（5分）` },
+{ id:'A2014-C5', subject:'应用经济学', paper:'2014年（应经）', type:'计算', qid:'5',
+  question:`（10分）假设一个封闭经济的总量生产函数为 Y=AK^α·(yL)^β。Y、A、K、L 分别表示总产出、技术系数、总资本、总人口，y 表示劳动参与率指标，y>0，我们约定 y=100% 时经济处于充分就业状态。假设该经济的人口增长率为 n，不考虑技术进步和折旧。假设经济的储蓄率 s 为外生常数。各外生参数取值分别为：A=0.2，s=0.5，α=0.5，β=0.5，n=0.01。
+
+假设经过了一段足够长的时间后，在某个时刻 t 经济达到了稳定状态，总资本存量为 K*。我们约定在时刻 t 的总人口 L=1。同时经济在时刻 t 突然受到某种外生冲击，从而处于非充分就业状态，且此时的名义工资 W 保持不变，W=20。假设在时刻 t 经济的 IS 曲线方程为 Y=2-5r，LM 曲线方程为 M/P=0.5Y-5r，M 为货币供给数量，P 为经济的总价格水平，r 为实际利率。
+
+（1）请计算经济在时刻 t 的总资本存量 K* 和充分就业产出 Y*。（5分）
+（2）使用 y 作为企业的劳动需求质量衡量指标，计算在时刻 t 经济的劳动需求曲线（即实际工资 w 和 y 的函数关系）和短期总供给（Y 和 P 的关系）。（3分）
+（3）计算在时刻 t 使得经济达到充分就业产出的货币供应数量 M*。（2分）` },
+{ id:'A2014-E1', subject:'应用经济学', paper:'2014年（应经）', type:'论述', qid:'1',
+  question:`（20分）根据下面的材料回答后面的问题：
+
+材料1：近年来，伴随着物价水平接连上涨，各地政府不断推出价格补贴措施，如某市就根据物价上升幅度，调整了低保水平，将城市市区低保标准由920元/月，提高到1160元/月。
+
+材料2：自2004年以来，政府对农业机械购买进行价格补贴，如广东省规定2013年底，非通用类和本省自选类农产品补贴标准不超过此档农产品在本省近三年的平均销售价格的30%计算，一般机具单机补贴额不超过5万元；挤奶机械、烘干机单机补贴额可提高12万元；73.5千瓦（100马力）以上的大型拖拉机、高性能青饲料收获机、大型免耕播种机、大型联合收割机、水稻大型种植芽程控设备单机补贴可提高到15万元；147千瓦（200马力）以上拖拉机单机补贴限额可提高到25万元；甘蔗收割机单机补贴可提高到20万元。
+
+材料3：2013年03月29日公告，根据张家港市金港镇人民政府金政发【2013】20号《关于给予张家港化工机械股份有限公司研发补贴资金的通知》，张化机械获得研发补贴1200万元，公司于2013年03月27日收到上述补贴，该部分财政补贴资金将计入公司当期损益。
+
+根据上述材料，论述各种补贴的类型、动机与方式，并分析各种补贴效果的影响因素。` },
+{ id:'A2014-E2', subject:'应用经济学', paper:'2014年（应经）', type:'论述', qid:'2',
+  question:`（20分）据国内媒体报道，在某次高峰论坛上，某经济学家表示，中国经济增长的未来前景还在于投资，靠消费拉动是不现实的，而反周期的政府举措应当是最有效投资。该学者指出，中国经济自2008年开始有20年的高增长期，每年能保持8%左右的增速，但长期经济增长和短期反周期政策的结合还要靠投资拉动。此前发达国家爆发经济危机的多是消费高增长国家，但仅靠消费无异于无水之源，不能持续，因此还要靠有效投资拉动。
+
+请结合你所学的经济学理论，对该经济学者观点的合理性展开分析、论述。` },
+
+/* ---------- 2013年（应经） ---------- */
+{ id:'A2013-S1', subject:'应用经济学', paper:'2013年（应经）', type:'简答', qid:'1',
+  question:`举例说明什么是道德风险。（5分）` },
+{ id:'A2013-S2', subject:'应用经济学', paper:'2013年（应经）', type:'简答', qid:'2',
+  question:`现实生活中很多商人秉承“薄利多销”这一传统经商理念，请运用你学过的弹性理论分析这一传统的经商理念。（5分）` },
+{ id:'A2013-S3', subject:'应用经济学', paper:'2013年（应经）', type:'简答', qid:'3',
+  question:`什么是机会成本？试举两例说明。（5分）` },
+{ id:'A2013-S4', subject:'应用经济学', paper:'2013年（应经）', type:'简答', qid:'4',
+  question:`什么是价格歧视？垄断厂商实行价格歧视是否会降低国民福利。（5分）` },
+{ id:'A2013-S5', subject:'应用经济学', paper:'2013年（应经）', type:'简答', qid:'5',
+  question:`试说明如果一个策略组合为博弈中唯一的纳什均衡，则该策略组合不会在重复剔除严格劣策略的过程中被剔除。（5分）` },
+{ id:'A2013-S6', subject:'应用经济学', paper:'2013年（应经）', type:'简答', qid:'6',
+  question:`什么是流动性陷阱？在流动性陷阱中，货币政策是否有效？（5分）` },
+{ id:'A2013-S7', subject:'应用经济学', paper:'2013年（应经）', type:'简答', qid:'7',
+  question:`请通过一个具体的例子说明宏观经济政策时间不一致性。（5分）` },
+{ id:'A2013-S8', subject:'应用经济学', paper:'2013年（应经）', type:'简答', qid:'8',
+  question:`什么是消费的生命周期说？它与凯恩斯的消费理论相比最大的区别在于什么地方？（5分）` },
+{ id:'A2013-C1', subject:'应用经济学', paper:'2013年（应经）', type:'计算', qid:'1',
+  question:`（10分）假定消费者A、B的效用函数分别为 U_A=X_A^a·Y_A 和 U_B=X_B^a·Y_B。如果消费者A商品X的禀赋为 X̄，Y的禀赋为0；消费者B商品X的禀赋为0，Y的禀赋为 Ȳ。试推导A、B的交换契约曲线方程。` },
+{ id:'A2013-C2', subject:'应用经济学', paper:'2013年（应经）', type:'计算', qid:'2',
+  question:`（15分）考虑一个小产品市场，其中假定男性市场对小产品的总需求为 X_m(P)=a-A_m·P，女性市场对小产品的总需求为 X_w(P)=a-A_w·P，这里假定 A_m<A_w。每件小产品的生产成本为 c。
+
+（1）假定小产品市场是完全竞争的，求市场均衡时的价格和各自市场的需求量。（3分）
+（2）设厂商甲是该小产品的垄断生产者，另假定厂商甲被禁止采取“价格歧视”政策（即对男性和女性分别定价），则使利润最大化的价格是多少？（5分）在怎样的条件下，男、女性都有正的需求量？（2分）
+（3）仍设厂商甲是该小产品的垄断生产者，若允许厂商甲进行价格歧视，求出其对男性和女性分别的最优定价。（5分）` },
+{ id:'A2013-C3', subject:'应用经济学', paper:'2013年（应经）', type:'计算', qid:'3',
+  question:`（15分）封闭经济总需求与总供给模型：
+
+消费函数：C=100+0.8Y
+投资函数：I=1000-20r
+名义货币供给量：M_s=800
+实际货币需求量：M_d/P=0.2Y-20r
+政府购买支出：G=500
+短期总生产函数：Y=20L
+劳动供给：L_s=100+2(W/P)
+劳动需求：L_d=500-2(W/P)
+
+W 为名义工资率，P 为价格水平，r 为利率。
+
+（1）假设价格和工资充分弹性，请给出总需求函数和总供给函数，均衡产出与均衡价格水平是多少？（10分）
+（2）如果政府购买支出 G 增加200，在价格和工资弹性的条件下，均衡的价格水平和产出会如何变动？（5分）` },
+{ id:'A2013-C4', subject:'应用经济学', paper:'2013年（应经）', type:'计算', qid:'4',
+  question:`（15分）考察索洛模型如下：
+
+总生产函数为：Y_t=K_t^α·(A_t L_t)^(1-α)
+资本积累方程：K̇_t=sY_t-σK_t
+劳动力增长率：L̇(t)/L(t)=n
+技术进步率：Ȧ(t)/A(t)=g
+
+其中 Y_t 为 t 时期的总产出，K_t 为 t 时期的总资本存量，A_t 为 t 时期劳动的效率（代表技术进步），L_t 是 t 时期的总劳动量，s 是储蓄率。
+
+（1）请你给出该增长模型的均衡点（静止点），即均衡时的平均有效资本 k*=K_t/(A_t L_t) 是多少？（3分）并证明它是否稳定？（2分）
+（2）假定 α=1/2，σ=10%，n=1%，g=1.5%，s=50%，那么均衡下的平均有效资本 K_t/(A_t L_t) 是多少？（2分）它是否大于黄金律资本存量？（3分）
+（3）若储蓄率 s 发生变化（比如下降），对平衡增长路径有什么影响？（5分）` },
+{ id:'A2013-C5', subject:'应用经济学', paper:'2013年（应经）', type:'计算', qid:'5',
+  question:`（15分）考虑一个单一产品经济，假定张三的寿命分两期：第一期参加工作，收入用于当期的消费和储蓄；第二期张三作为退休的老人，不参加工作，使用第一期的储蓄满足该期的消费。张三在第一期的消费为 c₁，储蓄为 s，劳动收入为 w；第二期的消费为 c₂；利率为 r。
+
+张三的效用函数为：U(c₁,c₂)=(c₁^(1-θ)-1)/(1-θ) + β·(c₂^(1-θ)-1)/(1-θ)，0<β<1，θ>0。
+
+假定 w、r、β、θ 为外生参数（数值已知）。
+
+（1）写出张三的效用最大化问题。（2分）并给出张三在一、二期的消费函数。（5分）
+（2）讨论利率 r 升高后，储蓄 S 如何变化？（4分）并给出经济解释。（4分）` },
+{ id:'A2013-E1', subject:'应用经济学', paper:'2013年（应经）', type:'论述', qid:'1',
+  question:`（20分）在2012年召开的中共十八大报告中提出：“调整国民收入分配格局，着力解决收入分配差距较大问题，使发展成果更多更公平惠及全体人民，朝着共同富裕方向稳步迈进”。同时报告指出，到2020年，实现国内生产总值和城乡居民人均收入比2010年翻一番。
+
+（1）结合你所学的经济学知识，论述十八大报告中提出的收入分配格局调整对于我国扩大内需、拉动居民消费的意义。（7分）
+（2）结合你所学的经济学知识，论述在我国今后的发展目标中同时考虑国内生产总值和城乡居民人均收入增长的原因及意义。（7分）
+（3）结合你所学的经济学知识，论述实现国民收入分配格局调整和城乡居民收入翻番的有关政策手段。（6分）` },
+{ id:'A2013-E2', subject:'应用经济学', paper:'2013年（应经）', type:'论述', qid:'2',
+  question:`（20分）结合微观经济学相关理论，分析不同市场结构下企业进行广告宣传的动机和策略取向。` },
+
+/* ---------- 2012年（应经） ---------- */
+{ id:'A2012-S1', subject:'应用经济学', paper:'2012年（应经）', type:'简答', qid:'1',
+  question:`比较说明“边际产品价值”与“边际收益产品”之间的异同。（10分）` },
+{ id:'A2012-S2', subject:'应用经济学', paper:'2012年（应经）', type:'简答', qid:'2',
+  question:`在经验研究中经济学家从供给角度经常将价格相对于边际成本的“溢价”（即 (P-MC)/P）作为测量厂商垄断程度的指标，请说明其经济学原理。另一方面，从需求角度也可以通过市场的需求价格弹性来反映厂商的垄断程度。请问这与价格相对于边际成本的“溢价”有何联系？（10分）` },
+{ id:'A2012-S3', subject:'应用经济学', paper:'2012年（应经）', type:'简答', qid:'3',
+  question:`在信贷市场上，一般来说利率越高，银行进行放贷的供给数额也就越多，但这并不总是“铁律”，下图描绘了两者之间一种U型关系，请说明其存在的原因。此外，当对信贷的需求为何种情况时，会出现“信贷配给”的现象，请试画图说明。（10分）` },
+{ id:'A2012-S4', subject:'应用经济学', paper:'2012年（应经）', type:'简答', qid:'4',
+  question:`对于一条给定的U型长期平均成本（LAC）曲线而言，厂商的内部规模经济、内部规模不经济、外在经济、外在不经济如何体现？请画图表示并加以说明。（10分）` },
+{ id:'A2012-S5', subject:'应用经济学', paper:'2012年（应经）', type:'简答', qid:'5',
+  question:`以下三种方式中哪种方式对总产出（或总收入）产生的刺激效果最大？哪种方式最小？
+
+（1）政府增加数量为X的开支
+（2）政府削减数量为X的税收
+（3）政府增加数量为X的开支，同时增加数量为X的税收，以保持财政平衡。请说明你的理由。（10分）` },
+{ id:'A2012-S6', subject:'应用经济学', paper:'2012年（应经）', type:'简答', qid:'6',
+  question:`请判断以下关于货币供给的论断是否正确？并解释之。
+
+（1）只有银行体系才具有货币创造的能力，而其他金融机构没有这种能力；
+（2）银行体系创造货币不仅增加了经济中的流动性，同时也增加了经济中的财富。（10分）` },
+{ id:'A2012-S7', subject:'应用经济学', paper:'2012年（应经）', type:'简答', qid:'7',
+  question:`什么是“卢卡斯批评”？请结合例子说明它对宏观经济政策制定的启示和影响。（10分）` },
+{ id:'A2012-C1', subject:'应用经济学', paper:'2012年（应经）', type:'计算', qid:'1',
+  question:`（12分）某人的效用函数是 U(C,R)=C-(12-R)²，其中 R 是他每天拥有的闲暇时间。他每天有16小时可用在工作和闲暇上，每天有20元的非劳动收入。消费品的价格是每单位1元。如果工资率是每小时10元，他将选择多少小时进行工作以获得最大效用？` },
+{ id:'A2012-C2', subject:'应用经济学', paper:'2012年（应经）', type:'计算', qid:'2',
+  question:`（14分）一个垄断厂商拥有 A 和 B 两个工厂，其成本函数分别为：TC_a=4Q_a²+5，TC_b=2Q_b²+10，其中 TC 为总成本，Q 为产量；市场需求函数为：P=100-2Q，其中 P 为价格。
+
+（1）求该企业利润最大化的产量、价格与利润；（7分）
+（2）如果政府采用边际定价法对其产品价格加以限制，则求该厂商的产量、价格和利润。（7分）` },
+{ id:'A2012-C3', subject:'应用经济学', paper:'2012年（应经）', type:'计算', qid:'3',
+  question:`（14分）在新古典经济增长模型中，假设生产函数为 Y=K^(2/3)·N^(1/3)，其中 Y、K 和 N 分别为总产出、资本存量和劳动力。假定资本折旧率 δ 为4%，人口增长率 n 为2%。
+
+（1）如果储蓄率 s 为30%，求均衡的人均资本和人均产出；（7分）
+（2）计算满足黄金律要求的人均资本和相应的储蓄率水平。（7分）` },
+{ id:'A2012-E1', subject:'应用经济学', paper:'2012年（应经）', type:'论述', qid:'1',
+  question:`（20分）现实中存在诸多干预市场供求规律的情况，例如政府出于社会目标的考虑对从食品到房租的价格进行最高限价管制，其价格往往低于市场均衡价格，请回答：
+
+（1）最高限价政策将对市场供求产生怎样的影响？
+（2）最高限价政策将对社会经济福利（包括消费者剩余和生产者剩余）产生什么影响？
+（3）从长期来看，你认为最高限价管制能够解决高价格与供求矛盾的问题吗？请说明你的理由。` },
+{ id:'A2012-E2', subject:'应用经济学', paper:'2012年（应经）', type:'论述', qid:'2',
+  question:`（20分）欧洲主权债务危机与美国财政赤字危机引发了全球对政府债务问题的关注。我国中央政府的财政赤字与债务总水平虽在可控制范围之内，但各种显性与隐性的地方债务问题也需引起足够的重视，以避免触发公共财政与金融风险。请回答：
+
+（1）为什么需要合理和有效地控制政府预算赤字？（7分）
+（2）2008年金融危机爆发后许多发达经济体（特别是美国）在实施财政刺激计划的同时都采取了扩张性的货币政策，请利用宏观经济基本模型说明实施“财政政策货币化”的原因及效果。（7分）
+（3）解决政府债务的办法主要包括税收筹资与债券筹资，这两种方式对消费、储蓄与产出（收入）的影响有何不同？（6分）` },
+
+/* ---------- 2011年（应经） ---------- */
+{ id:'A2011-S1', subject:'应用经济学', paper:'2011年（应经）', type:'简答', qid:'1',
+  question:`早在两百多年前，亚当·斯密就曾断言：人们在追求私利的时候，会在一只“看不见的手”的指引下实现增进社会福利的目的。当代西方经济学家将斯密的上述思想发展成为一个更加精致的原理：完全竞争的市场机制可以导致帕累托最优状态。请简要解释完全竞争经济中的最优化行为为什么会导致帕累托最优？（10分）` },
+{ id:'A2011-S2', subject:'应用经济学', paper:'2011年（应经）', type:'简答', qid:'2',
+  question:`请判断以下说法是否正确，并加以解释：“在长期内，为生产既定产量的产品，厂商总是在最优厂商规模的最低平均成本水平上进行生产”。（10分）` },
+{ id:'A2011-S3', subject:'应用经济学', paper:'2011年（应经）', type:'简答', qid:'3',
+  question:`如果已知每个消费者对私人物品与公共物品的需求曲线，请比较说明对一个经济体而言，私人物品与公共物品在定价上的区别。消费者会愿意按照你所认为的公共物品的价格来进行支付吗？为什么？（10分）` },
+{ id:'A2011-S4', subject:'应用经济学', paper:'2011年（应经）', type:'简答', qid:'4',
+  question:`试比较说明“凯恩斯主义极端”与“古典主义极端”两种情况的经济含义，以及在这两种情形下的财政政策与货币政策的有效性。（10分）` },
+{ id:'A2011-S5', subject:'应用经济学', paper:'2011年（应经）', type:'简答', qid:'5',
+  question:`货币冲击会对经济的实际产出在短期与长期内产生怎样的影响？请结合宏观经济学的不同流派理论进行比较分析。（10分）` },
+{ id:'A2011-C1', subject:'应用经济学', paper:'2011年（应经）', type:'计算', qid:'1',
+  question:`（15分）某消费者消费X和Y两种商品的效用函数为 U=X²Y³，消费者收入 M 为100。
+
+（1）求该消费者对X商品的需求函数；
+（2）若Y商品的价格为 P_Y=3，求当X商品的价格 P_X 由2变为1时的替代效应和收入效应。` },
+{ id:'A2011-C2', subject:'应用经济学', paper:'2011年（应经）', type:'计算', qid:'2',
+  question:`（15分）一个行业有两家企业，这两家企业具有相同的成本函数 c(q)=4q，其中 q 为企业的产量。这个行业的反需求函数是 P=100-2Q，其中 P 为价格，Q 为行业的总产量。
+
+（1）若两家企业进行古诺产量竞争，求均衡时两家企业的产量和利润；
+（2）若两家企业进行伯特兰价格竞争，求均衡时两家企业的产量和利润；
+（3）若企业1是斯塔克尔伯格博弈中的领先者，企业2是追随者，求均衡时两家企业的产量和利润；
+（4）若两家企业组成卡特尔，并平分市场，则两家企业的产量和利润分别是多少？假定企业2不会背叛，当企业1背叛卡特尔协议时的产量和利润各是多少？` },
+{ id:'A2011-C3', subject:'应用经济学', paper:'2011年（应经）', type:'计算', qid:'3',
+  question:`（15分）考察如下封闭经济：
+
+C=200+0.25Y_d
+I=150+0.3Y-1000r
+G=250
+T=0.2Y
+M_d=2PY-8000r
+M_s=5H
+H=240
+
+其中，Y 为收入，Y_d 为可支配收入，C 为消费，G 为政府支出，I 为投资，r 为利率，T 为税收，M_d 为货币需求，M_s 为货币供给，P 为价格，H 为高能货币。试求：
+
+（1）IS 曲线方程式；
+（2）当 P=1 时，LM 的曲线方程式；
+（3）当 P=1 时，产品市场和货币市场同时均衡时的利率、收入、税收、消费和投资；
+（4）在（3）的情况下，政府是否满足其预算平衡？若不能满足，请问政府支出 G 应为多少可实现其预算平衡？
+（5）总需求曲线的方程式。` },
+{ id:'A2011-C4', subject:'应用经济学', paper:'2011年（应经）', type:'计算', qid:'4',
+  question:`（15分）假设一个经济社会的产出、货币供给、通货膨胀和失业相互间的关系可由下列三个方程表示：
+
+总需求关系：g_yt=g_mt-π_t
+菲利普斯曲线：π_t-π_{t-1}=-(u_t-4%)
+奥肯定律：u_t-u_{t-1}=-0.4(g_yt-3%)
+
+其中，g_yt、g_mt、π_t、u_t 分别为 t 时期的产出增长率、货币供给增长率、通货膨胀率和失业率。
+
+（1）请问该经济的自然失业率水平是多少？为什么？
+（2）假设失业率维持在自然失业率水平，通胀率为6%，请计算该经济的产出增长率和货币供给增长率。
+（3）假设中央银行决定在两年时间内采用紧缩的货币政策，使通胀率从6%降至2%，但同时这一政策会导致失业率短期内有所上升，假设这两年中央失业率升至6%，两年后失业率又回到其自然水平，试求该经济的牺牲率。` },
+{ id:'A2011-E1', subject:'应用经济学', paper:'2011年（应经）', type:'论述', qid:'1',
+  question:`（20分）促使个人与厂商做出最优选择的激励是经济学的一个基本问题。请回答关于激励的以下几个问题：
+
+（1）市场经济是通过什么向个人和厂商提供激励的？
+（2）只要个人不能完全承担或获得其行为的全部结果，就会产生激励问题，请你试举一例说明；
+（3）你认为可以采取哪些方法解决激励问题？
+（4）信息的不完全性会如何影响激励？如何解决这个问题？` },
+{ id:'A2011-E2', subject:'应用经济学', paper:'2011年（应经）', type:'论述', qid:'2',
+  question:`（20分）请阅读以下材料，并回答问题：
+
+“……党的十七大提出了加快转变经济发展方式的战略任务，强调要促进经济增长由主要依靠投资、出口拉动向依靠消费、投资、出口协调拉动转变，由主要依靠第二产业带动向依靠第一、第二、第三产业协同带动转变，由主要依靠增加物质资源消耗向主要依靠科技进步、劳动者素质提高、管理创新转变。国际金融危机使我国转变经济发展方式问题更加凸显出来，国际金融危机对我国经济的冲击表面上是对经济增长速度的冲击，实质上是对经济发展方式的冲击。综合判断国际国内经济形势，转变经济发展方式已刻不容缓。我们必须见事早、行动快、积极应对，为我国加快转变经济发展方式、保持经济平衡较快发展增添推动力。”
+——胡锦涛总书记在中央党校省部级主要领导干部“深入贯彻落实科学发展观，加快经济发展方式转变”专题研讨班开班式上的讲话，2010年2月3日
+
+“……我们今天同意达成共识，迎接新的挑战，在危机过后，实现强劲、可持久、平衡的经济增长。我们将加强多边合作以推进外部可持续性，并寻求有益于减少巨大的贸易不平衡和维持经常项目不平衡处于可持续水平的全方位政策。按照各国财长以及央行行长未来达成的‘指引性指令’进行评估，如果一国出现持续性的巨大贸易不平衡，……（将）对该不平衡的性质及阻碍进行调整的原因进行评估，但需要对国家和地区的环境进行考虑。”
+——G20韩国首尔峰会领导人宣言，2010年11月14日
+
+利用宏观经济学的原理，结合上述材料阐述分析中国转变经济发展方式与全球经济再平衡之间的关系。` },
+
+/* ---------- 2010年（应经） ---------- */
+{ id:'A2010-S1', subject:'应用经济学', paper:'2010年（应经）', type:'简答', qid:'1',
+  question:`请比较分析机会成本、沉没成本和边际成本在理性经纪人的决策中所起的作用。（10分）` },
+{ id:'A2010-S2', subject:'应用经济学', paper:'2010年（应经）', type:'简答', qid:'2',
+  question:`如果一个垄断厂商试图采用价格歧视的方法来销售其产品，那么需要具备什么样的前提条件？航空公司往往对同一条航线的不同时段的机票采用差别定价，你怎样解释这种价格歧视现象？（10分）` },
+{ id:'A2010-S3', subject:'应用经济学', paper:'2010年（应经）', type:'简答', qid:'3',
+  question:`俗话说“买的不如卖的精”，在现实生活中存在许多消费者和供给者对商品质量的信息不对称现象，请回答：
+
+（1）假定买卖双方对商品质量都有充分的了解，试作图说明高质量商品和低质量商品的市场供求状况；
+（2）在信息不对称条件下，试作图分析高质量和低质量商品的市场供求状况。（10分）` },
+{ id:'A2010-S4', subject:'应用经济学', paper:'2010年（应经）', type:'简答', qid:'4',
+  question:`请指出以下各项交易是否能计入我国的GDP：如果能，请说明其分别是GDP中的消费、投资、政府购买及净出口中的哪一部分；如果不能请说明原因：
+
+（1）国内消费者购买一台二手的海信电视机；（2）国内投资者购买2000股海信电器股票；（3）海信电器库存电视机增加一万台；（4）也门政府购买1000台的海信电视机；（5）政府向海信公司的下岗工人提供失业救济金。（10分）` },
+{ id:'A2010-S5', subject:'应用经济学', paper:'2010年（应经）', type:'简答', qid:'5',
+  question:`根据储蓄与消费的生命周期模型，请解释为什么健全的社会保障体系使人们的消费倾向更加稳定。（10分）` },
+{ id:'A2010-S6', subject:'应用经济学', paper:'2010年（应经）', type:'简答', qid:'6',
+  question:`使用 AS-AD 模型说明在不利的总供给冲击下，传统的总需求管理为什么无效？那么政府可以采取哪些措施才能应对不利的总供给冲击？（10分）` },
+{ id:'A2010-C1', subject:'应用经济学', paper:'2010年（应经）', type:'计算', qid:'1',
+  question:`（12分）假设消费者面对如下跨期选择。消费者共生存两期，在第一期收入为 Y₁=380，消费为 C₁，在第二期收入为 Y₂=262.5，消费为 C₂。消费者第一期可选择储蓄 S，当 S 为负时表明其第一期借款，储蓄或借款的利率 r=5%。消费者生存期末既无储蓄也无借款，在此约束下，该消费者欲实现生存期间的效用最大化，假设其效用函数为：
+
+U(C₁,C₂)=lnC₁+0.5lnC₂
+
+（1）计算该消费者的最优消费额 C₁ 和 C₂。（6分）
+（2）假设储蓄 S 不可为负，即第一期不能借款，请问消费者的最优消费 C₁ 和 C₂ 各是多少？（6分）` },
+{ id:'A2010-C2', subject:'应用经济学', paper:'2010年（应经）', type:'计算', qid:'2',
+  question:`（16分）假定一个产品市场的需求函数为（原题给出），其中 P 为产品价格，Q 为产品需求量。厂商成本函数为 C(q)=cq，其中 C 为生产成本，q 为产量，c 为常数，且 0<c<a。
+
+（1）考虑完全竞争市场，厂商是价格的接受者，计算市场的均衡价格和需求量；（5分）
+（2）考虑完全垄断市场，厂商是价格的制定者，计算市场的需求价格和需求量；（5分）
+（3）考虑双寡头垄断市场，存在厂商1和厂商2，两个厂商通过选择产量进行古诺竞争，计算市场的均衡价格和需求量。（6分）` },
+{ id:'A2010-C3', subject:'应用经济学', paper:'2010年（应经）', type:'计算', qid:'3',
+  question:`（17分）在一个小国模型中，不考虑价格变化（简化为1）。假设货币需求是 L=0.2Y-10r，Y 和 r 分别为收入和利率，货币供给 M=200，消费 C=60+0.8Y_d，Y_d 为可支配收入，税收 T=100，投资 I=150-2r，政府支出 G=100，贸易收支平衡。
+
+（1）求在封闭条件下均衡的国民收入、利率和投资；（6分）
+（2）如果该国资本完全自由流动，当世界市场利率为1.5%，则均衡的国民收入为多少？（5分）
+（3）在开放条件（资本自由流动）下，当政府支出从100增加到120时，均衡的国民收入怎样变动？“挤出效应”是多少？（6分）` },
+{ id:'A2010-E1', subject:'应用经济学', paper:'2010年（应经）', type:'论述', qid:'1',
+  question:`（22分）外部性是市场失灵的主要原因之一，而环境问题是负外部性的典型例证。请回答有关的下列问题：
+
+（1）以污染为例说明负外部性为什么会导致市场导向的资源配置的低效率？（8分）
+（2）与主张通过政府干预治理环境外部性问题的对策相比，科斯定理提出的解决方法是什么？你如何评价它的优点和局限性。（8分）
+（3）政府在环境污染时经常采用的方法包括：关闭工厂、制定排放标准并对超标者进行罚款、出售污染排放许可证、对厂商的治污设备投资给与税收减免或补贴等，你认为哪个或哪些方法相比会更加有效？为什么？（9分）` },
+{ id:'A2010-E2', subject:'应用经济学', paper:'2010年（应经）', type:'论述', qid:'2',
+  question:`（23分）请结合宏观经济学的理论模型比较分析2008年全球金融危机爆发后中国与美国政府所采取的反危机政策措施的主要内容及作用原理。你认为这些调整措施中可能存在哪些潜在的风险？` },
+
+/* ---------- 2009年（应经） ---------- */
+{ id:'A2009-S1', subject:'应用经济学', paper:'2009年（应经）', type:'简答', qid:'1',
+  question:`证明消费者最优决策的对偶性。（10分）` },
+{ id:'A2009-S2', subject:'应用经济学', paper:'2009年（应经）', type:'简答', qid:'2',
+  question:`简述要素边际报酬递减与规模报酬不变的相容性。（10分）` },
+{ id:'A2009-S3', subject:'应用经济学', paper:'2009年（应经）', type:'简答', qid:'3',
+  question:`请比较占优策略均衡与纳什均衡的定义以及关系，并判断古诺模型均衡解的博弈性质。（10分）` },
+{ id:'A2009-S4', subject:'应用经济学', paper:'2009年（应经）', type:'简答', qid:'4',
+  question:`请说明CPI和GDP平减指数的区别（拉斯派尔指数与帕氏指数的影响）。这两种价格指数哪一个倾向于高估通货膨胀，原因是什么？（10分）` },
+{ id:'A2009-S5', subject:'应用经济学', paper:'2009年（应经）', type:'简答', qid:'5',
+  question:`简述现代菲利普斯曲线的构成因素，及其与原始菲利普斯曲线的区别，并指出前者与总供给曲线的关系。（10分）` },
+{ id:'A2009-S6', subject:'应用经济学', paper:'2009年（应经）', type:'简答', qid:'6',
+  question:`请依据 IS-LM 模型解释，在危机（严重衰退）时期的财政政策和货币政策的有效性会发生怎样的变化？（10分）` },
+{ id:'A2009-C1', subject:'应用经济学', paper:'2009年（应经）', type:'计算', qid:'1',
+  question:`（20分）在一个垄断市场中，厂商的需求曲线为：P=20-6Q，其成本函数为：TC=3Q²+2Q，请回答以下的问题：
+
+（1）厂商的最优生产决策及相应的利润是怎样的？（4分）
+（2）假如政府可以通过三种途径压缩厂商的利润，分别是：A.通过最高限价政策迫使厂商生产完全竞争市场的产量；B.征收固定额度的垄断暴利税（等于超额利润）；C.按照现价格与完全竞争市场价格的差价向每个产品征收从量税。则三种情况下厂商的定价、产量和利润状况分别是怎样的？（12分）
+（3）基于消费者的福利角度考虑，如何判断这三种政策的效果。（4分）` },
+{ id:'A2009-C2', subject:'应用经济学', paper:'2009年（应经）', type:'计算', qid:'2',
+  question:`（20分）一国的宏观经济结构如下：
+
+充分就业产出 Y*=1000
+总消费函数为 C=200+0.8(Y-T)-500r_n
+总投资函数为 I=200-500r_n
+政府支出为 G=200
+税收 T=20+0.25Y
+实际货币需求为 M_d/P=0.5Y-250(r_n+π_e)
+预期通胀率 π_e=10%
+名义货币供给 M_s=10000
+
+请回答以下的问题（共20分）：
+（1）解出该国的IS、LM以及总需求方程；（6分）
+（2）求一般均衡时的实际利率、价格水平、消费需求和投资规模；（7分）
+（3）如政府决定采取总量为40单位的积极财政支出政策，求新均衡状态下的实际利率、价格水平、消费需求和投资规模，此时投资的格局是怎样的？（7分）` },
+{ id:'A2009-E1', subject:'应用经济学', paper:'2009年（应经）', type:'论述', qid:'1',
+  question:`（15分）自2007年金融危机爆发后，各国政府以及货币当局均采取了大规模的金融援救行动，请阐述这一过程中可能存在的道德风险问题及其原因，并提出相应的政策应对。` },
+{ id:'A2009-E2', subject:'应用经济学', paper:'2009年（应经）', type:'论述', qid:'2',
+  question:`（15分）请阐述实际经济周期理论（新古典理论中的代表学说之一）与新凯恩斯理论在劳动力市场、技术冲击、货币中性以及工资弹性方面的主要分歧。` },
+{ id:'A2009-E3', subject:'应用经济学', paper:'2009年（应经）', type:'论述', qid:'3',
+  question:`（20分）2008年下半年以来，我国政府根据国内外宏观经济形式的变化，在货币政策和财政政策领域进行了有针对性的调整。请依据开放经济条件下的宏观经济理论，阐述这些调整产生的原因和政策目的，并分析相关稳定性政策的有效性预期。` },
+
+/* ---------- 2008年（应经） ---------- */
+{ id:'A2008-S1', subject:'应用经济学', paper:'2008年（应经）', type:'简答', qid:'1',
+  question:`简述“科斯定理”的含义。（10分）` },
+{ id:'A2008-S2', subject:'应用经济学', paper:'2008年（应经）', type:'简答', qid:'2',
+  question:`“如果一种商品的需求随着收入的增加而增加，那么，这种商品的需求一定会随着价格的上升而下降。”这种说法正确吗？试用经济学原理进行说明。（10分）` },
+{ id:'A2008-S3', subject:'应用经济学', paper:'2008年（应经）', type:'简答', qid:'3',
+  question:`假定有 N 家相同的厂商处于古诺均衡情况下，试求市场需求曲线的弹性一定大于 1/N。（10分）` },
+{ id:'A2008-S4', subject:'应用经济学', paper:'2008年（应经）', type:'简答', qid:'4',
+  question:`论点A：“为了减少财政赤字，应该增加税收。税收增加将消减赤字，降低利息率，从而刺激经济。”
+
+论点B：“为了减少财政赤字，应该消减税收。消减税收将刺激经济活动，扩大税基并增加政府收入，从而减少赤字。”
+
+上述哪种观点正确？为什么？（10分）` },
+{ id:'A2008-S5', subject:'应用经济学', paper:'2008年（应经）', type:'简答', qid:'5',
+  question:`请比较说明古典主义、凯恩斯主义和货币主义的货币需求函数的异同。（10分）` },
+{ id:'A2008-S6', subject:'应用经济学', paper:'2008年（应经）', type:'简答', qid:'6',
+  question:`简述实际经济周期理论和新凯恩斯主义经济学对经济波动的解释。（10分）` },
+{ id:'A2008-C1', subject:'应用经济学', paper:'2008年（应经）', type:'计算', qid:'1',
+  question:`（20分）香蕉的反需求函数为 P_d=18-3Q_d，反供给函数是 P_s=6+Q_s。
+
+（1）假设没有税收和补贴，均衡价格和均衡量各是多少？（4分）
+（2）假设对香蕉的生产者支付每单位（公斤）2元的补贴，新的均衡价格和均衡量各是多少？（5分）
+（3）计算对香蕉提供生产补贴后消费者剩余和生产者剩余的变化额。（6分）
+（4）如果苹果和香蕉之间的交叉价格弹性是0.5，那么在苹果价格保持不变的情况下，对香蕉生产者的补贴会对苹果的需求量产生怎样的影响？（5分）` },
+{ id:'A2008-C2', subject:'应用经济学', paper:'2008年（应经）', type:'计算', qid:'2',
+  question:`（15分）一个厂商有两个工厂，这两个工厂的成本函数是相同的：C_i(Y)=F+kY^a，其中 F>0，k>0，i=1,2，但如果厂商只在一个工厂生产，另一个工厂的固定成本 F 是可以避免的，即 C_i(0)=0，试问：
+
+（1）在 α=1 和 α=3 两种情况下，厂商如何决定是在一个工厂生产还是同时以两个工厂生产？（8分）
+（2）在 α=1 和 α=3 两种情况下，什么产量范围内存在规模经济？（7分）` },
+{ id:'A2008-C3', subject:'应用经济学', paper:'2008年（应经）', type:'计算', qid:'3',
+  question:`（15分）假设一经济是由三部门构成的，其消费函数 C=20+0.8(Y-T)；投资函数为 I=600-4000r；政府支出 G=420；税收函数 T=100+0.25Y，名义货币供给 M_s=345，货币需求函数 M_d=25+0.4Y-4000r。试求：
+
+（1）IS曲线的方程式。（4分）
+（2）当价格水平 P=1 时，LM曲线方程式。（3分）
+（3）当价格水平 P=1 时，产品市场和货币市场同时均衡的利率和收入。（4分）
+（4）总需求曲线方程。（4分）` },
+{ id:'A2008-E1', subject:'应用经济学', paper:'2008年（应经）', type:'论述', qid:'1',
+  question:`（20分）不完全信息导致如何的市场失灵？为什么会导致市场失灵？有什么样的解决方法？` },
+{ id:'A2008-E2', subject:'应用经济学', paper:'2008年（应经）', type:'论述', qid:'2',
+  question:`（20分）当前中国面临内外失衡，分析存在贸易顺差和通货膨胀的原因以及提出政策组合解决当前的问题。` },
+
+/* ==================== 理论经济学 ==================== */
+{ id:'T0', subject:'理论经济学', paper:'真题说明', type:'说明', qid:'1',
+  question:`南开大学经济学院理论经济学历年真题说明
+
+（1）在2022年之前，理论经济学中招生最多的世界经济专业只考宏微观（和应用经济学用一套试卷），而除世界经济以外的其他理论经济学专业每年报名和招生人数都极少，这就使得搜集理论经济学真题的难度很大，导致目前市面上没有2022年以前849（微宏观及政经）的完整真题。得益于我们团队多年来专注于南开辅导，得以保留2015—2022年理论经济学中的政经部分真题（市面上没有任何机构有）。
+
+虽然本真题册中更早年份理论经济学真题存在缺失，但每年80%以上的南开经济学上岸考生用三大本或课程，庞大的学员基数和我们的认真搜集整理，保证了我们的真题已经是市面最为准确、全面和权威的。
+
+（2）以上缺失部分对于复习影响并不大，因为：
+
+第一，849经济学的风格和847（微宏观）极像，近几年849简答题有的是847曾经考过的原题或类似题，计算题题型也都是847往年考过的，所以847真题对大家的参考价值很大，把847真题吃透，甚至经济增长个别高难度的压轴计算题不掌握，在849宏微观部分都不会有问题。
+
+具体使用上，建议大家首先看看849近几年真题，了解一下难度和风格，具体练习的时候，可以先练习847真题，之后再对849真题进行全真模拟，通过全真模拟找到考场上的感觉和适合自己的答题时间分配。
+
+第二，政经这一门课南开历年考的都很直接，不会像宏微观那样很灵活，大家只要做好背诵工作，背熟我们团队出的《政经背诵手册》，同时练好手册中总结的少量计算题，在政经中拿到高分是完全没问题的。
+
+政经部分曾多次更换过参考书或大纲，在2019年之前是给的政经大纲，2020—2025年改为给参考书，其中2020—2021年给的参考书是马工程《政治经济学》、逄锦聚《中国特色社会主义政治经济学概论》和张俊山《政治经济学——当代视角》，2022—2025年删去后两本，只保留马工程《政治经济学》并给出重点章节。所以太早年份的政经真题参考价值不大，重点关注2020—2025年近六年政经真题，把握其难度和风格即可。
+
+（3）与市面上其他真题不同，三大本第1册《真题大全解》不只是真题答案和解析。对于真题中难以理解之处或常见题型，学长学姐会进行点睛评注，为大家总结做题思路，帮助考生掌握一类题型的解题方法；重难点题目后附有考点拓展训练，帮助考生巩固拓展、举一反三，加深对考点的理解和掌握。
+
+（4）真题永远是复习备考的最佳指南，一切复习方法的总结和复习计划的制定从根本上说都源自对真题和参考书的研究，并且这些方法和计划的成果最终也交由真题来检验。因此，大家一定要认真做和研究真题。` },
+
+/* ---------- 2026年（理论） ---------- */
+{ id:'T2026-S1', subject:'理论经济学', paper:'2026年（理论）', type:'简答', qid:'1',
+  question:`什么是市场失灵，列举两种市场失灵的例子并说明如何导致市场失灵。（5分）` },
+{ id:'T2026-S2', subject:'理论经济学', paper:'2026年（理论）', type:'简答', qid:'2',
+  question:`厂商售卖某种高端功能饮料，该饮料的需求价格弹性为3，说明这属于什么类型的弹性，并说明厂商应该采取何种定价策略。（5分）` },
+{ id:'T2026-S3', subject:'理论经济学', paper:'2026年（理论）', type:'简答', qid:'3',
+  question:`新古典生产函数是什么，并说明如果是竞争性市场，将能够得到什么结论？（5分）` },
+{ id:'T2026-S4', subject:'理论经济学', paper:'2026年（理论）', type:'简答', qid:'4',
+  question:`通货膨胀和通货紧缩的含义及成因。（5分）` },
+{ id:'T2026-S5', subject:'理论经济学', paper:'2026年（理论）', type:'简答', qid:'5',
+  question:`绝对价值生产和相对价值生产的含义和区别。（5分）` },
+{ id:'T2026-S6', subject:'理论经济学', paper:'2026年（理论）', type:'简答', qid:'6',
+  question:`资本循环和资本周转的联系和区别。（5分）` },
+{ id:'T2026-S7', subject:'理论经济学', paper:'2026年（理论）', type:'简答', qid:'7',
+  question:`社会主义基本经济制度的内涵及优势。（5分）` },
+{ id:'T2026-S8', subject:'理论经济学', paper:'2026年（理论）', type:'简答', qid:'8',
+  question:`新发展格局的意义及战略要点。（5分）` },
+{ id:'T2026-C1', subject:'理论经济学', paper:'2026年（理论）', type:'计算', qid:'1',
+  question:`（11分）某人的效用函数是柯布-道格拉斯形式 u=x^0.5·y^0.5，商品 x 的价格是 p_x=4，商品 y 的价格是 p_y=1，消费者的收入 m=400。
+
+（1）当 x 商品的价格从 p_x=4 下降为 p_x=1 之后，两种商品的需求量会如何变化？（3分）
+（2）求价格变化时的斯勒茨基替代效应。（4分）
+（3）求价格变化时的希克斯替代效应。（4分）` },
+{ id:'T2026-C2', subject:'理论经济学', paper:'2026年（理论）', type:'计算', qid:'2',
+  question:`（12分）市场中存在两个寡头厂商，市场的需求函数为 Q=1000-P，厂商1的成本函数为 TC₁=20q₁-40000，厂商2的成本函数为 TC₂=60q₂-30000。
+
+（1）求两个厂商的反应函数。（4分）
+（2）求古诺均衡时两个厂商的均衡产量和价格。（4分）
+（3）若厂商1是领导者，求斯塔克尔伯格均衡时的产量和价格。（4分）` },
+{ id:'T2026-C3', subject:'理论经济学', paper:'2026年（理论）', type:'计算', qid:'3',
+  question:`（12分）考虑一个由两个消费者（A，B）和两个商品（1，2）的市场组成的经济，q_A 为消费者A拥有的商品的数量，消费者的效用函数为：U_A=q_{A1}·q_{A2}+4q_{A1}+2q_{A2}，U_B=q_{B1}·q_{B2}+2q_{B1}+q_{B2}，A的商品禀赋为 q_{A1}=80，q_{A2}=0；B的商品禀赋为 q_{B1}=0，q_{B2}=160。
+
+（1）求消费者A对两种商品的超额需求。（4分）
+（2）求消费者B对两种商品的超额需求。（4分）
+（3）当市场实现一般均衡时，求此时的商品的相对价格以及消费者的超额需求或超额供给。（4分）` },
+{ id:'T2026-C4', subject:'理论经济学', paper:'2026年（理论）', type:'计算', qid:'4',
+  question:`（15分）考虑生命周期理论，某人预期自己工作年限为7年，工作时每年的年收入 Y₁，退休后剩余的预期寿命为 R，退休后每年的年收入为 Y₂，且 Y₁>Y₂。这个人的初始财富和最终财富 W₀ 和 W_{T+R}，且都为0。W 为负时表示借款，且借款、贷款的利率都为0。每期消费为 C_t，对于这个人的效用函数为 ΣC_r。
+
+（1）构造拉格朗日函数。（2分）
+（2）第一期（t=1）这个人的消费和财富。（5分）
+（3）退休后的第一期（t=T+1）消费和财富。（6分）
+（4）如果退休年限 R 上升，第三问答案如何变化？（2分）` },
+{ id:'T2026-C5', subject:'理论经济学', paper:'2026年（理论）', type:'计算', qid:'5',
+  question:`（20分）考虑一个经济体由下面几个方程描述：
+
+产品与服务需求：Y_t=Ȳ_t-α(r_t-ρ)+ε_t
+费雪方程：r_t=i_t-E_tπ_{t+1}
+菲利普斯曲线：π_t=E_{t-1}π_t+φ(Y_t-Ȳ_t)+ν_t
+适应性预期：E_tπ_{t+1}=π_t
+货币政策规则：i_t=π_t+ρ+θ_t(π_t-π_t*)+θ_t(Y_t-Ȳ_t)
+
+其中 Y_t 为 t 时期的总产出，π_t 为 t 时期的通货膨胀率，E_tπ_{t+1} 为预期的通货膨胀率，i_t 为 t 时期的名义利率，r_t 为 t 时期的实际利率，ε_t、ν_t 分别为 t 时期的需求冲击和供给冲击，且需求和供给冲击的长期期望为0。
+
+（1）什么是长期均衡？（4分）
+（2）什么是短期均衡？推导DAS和DAD曲线，并说明短期均衡受哪些因素的影响。（6分）
+（3）如果一国大量增加国防开支并采取宽松的货币政策，利用动态AD-AS模型分析对经济产生的影响，并对政策进行评价。（10分）` },
+{ id:'T2026-E1', subject:'理论经济学', paper:'2026年（理论）', type:'论述', qid:'1',
+  question:`（20分）材料是描述的中国一些行业内卷式竞争的现状，提到相关行业协会要淘汰落后产能，要对钢铁、水泥和玻璃等行业实行限产减产，行业内企业之间还在协定制定“限产”协议，限产的目的是产业结构优化调整，推动高质量发展，还提供了供给侧结构性改革和新质生产力等内容。
+
+（1）利用古诺寡头模型，解释为什么要对企业实行限产。（7分）
+（2）为什么企业内部协定限产协议来减产这种模式很脆弱？（7分）
+（3）如何避免限产中的囚徒困境问题，让限产政策持续，推动高质量发展？（6分）` },
+{ id:'T2026-E2', subject:'理论经济学', paper:'2026年（理论）', type:'论述', qid:'2',
+  question:`（20分）（1）简述国民收入初次分配、再分配和第三次分配的含义（10分）
+（2）为了推动共同富裕，如何利用初次分配，再分配与第三次分配？（10分）` },
+
+/* ---------- 2025年（理论） ---------- */
+{ id:'T2025-S1', subject:'理论经济学', paper:'2025年（理论）', type:'简答', qid:'1',
+  question:`完全竞争市场和垄断竞争市场在长期均衡时的相同点和不同点。（5分）` },
+{ id:'T2025-S2', subject:'理论经济学', paper:'2025年（理论）', type:'简答', qid:'2',
+  question:`为什么说“帕累托有效不一定是理想的状态，但理想的状态一定是帕累托有效的”？（5分）` },
+{ id:'T2025-S3', subject:'理论经济学', paper:'2025年（理论）', type:'简答', qid:'3',
+  question:`简述通货膨胀的社会成本。（5分）` },
+{ id:'T2025-S4', subject:'理论经济学', paper:'2025年（理论）', type:'简答', qid:'4',
+  question:`运用 IS-LM 和 AD-AS 模型分析一国央行通过公开操作从市场中购买国债如何影响该国货币供给、短期均衡的产出、利率和长期均衡的产出、利率。（5分）` },
+{ id:'T2025-S5', subject:'理论经济学', paper:'2025年（理论）', type:'简答', qid:'5',
+  question:`简述经济危机和货币职能的关系。（5分）` },
+{ id:'T2025-S6', subject:'理论经济学', paper:'2025年（理论）', type:'简答', qid:'6',
+  question:`为什么资本主义再生产是物质资料再生产和资本主义生产关系再生产的统一？（5分）` },
+{ id:'T2025-S7', subject:'理论经济学', paper:'2025年（理论）', type:'简答', qid:'7',
+  question:`简述社会资本和个人资本的异同。（5分）` },
+{ id:'T2025-S8', subject:'理论经济学', paper:'2025年（理论）', type:'简答', qid:'8',
+  question:`简述绝对地租产生的原因。（5分）` },
+{ id:'T2025-C1', subject:'理论经济学', paper:'2025年（理论）', type:'计算', qid:'1',
+  question:`（12分）在成本不变的完全竞争市场中，单个厂商的长期成本函数为 c=35q-10q²+q³。
+
+A、求厂商的长期平均成本与边际成本函数（3分）
+B、计算厂商利润最大化时的均衡价格（3分）
+C、写出行业的长期供给曲线（3分）
+D、若市场需求曲线为 Q=650-15P，则市场均衡数量为多少，此时市场容纳的厂商数量为多少（3分）` },
+{ id:'T2025-C2', subject:'理论经济学', paper:'2025年（理论）', type:'计算', qid:'2',
+  question:`（11分）拟线性效用函数 V(Q,M)=u(Q)+m，其中 Q 是拟线性商品的需求量，满足 u(Q) 一阶导大于零，二阶导小于0，Q 的价格为 p，I 为收入，m 为购买 Q 单位产品之后的剩余收入。
+
+证明：若消费者收入 I 足够其购买所需 Q 单位的数量，当消费者实现最优时，试证明收入效应为0。` },
+{ id:'T2025-C3', subject:'理论经济学', paper:'2025年（理论）', type:'计算', qid:'3',
+  question:`（12分）两个人进行协调博弈（Coordination game），二者在一个人付出努力不变时，另外一个人付出的努力越大收益就越高，在到达某个点之后，这个人付出的努力再增加则收益会下降，收益函数为 R_i=a_i(c+a_{-i}-a_i)，(i=1,2)，a_i>0，c>0 且为常数，R_i>0，其中 a_i 为一个人自己付出的努力程度，a_{-i} 为另外一个人付出的努力程度。
+
+A、若假定另一个人的努力程度为 a_i*，求第一个人付出的最大的努力 a_i。（3分）
+B、给定对手的努力程度，求参与人最优的反应函数。（4分）
+C、求两个人博弈均衡时的纳什均衡。（5分）` },
+{ id:'T2025-C4', subject:'理论经济学', paper:'2025年（理论）', type:'计算', qid:'4',
+  question:`（15分）给定生产函数 Y=K^(1/3)·L^(2/3)，每年的资本折旧率 δ 为0.02，人口增长率 n 为0.01，s 为储蓄率，不存在技术进步。
+
+A、当储蓄率为 s=0.12 时，求出稳态时的人均资本、人均产出和人均消费。（6分）
+B、储蓄率上升为 s=0.75 时，求出稳态时的人均资本、人均产出和人均消费。（3分）
+C、求消费最大时的稳态人均资本，说明储蓄率 s=0.12 和 s=0.75 时应怎样变动储蓄率来达到黄金律稳态，并说明储蓄率变动会造成当期人均消费怎么变动？（6分）` },
+{ id:'T2025-C5', subject:'理论经济学', paper:'2025年（理论）', type:'计算', qid:'5',
+  question:`（20分）考虑一个适用凯恩斯交叉分析的封闭经济，消费函数由方程 C=400+(2/3)(Y-T) 给出。计划投资、政府支出与税收均为300。
+
+A、如果实际产出为1500，计划支出是多少？存货积累或存货减少是多少？（4分）
+B、如果产出与计划支出均衡，求均衡时的产出水平，并求消费、个人储蓄、公共储蓄和国民储蓄（10分）
+C、如果政府支出为200，均衡产出为多少，消费是多少，并求政府支出乘数（6分）` },
+{ id:'T2025-E1', subject:'理论经济学', paper:'2025年（理论）', type:'论述', qid:'1',
+  question:`（20分）材料：近期，多地结合市场需求、地域特色、居民喜好等，投放新一轮消费券，提升居民消费意愿、丰富居民消费体验。上海市政府投入市级财政资金5亿元，面向餐饮、住宿、电影、体育等领域发放服务消费券，四类消费券均采用“先到先得”方式领取，其中餐饮、住宿消费券每周发放，电影、体育消费券则每天发放。四川、湖北等地聚焦家居家装、汽车、数码产品等重点行业领域，把促消费与惠民生相结合，推动消费扩容提质。
+
+中国国际经济交流中心经济研究部副部长刘向东在接受记者采访时表示，当前消费处在回升阶段，发放消费券能有效促进消费扩张，短期内提升消费者的购买力，具有直接刺激消费需求的作用，进而促进企业扩大再生产和增加就业，推动经济复苏。
+——整理自2024年10月《经济日报》《证券日报》等
+
+（1）发放消费券有从量补贴和从价补贴，以从量补贴的角度分析消费补贴对社会福利的影响，可结合图形说明（10分）
+（2）消费补贴会给市场效率带来哪些变化？若有效率损失，请说明政策应如何优化？（10分）` },
+{ id:'T2025-E2', subject:'理论经济学', paper:'2025年（理论）', type:'论述', qid:'2',
+  question:`（20分）材料：党的二十届三中全会指出，“高水平社会主义市场经济体制是中国式现代化的重要保障”，“聚焦构建高水平社会主义市场经济体制，充分发挥市场在资源配置中的决定性作用，更好发挥政府作用，坚持和完善社会主义基本经济制度，推进高水平科技自立自强，推进高水平对外开放，建成现代化经济体系，加快构建新发展格局，推动高质量发展”。
+
+（1）“市场决定资源配置”，市场的决定作用具体是如何体现的？（10分）
+（2）在社会主义市场经济中，政府是如何发挥作用的？（10分）` },
+
+/* ---------- 2024年（理论） ---------- */
+{ id:'T2024-S1', subject:'理论经济学', paper:'2024年（理论）', type:'简答', qid:'1',
+  question:`什么是补偿变化和等价变化，以及它们在什么情况下相同（用图示表示）？（5分）` },
+{ id:'T2024-S2', subject:'理论经济学', paper:'2024年（理论）', type:'简答', qid:'2',
+  question:`不同的市场结构在定价策略方面有什么不同（用公式表示）？（5分）` },
+{ id:'T2024-S3', subject:'理论经济学', paper:'2024年（理论）', type:'简答', qid:'3',
+  question:`说明凯恩斯交叉模型、IS-LM 模型和 AD-AS 模型的内在联系是什么。（5分）` },
+{ id:'T2024-S4', subject:'理论经济学', paper:'2024年（理论）', type:'简答', qid:'4',
+  question:`说明新凯恩斯主义理论和新古典理论的区别。（5分）` },
+{ id:'T2024-S5', subject:'理论经济学', paper:'2024年（理论）', type:'简答', qid:'5',
+  question:`说明社会必要劳动时间的两种含义。（5分）` },
+{ id:'T2024-S6', subject:'理论经济学', paper:'2024年（理论）', type:'简答', qid:'6',
+  question:`说明级差地租产生的条件。（5分）` },
+{ id:'T2024-S7', subject:'理论经济学', paper:'2024年（理论）', type:'简答', qid:'7',
+  question:`资本主义制度下阻碍平均利润率下降的因素。（5分）` },
+{ id:'T2024-S8', subject:'理论经济学', paper:'2024年（理论）', type:'简答', qid:'8',
+  question:`说明为什么劳动二重性理论是政治经济学的枢纽。（5分）` },
+{ id:'T2024-C1', subject:'理论经济学', paper:'2024年（理论）', type:'计算', qid:'1',
+  question:`（12分）消费者的效用函数为 U=(x^α+y^α)^α，其中 0<α<1。商品 x 的价格为 p_x，商品 y 的价格为 p_y，消费者收入为 I。
+
+（1）求 x 和 y 的需求函数；（6分）
+（2）说明对两种商品的消费比例 x/y 与什么因素有关。（6分）` },
+{ id:'T2024-C2', subject:'理论经济学', paper:'2024年（理论）', type:'计算', qid:'2',
+  question:`（12分）厂商的生产函数为柯布-道格拉斯生产函数 F(K,L)=K^α·L^α，生产的产量为 q，资本和劳动的价格 w=r=1。
+
+（1）在短期固定资本 K=K₀，求短期生产成本；（3分）
+（2）在长期所有要素均可变，求长期生产成本；（3分）
+（3）在前面两题的基础上，说明如何由短期生产成本得到长期生产成本函数。（6分）` },
+{ id:'T2024-C3', subject:'理论经济学', paper:'2024年（理论）', type:'计算', qid:'3',
+  question:`（11分）已知社会效用函数 U=XY，社会的生产可能性边界为 X²+Y²/4=1。
+
+（1）求生产端的边际转换率；（3分）
+（2）求需求端的边际替代率；（3分）
+（3）求均衡时消费品的数量、价格和社会总效用。（5分）` },
+{ id:'T2024-C4', subject:'理论经济学', paper:'2024年（理论）', type:'计算', qid:'4',
+  question:`（15分）考虑跨期消费模型，消费者第一期的收入为 Y₁=100，第一期的消费为 C₁，储蓄为 S₁，而且储蓄不能小于0。利率为4%，第二期的收入为 Y₂，消费为 C₂，消费者最终没有收入剩余。消费者效用函数为 U=lnC₁+(1/1.04)lnC₂。
+
+（1）写出消费者的预算约束方程；（5分）
+（2）当 Y₂=96 时，求消费者效用最大化时的 C₁、C₂；（5分）
+（3）当 Y₂=104 时，求消费者效用最大化时的 C₁、C₂。（5分）` },
+{ id:'T2024-C5', subject:'理论经济学', paper:'2024年（理论）', type:'计算', qid:'5',
+  question:`（20分）经济的总产出函数为 Y=K^a·(L×E)^(1-a)，资本折旧率为 δ，劳动增长率为 n，技术进步率为 g，储蓄率为 s。
+
+（1）求稳态时总资本—总产出的比率；（5分）
+（2）求稳态时有效人均资本；（5分）
+（3）求黄金率水平下的有效人均资本；（5分）
+（4）求黄金率水平下总资本—总产出的比率。（5分）` },
+{ id:'T2024-E1', subject:'理论经济学', paper:'2024年（理论）', type:'论述', qid:'1',
+  question:`（20分）有网友反映国庆期间北京到深圳的车票价格上涨700，原来1100左右，涨到1800左右。
+
+铁路公司是否可以在高峰期调整车票价格？事实上我国已经在逐渐推进铁路运输市场化改革，逐渐把定价权移交给铁路方。除普通火车硬座、硬卧等定价权依然掌握在国家发改委手中，其他种类如轻轨高铁等座位价格可由铁路公司根据法律定价。
+
+许多专家一致认为，推动铁路运输市场化改革，关键是打破垄断。
+
+（1）从市场效率方面分析推进市场化改革的意义；（10分）
+（2）为什么打破垄断有重要意义？（10分）` },
+{ id:'T2024-E2', subject:'理论经济学', paper:'2024年（理论）', type:'论述', qid:'2',
+  question:`（20分）我国实行以按劳分配为主体，多种所有制共同发展的分配制度，初次分配、再分配结合，保证机会公平，保障低收入群体的合法权益。
+
+（1）“以按劳分配为主体，多种所有制共同发展”的理论依据是什么？（10分）
+（2）我国社会主义初级阶段实行的按劳分配制度的实践过程和实践结果不同于马克思设想的分配制度，社会主义初级阶段按劳分配制度的特点有哪些？（10分）` },
+
+/* ---------- 2023年（理论） ---------- */
+{ id:'T2023-S1', subject:'理论经济学', paper:'2023年（理论）', type:'简答', qid:'1',
+  question:`简述福利经济学第二定理的内涵和经济学意义。（5分）` },
+{ id:'T2023-S2', subject:'理论经济学', paper:'2023年（理论）', type:'简答', qid:'2',
+  question:`外部性是什么？解决外部性有哪些措施？（5分）` },
+{ id:'T2023-S3', subject:'理论经济学', paper:'2023年（理论）', type:'简答', qid:'3',
+  question:`利用蒙代尔-弗莱明模型，分别分析在浮动汇率和固定汇率制下的小型开放经济中，中央银行货币供给增加时对均衡产出、利率和汇率的影响。（5分）` },
+{ id:'T2023-S4', subject:'理论经济学', paper:'2023年（理论）', type:'简答', qid:'4',
+  question:`莫迪利亚尼生命周期假说和弗里德曼永久收入假说是如何解开消费函数之谜的？（5分）` },
+{ id:'T2023-S5', subject:'理论经济学', paper:'2023年（理论）', type:'简答', qid:'5',
+  question:`解释价值规律和按比例分配劳动时间规律。（5分）` },
+{ id:'T2023-S6', subject:'理论经济学', paper:'2023年（理论）', type:'简答', qid:'6',
+  question:`解释私人劳动和社会劳动的矛盾是商品经济的基本矛盾。（5分）` },
+{ id:'T2023-S7', subject:'理论经济学', paper:'2023年（理论）', type:'简答', qid:'7',
+  question:`简述“劳动”是否是商品，并说明理由。（5分）` },
+{ id:'T2023-S8', subject:'理论经济学', paper:'2023年（理论）', type:'简答', qid:'8',
+  question:`为什么我国在社会主义初级阶段要坚持以生产资料公有制为主体？（5分）` },
+{ id:'T2023-C1', subject:'理论经济学', paper:'2023年（理论）', type:'计算', qid:'1',
+  question:`（11分）消费者消费 X₁ 和 X₂ 两种商品，其中 P₁=P₂=9，消费者的收入为2880，效用函数为 U=4lnX₁+4lnX₂。
+
+（1）求消费者对两种商品的消费量；（4分）
+（2）当 X₂ 的价格变为36时，求补偿效应；（2分）
+（3）当 X₂ 的价格变为36时，求希克斯替代效应和收入效应，并在无差异曲线和预算线图中标出。（5分）` },
+{ id:'T2023-C2', subject:'理论经济学', paper:'2023年（理论）', type:'计算', qid:'2',
+  question:`（12分）手机市场可以看作是完全竞争行业，假设行业中有50家手机厂商，单个厂商的成本函数为 STC=q²+5q+21，市场需求曲线为 Q=610-10P。
+
+（1）求市场均衡时的数量和价格；（4分）
+（2）计算并说明行业总生产者剩余、行业短期总利润与行业短期总不变成本三者的关系；（4分）
+（3）当对每部手机征收2.8的税收时，此时市场均衡如何，求消费者和生产者各自承担的税收是多少。（4分）` },
+{ id:'T2023-C3', subject:'理论经济学', paper:'2023年（理论）', type:'计算', qid:'3',
+  question:`（12分）市场需求函数 P=3-Q，厂商边际成本为 MC=0.5，固定成本为 G。
+
+（1）如果是垄断厂商，求市场均衡价格、产量和垄断厂商的利润；（3分）
+（2）如果是双寡头厂商，求古诺均衡时两个厂商各自的产量；（3分）
+（3）求双寡头厂商古诺均衡的利润；（3分）
+（4）求 G 满足什么条件时符合自然垄断的特征。（3分）` },
+{ id:'T2023-C4', subject:'理论经济学', paper:'2023年（理论）', type:'计算', qid:'4',
+  question:`（15分）已知产品市场均衡为 Y_t=100+2G_t-r_t，其中 G_t=10，货币市场均衡为 M_t/P_t=0.5Y_t-0.5r_t，其中 M_t=1000。
+
+（1）在短期中价格黏性，若 P_t=P̄=20，求短期均衡产出和利率；（5分）
+（2）在（1）的条件下，当 G_t 变为 G_t=30 时，求短期均衡产出和利率；（2分）
+（3）假设长期中价格可以变化，总供给曲线为 Y_t=Y*+α(P_t-P̄_t)，其中 P̄_t=P_{t-1}，α=1，Y*=100，当 G_t=30 时，求长期均衡产出、价格和利率；（5分）
+（4）在（3）的条件下，当 M_t 变为800时，求长期均衡产出、价格和利率。（3分）` },
+{ id:'T2023-C5', subject:'理论经济学', paper:'2023年（理论）', type:'计算', qid:'5',
+  question:`（20分）一个经济的产出函数为 Y_t=K_t^α·(A_t L_t)^(1-α)，该经济体的人口增长率为 n=0.2%，技术进步率为 g=1.8%，储蓄率为 s=48%，折旧率为 δ=10%。
+
+（1）假设 t 时刻总产出增长率为1.5%，总资本增长率为1%，求 α 的值，并求出有效工人的人均产出表达式；（5分）
+（2）求稳态时的总产出增长率和有效工人的人均产出水平；（5分）
+（3）求黄金律稳态下的有效工人的人均资本量；（5分）
+（4）为达到黄金律稳态时的储蓄率，当前的消费会变大还是变小？达到黄金律稳态时，新的消费会更大还是更小？解释原因。（5分）` },
+{ id:'T2023-E1', subject:'理论经济学', paper:'2023年（理论）', type:'论述', qid:'1',
+  question:`（20分）我国作为数据大国，在2020年4月印发了《关于构建更加完善的要素市场化配置体制机制的意见》，提出要加快数据要素市场培育，强化数据治理工作。广东作为数字经济发展的先行省份，于2021年7月在全国率先印发《广东省数据要素市场化配置改革行动方案》，首次提出建立“数据经纪人制度”，旨在鼓励设立社会性数据经纪机构，规范开展数据要素市场流通中介服务。
+
+这里的数据经纪人概念，与欧盟《数据治理法案》提出的“数据中介”定义相似，其功能主要是帮助数据需求方收集、汇聚和交易合法数据给第三方。美国一些州颁布的数据经纪法也就数据经纪人给出定义，其主要是指整合和交易与其自身没有直接关系的企业的数据。
+
+与国外相比，适应我国现阶段数据要素市场的数据经纪人并不是一个自然人，而是一个市场主体。此次广东所提出的数据经纪人侧重于场景化、市场化的数据利用，旨在建立供需信任关系、挖掘数据要素价值、维护各方合法权益、活跃数据要素市场，促进数据可信有序流通和市场化利用。数据经纪人需具备生态协同能力、数据运营能力、技术创新能力、数据安全能力和组织保障能力，其受国家数据安全法、个人信息保护法等相关法律法规的约束，也在政府相关部门的监管下开展服务。
+
+（1）相比于传统的资本、劳动等要素，数据要素有什么独特特征，这决定了数据要素在配置过程中有什么困难？（10分）
+（2）用经济学知识阐述材料中提到的“数据经纪人”。（10分）` },
+{ id:'T2023-E2', subject:'理论经济学', paper:'2023年（理论）', type:'论述', qid:'2',
+  question:`（20分）利润转化为平均利润，价值转化为生产价格。请问：
+
+（1）价值规律的基本内容和表现形式（8分）
+（2）生产价格的形成是否违背价值规律，说明理由（12分）` },
+
+/* ---------- 2022年（理论） ---------- */
+{ id:'T2022-S1', subject:'理论经济学', paper:'2022年（理论）', type:'简答', qid:'1',
+  question:`吉芬商品的需求曲线向右上方倾斜，“吉芬商品的需求随着价格增加而增加是因为替代效应”，这种说法对吗？（5分）` },
+{ id:'T2022-S2', subject:'理论经济学', paper:'2022年（理论）', type:'简答', qid:'2',
+  question:`在完全竞争市场中，厂商亏损就会停止生产，这种说法对吗？（5分）` },
+{ id:'T2022-S3', subject:'理论经济学', paper:'2022年（理论）', type:'简答', qid:'3',
+  question:`简述总需求曲线向右下方倾斜的原因。（5分）` },
+{ id:'T2022-S4', subject:'理论经济学', paper:'2022年（理论）', type:'简答', qid:'4',
+  question:`简述泰勒原理。（5分）` },
+{ id:'T2022-S5', subject:'理论经济学', paper:'2022年（理论）', type:'简答', qid:'5',
+  question:`简述生产力和生产关系的相互关系。（5分）` },
+{ id:'T2022-S6', subject:'理论经济学', paper:'2022年（理论）', type:'简答', qid:'6',
+  question:`第二次世界大战以后，垄断资本主义产生了哪些新特点？（5分）` },
+{ id:'T2022-S7', subject:'理论经济学', paper:'2022年（理论）', type:'简答', qid:'7',
+  question:`纸币与金属货币相比，在价值贮藏上有哪些不同的性质和特点？（5分）` },
+{ id:'T2022-S8', subject:'理论经济学', paper:'2022年（理论）', type:'简答', qid:'8',
+  question:`简述社会主义初级阶段按劳分配的特点。（5分）` },
+{ id:'T2022-C1', subject:'理论经济学', paper:'2022年（理论）', type:'计算', qid:'1',
+  question:`（12分）市场需求曲线为 Q=50-P/2，回答下面问题：
+
+（1）假设市场上只存在一个垄断厂商，且厂商的边际成本 MC=Q/2，求市场的均衡产量与价格。（4分）
+（2）假设市场为完全竞争市场，市场的供给曲线 Q=2P，求均衡的产量及价格。（4分）
+（3）求垄断市场和完全竞争市场条件下各自的消费者剩余和生产者剩余，并求出垄断情况下的无谓损失。（4分）` },
+{ id:'T2022-C2', subject:'理论经济学', paper:'2022年（理论）', type:'计算', qid:'2',
+  question:`（12分）用 m 代表牛奶的消费量，c 代表饼干的消费量，小明的效用函数 U_A(m,c)=m+c，小敏的效用函数 U_B(m,c)=min{m,c}，小明有5瓶牛奶7块饼干，小敏有5瓶牛奶3块饼干。
+
+（1）画出埃奇沃思盒状图，并标出初始禀赋和过初始禀赋的两个人的效用曲线（左下角表示小明，右上角表示小敏，横轴表示牛奶，纵轴表示饼干）。（4分）
+（2）求出契约曲线，并在盒状图中画出。（4分）
+（3）小敏用1瓶牛奶交换小明的1块饼干，请问是否会发生这种交易？请问交易后是否达到帕累托有效状态？请解释。（4分）` },
+{ id:'T2022-C3', subject:'理论经济学', paper:'2022年（理论）', type:'计算', qid:'3',
+  question:`（11分）完全竞争市场的需求曲线为 Q=100-P，回答下面问题：
+
+（1）在单位需求弹性的条件下，求均衡的价格和产量。（4分）
+（2）若有50个完全相同的厂商，供给函数均为 q=P，求每个厂商面临的剩余需求曲线和剩余需求弹性。（4分）
+（3）求（2）中每个厂商的均衡价格和产量。（3分）` },
+{ id:'T2022-C4', subject:'理论经济学', paper:'2022年（理论）', type:'计算', qid:'4',
+  question:`（20分）某完全封闭经济体的初始状态由如下方程描述：C=100+0.8(1-t)Y，t=0.375，G=100，I=800-5000r，M_d=200+0.5Y-10000r，M_s=600，其中 C、t、G、I、M_d 和 M_s 分别代表消费、边际税率、政府购买支出、投资、实际货币余额需求和实际货币余额供给。
+
+（1）推导 IS 和 LM 曲线。（5分）
+（2）求产品和货币市场同时达到均衡时的均衡利率和均衡产出。（5分）
+（3）当政府购买 G 变为220，为保持产出不变，求此时实际货币余额的供给量 M_s。（5分）
+（4）当政府购买 G 变为220，为保持利率不变，求此时实际货币余额的供给量 M_s。（5分）` },
+{ id:'T2022-C5', subject:'理论经济学', paper:'2022年（理论）', type:'计算', qid:'5',
+  question:`（15分）经济体的总产出的函数为 Y_t=K_t^θ·[yL_t]^(1-θ)，y 为劳动参与率，并且 0<y<1，该经济体的储蓄率为 s，资本折旧率为 δ，人口增长率为 n。
+
+（1）计算稳态时的人均资本 K_t/L_t 和人均产出 Y_t/L_t 的表达式，并说明劳动参与率 y 对二者分别的影响。（7分）
+（2）求黄金律稳态时的人均资本和储蓄率，并说明劳动参与率 y 对二者分别的影响。（8分）` },
+{ id:'T2022-E1', subject:'理论经济学', paper:'2022年（理论）', type:'论述', qid:'1',
+  question:`（20分）银行愿意给大企业贷款，因为大企业信用风险低，可抵押物品多。银行不愿意给小微企业贷款，应该形成良好的机制，奖励守信用的企业，惩罚失信企业，提高全社会信用水平，可以一定程度上缓解小微企业融资难的情况。
+
+（1）根据材料，说明小微企业融资难的原因。（10分）
+（2）提出解决小微企业融资难的办法。（10分）` },
+{ id:'T2022-E2', subject:'理论经济学', paper:'2022年（理论）', type:'论述', qid:'2',
+  question:`（20分）有人说市场经济与资本主义基本制度相联系，以资本主义私有制为基础，社会主义基本制度不可能实行市场经济，实践证明，这句话是完全错误的。请论证社会主义制度与市场经济的相容性。` },
+
+/* ==================== 金融学 ==================== */
+{ id:'F0', subject:'金融学', paper:'真题说明', type:'说明', qid:'1',
+  question:`南开大学金融学院应用经济学历年真题说明
+
+（1）南开大学金融学院是2015年从经济学院独立出去的，在独立的前两年（2015和2016年），金融学院和经济学院应用经济学847（微宏观）共用一套试卷，自2017年开始，金融学院开始独立命题。但是，2025年，为响应教育部专业课统一命题号召，金融学院再一次与经济学院应用经济学847（微宏观）共用一套试卷，但金院复试阶段笔试会考察计量经济学。因此，本部分所包含的2017—2024年真题即为金融学院独立命题阶段的完整真题。
+
+（2）预计未来金融学院再独立命题的可能性很小。所以报考金融学院的同学，初试阶段需要像经济学院应用经济学考生一样按照847经济学进行备考，重点参考的是847往年真题。
+
+（3）但2025考研金院复试已经确定笔试要考察计量，且考试难度和风格预计和往年金院初试真题中的计量有一定相似度（具体情况待复试结束后会有进一步结论），所以金院同学复试阶段学习计量时仍要一定程度参照初试中的计量真题。
+
+（4）对于金融学院2017—2024年微宏观部分的真题，尤其是近几年真题，可以作为所有847考生在学有余力时作为练习题进行训练，因为老师在命题时可能也会参考其他代码的往年真题，并且金融学院的真题中有些题目出的比较新颖，能够很好锻炼大家对知识的理解。因此，金融学院的真题仍然具备一定的参考价值。` },
+
+/* ---------- 2024年（金融） ---------- */
+{ id:'F2024-S1', subject:'金融学', paper:'2024年（金融）', type:'简答', qid:'1',
+  question:`（6+2分）在短期，相比固定成本低的企业，为什么固定成本高的企业的总成本曲线更平缓（6分），请作图解释（2分）。` },
+{ id:'F2024-S2', subject:'金融学', paper:'2024年（金融）', type:'简答', qid:'2',
+  question:`（4+4分）埃奇沃思盒形图中的交换契约曲线是怎么形成的？（4分）给定性状良好的无差异曲线，并给定初始禀赋点，则能通过自由交易达到帕累托均衡，并且可以取到交易契约线上的任意一点，这种说法正确吗？请解释。（4分）` },
+{ id:'F2024-S3', subject:'金融学', paper:'2024年（金融）', type:'简答', qid:'3',
+  question:`（4+4分）用凯恩斯交叉图分析财政政策对国民收入的乘数效应。（4分）解释说明政府支出乘数和税收乘数。（4分）` },
+{ id:'F2024-S4', subject:'金融学', paper:'2024年（金融）', type:'简答', qid:'4',
+  question:`（4+4分）什么因素决定了自然失业率？（4分）经济学家如何解释20世纪70年代和80年代的高自然失业率？（4分）` },
+{ id:'F2024-S5', subject:'金融学', paper:'2024年（金融）', type:'简答', qid:'5',
+  question:`（4+4分）简述通货膨胀造成的社会成本（4分），并说明发生恶性通胀的原因（4分）。` },
+{ id:'F2024-C1', subject:'金融学', paper:'2024年（金融）', type:'计算', qid:'1',
+  question:`有一家厂商有两个工厂，第一个工厂的边际成本为 MC₁=28+0.04Q₁；第二个工厂的边际成本为 MC₂=16+0.02Q₂，总产量 Q=Q₁+Q₂。
+
+（1）求出该厂商的总边际成本函数 MC；
+（2）假设 Q=5000-100P，求企业如何安排两个工厂的产量和价格；
+（3）假设 Q=4000-100P，求企业如何安排两个工厂的产量和价格；
+（4）根据上述结果，分析什么情况下只有1家工厂在生产，什么情况下两家工厂都在生产？` },
+{ id:'F2024-C2', subject:'金融学', paper:'2024年（金融）', type:'计算', qid:'2',
+  question:`市场上有两家厂商，厂商可以决定自己的产量，且两家厂商的总产量会影响市场价格。厂商1的边际成本为 MC₁=340，厂商2的边际成本为 MC₂=420。
+
+（1）假设市场需求曲线为 Q=1500-2P，Q 的单位是万吨，求市场均衡时的 P 和 Q，以及两家厂商的市场份额。
+（2）现在有两个方案：
+a、厂商二投入14.5亿元改变公众的印象使得需求函数变为 Q=1520-2P；
+b、厂商二投入49亿元使得边际成本降为400。
+试分别评估方案a、b是否可行，以及同时实行两个方案是否可行？` },
+{ id:'F2024-C3', subject:'金融学', paper:'2024年（金融）', type:'计算', qid:'3',
+  question:`一经济体由以下方程进行描述：
+
+消费函数 C=100+0.6(Y-T)，投资函数 I=300-10r，政府购买支出 G=100，税收 T=100，净出口 NX=-40，名义货币供给 M=4000，价格水平 P=10，实际货币余额需求 L(r,Y)=0.6Y-10r。
+
+（1）什么是凯恩斯交叉，根据凯恩斯交叉说明财政政策为什么具有乘数效应，求出均衡 Y 与 r。
+（2）求政府支出乘数和税收乘数，如果 IS 曲线向右移动150个单位，需要怎样变动税收？求出新的均衡 Y 与 r。
+（3）在第（1）问的情况下，求出储蓄和投资，并求资本净流出。如果 NX=-10-20e，求出实际汇率。` },
+{ id:'F2024-J1', subject:'金融学', paper:'2024年（金融）', type:'计量', qid:'1',
+  question:`（10分）Salary 为CEO工资，roe 为股本回报率。Log(Salary_i)=190.56+15.8Log(roe_i)，R²=0.012。
+
+（1）Log(roe_i) 的系数是什么含义？符合你的经济学直觉吗？
+（2）可决系数是什么意思，为什么本模型的可决系数比较小？
+（3）现在有 Log(roe_i)=15，则预测工资可能是多少？` },
+{ id:'F2024-J2', subject:'金融学', paper:'2024年（金融）', type:'计量', qid:'2',
+  question:`（10分）现在有一组数据（自变量X、因变量Y）。
+
+（1）计算回归方程的系数；
+（2）计算 Y 的拟合值和残差；
+（3）当 X=52 时，估计 Y 的值。
+
+【同类题补充】假设现在有一组数据：
+自变量X：31 35 38 40 42 45 48 50
+因变量Y：15.2 18.7 16.9 19.1 17.8 18.3 19.6 16.5
+（1）计算回归方程的系数；
+（2）计算 Y 的拟合值和残差；
+（3）当 X=28 时，估计 Y 的值。` },
+{ id:'F2024-J3', subject:'金融学', paper:'2024年（金融）', type:'计量', qid:'3',
+  question:`（10分）什么是均值回归？下面两个式子符合均值回归的特征吗？
+
+（1）X_t=X₀+0.8X_{t-1}+u_t+0.8u_{t-1}，u_t~WN(0,σ²)
+（2）X_t=X₀+1.5X_{t-1}+u_t，u_t~WN(0,σ²)` },
+{ id:'F2024-J4', subject:'金融学', paper:'2024年（金融）', type:'计量', qid:'4',
+  question:`（10分）社会融资总量是反映经济情况的一个指标，请说明其定义和统计方法。除了社会融资总量，还有货币供应量指标M1和M2，请简述其与社会融资总量的不同。一些研究者认为社会融资总量指标有其缺陷，你同意吗，谈谈你的看法。` },
+{ id:'F2024-E1', subject:'金融学', paper:'2024年（金融）', type:'论述', qid:'1',
+  question:`（20分）当前，我国社会呈现老龄化趋势，60周岁以上老年人口占比19.8%，65周岁以上老年人口占比14.9%。问：
+
+请运用微观经济学中跨期选择理论的知识分析社会老龄化对消费、储蓄的影响。以及谈谈该采取怎样的政策在保障社会养老的同时促进消费？` },
+{ id:'F2024-E2', subject:'金融学', paper:'2024年（金融）', type:'论述', qid:'2',
+  question:`（20分）现有某一小型开放经济体，其国家爆发战乱，导致该国增加政府购买支出。问：
+
+（1）运用可贷资金理论作图分析增加政府购买支出对贸易余额的影响。
+（2）分析增加政府购买支出对实际汇率的影响，说明实际汇率的意义。
+（3）如果该军事冲突发展为全球战争，世界各国普遍增加政府购买，这对第（2）问的结果有什么影响？` },
+
+/* ---------- 2023年（金融） ---------- */
+{ id:'F2023-S1', subject:'金融学', paper:'2023年（金融）', type:'简答', qid:'1',
+  question:`（3+5分）对垄断企业来说，较高的边际成本必然导致较低的垄断产量和较高的垄断价格，请判断这一结论是否正确（3分），并给出数学证明。（5分）` },
+{ id:'F2023-S2', subject:'金融学', paper:'2023年（金融）', type:'简答', qid:'2',
+  question:`（4+4分）消费者选择理论中关于个人偏好的假设有哪些？（4分）每一个假设条件对于刻画消费者行为的意义是什么？（4分）` },
+{ id:'F2023-S3', subject:'金融学', paper:'2023年（金融）', type:'简答', qid:'3',
+  question:`（4+4分）简述李嘉图等价定理的主要内容和政策含义（4分），请分析什么情况下李嘉图等价定理不成立？（4分）` },
+{ id:'F2023-S4', subject:'金融学', paper:'2023年（金融）', type:'简答', qid:'4',
+  question:`（4+4分）索洛模型中，储蓄率是如何影响稳态的收入水平和增长率的？（4分）人口增长率又是如何影响稳定状态的收入水平和增长率的？（4分）` },
+{ id:'F2023-S5', subject:'金融学', paper:'2023年（金融）', type:'简答', qid:'5',
+  question:`（4+4分）什么是自然失业率？（4分）如何对其进行度量？（4分）` },
+{ id:'F2023-C1', subject:'金融学', paper:'2023年（金融）', type:'计算', qid:'1',
+  question:`（10分）考虑两个厂商1和2，生产完全同质的产品，成本均为0。企业之间进行静态的产量竞争，市场需求函数为 P(Q)=156-4Q，其中 Q=q₁+q₂。
+
+（1）如果两个企业相互独立且进行产量竞争，求两个企业各自的均衡产量、产品的均衡价格以及两个企业各自的利润水平。（4分）
+（2）假设企业1对企业2进行财务投资，持有企业2的40%的股份，但不干预企业2的经营活动，求两个企业各自的均衡产量，产品的均衡价格以及两个企业各自的利润水平。（4分）
+（3）对企业1而言，为了购买企业2的40%的股份最多愿意支付多少钱？（2分）` },
+{ id:'F2023-C2', subject:'金融学', paper:'2023年（金融）', type:'计算', qid:'2',
+  question:`（10分）有两个公司各需要雇用一名新职员，公司 i 提供的工资是 w_i，满足 (1/2)w₁<w₂<2w₁。有两个谋职者同时得到这一消息，他们清楚每人只有一次申请机会，而一个人不能同时到两家公司去应聘。如果两人申请了不同公司的话，他们都会得到那里的工作，但如果两人同时去一家公司应聘，人事主管会用掷硬币的方法雇用其中一个，另一个则什么工作也得不到。
+
+（1）写出这两个谋职者间博弈的支付矩阵。（5分）
+（2）求纳什均衡。（5分）` },
+{ id:'F2023-C3', subject:'金融学', paper:'2023年（金融）', type:'计算', qid:'3',
+  question:`（10分）考虑一个经济体，消费函数为 C=100+0.75Y，投资函数为 I=20-2r，货币需求函数为 M/P=0.2Y-0.5r，名义货币供给 M=50，价格水平为 P，价格总供给函数 Y=10P，充分就业产出为250。求：
+
+（1）充分就业时的价格水平；（1分）
+（2）为了实现充分就业，政府购买需要增加多少？（3分）
+（3）为了实现充分就业，货币供给需要增加多少？（3分）
+（4）如果同时采取宽松的财政政策和宽松的货币政策，保持利率水平不变的前提下，政府购买和货币供给增加多少可以实现充分就业？（3分）` },
+{ id:'F2023-J1', subject:'金融学', paper:'2023年（金融）', type:'计量', qid:'1',
+  question:`（10分）对于如下 ARMA(1,2) 模型：Y_t=0.8Y_{t-1}+μ_t+0.7μ_{t-1}+0.6μ_{t-2}，其中 μ_t 为白噪声序列。定义 ρ_k 为自相关函数，请证明下面的表达式成立：
+
+（1）ρ_k=0.8ρ_{k-1}，对于 k≥3；
+（2）ρ₂=0.8ρ₁+0.6σ_μ²/γ₀。` },
+{ id:'F2023-J2', subject:'金融学', paper:'2023年（金融）', type:'计量', qid:'2',
+  question:`（10分）一元线性回归模型为：Y_t=β₀+β₁X_t+ε_t，并且 t=1,2,…,T。其中，β̂₀ 和 β̂₁ 为模型参数的OLS估计值；ε_t 为模型的随机误差项；令 Ŷ_t 为 Y_t 的样本拟合值；残差 ε̂_t=Y_t-Ŷ_t；x_t=X_t-X̄，y_t=Y_t-Ȳ 分别表示 X_t 和 Y_t 的离差；X̄ 和 Ȳ 为样本平均数。请回答下列问题：
+
+（1）怎样进行经济计量研究？请简述经济计量分析的主要步骤；
+（2）随机误差项 ε_t 与 ε̂_t 是一回事吗？试说明理由。
+（3）若令 r 为变量 X 和 Y 的简单线性样本相关系数，试问相关系数 r 与 β̂₁ 的符号是否相同？请说明理由。` },
+{ id:'F2023-J3', subject:'金融学', paper:'2023年（金融）', type:'计量', qid:'3',
+  question:`（10分）设消费函数 Y_t=β₀+β₁X_t+μ_t，其中 Y 为消费，X 为个人可支配收入，μ 为随机误差项，且 E(μ_t)=0，Var(μ_t)=σ²X_t²，其中 σ² 为常数，试回答以下问题：
+
+（1）选用适当的变换修正异方差，要求写出变换过程；
+（2）写出修正异方差后的参数估计量的表达式。` },
+{ id:'F2023-J4', subject:'金融学', paper:'2023年（金融）', type:'计量', qid:'4',
+  question:`（10分）消费者价格指数是分析一国宏观经济发展情况和通货膨胀情况的重要指标，试说明这个指标的定义和统计方法；（4分）在一些宏观经济分析中经济学家在研究消费者价格指数变化时会忽略能源价格，为什么？（2分）很多经济学家认为消费者价格指数的变化高估了通货膨胀，为什么？（4分）` },
+{ id:'F2023-E1', subject:'金融学', paper:'2023年（金融）', type:'论述', qid:'1',
+  question:`（20分）企业创新就是根据市场需求的发展趋势，为生产和市场需求相适应的产品，而充分利用并不断优化自身资源与社会资源配置，从企业经营管理各个层面上进行的创造和革新。但企业创新也会受到很多方面因素的影响，请用所学微观经济学理论分析市场结构、专利制度与专利竞赛、企业股权结构对企业创新的影响。` },
+{ id:'F2023-E2', subject:'金融学', paper:'2023年（金融）', type:'论述', qid:'2',
+  question:`（20分）假定某类小国开放经济实行固定汇率制度和资本自由流动。该类经济体正处于衰退期，产出水平低而失业率高，且有巨额的政府预算赤字。请结合开放经济下的有关宏观经济学模型分析：
+
+（1）他们为什么不能用货币政策来稳定经济？（10分）
+（2）若他们能够忍受高额预算赤字，为什么财政扩张将是有效的政策？（5分）
+（3）为什么货币贬值将会同时导致产出增加和政府赤字的降低？（5分）` },
+
+/* ---------- 2022年（金融） ---------- */
+{ id:'F2022-S1', subject:'金融学', paper:'2022年（金融）', type:'简答', qid:'1',
+  question:`“消费者消费两种商品，一种商品的需求收入弹性大于1为奢侈品，另一种商品的需求收入弹性必定小于1”，该观点正确吗，并给出数学证明。` },
+{ id:'F2022-S2', subject:'金融学', paper:'2022年（金融）', type:'简答', qid:'2',
+  question:`简述用货币衡量消费者效用的评价指标以及它们之间的联系。` },
+{ id:'F2022-S3', subject:'金融学', paper:'2022年（金融）', type:'简答', qid:'3',
+  question:`简述公共资源使用中存在的问题。有人建议建立相关所有权制解决这些问题，你同意吗。为什么？` },
+{ id:'F2022-S4', subject:'金融学', paper:'2022年（金融）', type:'简答', qid:'4',
+  question:`简述总需求曲线向右下方倾斜的原因，以及影响总需求曲线位移的因素。` },
+{ id:'F2022-S5', subject:'金融学', paper:'2022年（金融）', type:'简答', qid:'5',
+  question:`通货膨胀目标制是什么，它有什么优缺点？` },
+{ id:'F2022-C1', subject:'金融学', paper:'2022年（金融）', type:'计算', qid:'1',
+  question:`市场上有两个厂商，分别生产商品1和商品2，两个厂商都处于完全竞争市场，商品1和商品2的价格分别为 p₁ 和 p₂，厂商1的成本函数为 C₁(x₁)=(1/2)c₁x₁²，厂商2的成本函数为 C₂(x₂)=(1/2)c₂x₂²，厂商1生产 x₁ 单位的商品给厂商2带来的外部成本为 e=(1/2)ex₁²。
+
+（1）分别求单个厂商利润最大化时和社会福利最大化时两个厂商的产量，说明由于外部性导致的产量的区别。
+（2）如果政府采用税收的方法向厂商1收取费用，以使得两个厂商产量为社会福利最大化时的产量，政府应该向厂商1收取的税收总额为多少？
+（3）如果政府赋予厂商2向厂商1收取生产商品1造成的外部成本的费用的权利，那么为了使产量为社会福利最大化时的产量，厂商1生产一单位商品1应当向厂商2支付的价格为多少？` },
+{ id:'F2022-C2', subject:'金融学', paper:'2022年（金融）', type:'计算', qid:'2',
+  question:`已知厂商的生产函数为 f(x₁,x₂)=x₁^(1/2)+x₂^(1/2)，产品价格为 p，生产要素1和2的价格分别为 w₁ 和 w₂，求：
+
+（1）厂商的要素需求函数和供给函数；
+（2）厂商的条件要素需求函数和成本函数；
+（3）要素需求函数和条件要素需求函数之间存在什么关系？` },
+{ id:'F2022-C3', subject:'金融学', paper:'2022年（金融）', type:'计算', qid:'3',
+  question:`某经济体的资本存量 K=200，人口 N=200，投资 I=20，固定资本折旧率 δ=5%，边际消费倾向 c=0.6，求：
+
+（1）以人口衡量的人均水平产出和资本增长率。
+（2）当人口增长率 n=1.2%，储蓄率 s=12% 时，稳态时资本—产出比 K/Y 为多少？
+（3）当人均产出水平为0.5时，稳态时资本—劳动比率为多少？` },
+{ id:'F2022-J1', subject:'金融学', paper:'2022年（金融）', type:'计量', qid:'1',
+  question:`（10分）考虑如下关于 Y_t 的两种时间序列模型：
+
+Y_t=Y_{t-1}+u_t
+Y_t=1.079Y_{t-1}-0.97Y_{t-2}+u_t
+
+其中，u_t 是白噪声过程，试将模型表达成含有滞后算子的特征方程式，并判断哪一个模型是平稳的，说明原因。` },
+{ id:'F2022-J2', subject:'金融学', paper:'2022年（金融）', type:'计量', qid:'2',
+  question:`（10分）考虑简单回归模型：y=β₀+β₁x+u，令 z 为内生解释变量 x 的二值工具变量，证明：IV 估计量 β̂₁ 可以写成 β̂₁=(ȳ₁-ȳ₀)/(x̄₁-x̄₀)。其中，ȳ₀ 和 x̄₀ 是 z_i=0 的那部分样本中 y_i 和 x_i 的均值，而 ȳ₁ 和 x̄₁ 是 z_i=1 的那部分样本中 y_i 和 x_i 的均值。` },
+{ id:'F2022-J3', subject:'金融学', paper:'2022年（金融）', type:'计量', qid:'3',
+  question:`（10分）以 Q_t 表示粮食产量，A_t 表示播种面积，C_t 表示化肥施用量，经检验，它们取对数后都是 I(1) 变量，且相互之间存在 CI(1,1) 关系。经过检验并剔除不显著的变量（包括滞后变量），得到如下粮食生产模型：lnQ_t=α₀+α₁lnQ_{t-1}+α₂lnA_t+α₃lnC_t+α₄lnC_{t-1}+u_t。
+
+（1）写出长期均衡方程的理论形式。（2分）
+（2）写出误差修正项 ECM 的理论形式。（3分）
+（3）写出误差修正模型的理论形式，指出误差修正模型中每个待估参数的经济意义。（5分）` },
+{ id:'F2022-J4', subject:'金融学', paper:'2022年（金融）', type:'计量', qid:'4',
+  question:`（10分）劳动力参工率和失业率是分析一国宏观经济发展情况和劳动力市场均衡状况的重要指标，说明这两个指标的定义和统计方法。（3分）由于人们的工作状态在一年中是变化的，所以我们在统计时需要对以上两个指标做怎样的调整？（2分）失业率通常被认为是滞后指标，在长期经济衰退影响下，摩擦性失业、结构性失业和劳动力参工率会如何变化？（5分）` },
+{ id:'F2022-E1', subject:'金融学', paper:'2022年（金融）', type:'论述', qid:'1',
+  question:`（20分）网络产品的价值随使用用户增加而增加，分析网络产品的市场特征。网络产品市场是高竞争市场还是寡头垄断市场的？为什么？应该如何监管网络产品市场？` },
+{ id:'F2022-E2', subject:'金融学', paper:'2022年（金融）', type:'论述', qid:'2',
+  question:`（20分）新冠疫情后各国使用积极的财政政策和宽松货币政策刺激经济增长，有观点认为当今世界货币体系是政府信用的货币体系，财政政策应代替货币政策承担减少失业与通货膨胀的责任。结合宏观经济学知识分析这一观点。结合我国实际，如何协调财政政策和货币政策，促进经济复苏与发展。` },
+
+/* ---------- 2021年（金融） ---------- */
+{ id:'F2021-S1', subject:'金融学', paper:'2021年（金融）', type:'简答', qid:'1',
+  question:`简述经济学中的欧拉方程并推导。` },
+{ id:'F2021-S2', subject:'金融学', paper:'2021年（金融）', type:'简答', qid:'2',
+  question:`外部性一定要政府干预，你同意吗？为什么？` },
+{ id:'F2021-S3', subject:'金融学', paper:'2021年（金融）', type:'简答', qid:'3',
+  question:`垄断厂商实行一级价格歧视，能实现帕累托最优吗？经济是有效率的吗？` },
+{ id:'F2021-S4', subject:'金融学', paper:'2021年（金融）', type:'简答', qid:'4',
+  question:`简述凯恩斯的流动性偏好和弗里德曼的新货币数量论的差别。` },
+{ id:'F2021-S5', subject:'金融学', paper:'2021年（金融）', type:'简答', qid:'5',
+  question:`推导 m₁ 和 m₂ 的货币乘数表达式，并比较。` },
+{ id:'F2021-C1', subject:'金融学', paper:'2021年（金融）', type:'计算', qid:'1',
+  question:`某人的效用函数是 U(C,R)=C-(12-R)²，其中 R 是他每天拥有的闲暇时间。他每天有16小时可用在工作和闲暇上，每天有20元的非劳动收入。消费品的价格是每单位1元。如果工资率是每小时10元，他将选择多少小时进行工作以获得最大效用？` },
+{ id:'F2021-C2', subject:'金融学', paper:'2021年（金融）', type:'计算', qid:'2',
+  question:`一个厂商面对两个不同的市场需求函数 p₁=20-y₁，p₂=30-2y₂，y=y₁+y₂，成本函数为 c=2y-10，求每个市场的最优定价和供给量。` },
+{ id:'F2021-C3', subject:'金融学', paper:'2021年（金融）', type:'计算', qid:'3',
+  question:`假设在某国，资本在GDP中的份额为30%左右；产出的平均增长为每年3%左右；折旧率为每年4%左右；资本—产出比率为2.5左右。假设生产函数是柯布-道格拉斯生产函数，因此，资本在产出中的份额是不变的，而且，该国已经处于稳定状态。
+
+（1）在初始稳定状态，储蓄率应该是多少？[提示：使用稳定状态的关系式 sy=(δ+n+g)k]
+（2）在初始稳定状态，资本的边际产量是多少？
+（3）假设公共政策提高了储蓄率，从而使经济达到了资本的黄金律水平。在黄金律稳定状态，资本的边际产量将是多少？比较黄金律稳定状态的边际产量和初始稳定状态的边际产量，并解释。
+（4）在黄金律稳定状态，资本—产出比率将是多少？（提示：对柯布-道格拉斯生产函数来说，资本—产出比率与资本的边际产量是相关的。）
+（5）要达到黄金律稳定状态，储蓄率必须是多少？` },
+{ id:'F2021-J1', subject:'金融学', paper:'2021年（金融）', type:'计量', qid:'1',
+  question:`（1）时间序列稳定性的定义；
+（2）证明随机游走序列非平稳。` },
+{ id:'F2021-J2', subject:'金融学', paper:'2021年（金融）', type:'计量', qid:'2',
+  question:`考虑一个简化的凯恩斯宏观经济模型：
+
+消费方程 C_t=a₀+a₁Y_t+u_{1t}
+投资方程 I_t=β₀+β₁Y_t+β₂Y_{t-1}+u_{2t}
+收入方程 Y_t=C_t+I_t+G_t
+
+（1）对于消费方程，ILS、2SLS以及工具变量LS得到的估计结果是否相同，为什么？
+（2）对于投资方程，ILS和工具变量LS是否可行，为什么？
+（3）说明使用2SLS的优劣。
+（4）若 u_{1t} 和 u_{2t} 符合同方差、非自相关，但同一时间的二者非独立，请写出简化的消费方程的方差协方差矩阵。` },
+{ id:'F2021-J3', subject:'金融学', paper:'2021年（金融）', type:'计量', qid:'3',
+  question:`考虑如下一阶Probit模型：Y_t=1-@CNORM[-(λ₁X_{1t}+λ₂X_{2t})]+u_t，其中 Y 只有0,1两个取值。
+
+（1）u_t 是否符合白噪声？为什么？该模型与一般模型的区别在哪里？
+（2）P(z≥0.02)=0.462，-(λ̂₁X_{1t}+λ̂₂X_{2t})=0.02，求 λ̂₁，并解释其经济意义。` },
+{ id:'F2021-J4', subject:'金融学', paper:'2021年（金融）', type:'计量', qid:'4',
+  question:`泰勒规则中，政府的通胀反应具有前瞻性，产出缺口具有滞后性，写出该模型统计时应该注意的问题。` },
+{ id:'F2021-E1', subject:'金融学', paper:'2021年（金融）', type:'论述', qid:'1',
+  question:`（20分）简述公共物品的定义和特性，以及公共物品总需求函数确定的条件。并举例说明数据是不是公共物品。` },
+{ id:'F2021-E2', subject:'金融学', paper:'2021年（金融）', type:'论述', qid:'2',
+  question:`（20分）结合经济理论，谈谈你对新冠疫情下经济形势的认识，政府要采取什么样的货币政策和财政政策。` },
+
+/* ---------- 2020年（金融） ---------- */
+{ id:'F2020-S1', subject:'金融学', paper:'2020年（金融）', type:'简答', qid:'1',
+  question:`简述福利经济学第一和第二定理，并分析福利经济学第二定理对于解决分配和效率问题的意义。` },
+{ id:'F2020-S2', subject:'金融学', paper:'2020年（金融）', type:'简答', qid:'2',
+  question:`请用需求价格弹性相关、微观的原理来说明一下“薄利多销”的现象和经济意义。` },
+{ id:'F2020-S3', subject:'金融学', paper:'2020年（金融）', type:'简答', qid:'3',
+  question:`共享单车越来越被更多的恶意破坏，由共享变成了独享，那么请问一下，从微观经济学原理来解释一下这种现象，并谈谈解决方案。` },
+{ id:'F2020-S4', subject:'金融学', paper:'2020年（金融）', type:'简答', qid:'4',
+  question:`什么是泰勒规则？什么是泰勒原理？` },
+{ id:'F2020-S5', subject:'金融学', paper:'2020年（金融）', type:'简答', qid:'5',
+  question:`解释衰退可能提高自然失业率的两种方式。` },
+{ id:'F2020-S6', subject:'金融学', paper:'2020年（金融）', type:'简答', qid:'6',
+  question:`比较凯恩斯货币需求理论和剑桥方程式，比较庇古效应和凯恩斯效应。` },
+{ id:'F2020-C1', subject:'金融学', paper:'2020年（金融）', type:'计算', qid:'1',
+  question:`试计算下表中的战略式博弈的重复剔除劣战略均衡。（支付矩阵：A的U/M/D与B的L/M/R）` },
+{ id:'F2020-C2', subject:'金融学', paper:'2020年（金融）', type:'计算', qid:'2',
+  question:`某垄断者能够以常数平均（和边际）成本 AC=MC=5 生产。该厂商面临一市场需求曲线 Q=53-P。
+
+（1）计算这个垄断者的利润最大化价格和产量，并算出它的利润。
+（2）假设第二个厂商加入该市场。Q₁ 为第一个厂商的产量，Q₂ 是第二个厂商的产量。市场需求由 Q₁+Q₂=53-P 给出。设第二个厂商与第一个厂商有相同的成本，将各厂商的利润写成 Q₁ 和 Q₂ 的函数。
+（3）假设（如在古诺模型中一样）各厂商在假定它的竞争者的产量固定时选择其利润最大化产量水平。求出各厂商的“反应曲线”。
+（4）计算古诺均衡。求出市场价格和各厂商的利润是多少？
+（5）设该行业中有 N 家厂商，都有相同的常数边际成本 MC=5。求出古诺均衡。各厂商将生产多少，市场价格为多少，以及各厂商将赚到多少利润？还有，证明当 N 变大时，市场价格接近于完全竞争下的价格。` },
+{ id:'F2020-C3', subject:'金融学', paper:'2020年（金融）', type:'计算', qid:'3',
+  question:`假设某经济社会的消费函数为 C=100+0.8Y，投资为50（单位：10亿美元）。
+
+（1）求均衡收入、消费和储蓄。
+（2）如果当时实际产出（即收入）为800，试求企业非自愿存货积累为多少。
+（3）若投资增至100，试求增加的收入。
+（4）若消费函数变为 C=100+0.9Y，投资仍为50，收入和储蓄各为多少？投资增至100时收入增加多少？
+（5）消费函数变动后，乘数有何变化？` },
+{ id:'F2020-C4', subject:'金融学', paper:'2020年（金融）', type:'计算', qid:'4',
+  question:`如果一个国家的有效人均生产函数为：y=k^a，其中，α=0.35，此外储蓄率 s=0.4，人口增长率 n=0.01，技术进步率 g=0.03，资本折旧率 δ=0.06。请计算：
+
+（1）该国长期均衡的有效人均资本存量 k* 和消费水平 c*；
+（2）资本积累的“黄金律”水平 k_g。` },
+{ id:'F2020-J1', subject:'金融学', paper:'2020年（金融）', type:'计量', qid:'1',
+  question:`已知生产函数为 Q=AL^α·K^β·e^μ。
+
+（1）说明 α 和 β 的经济意义；
+（2）写出将生产函数变换为线性函数的变换方法；
+（3）加入变换后的线性回归模型的常数项估计量为 β̂，试写出 A 的估计式；
+（4）此模型可能不满足哪些假定条件，可以用哪些检验？` },
+{ id:'F2020-J2', subject:'金融学', paper:'2020年（金融）', type:'计量', qid:'2',
+  question:`检验如下命题：一个国家如果其开放度越高，则通货膨胀率越低。设定联立方程模型：
+
+inf=α₁₁open+β₁₀+β₁₁log(pcinc)+β₁₂log(land)+μ₁
+open=α₂₁inf+β₂₀+β₂₁log(pcinc)+β₂₂log(land)+μ₂
+
+其中，inf 表示通货膨胀率，open 表示开放度，pcinc 表示人均收入，land 表示土地面积。
+
+（1）指出模型中的内生变量和外生变量；
+（2）写出模型的原假设和备择假设；
+（3）如果方程（1）可识别，那么 β₂₂ 须满足什么条件；
+（4）如果方程（1）可识别，写出其2SLS估计的步骤。` },
+{ id:'F2020-J3', subject:'金融学', paper:'2020年（金融）', type:'计量', qid:'3',
+  question:`预期增强的菲利普斯曲线为：inf_t-inf_t*=β₁(unem_t-μ₀)+u_t，其中 unem_t 表示第 t 期的失业率(%)，inf_t 表示第 t 期的通货膨胀率(%)，inf_t* 表示预期的通货膨胀率，μ₀ 表示自然失业率。按照适应性预期理论，inf_t*=inf_{t-1}，令 Δinf_t=inf_t-inf_{t-1}，上述模型可以简化为：Δinf_t=β₀+β₁unem_t+u_t。
+
+利用英国1956—1996年的失业率、通货膨胀数据（年度数据）估计上述模型，结果为（括号内的数字为参数估计量的标准差）：
+Δinf_t=3.03-0.54unem_t
+(1.38) (0.23)
+R²=0.11，DW=1.77
+
+（1）失业率与通货膨胀率的变化存在显著的替代关系吗（检验水平为5%）？
+（2）计算英国的自然失业率；
+（3）令 û_t 表示上述模型的残差，Breush-Goldfrey自相关检验的回归结果为：
+û_t=-0.84+0.14unem_t-0.06û_{t-1}-0.42û_{t-2}
+(1.32) (0.22) (0.14) (0.14)
+R²=0.17，SE=2.29，DW=1.54
+û_t 二阶自回归结果为：û_t=-0.42û_{t-2}
+分析原残差序列是否存在自相关。如果存在，写出广义差分变量的定义和广义最小二乘估计式。` },
+{ id:'F2020-E1', subject:'金融学', paper:'2020年（金融）', type:'论述', qid:'1',
+  question:`（20分）材料一：我国某知名重点大学校内新规定，禁止给D或F的成绩。它对自己的行动辩解说，学生在没有因不及格而退学的压力时，他们的表现会超过平均水平。该大学说，它希望所有的学生都得到A和B。
+
+材料二：我国著名专家罗杰教授被某著名大学高薪聘请，学校说要狠抓学生的学习学术质量水平，但是罗杰教授在大学内只进行金融研究，两个月未曾去教室内给学生们传授知识，然而，罗杰教授还为自己辩解道，他的研究会给系里和大学带来更多的声誉。
+
+（1）请根据材料一回答一下，如果目标是把总体成绩提高到B或以上的水平，这是不是一项好的政策？结合道德风险问题进行讨论。
+（2）请根据材料二回答该大学是否继续允许罗杰教授只搞自己的科学研究，而不进行教学，请用微观经济学原理进行解释？
+（3）请根据上述材料回答一下信息和市场失灵之间的关系？` },
+{ id:'F2020-E2', subject:'金融学', paper:'2020年（金融）', type:'论述', qid:'2',
+  question:`（20分）现在全球面临着低利率的经济形势，而且低利率可能还会有长期存在的趋势，请说明一下全球低利率这样的情况产生原因是什么？会如何影响经济增长和金融稳定？` },
+
+/* ---------- 2019年（金融） ---------- */
+{ id:'F2019-S1', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'1',
+  question:`交易成本在社会运行中的积极作用表现在什么方面？（6分）` },
+{ id:'F2019-S2', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'2',
+  question:`劳动的供给曲线为什么可以向后弯曲？（6分）` },
+{ id:'F2019-S3', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'3',
+  question:`解释卡特尔组织不稳定性的原因。（6分）` },
+{ id:'F2019-S4', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'4',
+  question:`帕累托效率与帕累托改进的区别。（6分）` },
+{ id:'F2019-S5', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'5',
+  question:`为什么个人投资的波动被认为是引起经济活动波动的主要原因？（6分）` },
+{ id:'F2019-S6', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'6',
+  question:`简要解释短期菲利普斯曲线与长期菲利普斯曲线的区别。（6分）` },
+{ id:'F2019-S7', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'7',
+  question:`如果没有工资刚性的假设，凯恩斯扩张总需求的政策效应将如何？（6分）` },
+{ id:'F2019-J1', subject:'金融学', paper:'2019年（金融）', type:'计量', qid:'8',
+  question:`（6分）恩格尔曲线表明了消费者对某一商品的消费支出占总收入的比重。令 Y 表示某一商品的消费支出，X 表示消费者收入，构建如下形式的模型：
+
+(a) Y_i=β₀+β₁X_i+ε_i
+(b) Y_i=β₀+β₁(1/X_i)+ε_i
+(c) lnY_i=β₀+β₁lnX_i+ε_i
+(d) lnY_i=β₀+β₁(1/X_i)+ε_i
+(e) Y_i=β₀+β₁lnX_i+ε_i
+(f) lnY_i=β₀-β₁(1/X_i)+ε_i
+
+试回答：（1）给定样本的情形下，上述各模型的判定系数 R² 可以直接比较吗？如果不能，哪些能直接比较？（2分）
+（2）写出上述各模型中商品的消费支出对收入的弹性系数的表达式。（2分）
+（3）如果 β₁>0，解释上述各收入弹性的意义。（2分）` },
+{ id:'F2019-J2', subject:'金融学', paper:'2019年（金融）', type:'计量', qid:'9',
+  question:`（6分）已知“真实”模型的形式为：Y_i=β₀+β₁X_{1i}+ε_i（模型1）
+
+然而在构建模型时却引入了一个多余的“无关”解释变量 X₂，即：Y_i=β₀+β₁X_{1i}+β₂X_{2i}+υ_i（模型2）
+
+这里的“无关”是指解释变量 X₂ 的真实系数 β₂ 为0，ε_i 和 υ_i 为随机误差项，均满足经典线性回归模型的假定条件，若给定相同样本估计上述两个模型，试回答：
+（1）模型2的判定系数 R² 是否会大于模型1？并说明理由。
+（2）如果采用OLS估计模型2得到 β₁ 的估计量 β̂₁，那么无关解释变量 X₂ 的引入会对 β̂₁ 的方差估计有影响吗？并说明理由。` },
+{ id:'F2019-J3', subject:'金融学', paper:'2019年（金融）', type:'计量', qid:'10',
+  question:`（6分）构建如下形式的联立方程模型：
+
+Y_{1t}=α₁+α₂Y_{2t}+α₃X_t+u_{1t}
+Y_{2t}=β₁+β₂Y_{1t}+u_{2t}
+
+式中，Y₁ 和 Y₂ 是内生变量，X 是外生变量，u₁ 和 u₂ 是随机误差项。在给定样本的条件下得到上述模型的简化型模型的估计结果为：
+Y_{1t}=6+8X_t
+Y_{2t}=4+12X_t
+
+试回答：
+（1）依据简化模型的估计结果，可以估计哪些结构系数？并说明依据。（2分）
+（2）若获得先验信息 α₂=0，那么可以估计哪些结构系数？（2分）
+（3）若获得先验信息 α₁=0，那么可以估计哪些结构系数？（2分）` },
+{ id:'F2019-J4', subject:'金融学', paper:'2019年（金融）', type:'计量', qid:'11',
+  question:`（6分）定义如下形式的时间序列：（原题给出三种设定）
+
+其中 θ₀ 和 θ₁ 为非零常数；ξ_t 为相互独立同分布的白噪声过程。试判断上述三种设定下的时间序列是否平稳？并说明理由。` },
+{ id:'F2019-J5', subject:'金融学', paper:'2019年（金融）', type:'计量', qid:'12',
+  question:`（6分）假设变量 Y_t 和 X_t 均为单位根过程：Y_t~I(1)、X_t~I(1)，并且两者存在协整关系，根据如下形式的动态分布滞后模型：Y_t=α₀+α₁Y_{t-1}+α₂Y_{t-2}+β₀X_t+β₁X_{t-1}+β₂X_{t-2}+u_t，其中 u_t 服从正态分布且相互独立，即 u_t~IN(0,σ²)。试推导其相应的误差修正模型表达式，并描述变量间的长期关系和短期关系。` },
+{ id:'F2019-C1', subject:'金融学', paper:'2019年（金融）', type:'计算', qid:'1',
+  question:`（14分）假定自发消费为100，边际消费倾向是0.8，投资是50，政府购买为200，政府转移支付是62.5；税率是0.25，（单位：亿美元）求：
+
+（1）如果实际收入是2000亿美元，国民收入核算恒等式如何？经济如何调整？调整结果如何？（6分）
+（2）当政府减少购买10亿美元时，均衡收入水平是多少？（3分）
+（3）如果政府决定削减转移支付，同时增加等量的政府购买，均衡收入水平是增加、减少还是不变？请写出论证过程。（5分）` },
+{ id:'F2019-C2', subject:'金融学', paper:'2019年（金融）', type:'计算', qid:'2',
+  question:`（12分）一个消费者要分配24小时给工作和闲暇。她的效用来自于休闲时间 R 和收入 I，她工作一小时时的工资率为 P_L，她一天的效用函数为 U(R,I)=48R+RI-R²。
+
+（1）给出这个消费者的劳动供给函数。（4分）
+（2）她工作的时间会随着工资率的增加而增加吗？（4分）
+（3）不管工资率多高，她的工作时间有一个极限吗？（4分）` },
+{ id:'F2019-C3', subject:'金融学', paper:'2019年（金融）', type:'计算', qid:'3',
+  question:`（12分）下面的矩阵表示两个厂商选择的策略的收益矩阵（单位：万元）：
+
+　　　　　B守约　　B违约
+A守约　500,500　-200,800
+A违约　800,-200　200,200
+
+（1）哪一种策略使A的最大可能损失为最小？B的是哪一种？（4分）
+（2）如果你是A，你会选择哪一种策略？为什么？如果A违约，B会做什么？如果B违约，A会做什么？（4分）
+（3）这一对策略最可能出现的结果是什么？为什么？（4分）` },
+{ id:'F2019-E1', subject:'金融学', paper:'2019年（金融）', type:'论述', qid:'1',
+  question:`（20分）自然垄断条件下平均总成本持续降低，分析垄断厂商的均衡。如果政府对其实行限制价格，可采取哪些措施？要求用图示分析其效果。` },
+{ id:'F2019-E2', subject:'金融学', paper:'2019年（金融）', type:'论述', qid:'2',
+  question:`（20分）论述人民币的升、贬值对我国国际收支的影响。` },
+
+/* ---------- 2018年（金融） ---------- */
+{ id:'F2018-S1', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'1',
+  question:`经济政策往往会运用税收、补贴和配额影响消费者预算，请问补贴会怎样影响预算线？（6分）` },
+{ id:'F2018-S2', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'2',
+  question:`收入弹性可以影响商品的供求，请画图说明当收入弹性为负时恩格尔曲线的情形。（6分）` },
+{ id:'F2018-S3', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'3',
+  question:`在不确定性的条件下不同行为者的态度区别较大，请问投资者的风险偏好有哪些类型？（6分）` },
+{ id:'F2018-S4', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'4',
+  question:`技术要素会改变生产函数，简述边际技术替代率的变化趋势。（6分）` },
+{ id:'F2018-S5', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'5',
+  question:`市场上既有买方垄断也有卖方垄断，简述最低工资水平对劳动力供求的影响。（6分）` },
+{ id:'F2018-S6', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'6',
+  question:`假定中央银行对货币增长有完全的控制能力，而公众的预期也完全理性，根据纳什均衡，如何运用货币政策来调整通货紧缩的倾向。（6分）` },
+{ id:'F2018-S7', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'7',
+  question:`经济发展的周期波动受很多因素的影响，简述凯恩斯的经济周期理论，政府支出会对经济周期有怎样的影响？（6分）` },
+{ id:'F2018-J1', subject:'金融学', paper:'2018年（金融）', type:'计量', qid:'8',
+  question:`（6分）对于一元线性回归模型 Y_i=β₀+β₁X_i+u_i，假设 X 为随机变量且与扰动项 u 高度相关。假定 u 满足最小二乘法的其他假定条件：E(u_i)=0；Var(u_i)=σ_u²；Cov(u_i,u_j)=0，i≠j，i,j=1,2,3,…,n。请求解 β₀ 和 β₁ 的工具变量估计值表达式。` },
+{ id:'F2018-J2', subject:'金融学', paper:'2018年（金融）', type:'计量', qid:'9',
+  question:`（6分）假定真实的模型是 Y_i=β₀+β₁X_i+β₂X_{2i}+u_i，但是出于某种原因，在实际估计模型时使用的是如下模型：Y_i=β₀+β₁X_i+u_i。请问：在什么情况下，β₁ 的最小二乘估计值是无偏的。` },
+{ id:'F2018-J3', subject:'金融学', paper:'2018年（金融）', type:'计量', qid:'10',
+  question:`（6分）平稳的 AR(2) 过程如下：x(t)=φ₁x_{t-1}+φ₂x_{t-2}+u_t，φ₂+φ₁<1，φ₂-φ₁<1，-1<φ₂<1，u_t 为白噪声过程。请计算 AR(2) 过程的自相关函数表达式。` },
+{ id:'F2018-J4', subject:'金融学', paper:'2018年（金融）', type:'计量', qid:'11',
+  question:`（6分）一元线性回归模型为：Y_i=β₀+β₁X_i+u_i，其估计方程为：Y_i=β̂₁+β̂₂X_i+û_i=Ŷ_i+û_i，其中 Ŷ_i 是 Y_i 的估计值。请证明：可决系数 R² 等于观测值 Y_i 与 Ŷ_i 之间的相关系数的平方。` },
+{ id:'F2018-J5', subject:'金融学', paper:'2018年（金融）', type:'计量', qid:'12',
+  question:`（6分）已知三个时间序列 X_t、Y_t、Z_t 都是 I(1) 变量且相互之间存在 (1,1) 阶协整关系，经检验，它们之间的关系表达式为：Z_t=α₀+α₁Z_{t-1}+α₂X_t+α₃Y_t+α₄Y_{t-1}+μ_t。请推导误差修正模型的表达式，并指出误差修正模型中每个待估参数的经济意义。` },
+{ id:'F2018-C1', subject:'金融学', paper:'2018年（金融）', type:'计算', qid:'1',
+  question:`（12分）小陈在南开园拥有一家店，专门卖冷饮和热饮。他认为今年寒春的概率为0.55，暖春的概率为0.45。如果是寒春，学生会偏爱热饮，而如果是暖春，学生会偏爱冷饮。小陈必须要决定分别投入多少资金用于制作冷饮和热饮。他的报酬矩阵如下：
+
+报酬　　　　寒春(p=0.55)　暖春(p=0.45)
+热饮　　　　　20000　　　　　5000
+冷饮　　　　　5000　　　　　15000
+
+（1）如果小陈选择只做热饮或只做冷饮，他的期望报酬是多少？
+（2）如果小陈选择将 m 比例的资金投资热饮，其余资金投资冷饮，他的期望报酬是多少？` },
+{ id:'F2018-C2', subject:'金融学', paper:'2018年（金融）', type:'计算', qid:'2',
+  question:`（13分）货币数量方程式 PY=MV，P 为价格总水平，Y 为总产出，M 为货币供给，V 为货币流通速度：
+
+（1）根据货币数量方程，把通货膨胀写成其他变量及变化的函数。
+（2）利用（1）简述通货膨胀永远是货币现象的涵义，假设 V 是常数。
+（3）如果放松货币流通速度是常数的假设，你认为货币流通速度是顺周期还是逆周期的？为什么？对（2）中的讨论有何影响？` },
+{ id:'F2018-C3', subject:'金融学', paper:'2018年（金融）', type:'计算', qid:'3',
+  question:`（13分）分析一消费者消费 X 和 Y 两种商品时，无差异曲线的斜率处处是 Y/X，Y 是商品 Y 的量，X 是商品 X 的量。
+
+（1）说明对 X 的需求不取决于 Y 的价格，X 的需求弹性为1。
+（2）P_X=1，P_Y=3，该消费者均衡时的 MRS_XY 为多少？
+（3）对 X 的恩格尔曲线形状如何？对 X 的需求收入弹性是多少？` },
+{ id:'F2018-E1', subject:'金融学', paper:'2018年（金融）', type:'论述', qid:'1',
+  question:`（20分）假定某类小国，开放经济实行固定汇率，资本自由流动，该类经济体正处于衰退期，产出水平低而失业率高，且有巨额的政府预算赤字。试结合开放经济下的有关宏观经济学模型分析：
+
+（1）它们为什么不能用货币政策来稳定经济？
+（2）若它们能忍受高额预算赤字，为什么财政扩张将是有效的政策？
+（3）为什么货币贬值会同时导致产出增加和政府赤字的降低？` },
+{ id:'F2018-E2', subject:'金融学', paper:'2018年（金融）', type:'论述', qid:'2',
+  question:`（20分）在中国共产党的第十九次代表大会报告中，明确提出要深化国有企业改革，发展混合所有制经济，请评述什么是混合所有制？发展混合所有制经济的路径有哪些？` },
+
+/* ---------- 2017年（金融） ---------- */
+{ id:'F2017-S1', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'1',
+  question:`在存在外部性情况下，垄断时的社会福利是否可能高于完全竞争下的社会福利？（6分）` },
+{ id:'F2017-S2', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'2',
+  question:`竞争情况下当产量达到均衡产量时社会福利最大化，当产量高于均衡产量时，为何会产生无谓损失？（6分）` },
+{ id:'F2017-S3', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'3',
+  question:`垄断竞争下的均衡产量为何不能达到竞争均衡水平。（6分）` },
+{ id:'F2017-S4', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'4',
+  question:`说明计量分析的步骤。（6分）` },
+{ id:'F2017-S5', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'5',
+  question:`在2008年全球金融危机时，资本大量流入美国，购买美债，试分析这一流动对美国储蓄、投资、利率、外汇和经常账户的影响。（6分）` },
+{ id:'F2017-S6', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'6',
+  question:`当一国的中央银行打算降低通胀率，试利用菲利普斯曲线分析其短期影响和长期影响。（6分）` },
+{ id:'F2017-S7', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'7',
+  question:`请说明补偿变化和等价变化的含义及与消费者剩余的关系。（6分）` },
+{ id:'F2017-J1', subject:'金融学', paper:'2017年（金融）', type:'计量', qid:'8',
+  question:`（6分）给定一个OLSE计量模型：Y_t=β₀+β₁X_t+u_t，证明参数估计值 β₁ 的无偏性和一致性。` },
+{ id:'F2017-J2', subject:'金融学', paper:'2017年（金融）', type:'计量', qid:'9',
+  question:`（6分）两个计量模型：
+
+Y_t=β₀+β₁X_t+u_t
+Y_t=γ₀+γ₁(X_t-X̄)+u_t
+
+问：β₁ 与 γ₁ 的估计值是否相同，方差是否相同，为什么？` },
+{ id:'F2017-J3', subject:'金融学', paper:'2017年（金融）', type:'计量', qid:'10',
+  question:`（6分）常见的货币政策规则体系有哪些？泰勒规则属于哪一种？其在低利率甚至“负利率时代”是否具有适用性？` },
+{ id:'F2017-J4', subject:'金融学', paper:'2017年（金融）', type:'计量', qid:'11',
+  question:`（6分）对于随机游走序列 x_t=x_{t-1}+u_t，x₀=0，u_t~IN(0,σ_u²)。其中 u_t 为白噪声序列，IN(0,σ_u²) 表示 u_t 服从均值为零、方差为 σ_u² 的相互独立的正态分布，样本量为 T。试求 x_T 的期望、方差，以及 x_T 与 x_{T-k} 的相关系数 ρ_k。` },
+{ id:'F2017-J5', subject:'金融学', paper:'2017年（金融）', type:'计量', qid:'12',
+  question:`（6分）给定如下 ADL(1,1) 模型：y_t=α₀+α₁y_{t-1}+β₀x_t+β₁x_{t-1}+u_t，其中 |α₁|<1，u_t~IID(0,σ²)。试求：误差修正模型的表达式，并说明长短期变量之间的关系。` },
+{ id:'F2017-C1', subject:'金融学', paper:'2017年（金融）', type:'计算', qid:'1',
+  question:`（13分）假设原油的需求由下式给定：Q=-2000P+70000，其中，Q 是原油产量，单位是千桶/每年，P 是每桶价格。还假设有1000个相同的小原油生产商，每一个厂商的边际成本由下式给出：MC=q+5，其中 q 是一般厂商的产量。
+
+（1）假设每一个小石油生产商都是价格的接受者，计算市场供给曲线、市场均衡价格及产量；
+（2）假设在新泽西有一个潜在的价格领导者发现了无限的原油供应源，并且石油可按每桶15美元的不变平均边际成本生产。假设（1）中描述的竞争群体的供给行为并没有由于这一发现而变化，价格领导者为了利润最大化应生产多少原油？此时的市场价格与总产量是多少？
+（3）用图形来表示你的结论。消费者剩余会因新泽西的石油发现而增加吗？如果新泽西新发现的石油是通过竞争性的方式供给的，石油发现后的消费者剩余与原有消费者剩余的情况相比较会有什么结果？` },
+{ id:'F2017-C2', subject:'金融学', paper:'2017年（金融）', type:'计算', qid:'2',
+  question:`（13分）假设索洛模型生产函数为 Y=K^0.5·N^0.5，实际储蓄率为10%，人口增长率为1%，平均折旧率为4%。
+
+（1）写出生产函数的简约形式 y=f(k)，求出稳态时的人均资本和人均产量水平；
+（2）求出满足黄金律要求的人均资本和相应的储蓄率水平；
+（3）要达到黄金律稳定状态，储蓄率应该增加还是减少？` },
+{ id:'F2017-C3', subject:'金融学', paper:'2017年（金融）', type:'计算', qid:'3',
+  question:`（12分）考虑一个由以下方程描述的经济：消费函数为 C=300+0.8Y_d，投资函数为 I=200-1500r，净出口函数为 NX=100-0.1Y-500r，货币需求函数为 L=0.5Y+200-2000r，政府支出为 G=200，税收 T=100+0.25Y，货币流通值为 M_S=650，货币乘数为2，外汇（经常账户余额）为50，价格水平 P=1。
+
+（1）求IS和LM曲线的函数，在商品市场与货币市场达到均衡时利率与收入各为多少？
+（2）若政府支出增加100（即从200变为300），是否有挤出效应？
+（3）若政府减税100，是否可刺激产出，和增加同样多的支出相比哪个效果更好？` },
+{ id:'F2017-E1', subject:'金融学', paper:'2017年（金融）', type:'论述', qid:'1',
+  question:`（20分）福利经济学第二定理指出在一定初始条件下，任何帕累托均衡都可以达到竞争均衡。根据福二定理解析公平和效率的关系。` },
+{ id:'F2017-E2', subject:'金融学', paper:'2017年（金融）', type:'论述', qid:'2',
+  question:`（20分）请分析中国供给侧管理和美国供给学派的区别。` }
+];
+
+// ============================================================
+// 应用状态
+// ============================================================
+let currentData = [...cardData];
+let favorites = JSON.parse(localStorage.getItem('past_exams_favs') || '[]');
+let notes = JSON.parse(localStorage.getItem('past_exams_notes') || '{}');
+let edits = JSON.parse(localStorage.getItem('past_exams_edits') || '{}');
+
+let singleModeId = null;
+let history = [];
+let historyIndex = -1;
+
+const grid = document.getElementById('cardGrid');
+const totalSpan = document.getElementById('totalCards');
+const favSpan = document.getElementById('favCount');
+const filterSubject = document.getElementById('filterSubject');
+const filterPaper = document.getElementById('filterPaper');
+const filterType = document.getElementById('filterType');
+const filterFav = document.getElementById('filterFav');
+const filterSearch = document.getElementById('filterSearch');
+const clearBtn = document.getElementById('clearFilterBtn');
+const randomBtn = document.getElementById('randomBtn');
+const toast = document.getElementById('toast');
+const singleModeBar = document.getElementById('singleModeBar');
+const singleCardBadge = document.getElementById('singleCardBadge');
+const exitSingleBtn = document.getElementById('exitSingleBtn');
+const prevCardBtn = document.getElementById('prevCardBtn');
+const nextCardBtn = document.getElementById('nextCardBtn');
+const filterBar = document.getElementById('filterBar');
+
+let toastTimer = null;
+
+function showToast(msg) {
+    clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.classList.add('show');
+    toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 2200);
+}
+
+function saveFavs() { localStorage.setItem('past_exams_favs', JSON.stringify(favorites)); }
+function saveNotes() { localStorage.setItem('past_exams_notes', JSON.stringify(notes)); }
+function saveEdits() { localStorage.setItem('past_exams_edits', JSON.stringify(edits)); }
+
+// ---- HTML 转义，防止题目中的 < > 破坏页面 ----
+function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+// ---- 获取卡片数据（含编辑） ----
+function getCardData(id) {
+    const original = currentData.find(d => d.id === id);
+    if (!original) return null;
+    if (edits[id]) {
+        return { ...original, question: edits[id].question || original.question };
+    }
+    return { ...original };
+}
+
+// ---- 动态填充专业下拉框 ----
+function initSubjectOptions() {
+    const subjects = [];
+    cardData.forEach(d => { if (!subjects.includes(d.subject)) subjects.push(d.subject); });
+    filterSubject.innerHTML = '<option value="all">全部专业</option>' +
+        subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+}
+
+// ---- 动态填充套卷下拉框 ----
+function updatePaperOptions() {
+    const subj = filterSubject.value;
+    const prevVal = filterPaper.value;
+    const papers = [];
+    cardData.forEach(d => {
+        if ((subj === 'all' || d.subject === subj) && !papers.includes(d.paper)) papers.push(d.paper);
+    });
+    // 「真题说明」优先排在最前
+    papers.sort((a, b) => {
+        if (a === '真题说明') return -1;
+        if (b === '真题说明') return 1;
+        return 0;
+    });
+    filterPaper.innerHTML = '<option value="all">全部套卷</option>' +
+        papers.map(p => `<option value="${p}">${p === '真题说明' ? '📌 真题说明' : p}</option>`).join('');
+    // 尽量保留原选择
+    if (papers.includes(prevVal)) {
+        filterPaper.value = prevVal;
+    } else {
+        filterPaper.value = 'all';
+    }
+}
+
+function exitSingleMode() {
+    if (singleModeId === null) return;
+    singleModeId = null;
+    history = [];
+    historyIndex = -1;
+    singleModeBar.classList.remove('show');
+    filterBar.classList.remove('disabled');
+    render();
+    showToast('📋 已退出抽查模式');
+}
+
+function enterSingleMode(id) {
+    if (!id) return;
+    if (singleModeId !== null) {
+        if (singleModeId === id) return;
+        exitSingleMode();
+        setTimeout(() => { enterSingleMode(id); }, 100);
+        return;
+    }
+    const card = getCardData(id);
+    if (!card) { showToast('😅 题目不存在'); return; }
+    singleModeId = id;
+    const existIdx = history.indexOf(id);
+    if (existIdx !== -1) { historyIndex = existIdx; }
+    else { history.push(id); historyIndex = history.length - 1; }
+    singleModeBar.classList.add('show');
+    filterBar.classList.add('disabled');
+    updateSingleBadge(id);
+    updateNavButtons();
+    render(id);
+    showToast(`🎯 抽查: ${card.paper} · ${card.type}${card.qid}`);
+}
+
+function updateSingleBadge(id) {
+    const card = getCardData(id);
+    if (card) {
+        singleCardBadge.textContent = `${card.paper} · ${card.type}${card.qid}`;
+    } else {
+        singleCardBadge.textContent = id;
+    }
+}
+
+function updateNavButtons() {
+    prevCardBtn.classList.toggle('disabled', historyIndex <= 0);
+    const ids = getFilteredIds();
+    nextCardBtn.classList.toggle('disabled', ids.length <= 1);
+}
+
+function goPrevCard() {
+    if (singleModeId === null) return;
+    if (historyIndex <= 0) { showToast('已经是第一张了'); return; }
+    historyIndex--;
+    const id = history[historyIndex];
+    if (id) {
+        singleModeId = id;
+        updateSingleBadge(id);
+        updateNavButtons();
+        render(id);
+    } else { exitSingleMode(); }
+}
+
+function goNextCard() {
+    if (singleModeId === null) return;
+    const ids = getFilteredIds();
+    if (ids.length <= 1) { showToast('😅 没有更多题目可抽查'); return; }
+    const available = ids.filter(id => id !== singleModeId);
+    if (available.length === 0) { showToast('😅 没有更多题目可抽查'); return; }
+    const randomId = available[Math.floor(Math.random() * available.length)];
+    history = history.slice(0, historyIndex + 1);
+    history.push(randomId);
+    historyIndex = history.length - 1;
+    singleModeId = randomId;
+    updateSingleBadge(randomId);
+    updateNavButtons();
+    render(randomId);
+    const card = getCardData(randomId);
+    if (card) showToast(`▶ 下一张: ${card.paper} · ${card.type}${card.qid}`);
+}
+
+function doRandom() {
+    const ids = getFilteredIds();
+    if (ids.length === 0) { showToast('😅 当前没有题目可抽查，请调整筛选条件'); return; }
+    if (singleModeId !== null) {
+        exitSingleMode();
+        setTimeout(() => { doRandom(); }, 150);
+        return;
+    }
+    const randomId = ids[Math.floor(Math.random() * ids.length)];
+    enterSingleMode(randomId);
+}
+
+// ---- 编辑功能 ----
+const editBackups = {};
+
+function enterEditMode(id) {
+    const card = getCardData(id);
+    if (!card) return;
+    const questionEl = document.querySelector(`.card-question[data-id="${id}"] .q-text`);
+    const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+    if (!questionEl || !editBtn) return;
+    if (editBtn.classList.contains('is-editing')) return;
+
+    const currentQ = questionEl.textContent;
+    editBackups[id] = { question: currentQ };
+
+    const editQ = document.createElement('div');
+    editQ.contentEditable = true;
+    editQ.className = 'q-text editable';
+    editQ.textContent = currentQ;
+    editQ.style.cssText = 'display:inline-block;min-width:60px;outline:none;border-bottom:2px solid #6a9e9e;padding:2px 4px;white-space:pre-wrap;width:100%;';
+    questionEl.replaceWith(editQ);
+
+    editBtn.classList.add('is-editing');
+    editBtn.textContent = '💾';
+    editBtn.title = '保存修改';
+
+    let cancelBtn = document.querySelector(`.btn-cancel-edit[data-id="${id}"]`);
+    if (!cancelBtn) {
+        cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn-cancel-edit';
+        cancelBtn.dataset.id = id;
+        cancelBtn.textContent = '❌';
+        cancelBtn.title = '取消编辑';
+        cancelBtn.style.cssText = 'font-size:18px;padding:4px 6px;background:transparent;border:none;cursor:pointer;border-radius:10px;color:#8a4a4a;transition:background 0.15s,transform 0.1s;';
+        editBtn.parentNode.insertBefore(cancelBtn, editBtn.nextSibling);
+        cancelBtn.addEventListener('click', function(e) { e.stopPropagation(); cancelEdit(id); });
+        cancelBtn.addEventListener('mouseenter', function() { this.style.background = '#f0e0e0'; });
+        cancelBtn.addEventListener('mouseleave', function() { this.style.background = 'transparent'; });
+    } else { cancelBtn.style.display = 'inline-block'; }
+
+    editBtn.onclick = function(e) { e.stopPropagation(); saveEdit(id); };
+    showToast('✏️ 正在编辑，点击 💾 保存 或 ❌ 取消');
+}
+
+function saveEdit(id) {
+    const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+    if (!editBtn || !editBtn.classList.contains('is-editing')) return;
+    const editQ = document.querySelector(`.card-question[data-id="${id}"] .q-text.editable`);
+    if (!editQ) { showToast('⚠️ 编辑内容不存在'); return; }
+    const newQ = editQ.textContent.trim();
+    if (!newQ) { showToast('⚠️ 题目不能为空'); return; }
+    edits[id] = { question: newQ };
+    saveEdits();
+    exitEditMode(id, true);
+    showToast('✅ 修改已保存');
+}
+
+function cancelEdit(id) {
+    const backup = editBackups[id];
+    if (!backup) { exitEditMode(id, false); return; }
+    const editQ = document.querySelector(`.card-question[data-id="${id}"] .q-text.editable`);
+    if (editQ) {
+        const newSpan = document.createElement('span');
+        newSpan.className = 'q-text';
+        newSpan.textContent = backup.question;
+        editQ.replaceWith(newSpan);
+    }
+    delete editBackups[id];
+    exitEditMode(id, false);
+    showToast('↩️ 已取消编辑');
+}
+
+function exitEditMode(id, saved) {
+    const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
+    const cancelBtn = document.querySelector(`.btn-cancel-edit[data-id="${id}"]`);
+    if (editBtn) {
+        editBtn.classList.remove('is-editing');
+        editBtn.textContent = '✏️';
+        editBtn.title = '编辑题目';
+        editBtn.onclick = function(e) { e.stopPropagation(); enterEditMode(id); };
+    }
+    if (cancelBtn) cancelBtn.style.display = 'none';
+    if (saved) render(singleModeId || null);
+    delete editBackups[id];
+}
+
+// ---- 获取筛选后的ID ----
+function getFilteredIds() {
+    const subjVal = filterSubject.value;
+    const paperVal = filterPaper.value;
+    const typeVal = filterType.value;
+    const favVal = filterFav.value;
+    const searchVal = filterSearch.value.trim().toLowerCase();
+
+    return currentData.filter(d => {
+        if (subjVal !== 'all' && d.subject !== subjVal) return false;
+        if (paperVal !== 'all' && d.paper !== paperVal) return false;
+        if (typeVal !== 'all' && d.type !== typeVal) return false;
+        if (favVal === 'fav' && !favorites.includes(d.id)) return false;
+        if (searchVal) {
+            const q = (d.question || '').toLowerCase();
+            const p = (d.paper || '').toLowerCase();
+            const s = (d.subject || '').toLowerCase();
+            if (!q.includes(searchVal) && !p.includes(searchVal) && !s.includes(searchVal)) return false;
+        }
+        return true;
+    }).map(d => d.id);
+}
+
+// ---- 渲染 ----
+function render(singleId = null) {
+    if (singleId !== null && singleModeId === null) {
+        const ids = getFilteredIds();
+        if (ids.includes(singleId)) {
+            singleModeId = singleId;
+            if (history.length === 0 || history[history.length - 1] !== singleId) {
+                history.push(singleId);
+                historyIndex = history.length - 1;
+            }
+            singleModeBar.classList.add('show');
+            filterBar.classList.add('disabled');
+            updateSingleBadge(singleId);
+            updateNavButtons();
+        } else { singleId = null; }
+    }
+    if (singleId === null && singleModeId !== null) { exitSingleMode(); return; }
+
+    const isSingleMode = singleModeId !== null;
+    let filtered;
+
+    if (isSingleMode) {
+        const card = getCardData(singleModeId);
+        filtered = card ? [card] : [];
+        if (filtered.length === 0) { exitSingleMode(); return; }
+        updateSingleBadge(singleModeId);
+    } else {
+        const subjVal = filterSubject.value;
+        const paperVal = filterPaper.value;
+        const typeVal = filterType.value;
+        const favVal = filterFav.value;
+        const searchVal = filterSearch.value.trim().toLowerCase();
+
+        filtered = currentData
+            .map(d => getCardData(d.id))
+            .filter(d => {
+                if (!d) return false;
+                if (subjVal !== 'all' && d.subject !== subjVal) return false;
+                if (paperVal !== 'all' && d.paper !== paperVal) return false;
+                if (typeVal !== 'all' && d.type !== typeVal) return false;
+                if (favVal === 'fav' && !favorites.includes(d.id)) return false;
+                if (searchVal) {
+                    const q = (d.question || '').toLowerCase();
+                    const p = (d.paper || '').toLowerCase();
+                    const s = (d.subject || '').toLowerCase();
+                    if (!q.includes(searchVal) && !p.includes(searchVal) && !s.includes(searchVal)) return false;
+                }
+                return true;
+            });
+    }
+
+    totalSpan.textContent = currentData.length;
+    favSpan.textContent = favorites.length;
+    grid.classList.toggle('single-mode', isSingleMode);
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `<div class="no-result">🌿 没有找到匹配的题目，试试调整筛选条件吧</div>`;
+        return;
+    }
+
+    let html = '';
+    filtered.forEach(d => {
+        const isFav = favorites.includes(d.id);
+        const note = notes[d.id] || '';
+        const isNote = d.type === '说明';
+        const qText = escapeHtml(d.question);
+
+        html += `
+            <div class="card-item ${isFav ? 'favorited' : ''} ${isNote ? 'note-type' : ''}" data-id="${d.id}">
+                <div class="card-header">
+                    <div class="label">
+                        <span class="tag">${escapeHtml(d.subject)}</span>
+                        <span class="paper-tag">${escapeHtml(d.paper)}</span>
+                        ${d.type !== '说明' ? `<span class="type-tag">${escapeHtml(d.type)}</span>` : ''}
+                        ${d.type !== '说明' ? `<span class="qid">第${escapeHtml(d.qid)}题</span>` : ''}
+                    </div>
+                    <div class="card-actions" data-id="${d.id}">
+                        <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${d.id}" title="收藏">${isFav ? '⭐' : '☆'}</button>
+                        <button class="btn-note ${note ? 'active' : ''}" data-id="${d.id}" title="笔记">📝</button>
+                        <button class="btn-edit" data-id="${d.id}" title="编辑题目">✏️</button>
+                    </div>
+                </div>
+                <div class="card-question" data-id="${d.id}">
+                    <span class="q-text">${qText}</span>
+                    ${d.type !== '说明' ? '<span class="toggle-hint">(点击展开作答区)</span>' : ''}
+                </div>
+                <div class="card-note-area" data-id="${d.id}">
+                    <div class="note-editor" contenteditable="true" data-id="${d.id}">${note}</div>
+                    <div class="img-resize-control" data-id="${d.id}">
+                        <span>📐 大小</span>
+                        <input type="range" min="10" max="200" value="100" step="2" />
+                        <span class="size-val">100%</span>
+                        <button class="btn-reset-size" data-id="${d.id}">重置</button>
+                    </div>
+                    <div class="note-actions">
+                        <button class="btn-insert-img" data-id="${d.id}">🖼️ 插入图片</button>
+                        <button class="note-save" data-id="${d.id}">💾 保存笔记</button>
+                        <button class="note-clear" data-id="${d.id}">🗑️ 清空</button>
+                        <span class="note-size-hint">支持粘贴图片 · 点击图片调大小</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    grid.innerHTML = html;
+
+    // ---- 事件绑定 ----
+
+    // 1. 点击题目展开/收起作答区
+    document.querySelectorAll('.card-question').forEach(el => {
+        el.addEventListener('click', function(e) {
+            if (this.classList.contains('editable')) return;
+            const id = this.dataset.id;
+            const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+            const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+            if (!noteArea) return;
+            const isOpen = noteArea.classList.contains('open');
+            if (isOpen) {
+                noteArea.classList.remove('open');
+                if (noteBtn) noteBtn.classList.remove('active');
+            } else {
+                noteArea.classList.add('open');
+                if (noteBtn) noteBtn.classList.add('active');
+                const editor = noteArea.querySelector('.note-editor');
+                if (editor) setTimeout(() => editor.focus(), 100);
+            }
+        });
+    });
+
+    // 2. 收藏
+    document.querySelectorAll('.btn-fav').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.dataset.id;
+            const idx = favorites.indexOf(id);
+            if (idx > -1) {
+                favorites.splice(idx, 1);
+                this.classList.remove('active');
+                this.textContent = '☆';
+            } else {
+                favorites.push(id);
+                this.classList.add('active');
+                this.textContent = '⭐';
+            }
+            saveFavs();
+            const card = this.closest('.card-item');
+            if (card) {
+                if (favorites.includes(id)) card.classList.add('favorited');
+                else card.classList.remove('favorited');
+            }
+            favSpan.textContent = favorites.length;
+        });
+    });
+
+    // 3. 笔记按钮
+    document.querySelectorAll('.btn-note').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.dataset.id;
+            const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+            if (!noteArea) return;
+            const isOpen = noteArea.classList.contains('open');
+            if (isOpen) {
+                noteArea.classList.remove('open');
+                this.classList.remove('active');
+            } else {
+                noteArea.classList.add('open');
+                this.classList.add('active');
+                const editor = noteArea.querySelector('.note-editor');
+                if (editor) setTimeout(() => editor.focus(), 100);
+            }
+        });
+    });
+
+    // 4. 插入图片
+    document.querySelectorAll('.btn-insert-img').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.dataset.id;
+            const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+            if (!editor) return;
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+            fileInput.onchange = function() {
+                const file = this.files[0];
+                if (!file) { document.body.removeChild(fileInput); return; }
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const img = document.createElement('img');
+                    img.src = ev.target.result;
+                    img.alt = '笔记图片';
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '300px';
+                    img.style.borderRadius = '10px';
+                    img.style.margin = '6px 0';
+                    img.style.display = 'block';
+                    img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                    img.dataset.noteImg = 'true';
+                    const sel = window.getSelection();
+                    if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+                        const range = sel.getRangeAt(0);
+                        range.insertNode(img);
+                        range.setStartAfter(img);
+                        range.collapse(true);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    } else { editor.appendChild(img); }
+                    showToast('🖼️ 图片已插入，点击图片可调大小');
+                    document.body.removeChild(fileInput);
+                    bindImgClick(editor);
+                };
+                reader.readAsDataURL(file);
+            };
+            fileInput.click();
+        });
+    });
+
+    // 5. 保存笔记
+    document.querySelectorAll('.note-save').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.dataset.id;
+            const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+            if (!editor) return;
+            let content = editor.innerHTML.trim();
+            if (content === '<br>' || content === '') content = '';
+            if (content) notes[id] = content;
+            else delete notes[id];
+            saveNotes();
+            const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+            if (noteBtn) {
+                if (content) noteBtn.classList.add('active');
+                else noteBtn.classList.remove('active');
+            }
+            const orig = btn.textContent;
+            btn.textContent = '✅ 已保存';
+            setTimeout(() => { btn.textContent = orig; }, 1200);
+        });
+    });
+
+    // 6. 清空笔记
+    document.querySelectorAll('.note-clear').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.dataset.id;
+            if (!confirm('⚠️ 确定要清空这条笔记吗？')) return;
+            const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+            if (editor) {
+                editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记、作答思路，支持粘贴/插入图片…</span>';
+                delete notes[id];
+                saveNotes();
+                const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
+                if (noteBtn) noteBtn.classList.remove('active');
+                const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
+                if (noteArea) noteArea.classList.remove('open');
+                const rc = document.querySelector(`.img-resize-control[data-id="${id}"]`);
+                if (rc) rc.classList.remove('show');
+                showToast('🗑️ 笔记已清空');
+            }
+        });
+    });
+
+    // 7. 粘贴图片
+    document.querySelectorAll('.note-editor').forEach(editor => {
+        editor.addEventListener('paste', function(e) {
+            const items = e.clipboardData && e.clipboardData.items;
+            if (!items) return;
+            for (let item of items) {
+                if (item.type && item.type.startsWith('image/')) {
+                    e.preventDefault();
+                    const file = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        const img = document.createElement('img');
+                        img.src = ev.target.result;
+                        img.alt = '粘贴图片';
+                        img.style.maxWidth = '100%';
+                        img.style.maxHeight = '300px';
+                        img.style.borderRadius = '10px';
+                        img.style.margin = '6px 0';
+                        img.style.display = 'block';
+                        img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                        img.dataset.noteImg = 'true';
+                        const sel = window.getSelection();
+                        if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+                            const range = sel.getRangeAt(0);
+                            range.insertNode(img);
+                            range.setStartAfter(img);
+                            range.collapse(true);
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                        } else { editor.appendChild(img); }
+                        showToast('🖼️ 图片已粘贴，点击可调整大小');
+                        bindImgClick(editor);
+                    };
+                    reader.readAsDataURL(file);
+                    break;
+                }
+            }
+        });
+    });
+
+    // 8. 笔记编辑器占位
+    document.querySelectorAll('.note-editor').forEach(editor => {
+        const id = editor.dataset.id;
+        const content = notes[id] || '';
+        if (!content || content.trim() === '') {
+            editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记、作答思路，支持粘贴/插入图片…</span>';
+        }
+        editor.addEventListener('focus', function() {
+            const placeholder = this.querySelector('.note-placeholder');
+            if (placeholder) this.innerHTML = '';
+        });
+        editor.addEventListener('blur', function() {
+            if (this.innerHTML.trim() === '' || this.innerHTML === '<br>') {
+                this.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记、作答思路，支持粘贴/插入图片…</span>';
+            }
+        });
+    });
+
+    // 9. 绑定图片点击
+    document.querySelectorAll('.note-editor').forEach(editor => { bindImgClick(editor); });
+
+    // 10. 重置图片大小
+    document.querySelectorAll('.btn-reset-size').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.dataset.id;
+            const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+            if (!editor) return;
+            const imgs = editor.querySelectorAll('img');
+            imgs.forEach(img => {
+                img.style.width = '';
+                img.style.maxWidth = '100%';
+                img.dataset.origWidth = '100';
+            });
+            const slider = document.querySelector(`.img-resize-control[data-id="${id}"] input[type="range"]`);
+            if (slider) {
+                slider.value = 100;
+                const valSpan = slider.closest('.img-resize-control').querySelector('.size-val');
+                if (valSpan) valSpan.textContent = '100%';
+            }
+            showToast('📐 图片大小已重置');
+        });
+    });
+
+    // 11. 滑块调整图片大小
+    document.querySelectorAll('.img-resize-control input[type="range"]').forEach(slider => {
+        slider.addEventListener('input', function() {
+            const id = this.closest('.img-resize-control').dataset.id;
+            const val = parseInt(this.value);
+            const valSpan = this.closest('.img-resize-control').querySelector('.size-val');
+            if (valSpan) valSpan.textContent = val + '%';
+            const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
+            if (!editor) return;
+            const imgs = editor.querySelectorAll('img');
+            imgs.forEach(img => {
+                if (img.classList.contains('selected')) {
+                    img.style.width = val + '%';
+                    img.style.maxWidth = val + '%';
+                }
+            });
+        });
+    });
+
+    // 12. 编辑按钮
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.onclick = function(e) {
+            e.stopPropagation();
+            const id = this.dataset.id;
+            if (this.classList.contains('is-editing')) return;
+            enterEditMode(id);
+        };
+    });
+
+    if (isSingleMode) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+// ---- 图片点击 ----
+function bindImgClick(editor) {
+    const imgs = editor.querySelectorAll('img');
+    imgs.forEach(img => {
+        img.removeEventListener('click', imgClickHandler);
+        img.addEventListener('click', imgClickHandler);
+    });
+}
+
+function imgClickHandler(e) {
+    e.stopPropagation();
+    const img = this;
+    const editor = img.closest('.note-editor');
+    if (!editor) return;
+    const id = editor.dataset.id;
+
+    const allImgs = editor.querySelectorAll('img');
+    allImgs.forEach(i => i.classList.remove('selected'));
+    img.classList.add('selected');
+
+    const rc = document.querySelector(`.img-resize-control[data-id="${id}"]`);
+    if (!rc) return;
+    rc.classList.add('show');
+
+    const slider = rc.querySelector('input[type="range"]');
+    const valSpan = rc.querySelector('.size-val');
+    if (!slider) return;
+
+    let currentPct = 100;
+    if (img.style.width) {
+        const w = parseInt(img.style.width);
+        if (w > 0 && w <= 200) currentPct = w;
+    }
+    slider.value = currentPct;
+    if (valSpan) valSpan.textContent = currentPct + '%';
+
+    slider.oninput = function() {
+        const val = parseInt(slider.value);
+        if (valSpan) valSpan.textContent = val + '%';
+        img.style.width = val + '%';
+        img.style.maxWidth = val + '%';
+        img.dataset.origWidth = val;
+    };
+
+    const resetBtn = rc.querySelector('.btn-reset-size');
+    if (resetBtn) {
+        resetBtn.onclick = function(e2) {
+            e2.stopPropagation();
+            img.style.width = '';
+            img.style.maxWidth = '100%';
+            img.dataset.origWidth = '100';
+            slider.value = 100;
+            if (valSpan) valSpan.textContent = '100%';
+            showToast('📐 已重置');
+        };
+    }
+}
+
+// ---- 筛选 ----
+function onFilterChange() {
+    if (singleModeId !== null) exitSingleMode();
+    else render();
+}
+
+filterSubject.addEventListener('change', function() {
+    updatePaperOptions();
+    onFilterChange();
+});
+filterPaper.addEventListener('change', onFilterChange);
+filterType.addEventListener('change', onFilterChange);
+filterFav.addEventListener('change', onFilterChange);
+filterSearch.addEventListener('input', onFilterChange);
+
+clearBtn.addEventListener('click', function() {
+    filterSubject.value = 'all';
+    updatePaperOptions();
+    filterPaper.value = 'all';
+    filterType.value = 'all';
+    filterFav.value = 'all';
+    filterSearch.value = '';
+    if (singleModeId !== null) exitSingleMode();
+    else render();
+});
+
+exitSingleBtn.addEventListener('click', exitSingleMode);
+prevCardBtn.addEventListener('click', goPrevCard);
+nextCardBtn.addEventListener('click', goNextCard);
+randomBtn.addEventListener('click', doRandom);
+
+// ---- 键盘快捷键 ----
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'r' || e.key === 'R') {
+        if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+            const target = e.target;
+            if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA' && target.contentEditable !== 'true') {
+                e.preventDefault();
+                doRandom();
+            }
+        }
+    }
+    if (e.key === 'Escape') {
+        if (singleModeId !== null) { e.preventDefault(); exitSingleMode(); }
+    }
+    if (singleModeId !== null) {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); goPrevCard(); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); goNextCard(); }
+    }
+});
+
+// ---- 初始化 ----
+initSubjectOptions();
+updatePaperOptions();
+render();
+
+setTimeout(() => {
+    document.querySelectorAll('.note-editor').forEach(editor => {
+        const id = editor.dataset.id;
+        const content = notes[id] || '';
+        if (!content || content.trim() === '') {
+            editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记、作答思路，支持粘贴/插入图片…</span>';
+        }
+        bindImgClick(editor);
+    });
+}, 100);
+</script>
+</body>
+</html>
