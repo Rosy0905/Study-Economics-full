@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>南开经济学 · 知识库</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+  background: #f2f8f3;
+  color: #1e3a2a;
+  padding: 20px;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1100px; margin: 0 auto; }
+
+/* ================= 顶部卡片 ================= */
+header {
+  position: relative;
+  padding: 28px 28px 30px;
+  border-radius: 20px;
+  text-align: center;
+  background: linear-gradient(150deg, #eefaf3 0%, #e2f4e9 60%, #ddf2ea 100%);
+  border: 1px solid #e4f2e9;
+  box-shadow: 0 6px 18px rgba(70, 120, 90, .10),
+              inset 0 1px 0 rgba(255, 255, 255, .85);
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    #7fd1b0, #8fbcec, #ebcb86, #ef9fc0,
+    #7bd0dd, #a99eea, #f0a288, #c096dd);
+  opacity: .5;
+}
+
+header h1 {
+  font-size: 23px;
+  font-weight: 700;
+  color: #1b4a2b;
+  letter-spacing: .6px;
+  line-height: 1.35;
+}
+
+header p {
+  font-size: 12.5px;
+  color: #6a8f76;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+/* ================= 卡片网格 ================= */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.mod {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #e8f2ec;
+  border-radius: 16px;
+  padding: 20px 20px 16px 24px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 4px 14px rgba(70, 115, 90, .07);
+  overflow: hidden;
+  transition: transform .2s cubic-bezier(.2,.7,.4,1),
+              box-shadow .2s ease,
+              border-color .2s ease;
+}
+.mod::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 6px;
+  background: linear-gradient(180deg, var(--c), var(--c2));
+  transition: width .2s ease;
+}
+.mod:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(70, 115, 90, .14);
+  border-color: var(--soft);
+}
+.mod:hover::before { width: 8px; }
+.mod:active { transform: translateY(-1px); }
+
+.mod .ic {
+  width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 13px;
+  background: var(--soft);
+  font-size: 23px;
+  line-height: 1;
+  margin-bottom: 12px;
+  transition: transform .2s ease;
+}
+.mod:hover .ic { transform: scale(1.06); }
+
+.mod .t {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e4a2a;
+  letter-spacing: .3px;
+}
+.mod .d {
+  font-size: 12.5px;
+  color: #75907c;
+  margin-top: 7px;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.mod .foot {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed #eaf3ed;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.mod .count {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--c);
+  background: var(--soft);
+  padding: 3px 11px;
+  border-radius: 20px;
+  letter-spacing: .3px;
+}
+.mod .go {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--c);
+  opacity: .5;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.mod:hover .go { opacity: 1; transform: translateX(3px); }
+
+/* ================= 学习进度条（黄色系） + 清除按钮 ================= */
+.note-bar {
+  position: relative;
+  z-index: 30;
+  background: #fdf9ee;
+  border: 2px dashed #d4c49a;
+  border-radius: 14px;
+  padding: 9px 12px 9px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.note-bar .lb {
+  font-size: 13px;
+  font-weight: 600;
+  color: #7a5a2a;
+  white-space: nowrap;
+}
+
+.note-bar input {
+  flex: 1;
+  min-width: 130px;
+  border: 1px solid #e8ddc0;
+  background: #fffdf6;
+  border-radius: 30px;
+  padding: 8px 16px;
+  font-size: 13.5px;
+  color: #3f3a1a;
+  outline: none;
+  font-family: inherit;
+  transition: .2s;
+}
+
+.note-bar input::placeholder {
+  color: #c4b48d;
+}
+
+.note-bar input:focus {
+  border-color: #d4a24e;
+  box-shadow: 0 0 0 3px rgba(212, 162, 78, .15);
+}
+
+.note-bar .tip {
+  font-size: 11.5px;
+  color: #b0a184;
+  white-space: nowrap;
+  min-width: 42px;
+  text-align: right;
+}
+
+/* ================= 清除数据 · 花瓣（行内靠右） ================= */
+:root {
+  --petal-w: 34px;
+  --petal-h: 48px;
+  --dist: 56px;
+}
+
+.clear-section {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 6;
+}
+
+/* 花瓣层：以按钮中心为原点 */
+.petal-layer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* ===== 花瓣本体（清新柔美配色） ===== */
+.petal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--petal-w);
+  height: var(--petal-h);
+  margin-left: calc(var(--petal-w) / -2);
+  margin-top: calc(var(--petal-h) / -2);
+
+  border-radius: 50% 50% 50% 50% / 66% 66% 34% 34%;
+
+  border: 1.5px solid var(--pc);
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 45%, var(--soft) 100%);
+  box-shadow: 0 2px 8px rgba(90, 140, 115, .12);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: none;
+  user-select: none;
+
+  opacity: 0;
+  transform: rotate(var(--angle)) translateY(0) scale(.3);
+  transition: transform .42s cubic-bezier(.34,1.56,.64,1),
+              opacity .28s ease,
+              box-shadow .22s ease,
+              background .22s ease,
+              border-color .22s ease;
+}
+
+.clear-section.open .petal {
+  opacity: 1;
+  pointer-events: auto;
+  transform: rotate(var(--angle)) translateY(calc(-1 * var(--dist))) scale(1);
+}
+
+.clear-section.open .petal:nth-child(1) { transition-delay: 0s; }
+.clear-section.open .petal:nth-child(2) { transition-delay: .035s; }
+.clear-section.open .petal:nth-child(3) { transition-delay: .07s; }
+.clear-section.open .petal:nth-child(4) { transition-delay: .105s; }
+.clear-section.open .petal:nth-child(5) { transition-delay: .14s; }
+.clear-section.open .petal:nth-child(6) { transition-delay: .175s; }
+.clear-section.open .petal:nth-child(7) { transition-delay: .21s; }
+.clear-section.open .petal:nth-child(8) { transition-delay: .245s; }
+
+.petal-face {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  transform: rotate(calc(-1 * var(--angle)));
+  line-height: 1;
+}
+.petal-num {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--pcd);
+  opacity: .85;
+}
+.petal-ic {
+  font-size: 12px;
+  line-height: 1.15;
+}
+
+.petal.selected {
+  background: var(--pc);
+  border-color: #fff;
+  box-shadow: 0 0 0 2.5px var(--pc),
+              0 4px 12px rgba(90, 140, 115, .18);
+}
+.petal.selected .petal-num { color: #fff; opacity: 1; }
+
+/* ===== 行内小圆按钮（黄色柔边） ===== */
+.clear-btn {
+  position: relative;
+  z-index: 20;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid #f3d27c;
+  background: #fff;
+  color: #b8891f;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 0 0 3px rgba(245, 214, 122, .22),
+              0 2px 8px rgba(212, 162, 78, .18),
+              0 0 12px 2px rgba(255, 220, 130, .25);
+  transition: transform .2s ease,
+              box-shadow .25s ease,
+              color .25s ease,
+              border-color .25s ease;
+}
+.clear-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 4px rgba(245, 214, 122, .3),
+              0 4px 12px rgba(212, 162, 78, .22),
+              0 0 16px 3px rgba(255, 220, 130, .3);
+}
+.clear-btn:active { transform: scale(.97); }
+
+.clear-btn.check-mode {
+  font-size: 20px;
+  color: #2fa27a;
+  border-color: #8fd4b0;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(143, 212, 176, .22),
+              0 2px 8px rgba(47, 162, 122, .18),
+              0 0 12px 2px rgba(143, 212, 176, .25);
+}
+
+/* ================= 确认弹层 ================= */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 48, 36, .38);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+}
+.confirm-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.confirm-box {
+  width: min(90vw, 350px);
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px 24px 20px;
+  box-shadow: 0 24px 60px rgba(25, 60, 42, .24);
+  transform: translateY(14px) scale(.95);
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  text-align: center;
+}
+.confirm-overlay.show .confirm-box {
+  transform: translateY(0) scale(1);
+}
+
+.confirm-icon {
+  font-size: 30px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.confirm-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e4a2a;
+  letter-spacing: .3px;
+}
+.confirm-desc {
+  font-size: 12.5px;
+  color: #75907c;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+.confirm-list {
+  list-style: none;
+  margin: 12px 0 4px;
+  max-height: 168px;
+  overflow-y: auto;
+  text-align: left;
+  background: #f7fcf9;
+  border: 1px solid #e5f2ea;
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+.confirm-list li {
+  font-size: 12.5px;
+  color: #35603f;
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.confirm-list li + li {
+  border-top: 1px dashed #e5f2ea;
+}
+.confirm-list .li-dot {
+  flex: 0 0 auto;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .65;
+}
+
+.confirm-warn {
+  font-size: 11.5px;
+  color: #d4816a;
+  margin-top: 12px;
+  letter-spacing: .3px;
+}
+
+.confirm-btns {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.cbtn {
+  flex: 1;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  letter-spacing: .5px;
+  transition: transform .15s ease, filter .15s ease, background .15s ease;
+}
+.cbtn:active { transform: scale(.97); }
+
+.cbtn-cancel {
+  background: #eef6f1;
+  color: #587a68;
+}
+.cbtn-cancel:hover { background: #e4f0e9; }
+
+.cbtn-ok {
+  background: linear-gradient(135deg, #f3a98c, #e57c62);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(229, 124, 98, .28);
+}
+.cbtn-ok:hover { filter: brightness(1.05); }
+
+/* ================= 提示 toast ================= */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 34px;
+  transform: translateX(-50%) translateY(20px);
+  background: #45b98c;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  padding: 11px 24px;
+  border-radius: 30px;
+  box-shadow: 0 10px 26px rgba(69, 185, 140, .34);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 2000;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ================= 页脚 ================= */
+footer {
+  text-align: center;
+  font-size: 12.5px;
+  color: #96b3a2;
+  margin-top: 22px;
+  line-height: 1.9;
+}
+
+/* ================= 移动端 ================= */
+@media (max-width: 640px) {
+  body { padding: 14px; }
+
+  header {
+    padding: 22px 16px 24px;
+    border-radius: 16px;
+    margin-bottom: 18px;
+  }
+  header h1 { font-size: 17px; letter-spacing: .2px; }
+  header p { font-size: 11.5px; margin-top: 8px; }
+
+  .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .mod { padding: 14px 13px 12px 18px; border-radius: 14px; }
+  .mod .ic { width: 40px; height: 40px; font-size: 20px; margin-bottom: 9px; border-radius: 11px; }
+  .mod .t { font-size: 13.5px; }
+  .mod .d { font-size: 11px; margin-top: 5px; }
+  .mod .foot { margin-top: 11px; padding-top: 9px; }
+  .mod .count { font-size: 10.5px; padding: 2px 9px; }
+  .mod .go { font-size: 11.5px; }
+
+  :root {
+    --petal-w: 30px;
+    --petal-h: 42px;
+    --dist: 48px;
+  }
+  .note-bar { padding: 8px 9px 8px 14px; gap: 8px; }
+  .note-bar .lb { font-size: 12px; }
+  .note-bar input { font-size: 12.5px; padding: 7px 13px; min-width: 100px; }
+  .clear-btn { width: 40px; height: 40px; font-size: 10.5px; }
+  .clear-btn.check-mode { font-size: 18px; }
+  .petal-num { font-size: 8px; }
+  .petal-ic { font-size: 11px; }
+}
+
+@media (max-width: 380px) {
+  :root {
+    --petal-w: 27px;
+    --petal-h: 38px;
+    --dist: 43px;
+  }
+  .petal-num { font-size: 7.5px; }
+  .petal-ic { font-size: 10px; }
+}
+
+::-webkit-scrollbar { width: 7px; }
+::-webkit-scrollbar-track { background: #e0eee5; border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: #9ccfb4; border-radius: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>南开经济学 · 知识库</h1>
+    <p>八大模块 · 一站式学习 · 学习进度记录保存在本地</p>
+  </header>
+
+  <div class="grid" id="moduleGrid"></div>
+
+  <!-- ============ 学习进度 + 行内清除按钮 ============ -->
+  <div class="note-bar">
+    <span class="lb">📝 学习进度</span>
+    <input id="progressNote" placeholder="随手记一句：今天背到哪、哪块还没搞懂、下一步计划…" />
+    <span class="tip" id="saveTip"></span>
+
+    <div class="clear-section" id="clearSection">
+      <div class="petal-layer" id="petalLayer"></div>
+      <button class="clear-btn" id="clearBtn" type="button">
+        <span id="clearText">清除</span>
+      </button>
+    </div>
+  </div>
+
+  <footer>
+    © 南开经济学备考知识库<br />
+    数据仅保存在本机浏览器，换设备或清理缓存会丢失
+  </footer>
+
+</div>
+
+<!-- ============ 确认弹层 ============ -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠️</div>
+    <p class="confirm-title">确认清除</p>
+    <p class="confirm-desc">以下章节的数据将被清除：</p>
+    <ul class="confirm-list" id="confirmList"></ul>
+    <p class="confirm-warn">此操作不可恢复，请谨慎操作</p>
+    <div class="confirm-btns">
+      <button class="cbtn cbtn-cancel" id="confirmCancel" type="button">取消</button>
+      <button class="cbtn cbtn-ok" id="confirmOk" type="button">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">已清除选中数据</div>
+
+<script>
+/* ==========================================================
+   ① 八个模块配置（含 storagePrefix，与各版块实际 key 对应）
+   ========================================================== */
+const MODULES = [
+  {
+    icon: '📗', title: '背诵（微观）', desc: '微观背诵手册 · 概念与简答',
+    count: 110,
+    c: '#3FAE8C', c2: '#7FD1B0', soft: '#EAF8F2',
+    url: './1micro-recitation/',
+    storagePrefix: 'micro_recite_'
+  },
+  {
+    icon: '📘', title: '背诵（宏观）', desc: '宏观背诵手册 · 概念与简答',
+    count: 100,
+    c: '#5A96DE', c2: '#8FBCEC', soft: '#EAF2FD',
+    url: './2macro-recitation/',
+    storagePrefix: 'macro_recite_'
+  },
+  {
+    icon: '🧮', title: '计算要点', desc: '十五个专题 · 知识点与例题',
+    count: 84,
+    c: '#D0A44E', c2: '#EBCB86', soft: '#FDF7E9',
+    url: './3calc-keypoints/',
+    storagePrefix: 'calc_key_'
+  },
+  {
+    icon: '📐', title: '计算专项', desc: '微观/宏观 · 题型突破',
+    count: 212,
+    c: '#D9739F', c2: '#EF9FC0', soft: '#FCEFF5',
+    url: './4calc-special/',
+    storagePrefix: 'calc_special_'
+  },
+  {
+    icon: '✏️', title: '简答专项（微观）', desc: '微观简答题 · 分专题训练',
+    count: 108,
+    c: '#3FAFC2', c2: '#7BD0DD', soft: '#E9F7F9',
+    url: './5micro-short-answer/',
+    storagePrefix: 'micro_short_'
+  },
+  {
+    icon: '✒️', title: '简答专项（宏观）', desc: '宏观简答题 · 分专题训练',
+    count: 103,
+    c: '#7E70D6', c2: '#A99EEA', soft: '#F1EFFC',
+    url: './6macro-short-answer/',
+    storagePrefix: 'macro_short_'
+  },
+  {
+    icon: '📝', title: '论述专项', desc: '微观/宏观 · 答题思路',
+    count: 50,
+    c: '#E0785A', c2: '#F0A288', soft: '#FDF1EC',
+    url: './7essay/',
+    storagePrefix: 'essay_'
+  },
+  {
+    icon: '📜', title: '历年真题', desc: '应用经济学 / 理论经济学 / 金融学',
+    count: 466,
+    c: '#9B6BC4', c2: '#C096DD', soft: '#F7EFFB',
+    url: './8past-exams/',
+    storagePrefix: 'past_exams_'
+  }
+];
+
+/* ==========================================================
+   ② 渲染卡片
+   ========================================================== */
+function esc(s) {
+  return String(s === null || s === undefined ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderHome() {
+  const grid = document.getElementById('moduleGrid');
+  grid.innerHTML = MODULES.map(m => `
+    <a class="mod" href="${esc(m.url)}"
+       style="--c:${m.c};--c2:${m.c2};--soft:${m.soft}"
+       title="${esc(m.title)}">
+      <div class="ic">${m.icon}</div>
+      <div class="t">${esc(m.title)}</div>
+      <div class="d">${esc(m.desc)}</div>
+      <div class="foot">
+        <span class="count">${m.count} 张</span>
+        <span class="go">进入 →</span>
+      </div>
+    </a>
+  `).join('');
+}
+
+/* ==========================================================
+   ③ 学习进度记录（本地保存）
+   ========================================================== */
+(function () {
+  const PROG_KEY = 'eco_kb_progress';
+  const input = document.getElementById('progressNote');
+  const tip = document.getElementById('saveTip');
+  let timer = null;
+
+  try { input.value = localStorage.getItem(PROG_KEY) || ''; } catch (e) {}
+
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      try {
+        localStorage.setItem(PROG_KEY, input.value);
+        tip.textContent = '已保存';
+        setTimeout(() => { tip.textContent = ''; }, 1200);
+      } catch (e) {
+        tip.textContent = '保存失败';
+      }
+    }, 400);
+  });
+})();
+
+/* ==========================================================
+   ④ 清除数据 · 花瓣按钮（行内靠右）
+   ========================================================== */
+(function () {
+  const N = MODULES.length;                       // 8
+  const petalLayer   = document.getElementById('petalLayer');
+  const clearSection = document.getElementById('clearSection');
+  const clearBtn     = document.getElementById('clearBtn');
+  const clearText    = document.getElementById('clearText');
+  const confirmOverlay = document.getElementById('confirmOverlay');
+  const confirmList  = document.getElementById('confirmList');
+  const confirmOk    = document.getElementById('confirmOk');
+  const confirmCancel= document.getElementById('confirmCancel');
+  const toast        = document.getElementById('toast');
+
+  let isOpen = false;
+  const selected = new Set();
+
+  /* ---------- 生成八片花瓣 ---------- */
+  function buildPetals() {
+    petalLayer.innerHTML = MODULES.map((m, i) => {
+      const angle = (360 / N) * i;               // 0°,45°,90°…
+      return `
+        <div class="petal" data-idx="${i}"
+             style="--angle:${angle}deg; --pc:${m.c2}; --pcd:${m.c}; --soft:${m.soft};"
+             title="${esc(m.title)}">
+          <span class="petal-face">
+            <span class="petal-num">${i + 1}</span>
+            <span class="petal-ic">${m.icon}</span>
+          </span>
+        </div>`;
+    }).join('');
+
+    petalLayer.querySelectorAll('.petal').forEach(p => {
+      p.addEventListener('click', e => {
+        e.stopPropagation();
+        const idx = Number(p.dataset.idx);
+        if (selected.has(idx)) {
+          selected.delete(idx);
+          p.classList.remove('selected');
+        } else {
+          selected.add(idx);
+          p.classList.add('selected');
+        }
+      });
+    });
+  }
+
+  /* ---------- 展开 / 收起 ---------- */
+  function openPetals() {
+    isOpen = true;
+    clearSection.classList.add('open');
+    clearText.textContent = '✓';
+    clearBtn.classList.add('check-mode');
+  }
+
+  function resetAll() {
+    isOpen = false;
+    selected.clear();
+    clearSection.classList.remove('open');
+    clearText.textContent = '清除';
+    clearBtn.classList.remove('check-mode');
+    petalLayer.querySelectorAll('.petal').forEach(p => p.classList.remove('selected'));
+    confirmOverlay.classList.remove('show');
+  }
+
+  /* ---------- 显示 toast ---------- */
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  /* ---------- 按钮点击 ---------- */
+  clearBtn.addEventListener('click', e => {
+    e.stopPropagation();
+
+    // 未展开 → 展开
+    if (!isOpen) {
+      openPetals();
+      return;
+    }
+
+    // 已展开但没选任何花瓣 → 收起
+    if (selected.size === 0) {
+      resetAll();
+      return;
+    }
+
+    // 已选花瓣 → 弹出确认框
+    const items = [...selected].sort((a, b) => a - b);
+    confirmList.innerHTML = items.map(i => {
+      const m = MODULES[i];
+      return `<li><span class="li-dot" style="color:${m.c2}"></span>
+                第 ${i + 1} 项 · ${esc(m.title)}</li>`;
+    }).join('');
+    confirmOverlay.classList.add('show');
+  });
+
+  /* ---------- 点击外部收起花瓣 ---------- */
+  document.addEventListener('click', e => {
+    if (!isOpen) return;
+    if (clearSection.contains(e.target)) return;
+    if (confirmOverlay.classList.contains('show')) return;
+    resetAll();
+  });
+
+  /* ---------- 确认清除 ---------- */
+  confirmOk.addEventListener('click', () => {
+    const toRemove = [];
+
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+
+        // 主页学习进度笔记，随任一模块清除一起清掉
+        if (key === 'eco_kb_progress') { toRemove.push(key); continue; }
+
+        // 按选中模块的 storagePrefix 匹配
+        for (const idx of selected) {
+          const prefix = MODULES[idx].storagePrefix;
+          if (prefix && key.startsWith(prefix)) {
+            toRemove.push(key);
+            break;
+          }
+        }
+      }
+
+      toRemove.forEach(k => localStorage.removeItem(k));
+    } catch (e) {
+      console.warn('清除失败', e);
+    }
+
+    // 顺带清掉主页输入框显示
+    try {
+      const input = document.getElementById('progressNote');
+      if (input && toRemove.includes('eco_kb_progress')) input.value = '';
+    } catch (e) {}
+
+    const clearedNames = [...selected].sort((a, b) => a - b)
+      .map(i => MODULES[i].title).join('、');
+
+    resetAll();
+    showToast(clearedNames ? `已清除：${clearedNames}` : '已清除数据');
+  });
+
+  /* ---------- 取消 ---------- */
+  confirmCancel.addEventListener('click', e => {
+    e.stopPropagation();
+    confirmOverlay.classList.remove('show');
+  });
+
+  // 点击遮罩关闭
+  confirmOverlay.addEventListener('click', e => {
+    if (e.target === confirmOverlay) confirmOverlay.classList.remove('show');
+  });
+
+  // Esc 关闭
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      if (confirmOverlay.classList.contains('show')) {
+        confirmOverlay.classList.remove('show');
+      } else if (isOpen) {
+        resetAll();
+      }
+    }
+  });
+
+  /* ---------- 初始化 ---------- */
+  buildPetals();
+})();
+
+/* ==========================================================
+   ⑤ 初始化页面
+   ========================================================== */
+renderHome();
+</script>
+</body>
+</html>
