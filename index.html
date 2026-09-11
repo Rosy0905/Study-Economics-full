@@ -128,12 +128,12 @@ header p {
 .mod .foot {
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 0;                       /* 去掉 dashed */
+  border-top: 0;
 
   background-image: repeating-linear-gradient(
     to right,
-    #e2efe7 0 4px,                     /* 实线段 */
-    transparent 4px 9px                /* 空隙段 */
+    #e2efe7 0 4px,
+    transparent 4px 9px
   );
   background-repeat: no-repeat;
   background-position: top left;
@@ -161,7 +161,7 @@ header p {
 }
 .mod:hover .go { opacity: 1; transform: translateX(3px); }
 
-/* ================= 学习进度条（黄色系） + 清除按钮 ================= */
+/* ================= 学习进度条 + 朗读 + 清除 ================= */
 .note-bar {
   position: relative;
   z-index: 30;
@@ -213,7 +213,125 @@ header p {
   text-align: right;
 }
 
-/* ================= 清除数据 · 花瓣（行内靠右） ================= */
+/* ================= 朗读（TTS） ================= */
+.tts {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.tts-btn {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid #cbe6d8;
+  background: #fff;
+  color: #3d8f6e;
+  font-size: 15px;
+  line-height: 1;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .18s ease, box-shadow .22s ease,
+              border-color .22s ease, background .22s ease, color .22s ease;
+}
+
+/* SVG 图标：精确居中，颜色跟随 currentColor */
+.tts-btn svg {
+  display: block;
+  width: 15px;
+  height: 15px;
+  pointer-events: none;
+}
+
+.tts-btn:hover {
+  transform: scale(1.08);
+  border-color: #8fd4b0;
+  background: #f3fbf7;
+  box-shadow: 0 2px 8px rgba(63, 174, 140, .18);
+}
+.tts-btn:active { transform: scale(.95); }
+
+.tts-btn.speaking {
+  border-color: #7fc9a8;
+  background: #eaf8f2;
+  animation: ttsPulse 1.5s ease-in-out infinite;
+}
+.tts-btn.paused {
+  border-color: #e5c882;
+  background: #fdf7e6;
+  color: #b8891f;
+  animation: none;
+}
+.tts-btn:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+  animation: none;
+}
+
+@keyframes ttsPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(63, 174, 140, .30); }
+  70%      { box-shadow: 0 0 0 8px rgba(63, 174, 140, 0); }
+}
+
+.tts-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 76px;
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #a9e0c6 0%, #d8ecdf 100%);
+  outline: none;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.tts-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #7fc9a8;
+  box-shadow: 0 1px 4px rgba(60, 130, 100, .28);
+  cursor: pointer;
+  transition: transform .15s ease;
+}
+.tts-range::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.tts-range::-moz-range-thumb {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #7fc9a8;
+  box-shadow: 0 1px 4px rgba(60, 130, 100, .28);
+  cursor: pointer;
+}
+.tts-range::-moz-range-track {
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #a9e0c6 0%, #d8ecdf 100%);
+}
+
+.tts-val {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  color: #3d8f6e;
+  background: #eaf8f2;
+  border-radius: 20px;
+  padding: 3px 8px;
+  min-width: 38px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .2px;
+  user-select: none;
+}
+
+/* ================= 清除数据 · 花瓣 ================= */
 :root {
   --petal-w: 34px;
   --petal-h: 48px;
@@ -229,7 +347,6 @@ header p {
   z-index: 6;
 }
 
-/* 花瓣层：以按钮中心为原点 */
 .petal-layer {
   position: absolute;
   left: 50%;
@@ -239,7 +356,6 @@ header p {
   pointer-events: none;
 }
 
-/* ===== 花瓣本体（清新柔美配色） ===== */
 .petal {
   position: absolute;
   left: 50%;
@@ -314,7 +430,6 @@ header p {
 }
 .petal.selected .petal-num { color: #fff; opacity: 1; }
 
-/* ===== 行内小圆按钮（黄色柔边） ===== */
 .clear-btn {
   position: relative;
   z-index: 20;
@@ -494,6 +609,8 @@ header p {
   pointer-events: none;
   transition: opacity .25s ease, transform .25s ease;
   z-index: 2000;
+  max-width: 86vw;
+  text-align: center;
 }
 .toast.show {
   opacity: 1;
@@ -538,6 +655,12 @@ footer {
   .note-bar { padding: 8px 9px 8px 14px; gap: 8px; }
   .note-bar .lb { font-size: 12px; }
   .note-bar input { font-size: 12.5px; padding: 7px 13px; min-width: 100px; }
+
+  .tts-btn { width: 30px; height: 30px; }
+  .tts-btn svg { width: 13px; height: 13px; }
+  .tts-range { width: 52px; }
+  .tts-val { font-size: 10px; min-width: 34px; padding: 2px 6px; }
+
   .clear-btn { width: 40px; height: 40px; font-size: 10.5px; }
   .clear-btn.check-mode { font-size: 18px; }
   .petal-num { font-size: 8px; }
@@ -552,6 +675,7 @@ footer {
   }
   .petal-num { font-size: 7.5px; }
   .petal-ic { font-size: 10px; }
+  .tts-range { width: 42px; }
 }
 
 ::-webkit-scrollbar { width: 7px; }
@@ -569,11 +693,20 @@ footer {
 
   <div class="grid" id="moduleGrid"></div>
 
-  <!-- ============ 学习进度 + 行内清除按钮 ============ -->
+  <!-- ============ 学习进度 + 朗读 + 行内清除按钮 ============ -->
   <div class="note-bar">
     <span class="lb">📝 学习进度</span>
     <input id="progressNote" placeholder="随手记一句：今天背到哪、哪块还没搞懂、下一步计划…" />
     <span class="tip" id="saveTip"></span>
+
+    <!-- 朗读控件 -->
+    <div class="tts">
+      <button class="tts-btn" id="ttsBtn" type="button" title="朗读学习进度" aria-label="朗读学习进度"></button>
+      <input class="tts-range" id="ttsRate" type="range"
+             min="0.5" max="2" step="0.1" value="1"
+             title="朗读语速" aria-label="朗读语速" />
+      <span class="tts-val" id="ttsVal">1.0×</span>
+    </div>
 
     <div class="clear-section" id="clearSection">
       <div class="petal-layer" id="petalLayer"></div>
@@ -671,7 +804,7 @@ const MODULES = [
 ];
 
 /* ==========================================================
-   ② 渲染卡片
+   ② 通用工具
    ========================================================== */
 function esc(s) {
   return String(s === null || s === undefined ? '' : s)
@@ -682,6 +815,19 @@ function esc(s) {
     .replace(/'/g, '&#39;');
 }
 
+/* 全局 toast */
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove('show'), 1900);
+}
+
+/* ==========================================================
+   ③ 渲染卡片
+   ========================================================== */
 function renderHome() {
   const grid = document.getElementById('moduleGrid');
   grid.innerHTML = MODULES.map(m => `
@@ -700,7 +846,7 @@ function renderHome() {
 }
 
 /* ==========================================================
-   ③ 学习进度记录（本地保存）
+   ④ 学习进度记录（本地保存）
    ========================================================== */
 (function () {
   const PROG_KEY = 'eco_kb_progress';
@@ -725,7 +871,194 @@ function renderHome() {
 })();
 
 /* ==========================================================
-   ④ 清除数据 · 花瓣按钮（行内靠右）
+   ⑤ 朗读学习进度（语速可调）
+   ----------------------------------------------------------
+   图标全部用 SVG，viewBox 精确居中，不再受 emoji 字形偏移影响
+   ========================================================== */
+(function () {
+  const synth = window.speechSynthesis;
+  const supported = !!(synth && typeof window.SpeechSynthesisUtterance === 'function');
+
+  const btn   = document.getElementById('ttsBtn');
+  const range = document.getElementById('ttsRate');
+  const val   = document.getElementById('ttsVal');
+  const input = document.getElementById('progressNote');
+  const RATE_KEY = 'eco_kb_tts_rate';
+
+  /* ---------- SVG 图标（fill 跟随 currentColor） ---------- */
+  const svg = (body, size = 24) =>
+    `<svg viewBox="0 0 ${size} ${size}" aria-hidden="true">${body}</svg>`;
+
+  const ICON = {
+    // 喇叭 + 声波
+    speaker: svg(`
+      <path fill="currentColor" d="M12.5 3.6a1 1 0 0 0-1.6-.8L6.6 6.4H4A2 2 0 0 0 2 8.4v7.2a2 2 0 0 0 2 2h2.6l4.3 3.6a1 1 0 0 0 1.6-.8z"/>
+      <path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+            d="M16 8.7a5 5 0 0 1 0 6.6M19 6a9 9 0 0 1 0 12"/>
+    `),
+    // 暂停：两条竖条，左右对称居中
+    pause: svg(`
+      <rect x="6.6" y="4" width="4.2" height="16" rx="1.7" fill="currentColor"/>
+      <rect x="13.2" y="4" width="4.2" height="16" rx="1.7" fill="currentColor"/>
+    `),
+    // 继续：三角形（按形心居中）
+    play: svg(`
+      <path fill="currentColor" d="M8.2 5.1v13.8a1 1 0 0 0 1.54.84l10.2-6.9a1 1 0 0 0 0-1.68L9.74 4.26A1 1 0 0 0 8.2 5.1z"/>
+    `),
+    // 静音（不支持时显示）
+    mute: svg(`
+      <path fill="currentColor" d="M12.5 3.6a1 1 0 0 0-1.6-.8L6.6 6.4H4A2 2 0 0 0 2 8.4v7.2a2 2 0 0 0 2 2h2.6l4.3 3.6a1 1 0 0 0 1.6-.8z"/>
+      <path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+            d="M16.4 9.6l5 4.8M21.4 9.6l-5 4.8"/>
+    `)
+  };
+
+  /* ---------- 不支持时优雅降级 ---------- */
+  if (!supported) {
+    btn.disabled = true;
+    btn.innerHTML = ICON.mute;
+    btn.title = '当前浏览器不支持语音朗读';
+    range.disabled = true;
+    range.style.opacity = '.45';
+    return;
+  }
+
+  let state = 'idle';        // idle | speaking | paused
+  let voices = [];
+  let token = 0;             // 防止旧 utterance 的回调污染状态
+  let rateTimer = null;
+  let currentRate = 1;
+
+  /* ---------- 语速读取 ---------- */
+  try {
+    const saved = parseFloat(localStorage.getItem(RATE_KEY));
+    if (!isNaN(saved) && saved >= 0.5 && saved <= 2) {
+      currentRate = Math.round(saved * 10) / 10;
+    }
+  } catch (e) {}
+
+  range.value = currentRate;
+  val.textContent = currentRate.toFixed(1) + '×';
+
+  /* ---------- 语音列表 ---------- */
+  function refreshVoices() {
+    try { voices = synth.getVoices() || []; } catch (e) { voices = []; }
+  }
+  refreshVoices();
+  try {
+    synth.addEventListener('voiceschanged', refreshVoices);
+  } catch (e) {
+    synth.onvoiceschanged = refreshVoices;
+  }
+
+  function pickVoice() {
+    if (!voices.length) refreshVoices();
+    if (!voices.length) return null;
+    const zh = voices.filter(v => /^zh|^cmn/i.test(v.lang || ''));
+    return zh.find(v => /zh[-_]?(CN|Hans)/i.test(v.lang)) || zh[0] || null;
+  }
+
+  /* ---------- 状态切换 ---------- */
+  function setState(s) {
+    state = s;
+    btn.classList.toggle('speaking', s === 'speaking');
+    btn.classList.toggle('paused', s === 'paused');
+    if (s === 'speaking') {
+      btn.innerHTML = ICON.pause;
+      btn.title = '暂停朗读';
+    } else if (s === 'paused') {
+      btn.innerHTML = ICON.play;
+      btn.title = '继续朗读';
+    } else {
+      btn.innerHTML = ICON.speaker;
+      btn.title = '朗读学习进度';
+    }
+  }
+
+  /* ---------- 停止 ---------- */
+  function stop() {
+    token++;
+    try { synth.cancel(); } catch (e) {}
+    if (state !== 'idle') setState('idle');
+  }
+  window.stopTTS = stop;   // 供清除数据时调用
+
+  /* ---------- 开始朗读 ---------- */
+  function speak() {
+    const text = (input.value || '').trim();
+    if (!text) {
+      showToast('先写点学习进度，再朗读哦');
+      return;
+    }
+
+    const my = ++token;
+    try { synth.cancel(); } catch (e) {}
+
+    const u = new SpeechSynthesisUtterance(text);
+    const v = pickVoice();
+    if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = 'zh-CN'; }
+    u.rate = currentRate;
+    u.pitch = 1;
+    u.volume = 1;
+
+    u.onend = () => { if (my === token) setState('idle'); };
+    u.onerror = () => { if (my === token) setState('idle'); };
+
+    synth.speak(u);
+    setState('speaking');
+  }
+
+  /* ---------- 播放 / 暂停 / 继续 ---------- */
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (state === 'idle') {
+      speak();
+    } else if (state === 'speaking') {
+      try { synth.pause(); } catch (err) {}
+      setState('paused');
+    } else {
+      try { synth.resume(); } catch (err) {}
+      setState('speaking');
+    }
+  });
+
+  /* ---------- 语速滑块 ---------- */
+  range.addEventListener('input', () => {
+    currentRate = Math.round(parseFloat(range.value) * 10) / 10;
+    val.textContent = currentRate.toFixed(1) + '×';
+    try { localStorage.setItem(RATE_KEY, String(currentRate)); } catch (e) {}
+
+    clearTimeout(rateTimer);
+
+    // 暂停中改语速：直接取消，下次重新朗读即生效
+    if (state === 'paused') { stop(); return; }
+    if (state !== 'speaking') return;
+
+    // 正在朗读：停顿一下，用新语速重新开始
+    rateTimer = setTimeout(() => {
+      if (state === 'speaking') speak();
+    }, 480);
+  });
+
+  // 拖动滑块时不要触发"点击外部收起花瓣"
+  range.addEventListener('click', e => e.stopPropagation());
+  range.addEventListener('pointerdown', e => e.stopPropagation());
+
+  /* ---------- 编辑笔记 → 立即停止朗读 ---------- */
+  input.addEventListener('input', () => {
+    if (state !== 'idle') stop();
+  });
+
+  /* ---------- 离开页面停止 ---------- */
+  window.addEventListener('pagehide', stop);
+  window.addEventListener('beforeunload', stop);
+
+  /* ---------- 初始化图标 ---------- */
+  setState('idle');
+})();
+
+/* ==========================================================
+   ⑥ 清除数据 · 花瓣按钮（行内靠右）
    ========================================================== */
 (function () {
   const N = MODULES.length;                       // 8
@@ -737,7 +1070,6 @@ function renderHome() {
   const confirmList  = document.getElementById('confirmList');
   const confirmOk    = document.getElementById('confirmOk');
   const confirmCancel= document.getElementById('confirmCancel');
-  const toast        = document.getElementById('toast');
 
   let isOpen = false;
   const selected = new Set();
@@ -745,7 +1077,7 @@ function renderHome() {
   /* ---------- 生成八片花瓣 ---------- */
   function buildPetals() {
     petalLayer.innerHTML = MODULES.map((m, i) => {
-      const angle = (360 / N) * i;               // 0°,45°,90°…
+      const angle = (360 / N) * i;
       return `
         <div class="petal" data-idx="${i}"
              style="--angle:${angle}deg; --pc:${m.c2}; --pcd:${m.c}; --soft:${m.soft};"
@@ -790,30 +1122,14 @@ function renderHome() {
     confirmOverlay.classList.remove('show');
   }
 
-  /* ---------- 显示 toast ---------- */
-  function showToast(msg) {
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 1800);
-  }
-
   /* ---------- 按钮点击 ---------- */
   clearBtn.addEventListener('click', e => {
     e.stopPropagation();
 
-    // 未展开 → 展开
-    if (!isOpen) {
-      openPetals();
-      return;
-    }
+    if (!isOpen) { openPetals(); return; }
 
-    // 已展开但没选任何花瓣 → 收起
-    if (selected.size === 0) {
-      resetAll();
-      return;
-    }
+    if (selected.size === 0) { resetAll(); return; }
 
-    // 已选花瓣 → 弹出确认框
     const items = [...selected].sort((a, b) => a - b);
     confirmList.innerHTML = items.map(i => {
       const m = MODULES[i];
@@ -840,10 +1156,8 @@ function renderHome() {
         const key = localStorage.key(i);
         if (!key) continue;
 
-        // 主页学习进度笔记，随任一模块清除一起清掉
         if (key === 'eco_kb_progress') { toRemove.push(key); continue; }
 
-        // 按选中模块的 storagePrefix 匹配
         for (const idx of selected) {
           const prefix = MODULES[idx].storagePrefix;
           if (prefix && key.startsWith(prefix)) {
@@ -864,6 +1178,9 @@ function renderHome() {
       if (input && toRemove.includes('eco_kb_progress')) input.value = '';
     } catch (e) {}
 
+    // 正在朗读就停掉
+    if (typeof window.stopTTS === 'function') window.stopTTS();
+
     const clearedNames = [...selected].sort((a, b) => a - b)
       .map(i => MODULES[i].title).join('、');
 
@@ -877,12 +1194,10 @@ function renderHome() {
     confirmOverlay.classList.remove('show');
   });
 
-  // 点击遮罩关闭
   confirmOverlay.addEventListener('click', e => {
     if (e.target === confirmOverlay) confirmOverlay.classList.remove('show');
   });
 
-  // Esc 关闭
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       if (confirmOverlay.classList.contains('show')) {
@@ -893,12 +1208,11 @@ function renderHome() {
     }
   });
 
-  /* ---------- 初始化 ---------- */
   buildPetals();
 })();
 
 /* ==========================================================
-   ⑤ 初始化页面
+   ⑦ 初始化页面
    ========================================================== */
 renderHome();
 </script>
