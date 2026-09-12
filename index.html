@@ -161,7 +161,7 @@ header p {
 }
 .mod:hover .go { opacity: 1; transform: translateX(3px); }
 
-/* ================= 学习进度条 + 朗读 + 清除 ================= */
+/* ================= 学习进度条 + 朗读 + 清除 + 同步 ================= */
 .note-bar {
   position: relative;
   z-index: 30;
@@ -219,6 +219,7 @@ header p {
   display: flex;
   align-items: center;
   gap: 7px;
+  transition: opacity .3s ease, transform .3s cubic-bezier(.34,1.56,.64,1);
 }
 
 .tts-btn {
@@ -336,6 +337,9 @@ header p {
   --petal-w: 34px;
   --petal-h: 48px;
   --dist: 56px;
+
+  --orb-size: 40px;
+  --orb-dist: 56px;
 }
 
 .clear-section {
@@ -346,6 +350,7 @@ header p {
   justify-content: center;
   z-index: 6;
 }
+.clear-section.open { z-index: 40; }
 
 .petal-layer {
   position: absolute;
@@ -450,7 +455,8 @@ header p {
   transition: transform .2s ease,
               box-shadow .25s ease,
               color .25s ease,
-              border-color .25s ease;
+              border-color .25s ease,
+              font-size .2s ease;
 }
 .clear-btn:hover {
   transform: scale(1.05);
@@ -468,6 +474,147 @@ header p {
   box-shadow: 0 0 0 3px rgba(143, 212, 176, .22),
               0 2px 8px rgba(47, 162, 122, .18),
               0 0 12px 2px rgba(143, 212, 176, .25);
+}
+
+/* ================= 数据同步 · 上下小球（浅蓝） ================= */
+.sync-section {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 25;
+  overflow: visible;
+  transition: opacity .3s ease, transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+
+.sync-btn {
+  position: relative;
+  z-index: 26;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid #a8cfe8;
+  background: #fff;
+  color: #2e6a99;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 0 0 3px rgba(168, 207, 232, .22),
+              0 2px 8px rgba(79, 148, 196, .18),
+              0 0 12px 2px rgba(139, 194, 228, .25);
+  transition: transform .2s ease, box-shadow .25s ease,
+              color .25s ease, border-color .25s ease, background .25s ease;
+}
+.sync-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 4px rgba(168, 207, 232, .3),
+              0 4px 12px rgba(79, 148, 196, .22),
+              0 0 16px 3px rgba(139, 194, 228, .3);
+}
+.sync-btn:active { transform: scale(.97); }
+.sync-btn.open {
+  background: #eaf4fc;
+  transform: scale(1.05);
+  border-color: #8bbde0;
+}
+
+/* ---------- 上下小球 ---------- */
+.sync-orb {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--orb-size);
+  height: var(--orb-size);
+  margin-left: calc(var(--orb-size) / -2);
+  margin-top: calc(var(--orb-size) / -2);
+
+  border-radius: 50%;
+  border: 1.8px solid var(--oc);
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 42%, var(--osoft) 100%);
+  box-shadow: 0 2px 8px rgba(90, 140, 115, .14);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+
+  cursor: pointer;
+  user-select: none;
+
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0) scale(.3);
+  transition: transform .42s cubic-bezier(.34,1.56,.64,1),
+             opacity .28s ease,
+             box-shadow .22s ease,
+             background .22s ease,
+             border-color .22s ease;
+
+  z-index: 24;
+}
+
+.sync-orb .orb-ic {
+  font-size: 14px;
+  line-height: 1;
+  display: block;
+}
+.sync-orb .orb-tx {
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--ocd);
+  letter-spacing: .3px;
+  line-height: 1;
+  display: block;
+}
+
+/* 展开 */
+.sync-section.open .sync-orb.import {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(calc(-1 * var(--orb-dist))) scale(1);
+  transition-delay: 0s;
+}
+.sync-section.open .sync-orb.export {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(var(--orb-dist)) scale(1);
+  transition-delay: .08s;
+}
+
+/* hover */
+.sync-section.open .sync-orb.import:hover {
+  transform: translateY(calc(-1 * var(--orb-dist))) scale(1.08);
+  box-shadow: 0 4px 14px rgba(90, 140, 115, .22);
+}
+.sync-section.open .sync-orb.export:hover {
+  transform: translateY(var(--orb-dist)) scale(1.08);
+  box-shadow: 0 4px 14px rgba(90, 140, 115, .22);
+}
+
+/* ★ 导入球：浅粉 */
+.sync-orb.import {
+  --oc: #e8a8c8;
+  --ocd: #a85a7a;
+  --osoft: #fceef4;
+}
+
+/* ★ 导出球：浅紫 */
+.sync-orb.export {
+  --oc: #b89ee0;
+  --ocd: #6a4a9a;
+  --osoft: #f0eaf8;
+}
+
+/* ★ 花瓣展开时：只遮罩同步按钮 */
+.note-bar.petals-open .sync-section {
+  opacity: .15;
+  transform: scale(.85);
+  pointer-events: none;
+  transition: opacity .3s ease, transform .3s cubic-bezier(.34,1.56,.64,1);
 }
 
 /* ================= 确认弹层 ================= */
@@ -651,6 +798,8 @@ footer {
     --petal-w: 30px;
     --petal-h: 42px;
     --dist: 48px;
+    --orb-size: 36px;
+    --orb-dist: 48px;
   }
   .note-bar { padding: 8px 9px 8px 14px; gap: 8px; }
   .note-bar .lb { font-size: 12px; }
@@ -663,8 +812,11 @@ footer {
 
   .clear-btn { width: 40px; height: 40px; font-size: 10.5px; }
   .clear-btn.check-mode { font-size: 18px; }
+  .sync-btn { width: 40px; height: 40px; font-size: 10.5px; }
   .petal-num { font-size: 8px; }
   .petal-ic { font-size: 11px; }
+  .sync-orb .orb-ic { font-size: 12px; }
+  .sync-orb .orb-tx { font-size: 7.5px; }
 }
 
 @media (max-width: 380px) {
@@ -672,6 +824,8 @@ footer {
     --petal-w: 27px;
     --petal-h: 38px;
     --dist: 43px;
+    --orb-size: 32px;
+    --orb-dist: 43px;
   }
   .petal-num { font-size: 7.5px; }
   .petal-ic { font-size: 10px; }
@@ -693,8 +847,8 @@ footer {
 
   <div class="grid" id="moduleGrid"></div>
 
-  <!-- ============ 学习进度 + 朗读 + 行内清除按钮 ============ -->
-  <div class="note-bar">
+  <!-- ============ 学习进度 + 朗读 + 清除 + 同步 ============ -->
+  <div class="note-bar" id="noteBar">
     <span class="lb">📝 学习进度</span>
     <input id="progressNote" placeholder="随手记一句：今天背到哪、哪块还没搞懂、下一步计划…" />
     <span class="tip" id="saveTip"></span>
@@ -708,11 +862,25 @@ footer {
       <span class="tts-val" id="ttsVal">1.0×</span>
     </div>
 
+    <!-- 清除数据 -->
     <div class="clear-section" id="clearSection">
       <div class="petal-layer" id="petalLayer"></div>
       <button class="clear-btn" id="clearBtn" type="button">
         <span id="clearText">清除</span>
       </button>
+    </div>
+
+    <!-- 数据同步 -->
+    <div class="sync-section" id="syncSection">
+      <div class="sync-orb import" id="orbImport" title="导入数据（从 JSON 文件恢复）">
+        <span class="orb-ic">📥</span>
+        <span class="orb-tx">导入</span>
+      </div>
+      <div class="sync-orb export" id="orbExport" title="导出数据（保存为 JSON 文件）">
+        <span class="orb-ic">📤</span>
+        <span class="orb-tx">导出</span>
+      </div>
+      <button class="sync-btn" type="button" id="syncBtn">同步</button>
     </div>
   </div>
 
@@ -722,6 +890,9 @@ footer {
   </footer>
 
 </div>
+
+<!-- 隐藏的文件选择器（导入用） -->
+<input type="file" id="importFile" accept=".json,application/json" style="display:none" />
 
 <!-- ============ 确认弹层 ============ -->
 <div class="confirm-overlay" id="confirmOverlay">
@@ -1070,6 +1241,7 @@ function renderHome() {
   const confirmList  = document.getElementById('confirmList');
   const confirmOk    = document.getElementById('confirmOk');
   const confirmCancel= document.getElementById('confirmCancel');
+  const noteBar      = document.getElementById('noteBar');
 
   let isOpen = false;
   const selected = new Set();
@@ -1106,8 +1278,10 @@ function renderHome() {
 
   /* ---------- 展开 / 收起 ---------- */
   function openPetals() {
+    if (typeof window.closeSync === 'function') window.closeSync();
     isOpen = true;
     clearSection.classList.add('open');
+    noteBar.classList.add('petals-open');
     clearText.textContent = '✓';
     clearBtn.classList.add('check-mode');
   }
@@ -1116,11 +1290,14 @@ function renderHome() {
     isOpen = false;
     selected.clear();
     clearSection.classList.remove('open');
+    noteBar.classList.remove('petals-open');
     clearText.textContent = '清除';
     clearBtn.classList.remove('check-mode');
     petalLayer.querySelectorAll('.petal').forEach(p => p.classList.remove('selected'));
     confirmOverlay.classList.remove('show');
   }
+
+  window.closePetals = resetAll;
 
   /* ---------- 按钮点击 ---------- */
   clearBtn.addEventListener('click', e => {
@@ -1212,7 +1389,212 @@ function renderHome() {
 })();
 
 /* ==========================================================
-   ⑦ 初始化页面
+   ⑦ 数据同步 · 导入 / 导出（JSON）
+   ----------------------------------------------------------
+   原理：八个子页面与主页同源，共用一份 localStorage。
+   所以在这里导出，就能一次性把全部模块的进度打包带走。
+   ========================================================== */
+(function () {
+  const syncSection  = document.getElementById('syncSection');
+  const syncBtn      = document.getElementById('syncBtn');
+  const orbImport    = document.getElementById('orbImport');
+  const orbExport    = document.getElementById('orbExport');
+  const fileInput    = document.getElementById('importFile');
+
+  /* 只导出与本知识库相关的键，避免夹带无关数据 */
+  const PREFIXES = MODULES.map(m => m.storagePrefix).filter(Boolean);
+  const ALLOW    = ['eco_kb_progress'];
+
+  let isOpen = false;
+
+  /* ---------- 展开 / 收起 ---------- */
+  function openSync() {
+    if (typeof window.closePetals === 'function') window.closePetals();
+    isOpen = true;
+    syncSection.classList.add('open');
+    syncBtn.classList.add('open');
+  }
+
+  function resetSync() {
+    isOpen = false;
+    syncSection.classList.remove('open');
+    syncBtn.classList.remove('open');
+  }
+  window.closeSync = resetSync;
+
+  syncBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (isOpen) resetSync(); else openSync();
+  });
+
+  document.addEventListener('click', e => {
+    if (!isOpen) return;
+    if (syncSection.contains(e.target)) return;
+    resetSync();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && isOpen) resetSync();
+  });
+
+  /* ---------- 收集本机数据 ---------- */
+  function collectData() {
+    const data = {};
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+        const hit = ALLOW.indexOf(key) >= 0 ||
+                    PREFIXES.some(p => key.indexOf(p) === 0);
+        if (hit) data[key] = localStorage.getItem(key);
+      }
+    } catch (e) {
+      console.warn('读取本地数据失败', e);
+    }
+    return data;
+  }
+
+  function pad2(n) { return String(n).padStart(2, '0'); }
+
+  /* ---------- 导出 ---------- */
+  function doExport() {
+    const data = collectData();
+    const keys = Object.keys(data);
+    if (!keys.length) {
+      showToast('本机还没有可导出的学习数据');
+      resetSync();
+      return;
+    }
+
+    const now = new Date();
+    const payload = {
+      app: 'nankai-econ-kb',
+      version: 1,
+      exportedAt: now.toISOString(),
+      count: keys.length,
+      data: data
+    };
+
+    let blob, url;
+    try {
+      blob = new Blob([JSON.stringify(payload, null, 2)],
+                      { type: 'application/json;charset=utf-8' });
+      url = URL.createObjectURL(blob);
+    } catch (e) {
+      showToast('导出失败，请换个浏览器试试');
+      resetSync();
+      return;
+    }
+
+    const name = `南开经济学知识库-备份-`
+      + now.getFullYear() + pad2(now.getMonth() + 1) + pad2(now.getDate())
+      + '-' + pad2(now.getHours()) + pad2(now.getMinutes()) + '.json';
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} }, 2000);
+
+    showToast(`已导出 ${keys.length} 条数据`);
+    resetSync();
+  }
+
+  /* ---------- 导入 ---------- */
+  function handleFile(file) {
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function (ev) {
+      let obj = null;
+      try {
+        obj = JSON.parse(ev.target.result);
+      } catch (err) {
+        showToast('导入失败：不是有效的 JSON 文件');
+        return;
+      }
+
+      if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
+        showToast('导入失败：文件格式不正确');
+        return;
+      }
+
+      // 兼容两种写法：带 data 字段的备份包 / 直接的键值对象
+      let data = null;
+      if (obj.data && typeof obj.data === 'object' && !Array.isArray(obj.data)) {
+        data = obj.data;
+      } else {
+        data = obj;
+      }
+
+      const keys = Object.keys(data).filter(k => typeof data[k] === 'string');
+      if (!keys.length) {
+        showToast('文件里没有可导入的数据');
+        return;
+      }
+
+      const ok = window.confirm(
+        '即将导入 ' + keys.length + ' 条数据。\n\n' +
+        '同名的记录会被覆盖，本机独有、文件里没有的记录会保留。\n\n' +
+        '确定继续吗？'
+      );
+      if (!ok) return;
+
+      let done = 0;
+      try {
+        keys.forEach(k => {
+          localStorage.setItem(k, data[k]);
+          done++;
+        });
+      } catch (err) {
+        showToast('导入中断：浏览器存储空间可能已满');
+        return;
+      }
+
+      if (typeof window.stopTTS === 'function') window.stopTTS();
+
+      showToast('导入成功：' + done + ' 条，正在刷新…');
+      setTimeout(() => location.reload(), 900);
+    };
+
+    reader.onerror = function () {
+      showToast('导入失败：文件读取错误');
+    };
+
+    reader.readAsText(file, 'utf-8');
+  }
+
+  /* ---------- 小球点击 ---------- */
+  orbExport.addEventListener('click', e => {
+    e.stopPropagation();
+    doExport();
+  });
+
+  orbImport.addEventListener('click', e => {
+    e.stopPropagation();
+    resetSync();
+    fileInput.value = '';     // 允许连续选同一个文件
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    handleFile(f);
+  });
+
+  // 小球上的鼠标事件不要触发"点击外部收起"
+  [orbImport, orbExport].forEach(el => {
+    el.addEventListener('pointerdown', e => e.stopPropagation());
+  });
+})();
+
+/* ==========================================================
+   ⑧ 初始化页面
    ========================================================== */
 renderHome();
 </script>
