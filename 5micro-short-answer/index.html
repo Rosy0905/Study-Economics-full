@@ -1807,7 +1807,6 @@
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
-                    const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
 
                     if (!noteArea) return;
 
@@ -1816,9 +1815,6 @@
                         noteArea.classList.remove('open');
                         this.classList.remove('active');
                     } else {
-                        if (answerDiv && !answerDiv.classList.contains('open')) {
-                            answerDiv.classList.add('open');
-                        }
                         noteArea.classList.add('open');
                         this.classList.add('active');
                         const editor = noteArea.querySelector('.note-editor');
@@ -2055,17 +2051,6 @@
                 };
             });
 
-            // 13. 有笔记内容自动展开
-            document.querySelectorAll('.card-note-area').forEach(area => {
-                const id = area.dataset.id;
-                const hasContent = notes[id] && notes[id].trim().length > 0;
-                if (hasContent) {
-                    const btn = document.querySelector(`.btn-note[data-id="${id}"]`);
-                    if (btn && btn.classList.contains('active')) {
-                        area.classList.add('open');
-                    }
-                }
-            });
 
             if (isSingleMode) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
