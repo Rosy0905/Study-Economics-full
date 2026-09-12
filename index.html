@@ -1461,7 +1461,7 @@ function renderHome() {
     const data = collectData();
     const keys = Object.keys(data);
     if (!keys.length) {
-      showToast('本机还没有可导出的学习数据');
+      showToast('本机暂无学习记录，先学一点再导出吧~~');
       resetSync();
       return;
     }
@@ -1500,7 +1500,7 @@ function renderHome() {
 
     setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} }, 2000);
 
-    showToast(`已导出 ${keys.length} 条数据`);
+    showToast(`导出成功！${keys.length} 条学习记录已保存为文件啦~😊`);
     resetSync();
   }
 
@@ -1540,7 +1540,7 @@ function renderHome() {
 
       const ok = window.confirm(
         '即将导入 ' + keys.length + ' 条数据。\n\n' +
-        '同名的记录会被覆盖，本机独有、文件里没有的记录会保留。\n\n' +
+        '同名记录会被覆盖，本机独有而文件里没有的记录会保留。\n\n' +
         '确定继续吗？'
       );
       if (!ok) return;
@@ -1558,7 +1558,7 @@ function renderHome() {
 
       if (typeof window.stopTTS === 'function') window.stopTTS();
 
-      showToast('导入成功：' + done + ' 条，正在刷新…');
+      showToast('已导入成功 ' + done + ' 条学习记录，页面即将刷新~~😊');
       setTimeout(() => location.reload(), 900);
     };
 
