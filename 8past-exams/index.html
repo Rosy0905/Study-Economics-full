@@ -3688,20 +3688,44 @@ setTimeout(() => {
     var pageTitle = h1 ? h1.textContent.replace(/^[^\u4e00-\u9fa5A-Za-z]+/, '').trim() : '';
     if (pageTitle) ctx += '【当前模块】' + pageTitle + '\n';
 
-    var openCards = document.querySelectorAll('.card-answer.open');
-    if (openCards.length) {
+    // 收集当前"用户正在看"的卡片（兼容多种页面结构）
+    var cards = [];
+    var seenQ = {};
+    function addCard(item) {
+      if (!item || cards.length >= 3) return;
+      var qEl = item.querySelector('.q-text');
+      var q = (qEl ? qEl.textContent : '').trim();
+      if (!q || seenQ[q]) return;
+      var aEl = item.querySelector('.card-answer.open .answer-inner');
+      var a = aEl ? aEl.textContent.trim() : '';
+      seenQ[q] = 1;
+      cards.push({ q: q, a: a });
+    }
+    // 优先级 1：答案展开的卡片（背诵/简答/论述等页面）
+    Array.prototype.forEach.call(document.querySelectorAll('.card-answer.open'), function (el) {
+      addCard(el.closest('.card-item'));
+    });
+    // 优先级 2：笔记区展开的卡片（真题页用这个）
+    if (cards.length === 0) {
+      Array.prototype.forEach.call(document.querySelectorAll('.card-note-area.open'), function (el) {
+        addCard(el.closest('.card-item'));
+      });
+    }
+    // 优先级 3：视口内可见的卡片（什么都不点也能识别）
+    if (cards.length === 0) {
+      var vh = window.innerHeight;
+      Array.prototype.forEach.call(document.querySelectorAll('.card-item'), function (item) {
+        if (cards.length >= 3) return;
+        var r = item.getBoundingClientRect();
+        var cy = (r.top + r.bottom) / 2;
+        if (cy > 0 && cy < vh) addCard(item);
+      });
+    }
+    if (cards.length) {
       ctx += '\n【用户正在查看的内容】\n';
-      var seen = {}; var count = 0;
-      Array.prototype.forEach.call(openCards, function (card) {
-        if (count >= 3) return;
-        var item = card.closest('.card-item'); if (!item) return;
-        var qEl = item.querySelector('.q-text');
-        var aEl = card.querySelector('.answer-inner');
-        var q = (qEl ? qEl.textContent : '').trim().slice(0, 400);
-        var a = (aEl ? aEl.textContent : '').trim().slice(0, 1600);
-        if (!q || seen[q]) return;
-        seen[q] = 1; count++;
-        ctx += '\n— 第 ' + count + ' 张 —\n题目：' + q + '\n内容：' + a + '\n';
+      cards.forEach(function (c, i) {
+        ctx += '\n— 第 ' + (i + 1) + ' 张 —\n题目：' + c.q.slice(0, 400) + '\n';
+        if (c.a) ctx += '内容：' + c.a.slice(0, 1600) + '\n';
       });
     }
 
