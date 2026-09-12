@@ -2216,7 +2216,7 @@ c. 第三，势力的不对称性。即使污染者与受害者有可能达成�
                             </div>
                             <div class="card-actions" data-id="${d.id}">
                                 <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${d.id}" title="收藏">${isFav ? '⭐' : '☆'}</button>
-                                <button class="btn-note ${note ? 'has-note' : ''}" data-id="${d.id}" title="笔记">📝</button>
+                                <button class="btn-note ${note ? 'active' : ''}" data-id="${d.id}" title="笔记">📝</button>
                                 <button class="btn-edit" data-id="${d.id}" title="编辑题目和答案">✏️</button>
                             </div>
                         </div>
@@ -2311,7 +2311,6 @@ c. 第三，势力的不对称性。即使污染者与受害者有可能达成�
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
-                    const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
 
                     if (!noteArea) return;
 
@@ -2320,9 +2319,6 @@ c. 第三，势力的不对称性。即使污染者与受害者有可能达成�
                         noteArea.classList.remove('open');
                         this.classList.remove('active');
                     } else {
-                        if (answerDiv && !answerDiv.classList.contains('open')) {
-                            answerDiv.classList.add('open');
-                        }
                         noteArea.classList.add('open');
                         this.classList.add('active');
                         const editor = noteArea.querySelector('.note-editor');
@@ -2399,7 +2395,11 @@ c. 第三，势力的不对称性。即使污染者与受害者有可能达成�
                     saveNotes();
                     const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
                     if (noteBtn) {
-                        noteBtn.classList.toggle('has-note', !!content);
+                        if (content) {
+                            noteBtn.classList.add('active');
+                        } else {
+                            noteBtn.classList.remove('active');
+                        }
                     }
                     if (content) {
                         const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
@@ -2422,7 +2422,7 @@ c. 第三，势力的不对称性。即使污染者与受害者有可能达成�
                         delete notes[id];
                         saveNotes();
                         const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
-                        if (noteBtn) noteBtn.classList.remove('active', 'has-note');
+                        if (noteBtn) noteBtn.classList.remove('active');
                         const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
                         if (noteArea) noteArea.classList.remove('open');
                         const rc = document.querySelector(`.img-resize-control[data-id="${id}"]`);
