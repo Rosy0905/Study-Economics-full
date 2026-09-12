@@ -935,13 +935,11 @@ function render(singleId = null){
       e.stopPropagation();
       const id = this.dataset.id;
       const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
-      const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
       if(!noteArea) return;
       if(noteArea.classList.contains('open')){
         noteArea.classList.remove('open');
         this.classList.remove('active');
       } else {
-        if(answerDiv && !answerDiv.classList.contains('open')) answerDiv.classList.add('open');
         noteArea.classList.add('open');
         this.classList.add('active');
         const editor = noteArea.querySelector('.note-editor');
