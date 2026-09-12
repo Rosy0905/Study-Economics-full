@@ -242,7 +242,6 @@ header p {
               border-color .22s ease, background .22s ease, color .22s ease;
 }
 
-/* SVG 图标：精确居中，颜色跟随 currentColor */
 .tts-btn svg {
   display: block;
   width: 15px;
@@ -571,7 +570,6 @@ header p {
   display: block;
 }
 
-/* 展开 */
 .sync-section.open .sync-orb.import {
   opacity: 1;
   pointer-events: auto;
@@ -585,7 +583,6 @@ header p {
   transition-delay: .08s;
 }
 
-/* hover */
 .sync-section.open .sync-orb.import:hover {
   transform: translateY(calc(-1 * var(--orb-dist))) scale(1.08);
   box-shadow: 0 4px 14px rgba(90, 140, 115, .22);
@@ -595,21 +592,18 @@ header p {
   box-shadow: 0 4px 14px rgba(90, 140, 115, .22);
 }
 
-/* ★ 导入球：浅粉 */
 .sync-orb.import {
   --oc: #e8a8c8;
   --ocd: #a85a7a;
   --osoft: #fceef4;
 }
 
-/* ★ 导出球：浅紫 */
 .sync-orb.export {
   --oc: #b89ee0;
   --ocd: #6a4a9a;
   --osoft: #f0eaf8;
 }
 
-/* ★ 花瓣展开时：只遮罩同步按钮 */
 .note-bar.petals-open .sync-section {
   opacity: .15;
   transform: scale(.85);
@@ -1043,8 +1037,6 @@ function renderHome() {
 
 /* ==========================================================
    ⑤ 朗读学习进度（语速可调）
-   ----------------------------------------------------------
-   图标全部用 SVG，viewBox 精确居中，不再受 emoji 字形偏移影响
    ========================================================== */
 (function () {
   const synth = window.speechSynthesis;
@@ -1056,27 +1048,22 @@ function renderHome() {
   const input = document.getElementById('progressNote');
   const RATE_KEY = 'eco_kb_tts_rate';
 
-  /* ---------- SVG 图标（fill 跟随 currentColor） ---------- */
   const svg = (body, size = 24) =>
     `<svg viewBox="0 0 ${size} ${size}" aria-hidden="true">${body}</svg>`;
 
   const ICON = {
-    // 喇叭 + 声波
     speaker: svg(`
       <path fill="currentColor" d="M12.5 3.6a1 1 0 0 0-1.6-.8L6.6 6.4H4A2 2 0 0 0 2 8.4v7.2a2 2 0 0 0 2 2h2.6l4.3 3.6a1 1 0 0 0 1.6-.8z"/>
       <path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
             d="M16 8.7a5 5 0 0 1 0 6.6M19 6a9 9 0 0 1 0 12"/>
     `),
-    // 暂停：两条竖条，左右对称居中
     pause: svg(`
       <rect x="6.6" y="4" width="4.2" height="16" rx="1.7" fill="currentColor"/>
       <rect x="13.2" y="4" width="4.2" height="16" rx="1.7" fill="currentColor"/>
     `),
-    // 继续：三角形（按形心居中）
     play: svg(`
       <path fill="currentColor" d="M8.2 5.1v13.8a1 1 0 0 0 1.54.84l10.2-6.9a1 1 0 0 0 0-1.68L9.74 4.26A1 1 0 0 0 8.2 5.1z"/>
     `),
-    // 静音（不支持时显示）
     mute: svg(`
       <path fill="currentColor" d="M12.5 3.6a1 1 0 0 0-1.6-.8L6.6 6.4H4A2 2 0 0 0 2 8.4v7.2a2 2 0 0 0 2 2h2.6l4.3 3.6a1 1 0 0 0 1.6-.8z"/>
       <path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
@@ -1084,7 +1071,6 @@ function renderHome() {
     `)
   };
 
-  /* ---------- 不支持时优雅降级 ---------- */
   if (!supported) {
     btn.disabled = true;
     btn.innerHTML = ICON.mute;
@@ -1094,13 +1080,12 @@ function renderHome() {
     return;
   }
 
-  let state = 'idle';        // idle | speaking | paused
+  let state = 'idle';
   let voices = [];
-  let token = 0;             // 防止旧 utterance 的回调污染状态
+  let token = 0;
   let rateTimer = null;
   let currentRate = 1;
 
-  /* ---------- 语速读取 ---------- */
   try {
     const saved = parseFloat(localStorage.getItem(RATE_KEY));
     if (!isNaN(saved) && saved >= 0.5 && saved <= 2) {
@@ -1111,7 +1096,6 @@ function renderHome() {
   range.value = currentRate;
   val.textContent = currentRate.toFixed(1) + '×';
 
-  /* ---------- 语音列表 ---------- */
   function refreshVoices() {
     try { voices = synth.getVoices() || []; } catch (e) { voices = []; }
   }
@@ -1129,7 +1113,6 @@ function renderHome() {
     return zh.find(v => /zh[-_]?(CN|Hans)/i.test(v.lang)) || zh[0] || null;
   }
 
-  /* ---------- 状态切换 ---------- */
   function setState(s) {
     state = s;
     btn.classList.toggle('speaking', s === 'speaking');
@@ -1146,15 +1129,13 @@ function renderHome() {
     }
   }
 
-  /* ---------- 停止 ---------- */
   function stop() {
     token++;
     try { synth.cancel(); } catch (e) {}
     if (state !== 'idle') setState('idle');
   }
-  window.stopTTS = stop;   // 供清除数据时调用
+  window.stopTTS = stop;
 
-  /* ---------- 开始朗读 ---------- */
   function speak() {
     const text = (input.value || '').trim();
     if (!text) {
@@ -1179,7 +1160,6 @@ function renderHome() {
     setState('speaking');
   }
 
-  /* ---------- 播放 / 暂停 / 继续 ---------- */
   btn.addEventListener('click', e => {
     e.stopPropagation();
     if (state === 'idle') {
@@ -1193,7 +1173,6 @@ function renderHome() {
     }
   });
 
-  /* ---------- 语速滑块 ---------- */
   range.addEventListener('input', () => {
     currentRate = Math.round(parseFloat(range.value) * 10) / 10;
     val.textContent = currentRate.toFixed(1) + '×';
@@ -1201,30 +1180,24 @@ function renderHome() {
 
     clearTimeout(rateTimer);
 
-    // 暂停中改语速：直接取消，下次重新朗读即生效
     if (state === 'paused') { stop(); return; }
     if (state !== 'speaking') return;
 
-    // 正在朗读：停顿一下，用新语速重新开始
     rateTimer = setTimeout(() => {
       if (state === 'speaking') speak();
     }, 480);
   });
 
-  // 拖动滑块时不要触发"点击外部收起花瓣"
   range.addEventListener('click', e => e.stopPropagation());
   range.addEventListener('pointerdown', e => e.stopPropagation());
 
-  /* ---------- 编辑笔记 → 立即停止朗读 ---------- */
   input.addEventListener('input', () => {
     if (state !== 'idle') stop();
   });
 
-  /* ---------- 离开页面停止 ---------- */
   window.addEventListener('pagehide', stop);
   window.addEventListener('beforeunload', stop);
 
-  /* ---------- 初始化图标 ---------- */
   setState('idle');
 })();
 
@@ -1232,7 +1205,7 @@ function renderHome() {
    ⑥ 清除数据 · 花瓣按钮（行内靠右）
    ========================================================== */
 (function () {
-  const N = MODULES.length;                       // 8
+  const N = MODULES.length;
   const petalLayer   = document.getElementById('petalLayer');
   const clearSection = document.getElementById('clearSection');
   const clearBtn     = document.getElementById('clearBtn');
@@ -1246,7 +1219,6 @@ function renderHome() {
   let isOpen = false;
   const selected = new Set();
 
-  /* ---------- 生成八片花瓣 ---------- */
   function buildPetals() {
     petalLayer.innerHTML = MODULES.map((m, i) => {
       const angle = (360 / N) * i;
@@ -1276,7 +1248,6 @@ function renderHome() {
     });
   }
 
-  /* ---------- 展开 / 收起 ---------- */
   function openPetals() {
     if (typeof window.closeSync === 'function') window.closeSync();
     isOpen = true;
@@ -1299,7 +1270,6 @@ function renderHome() {
 
   window.closePetals = resetAll;
 
-  /* ---------- 按钮点击 ---------- */
   clearBtn.addEventListener('click', e => {
     e.stopPropagation();
 
@@ -1316,7 +1286,6 @@ function renderHome() {
     confirmOverlay.classList.add('show');
   });
 
-  /* ---------- 点击外部收起花瓣 ---------- */
   document.addEventListener('click', e => {
     if (!isOpen) return;
     if (clearSection.contains(e.target)) return;
@@ -1324,7 +1293,6 @@ function renderHome() {
     resetAll();
   });
 
-  /* ---------- 确认清除 ---------- */
   confirmOk.addEventListener('click', () => {
     const toRemove = [];
 
@@ -1349,13 +1317,11 @@ function renderHome() {
       console.warn('清除失败', e);
     }
 
-    // 顺带清掉主页输入框显示
     try {
       const input = document.getElementById('progressNote');
       if (input && toRemove.includes('eco_kb_progress')) input.value = '';
     } catch (e) {}
 
-    // 正在朗读就停掉
     if (typeof window.stopTTS === 'function') window.stopTTS();
 
     const clearedNames = [...selected].sort((a, b) => a - b)
@@ -1365,7 +1331,6 @@ function renderHome() {
     showToast(clearedNames ? `已清除：${clearedNames}` : '已清除数据');
   });
 
-  /* ---------- 取消 ---------- */
   confirmCancel.addEventListener('click', e => {
     e.stopPropagation();
     confirmOverlay.classList.remove('show');
@@ -1391,8 +1356,13 @@ function renderHome() {
 /* ==========================================================
    ⑦ 数据同步 · 导入 / 导出（JSON）
    ----------------------------------------------------------
-   原理：八个子页面与主页同源，共用一份 localStorage。
-   所以在这里导出，就能一次性把全部模块的进度打包带走。
+   同步内容：
+   - 8 个模块的学习数据（收藏 / 笔记 / 编辑）
+   - 学习进度记录
+   - AI 助手：提示词 / 对话历史 / 面板尺寸
+   注意：
+   - 导出时会剔除 AI 的 API Key，防止泄露
+   - 导入时会保留本机已有的 API Key，不会被覆盖
    ========================================================== */
 (function () {
   const syncSection  = document.getElementById('syncSection');
@@ -1401,13 +1371,25 @@ function renderHome() {
   const orbExport    = document.getElementById('orbExport');
   const fileInput    = document.getElementById('importFile');
 
-  /* 只导出与本知识库相关的键，避免夹带无关数据 */
-  const PREFIXES = MODULES.map(m => m.storagePrefix).filter(Boolean);
+  /* 8 个模块的存储前缀 */
+  const MODULE_PREFIXES = MODULES.map(m => m.storagePrefix).filter(Boolean);
+
+  /* AI 助手相关前缀（key 在导出时会被剔除） */
+  const EXTRA_PREFIXES = [
+    'ai_assistant_cfg_',      // AI 配置（key 会被剔除）
+    'ai_assistant_history_',  // 对话记录
+    'ai_assistant_size_',     // 面板尺寸
+    'ai_assistant_sys_ver'    // 提示词版本号
+  ];
+
+  const PREFIXES = MODULE_PREFIXES.concat(EXTRA_PREFIXES);
   const ALLOW    = ['eco_kb_progress'];
+
+  /* AI 配置的 key 名（用于导出时剔除 key / 导入时保留 key） */
+  const AI_CFG_KEY = 'ai_assistant_cfg_v1';
 
   let isOpen = false;
 
-  /* ---------- 展开 / 收起 ---------- */
   function openSync() {
     if (typeof window.closePetals === 'function') window.closePetals();
     isOpen = true;
@@ -1437,7 +1419,6 @@ function renderHome() {
     if (e.key === 'Escape' && isOpen) resetSync();
   });
 
-  /* ---------- 收集本机数据 ---------- */
   function collectData() {
     const data = {};
     try {
@@ -1466,12 +1447,24 @@ function renderHome() {
       return;
     }
 
+    /* ★ 导出前，剔除 AI 配置里的 API Key（防止泄露） */
+    let aiCfgIncluded = false;
+    if (data[AI_CFG_KEY]) {
+      try {
+        const cfg = JSON.parse(data[AI_CFG_KEY]);
+        delete cfg.key;
+        data[AI_CFG_KEY] = JSON.stringify(cfg);
+        aiCfgIncluded = true;
+      } catch (e) {}
+    }
+
     const now = new Date();
     const payload = {
       app: 'nankai-econ-kb',
       version: 1,
       exportedAt: now.toISOString(),
       count: keys.length,
+      note: aiCfgIncluded ? '含 AI 助手配置（不含 API Key）' : '',
       data: data
     };
 
@@ -1500,7 +1493,7 @@ function renderHome() {
 
     setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} }, 2000);
 
-    showToast(`导出成功！${keys.length} 条学习记录已保存为文件啦~😊`);
+    showToast(`导出成功！${keys.length} 条记录已保存` + (aiCfgIncluded ? '（含 AI 配置，不含 Key）' : ''));
     resetSync();
   }
 
@@ -1524,7 +1517,6 @@ function renderHome() {
         return;
       }
 
-      // 兼容两种写法：带 data 字段的备份包 / 直接的键值对象
       let data = null;
       if (obj.data && typeof obj.data === 'object' && !Array.isArray(obj.data)) {
         data = obj.data;
@@ -1538,17 +1530,34 @@ function renderHome() {
         return;
       }
 
+      const hasAI = keys.some(k => k === AI_CFG_KEY);
       const ok = window.confirm(
-        '即将导入 ' + keys.length + ' 条数据。\n\n' +
-        '同名记录会被覆盖，本机独有而文件里没有的记录会保留。\n\n' +
-        '确定继续吗？'
+        '即将导入 ' + keys.length + ' 条数据。\n\n'
+        + (hasAI ? '📦 包含 AI 助手配置（提示词 / 对话历史等），但不含 API Key。\n导入后本机已有的 API Key 会保留。\n\n' : '')
+        + '同名的记录会被覆盖，本机独有而文件里没有的记录会保留。\n\n'
+        + '确定继续吗？'
       );
       if (!ok) return;
 
       let done = 0;
       try {
         keys.forEach(k => {
-          localStorage.setItem(k, data[k]);
+          /* ★ 导入 AI 配置时，保留本机已有的 API Key */
+          if (k === AI_CFG_KEY) {
+            try {
+              const incoming = JSON.parse(data[k]);
+              const existing = JSON.parse(localStorage.getItem(AI_CFG_KEY) || '{}');
+              // 文件里没带 key，但本机有 key → 用本机的
+              if (!incoming.key && existing.key) {
+                incoming.key = existing.key;
+              }
+              localStorage.setItem(k, JSON.stringify(incoming));
+            } catch (e) {
+              localStorage.setItem(k, data[k]);
+            }
+          } else {
+            localStorage.setItem(k, data[k]);
+          }
           done++;
         });
       } catch (err) {
@@ -1558,7 +1567,7 @@ function renderHome() {
 
       if (typeof window.stopTTS === 'function') window.stopTTS();
 
-      showToast('已导入成功 ' + done + ' 条学习记录，页面即将刷新~~😊');
+      showToast('已导入成功 ' + done + ' 条记录，页面即将刷新~~');
       setTimeout(() => location.reload(), 900);
     };
 
@@ -1569,7 +1578,6 @@ function renderHome() {
     reader.readAsText(file, 'utf-8');
   }
 
-  /* ---------- 小球点击 ---------- */
   orbExport.addEventListener('click', e => {
     e.stopPropagation();
     doExport();
@@ -1578,7 +1586,7 @@ function renderHome() {
   orbImport.addEventListener('click', e => {
     e.stopPropagation();
     resetSync();
-    fileInput.value = '';     // 允许连续选同一个文件
+    fileInput.value = '';
     fileInput.click();
   });
 
@@ -1587,7 +1595,6 @@ function renderHome() {
     handleFile(f);
   });
 
-  // 小球上的鼠标事件不要触发"点击外部收起"
   [orbImport, orbExport].forEach(el => {
     el.addEventListener('pointerdown', e => e.stopPropagation());
   });
