@@ -1063,11 +1063,10 @@
         item.addEventListener('click', function (e) {
           e.stopPropagation();
           navScrollTo(i);
-          if (panelEl) panelEl.classList.remove('show');
         });
         panelInner.appendChild(item);
       }
-
+      
       tick.addEventListener('click', function (e) {
         e.stopPropagation();
         navScrollTo(i);
