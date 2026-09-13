@@ -332,6 +332,12 @@
     '（4）对比类：必须用表格。',
     '（5）答题类：按"总—分—总"给框架。',
     '',
+    '【卡片指代规则】',
+    '提到用户在看的内容时，一律用卡片的【标签】指代（如"你现在看的这道消费者行为题"），',
+    '绝对不要用"第1张""第2张"这种序号，因为序号每次都在变。',
+    '若上下文里出现"焦点已切换"，说明用户已经换题，直接按新的标签回答，',
+    '不要反问"你是不是还在看上一张"。',
+    '',
     '【格式要求（必须遵守）】',
     '· 所有数学符号和公式必须用 LaTeX 语法：',
     '  - 行内公式：$P = MR$、$MRS_{xy} = P_x/P_y$、$u = x^a y^b$',
@@ -564,152 +570,182 @@
 
   /* ===================== 读取页面上下文 ===================== */
 
-  /* 追踪"最近展开的卡片"：点开答案/笔记区的那张作为"当前卡" */
-  var lastOpenedCardId = null;
+/* ============ 卡片稳定标识：data-id → 标签 → 题干 ============ */
+function cardKey(card) {
+  if (!card) return '';
+  if (card.dataset && card.dataset.id) return 'id:' + card.dataset.id;
+  var labelEl = card.querySelector('.card-header .label');
+  var label = labelEl ? labelEl.textContent.replace(/\s+/g, ' ').trim() : '';
+  if (label) return 'label:' + label;
+  var qEl = card.querySelector('.q-text');
+  return 'q:' + ((qEl ? qEl.textContent : '').trim().slice(0, 120));
+}
 
-  document.addEventListener('click', function (e) {
-    var q = e.target.closest && e.target.closest('.card-question');
-    if (!q) return;
-    var card = q.closest('.card-item');
-    if (!card || !card.dataset.id) return;
-    var id = card.dataset.id;
-    // 等页面自己的 click 处理跑完，再检查展开状态
-       setTimeout(function () {
-      var isOpen = !!card.querySelector('.card-answer.open, .card-note-area.open');
-      if (isOpen) {
-        lastOpenedCardId = id;
-        return;
-      }
-      // 收回的是当前卡：看视口里还有没有别的展开的卡，有就顶替
-      if (lastOpenedCardId === id) {
-        lastOpenedCardId = null;
-        var vh = window.innerHeight, vw = window.innerWidth;
-        var all = document.querySelectorAll('.card-item');
-        for (var i = 0; i < all.length; i++) {
-          var it = all[i];
-          if (it.dataset.id === id) continue;
-          if (!it.querySelector('.card-answer.open, .card-note-area.open')) continue;
-          var r = it.getBoundingClientRect();
-          if (r.bottom <= 0 || r.top >= vh || r.right <= 0 || r.left >= vw) continue;
-          lastOpenedCardId = it.dataset.id;
-          break;
-        }
-      }
-    }, 0);
-  }, true);
+function cardLabel(card) {
+  var labelEl = card.querySelector('.card-header .label');
+  var label = labelEl ? labelEl.textContent.replace(/\s+/g, ' ').trim() : '';
+  if (label) return label.slice(0, 80);
+  var qEl = card.querySelector('.q-text');
+  var q = qEl ? qEl.textContent.trim() : '';
+  return q ? ('（无标签）' + q.slice(0, 30)) : '（无标签卡片）';
+}
 
-  function buildPageContext() {
-    var ctx = '';
-    var h1 = document.querySelector('.app-header h1, header h1, h1');
-    var pageTitle = h1 ? h1.textContent.replace(/^[^\u4e00-\u9fa5A-Za-z]+/, '').trim() : '';
-    if (pageTitle) ctx += '【当前模块】' + pageTitle + '\n';
-    ctx += '【★★★ 下面"用户正在查看的内容"是用户此刻屏幕上实际显示的卡片，以它为准；历史对话中若涉及其他题号，请忽略，不要再回答旧题。★★★】\n';
-
-    var vh = window.innerHeight;
-    var vw = window.innerWidth;
-
-    /* 收集所有卡片（多套选择器兜底） */
-    var allCards = [];
-    function collect(sel) {
-      Array.prototype.forEach.call(document.querySelectorAll(sel), function (el) {
-        if (allCards.indexOf(el) === -1) allCards.push(el);
-      });
-    }
-    collect('.card-item');
-    if (!allCards.length) {
-      collect('[class*="card-item"]');
-      collect('.question-card');
-      collect('[data-card]');
-    }
-
-    /* 按"可见程度 + 离视口中心距离"打分，只挑当前屏幕上的 */
-    var scored = [];
-    allCards.forEach(function (item) {
-      var r = item.getBoundingClientRect();
-      if (r.bottom <= 0 || r.top >= vh || r.right <= 0 || r.left >= vw) return;
-      var visibleH = Math.min(vh, r.bottom) - Math.max(0, r.top);
-      var ratio = r.height > 0 ? visibleH / r.height : 0;
-      var cardCenter = (r.top + r.bottom) / 2;
-      var distToCenter = Math.abs(cardCenter - vh / 2);
-      // 可见比例为主，离中心近为辅
-      var score = ratio * 1000 - distToCenter;
-      scored.push({ el: item, score: score, ratio: ratio });
-    });
-    scored.sort(function (a, b) { return b.score - a.score; });
-
-    // 如果最近展开过某张卡，且它还在视口内，就只读它
-    if (lastOpenedCardId) {
-      var inView = scored.some(function (sc) {
-        return sc.el.dataset.id === lastOpenedCardId;
-      });
-      if (inView) {
-        scored = scored.filter(function (sc) {
-          return sc.el.dataset.id === lastOpenedCardId;
-        });
-      } else {
-        lastOpenedCardId = null;
-      }
-    }
-
-    var cards = [];
-    var seenQ = {};
-    scored.forEach(function (sc) {
-      if (cards.length >= 3) return;
-      var item = sc.el;
-      var qEl = item.querySelector('.q-text');
-      var q = (qEl ? qEl.textContent : '').trim();
-      if (!q || seenQ[q]) return;
-      seenQ[q] = 1;
-      var labelEl = item.querySelector('.card-header .label');
-      var label = labelEl ? labelEl.textContent.replace(/\s+/g, ' ').trim() : '';
-      var aEl = item.querySelector('.card-answer.open .answer-inner');
-      var a = aEl ? aEl.textContent.trim() : '';
-      var nEl = item.querySelector('.card-note-area .note-editor');
-      var n = nEl ? nEl.textContent.trim() : '';
-      if (n && n.indexOf('点击写下笔记') > -1) n = '';
-      cards.push({ label: label, q: q, a: a, n: n });
-    });
-
-    /* 兜底：视口内确实没有卡片时，才去用"最近展开过的那张" */
-    if (cards.length === 0) {
-      var opened = document.querySelectorAll('.card-answer.open, .card-note-area.open');
-      if (opened.length) {
-        var lastOpened = opened[opened.length - 1].closest('.card-item');
-        if (lastOpened) {
-          var qEl = lastOpened.querySelector('.q-text');
-          var q = (qEl ? qEl.textContent : '').trim();
-          if (q) {
-            var aEl = lastOpened.querySelector('.card-answer.open .answer-inner');
-            var a = aEl ? aEl.textContent.trim() : '';
-            var nEl = lastOpened.querySelector('.card-note-area .note-editor');
-            var n = nEl ? nEl.textContent.trim() : '';
-            if (n && n.indexOf('点击写下笔记') > -1) n = '';
-            cards.push({ label: '', q: q, a: a, n: n });
-          }
-        }
-      }
-    }
-
-    if (cards.length) {
-      ctx += '\n【用户正在查看的内容（屏幕上的卡片）】\n';
-      cards.forEach(function (c, i) {
-        ctx += '\n— 第 ' + (i + 1) + ' 张 —\n';
-        if (c.label) ctx += '标签：' + c.label.slice(0, 80) + '\n';
-        ctx += '题目：' + c.q.slice(0, 400) + '\n';
-        if (c.a) ctx += '答案：' + c.a.slice(0, 1600) + '\n';
-        if (c.n) ctx += '用户笔记：' + c.n.slice(0, 800) + '\n';
-      });
-    } else {
-      ctx += '\n【用户当前屏幕上没有可见的卡片】\n';
-    }
-
-    var subj = document.querySelector('#filterSubject option:checked');
-    var paper = document.querySelector('#filterPaper option:checked');
-    if (subj && subj.value !== 'all') ctx += '\n【筛选·专业】' + subj.textContent;
-    if (paper && paper.value !== 'all') ctx += '\n【筛选·套卷】' + paper.textContent;
-
-    return ctx.trim();
+function readCard(card, withAnswer) {
+  var qEl = card.querySelector('.q-text');
+  var q = (qEl ? qEl.textContent : '').trim();
+  var label = cardLabel(card);
+  var a = '', n = '';
+  if (withAnswer) {
+    var aEl = card.querySelector('.card-answer.open .answer-inner');
+    a = aEl ? aEl.textContent.trim() : '';
+    var nEl = card.querySelector('.card-note-area .note-editor');
+    n = nEl ? nEl.textContent.trim() : '';
+    if (n && n.indexOf('点击写下笔记') > -1) n = '';
   }
+  return { key: cardKey(card), label: label, q: q, a: a, n: n };
+}
+
+/* 追踪焦点：lastFocusedCardKey 是「卡片稳定键」，不是序号 */
+var lastFocusedCardKey = null;   // 用户此刻在看的卡
+var lastSentFocusKey   = null;   // 上一轮发消息时看的卡（用来检测"切换"）
+var lastSentFocusLabel = '';
+
+document.addEventListener('click', function (e) {
+  var q = e.target.closest && e.target.closest('.card-question');
+  if (!q) return;
+  var card = q.closest('.card-item');
+  if (!card) return;
+  var key = cardKey(card);
+  setTimeout(function () {
+    var isOpen = !!card.querySelector('.card-answer.open, .card-note-area.open');
+    if (isOpen) { lastFocusedCardKey = key; return; }
+    // 当前卡被收起：看视口里还有没有别的展开的卡
+    if (lastFocusedCardKey !== key) return;
+    lastFocusedCardKey = null;
+    var vh = window.innerHeight, vw = window.innerWidth;
+    var all = document.querySelectorAll('.card-item');
+    for (var i = 0; i < all.length; i++) {
+      var it = all[i];
+      if (it === card) continue;
+      if (!it.querySelector('.card-answer.open, .card-note-area.open')) continue;
+      var r = it.getBoundingClientRect();
+      if (r.bottom <= 0 || r.top >= vh || r.right <= 0 || r.left >= vw) continue;
+      lastFocusedCardKey = cardKey(it);
+      break;
+    }
+  }, 0);
+}, true);
+
+function buildPageContext() {
+  var vh = window.innerHeight, vw = window.innerWidth;
+
+  /* 收集所有卡片 */
+  var allCards = [];
+  function collect(sel) {
+    Array.prototype.forEach.call(document.querySelectorAll(sel), function (el) {
+      if (allCards.indexOf(el) === -1) allCards.push(el);
+    });
+  }
+  collect('.card-item');
+  if (!allCards.length) {
+    collect('[class*="card-item"]');
+    collect('.question-card');
+    collect('[data-card]');
+  }
+
+  /* 视口内卡片打分：可见比例 + 离中心距离 + 展开加权 */
+  var visible = [];
+  allCards.forEach(function (item) {
+    var r = item.getBoundingClientRect();
+    if (r.bottom <= 0 || r.top >= vh || r.right <= 0 || r.left >= vw) return;
+    var visibleH = Math.min(vh, r.bottom) - Math.max(0, r.top);
+    var ratio = r.height > 0 ? visibleH / r.height : 0;
+    var center = (r.top + r.bottom) / 2;
+    var dist = Math.abs(center - vh / 2);
+    var isOpen = !!item.querySelector('.card-answer.open, .card-note-area.open');
+    var score = ratio * 1000 - dist + (isOpen ? 500 : 0);
+    visible.push({ el: item, score: score, isOpen: isOpen });
+  });
+  visible.sort(function (a, b) { return b.score - a.score; });
+
+  /* 决定「当前卡片」：已展开的优先，其次用户最近点开的那张 */
+  var focusEl = null;
+
+  // 优先级 1：用户最近点开的那张，且还在视口里
+  if (lastFocusedCardKey) {
+    for (var i = 0; i < visible.length; i++) {
+      if (cardKey(visible[i].el) === lastFocusedCardKey) { focusEl = visible[i].el; break; }
+    }
+    if (!focusEl) lastFocusedCardKey = null;  // 已滚出视口，作废
+  }
+  // 优先级 2：视口内第一张展开的
+  if (!focusEl) {
+    for (var j = 0; j < visible.length; j++) {
+      if (visible[j].isOpen) { focusEl = visible[j].el; break; }
+    }
+  }
+  // 优先级 3：可见度最高的
+  if (!focusEl && visible.length) focusEl = visible[0].el;
+
+  /* 拼上下文 */
+  var ctx = '';
+  var h1 = document.querySelector('.app-header h1, header h1, h1');
+  var pageTitle = h1 ? h1.textContent.replace(/^[^\u4e00-\u9fa5A-Za-z]+/, '').trim() : '';
+  if (pageTitle) ctx += '【当前模块】' + pageTitle + '\n';
+
+  ctx += '【★★★ 唯一判定标准：下面「当前卡片」就是用户此刻屏幕上正在看的那张，以它的【标签】为准。'
+       + '对话历史里出现过的任何其他标签、题号、"第N张"一律作废，绝对不要再说"还在看第几张"。★★★】\n';
+
+  if (focusEl) {
+    var fc = readCard(focusEl, true);
+    var focusLabel = fc.label;
+
+    /* ★ 焦点切换信号 ★ */
+    if (lastSentFocusKey && lastSentFocusKey !== fc.key) {
+      ctx += '\n【★★★ 焦点已切换 ★★★】\n'
+           + '上一轮用户看的是「' + lastSentFocusLabel + '」，'
+           + '现在屏幕上显示的是「' + focusLabel + '」。\n'
+           + '用户说"看新题""换一道"时，就是这张。请直接按新卡片回答，'
+           + '不要再说"仍在上一张 / 还是第一张 / 没看到切换"。\n';
+    }
+
+    ctx += '\n【当前卡片】\n';
+    ctx += '标签：' + focusLabel + '\n';
+    if (fc.q) ctx += '题目：' + fc.q.slice(0, 400) + '\n';
+    if (fc.a) ctx += '答案：' + fc.a.slice(0, 1600) + '\n';
+    if (fc.n) ctx += '用户笔记：' + fc.n.slice(0, 800) + '\n';
+
+    /* 同屏其他卡片：只给标签 + 题干开头，明确说"不是重点" */
+    var refs = [];
+    for (var k = 0; k < visible.length && refs.length < 2; k++) {
+      if (visible[k].el === focusEl) continue;
+      var rc = readCard(visible[k].el, false);
+      if (!rc.label && !rc.q) continue;
+      refs.push(rc);
+    }
+    if (refs.length) {
+      ctx += '\n【同屏其他卡片（仅供消歧，不是用户当前关注的重点，回答时不要拿它们当主角）】\n';
+      refs.forEach(function (r) {
+        ctx += '· 标签：' + r.label + ' ｜ 题干：' + (r.q ? r.q.slice(0, 60) : '') + '\n';
+      });
+    }
+
+    /* 记下本轮焦点，供下一轮比较 */
+    lastSentFocusKey   = fc.key;
+    lastSentFocusLabel = focusLabel;
+  } else {
+    ctx += '\n【用户当前屏幕上没有可见的卡片】\n';
+    lastSentFocusKey   = null;
+    lastSentFocusLabel = '';
+  }
+
+  var subj  = document.querySelector('#filterSubject option:checked');
+  var paper = document.querySelector('#filterPaper option:checked');
+  if (subj  && subj.value  !== 'all') ctx += '\n【筛选·专业】' + subj.textContent;
+  if (paper && paper.value !== 'all') ctx += '\n【筛选·套卷】' + paper.textContent;
+
+  return ctx.trim();
+}
 
   /* 诊断用：在浏览器控制台输入 __AI_DIAG__() 可看当前读到的上下文 */
   window.__AI_DIAG__ = function () {
