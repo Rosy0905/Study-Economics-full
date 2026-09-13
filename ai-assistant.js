@@ -432,12 +432,12 @@
 
   function saveHistory() {
     try {
-      if (history.length > 40) history = history.slice(-40);
+      var source = history.length > 40 ? history.slice(-40) : history;
       var budget = 1.6 * 1024 * 1024;
       var used = 0;
       var out = [];
-      for (var i = history.length - 1; i >= 0; i--) {
-        var m = history[i];
+      for (var i = source.length - 1; i >= 0; i--) {
+        var m = source[i];
         var copy = { role: m.role, content: m.content };
         if (m.attachments && m.attachments.length) {
           var sz = 0;
@@ -1000,7 +1000,7 @@
     });
     wrap.appendChild(copyBtn);
 
-    if (role === 'ai' && typeof idx === 'number' && idx >= 0) {
+    if ((role === 'ai' || role === 'assistant') && typeof idx === 'number' && idx >= 0) {
       var regenBtn = document.createElement('button');
       regenBtn.className = 'ai-act-btn ai-act-regen';
       regenBtn.title = '重新生成';
@@ -1472,7 +1472,7 @@
         div.innerHTML = renderMD(m.content);
       }
 
-      attachMsgActions(div, copyText, m.role, i);
+      attachMsgActions(div, copyText, m.role === 'user' ? 'user' : 'ai', i);
       msgsEl.appendChild(div);
     });
     scrollToBottom();
