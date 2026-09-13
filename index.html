@@ -1442,7 +1442,7 @@ function renderHome() {
     return /MicroMessenger/i.test(navigator.userAgent);
   }
 
-  /* ---------- 微信里的导出浮层：复制 JSON 到剪贴板 ---------- */
+  /* ---------- 微信里的导出浮层：分段复制 JSON ---------- */
   function showWeChatExportDialog(jsonText, fileName) {
     var old = document.getElementById('wxExportOverlay');
     if (old) old.remove();
@@ -1486,57 +1486,115 @@ function renderHome() {
           font-family:ui-monospace,Menlo,Consolas,monospace;
           font-size:11.5px;color:#2a6a4a;
         }
-        .wx-export-ta{
-          width:100%;height:170px;
-          padding:12px;
-          border:1.5px solid #d8ebdf;border-radius:12px;
+        .wx-export-list{
+          display:flex;flex-direction:column;gap:8px;
+          max-height:46vh;overflow-y:auto;
+          padding:2px 0;
+        }
+        .wx-export-list::-webkit-scrollbar{width:5px;}
+        .wx-export-list::-webkit-scrollbar-thumb{background:#cfe8db;border-radius:10px;}
+        .wx-export-row{
+          display:flex;align-items:center;gap:10px;
+          padding:11px 14px;
           background:#fbfefc;
-          font-size:11px;
-          font-family:ui-monospace,Menlo,Consolas,monospace;
-          line-height:1.55;
-          color:#2a4a3a;
-          resize:none;outline:none;
-          word-break:break-all;
+          border:1.5px solid #d8ebdf;
+          border-radius:12px;
+          transition:border-color .15s, background .15s;
         }
-        .wx-export-ta:focus{border-color:#5ec99a;}
-        .wx-export-btns{display:flex;gap:10px;}
-        .wx-export-btn{
-          flex:1;padding:13px 0;border:none;border-radius:12px;
-          font-size:14px;font-weight:700;font-family:inherit;
-          cursor:pointer;letter-spacing:.4px;
+        .wx-export-row.done{
+          border-color:#5ec99a;
+          background:#eaf8f2;
+        }
+        .wx-export-row .idx{
+          flex:0 0 auto;
+          width:32px;height:32px;border-radius:50%;
+          background:#e4f2eb;color:#2e8b5f;
+          display:flex;align-items:center;justify-content:center;
+          font-size:12.5px;font-weight:700;
+        }
+        .wx-export-row.done .idx{background:#3fa87a;color:#fff;}
+        .wx-export-row .info{
+          flex:1;min-width:0;
+          display:flex;flex-direction:column;gap:2px;
+        }
+        .wx-export-row .info .lb{
+          font-size:13px;font-weight:600;color:#1e4a2a;
+        }
+        .wx-export-row .info .sz{
+          font-size:11px;color:#8aaa95;
+        }
+        .wx-export-row .btn{
+          flex:0 0 auto;
+          padding:8px 16px;
+          border:none;border-radius:20px;
+          font-size:12.5px;font-weight:700;
+          font-family:inherit;cursor:pointer;
           background:linear-gradient(135deg,#5ec99a,#3fa87a);
-          color:#fff;box-shadow:0 4px 12px rgba(63,168,122,.28);
-          transition:filter .15s;
+          color:#fff;
+          box-shadow:0 3px 10px rgba(63,168,122,.24);
+          transition:filter .15s, background .2s;
         }
-        .wx-export-btn:active{filter:brightness(.96);}
-        .wx-export-btn.done{background:linear-gradient(135deg,#3fa87a,#2e8b5f);}
+        .wx-export-row .btn:active{filter:brightness(.96);}
+        .wx-export-row.done .btn{background:#3fa87a;}
+        .wx-export-foot{
+          font-size:11.5px;color:#8aaa95;line-height:1.6;
+          padding-top:4px;
+        }
       `;
       document.head.appendChild(st);
     }
 
+    /* 分块：微信剪贴板约 4500 字，留余量用 4000 */
+    var CHUNK = 4000;
+    var chunks = [];
+    for (var p = 0; p < jsonText.length; p += CHUNK) {
+      chunks.push(jsonText.slice(p, p + CHUNK));
+    }
+    var total = chunks.length;
+    var isSingle = (total === 1);
+
     var box = document.createElement('div');
     box.id = 'wxExportOverlay';
     box.className = 'wx-export-overlay';
+
+    var rowsHtml = '';
+    chunks.forEach(function (c, i) {
+      rowsHtml += ''
+        + '<div class="wx-export-row" data-idx="' + i + '">'
+        +   '<div class="idx">' + (i + 1) + '</div>'
+        +   '<div class="info">'
+        +     '<div class="lb">第 ' + (i + 1) + ' 段 / 共 ' + total + ' 段</div>'
+        +     '<div class="sz">' + c.length + ' 字</div>'
+        +   '</div>'
+        +   '<button class="btn" type="button" data-idx="' + i + '">复制</button>'
+        + '</div>';
+    });
+
+    var descHtml = isSingle
+      ? '微信内置浏览器不支持直接下载文件，已为你生成备份内容。'
+        + '请点下方「复制」，粘贴到电脑记事本里保存为 <code>' + fileName + '</code>。<br>'
+        + '💡 微信和手机浏览器是两套独立存储，数据不共享。'
+      : '微信剪贴板一次存不下整份文件，已为你切成 <b>' + total + ' 段</b>。'
+        + '请<b>按顺序</b>点击下方每段的「复制」，依次粘贴到电脑记事本的<b>同一个文件</b>里，'
+        + '拼好后保存为 <code>' + fileName + '</code>。<br>'
+        + '💡 微信和手机浏览器是两套独立存储，数据不共享。';
+
+    var footHtml = isSingle
+      ? ''
+      : '<div class="wx-export-foot">⚠️ 必须全部 ' + total + ' 段都复制并拼接完整，否则导入时会失败。</div>';
+
     box.innerHTML = ''
       + '<div class="wx-export-box">'
       +   '<div class="wx-export-title">'
-      +     '<span>📋 复制备份数据</span>'
+      +     '<span>📋 ' + (isSingle ? '复制备份数据' : '分段复制备份数据') + '</span>'
       +     '<button class="close" type="button" aria-label="关闭">✕</button>'
       +   '</div>'
-      +   '<div class="wx-export-desc">'
-      +     '微信内置浏览器不支持直接下载文件。已为你生成备份内容，请点 <b>复制全部</b>，再粘贴到电脑记事本里，保存为 <code>' + fileName + '</code>。<br>'
-      +     '💡 <b>微信和手机浏览器是两套独立存储</b>，数据不共享。想合并两边进度，需分别在两边导出、在同一浏览器里导入。'
-      +   '</div>'
-      +   '<textarea class="wx-export-ta" readonly></textarea>'
-      +   '<div class="wx-export-btns">'
-      +     '<button class="wx-export-btn" type="button" id="wxExportCopy">📋 复制全部</button>'
-      +   '</div>'
+      +   '<div class="wx-export-desc">' + descHtml + '</div>'
+      +   '<div class="wx-export-list">' + rowsHtml + '</div>'
+      +   footHtml
       + '</div>';
 
     document.body.appendChild(box);
-
-    var ta = box.querySelector('textarea');
-    ta.value = jsonText;
 
     box.addEventListener('click', function (e) {
       if (e.target === box) box.remove();
@@ -1545,40 +1603,40 @@ function renderHome() {
       box.remove();
     });
 
-    var copyBtn = box.querySelector('#wxExportCopy');
-    var originalText = copyBtn.textContent;
-    copyBtn.addEventListener('click', function () {
-      var done = function () {
-        copyBtn.classList.add('done');
-        copyBtn.textContent = '✅ 已复制，去粘贴吧';
-        setTimeout(function () {
-          copyBtn.classList.remove('done');
-          copyBtn.textContent = originalText;
-        }, 2400);
-      };
-      var fallback = function () {
-        try {
-          ta.removeAttribute('readonly');
-          ta.focus();
+    box.querySelectorAll('.btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var i = parseInt(btn.dataset.idx, 10);
+        var text = chunks[i];
+        var row = btn.closest('.wx-export-row');
+
+        var success = function () {
+          row.classList.add('done');
+          btn.textContent = '✅ 已复制';
+          setTimeout(function () { btn.textContent = '再复制'; }, 1800);
+        };
+        var fail = function () {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.cssText = 'position:fixed;left:-9999px;top:0;';
+          document.body.appendChild(ta);
           ta.select();
-          ta.setSelectionRange(0, ta.value.length);
-          var ok = document.execCommand('copy');
-          ta.setAttribute('readonly', '');
-          if (ok) done();
+          ta.setSelectionRange(0, text.length);
+          var ok = false;
+          try { ok = document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          if (ok) success();
           else {
-            copyBtn.textContent = '⚠️ 长按上方文字手动全选复制';
-            setTimeout(function () { copyBtn.textContent = originalText; }, 2400);
+            btn.textContent = '⚠️ 长按手动复制';
+            setTimeout(function () { btn.textContent = '重试'; }, 2200);
           }
-        } catch (e) {
-          copyBtn.textContent = '⚠️ 长按上方文字手动全选复制';
-          setTimeout(function () { copyBtn.textContent = originalText; }, 2400);
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(success).catch(fail);
+        } else {
+          fail();
         }
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(jsonText).then(done).catch(fallback);
-      } else {
-        fallback();
-      }
+      });
     });
   }
 
@@ -1613,7 +1671,7 @@ function renderHome() {
       data: data
     };
 
-    const jsonText = JSON.stringify(payload, null, 2);
+    const jsonText = JSON.stringify(payload);
 
     const name = `南开经济学知识库-备份-`
       + now.getFullYear() + pad2(now.getMonth() + 1) + pad2(now.getDate())
