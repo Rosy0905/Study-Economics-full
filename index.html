@@ -1437,6 +1437,151 @@ function renderHome() {
 
   function pad2(n) { return String(n).padStart(2, '0'); }
 
+  /* ---------- 微信环境检测 ---------- */
+  function isWeChat() {
+    return /MicroMessenger/i.test(navigator.userAgent);
+  }
+
+  /* ---------- 微信里的导出浮层：复制 JSON 到剪贴板 ---------- */
+  function showWeChatExportDialog(jsonText, fileName) {
+    var old = document.getElementById('wxExportOverlay');
+    if (old) old.remove();
+
+    if (!document.getElementById('wxExportStyle')) {
+      var st = document.createElement('style');
+      st.id = 'wxExportStyle';
+      st.textContent = `
+        .wx-export-overlay{
+          position:fixed;inset:0;z-index:3000;
+          background:rgba(28,48,36,.55);
+          backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+          display:flex;align-items:flex-end;justify-content:center;
+          animation:wxFadeIn .22s ease;
+        }
+        @keyframes wxFadeIn{from{opacity:0}to{opacity:1}}
+        .wx-export-box{
+          width:100%;max-width:560px;
+          background:#fff;
+          border-radius:20px 20px 0 0;
+          padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+          box-shadow:0 -10px 40px rgba(0,0,0,.2);
+          display:flex;flex-direction:column;gap:12px;
+          max-height:88vh;
+        }
+        .wx-export-title{
+          font-size:16px;font-weight:700;color:#1e4a2a;
+          display:flex;align-items:center;justify-content:space-between;
+        }
+        .wx-export-title .close{
+          width:28px;height:28px;border:none;background:#eef6f1;
+          border-radius:50%;cursor:pointer;color:#587a68;
+          font-size:16px;line-height:1;padding:0;
+        }
+        .wx-export-desc{
+          font-size:12.5px;color:#5a7a68;line-height:1.75;
+        }
+        .wx-export-desc b{color:#2e8b5f;}
+        .wx-export-desc code{
+          background:#eaf8f2;padding:1px 6px;border-radius:4px;
+          font-family:ui-monospace,Menlo,Consolas,monospace;
+          font-size:11.5px;color:#2a6a4a;
+        }
+        .wx-export-ta{
+          width:100%;height:170px;
+          padding:12px;
+          border:1.5px solid #d8ebdf;border-radius:12px;
+          background:#fbfefc;
+          font-size:11px;
+          font-family:ui-monospace,Menlo,Consolas,monospace;
+          line-height:1.55;
+          color:#2a4a3a;
+          resize:none;outline:none;
+          word-break:break-all;
+        }
+        .wx-export-ta:focus{border-color:#5ec99a;}
+        .wx-export-btns{display:flex;gap:10px;}
+        .wx-export-btn{
+          flex:1;padding:13px 0;border:none;border-radius:12px;
+          font-size:14px;font-weight:700;font-family:inherit;
+          cursor:pointer;letter-spacing:.4px;
+          background:linear-gradient(135deg,#5ec99a,#3fa87a);
+          color:#fff;box-shadow:0 4px 12px rgba(63,168,122,.28);
+          transition:filter .15s;
+        }
+        .wx-export-btn:active{filter:brightness(.96);}
+        .wx-export-btn.done{background:linear-gradient(135deg,#3fa87a,#2e8b5f);}
+      `;
+      document.head.appendChild(st);
+    }
+
+    var box = document.createElement('div');
+    box.id = 'wxExportOverlay';
+    box.className = 'wx-export-overlay';
+    box.innerHTML = ''
+      + '<div class="wx-export-box">'
+      +   '<div class="wx-export-title">'
+      +     '<span>📋 复制备份数据</span>'
+      +     '<button class="close" type="button" aria-label="关闭">✕</button>'
+      +   '</div>'
+      +   '<div class="wx-export-desc">'
+      +     '微信内置浏览器不支持直接下载文件。已为你生成备份内容，请点 <b>复制全部</b>，再粘贴到电脑记事本里，保存为 <code>' + fileName + '</code>。<br>'
+      +     '💡 <b>微信和手机浏览器是两套独立存储</b>，数据不共享。想合并两边进度，需分别在两边导出、在同一浏览器里导入。'
+      +   '</div>'
+      +   '<textarea class="wx-export-ta" readonly></textarea>'
+      +   '<div class="wx-export-btns">'
+      +     '<button class="wx-export-btn" type="button" id="wxExportCopy">📋 复制全部</button>'
+      +   '</div>'
+      + '</div>';
+
+    document.body.appendChild(box);
+
+    var ta = box.querySelector('textarea');
+    ta.value = jsonText;
+
+    box.addEventListener('click', function (e) {
+      if (e.target === box) box.remove();
+    });
+    box.querySelector('.close').addEventListener('click', function () {
+      box.remove();
+    });
+
+    var copyBtn = box.querySelector('#wxExportCopy');
+    var originalText = copyBtn.textContent;
+    copyBtn.addEventListener('click', function () {
+      var done = function () {
+        copyBtn.classList.add('done');
+        copyBtn.textContent = '✅ 已复制，去粘贴吧';
+        setTimeout(function () {
+          copyBtn.classList.remove('done');
+          copyBtn.textContent = originalText;
+        }, 2400);
+      };
+      var fallback = function () {
+        try {
+          ta.removeAttribute('readonly');
+          ta.focus();
+          ta.select();
+          ta.setSelectionRange(0, ta.value.length);
+          var ok = document.execCommand('copy');
+          ta.setAttribute('readonly', '');
+          if (ok) done();
+          else {
+            copyBtn.textContent = '⚠️ 长按上方文字手动全选复制';
+            setTimeout(function () { copyBtn.textContent = originalText; }, 2400);
+          }
+        } catch (e) {
+          copyBtn.textContent = '⚠️ 长按上方文字手动全选复制';
+          setTimeout(function () { copyBtn.textContent = originalText; }, 2400);
+        }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(jsonText).then(done).catch(fallback);
+      } else {
+        fallback();
+      }
+    });
+  }
+
   /* ---------- 导出 ---------- */
   function doExport() {
     const data = collectData();
@@ -1447,7 +1592,7 @@ function renderHome() {
       return;
     }
 
-    /* ★ 导出前，剔除 AI 配置里的 API Key（防止泄露） */
+    /* ★ 剔除 AI 配置里的 API Key */
     let aiCfgIncluded = false;
     if (data[AI_CFG_KEY]) {
       try {
@@ -1468,20 +1613,29 @@ function renderHome() {
       data: data
     };
 
+    const jsonText = JSON.stringify(payload, null, 2);
+
+    const name = `南开经济学知识库-备份-`
+      + now.getFullYear() + pad2(now.getMonth() + 1) + pad2(now.getDate())
+      + '-' + pad2(now.getHours()) + pad2(now.getMinutes()) + '.json';
+
+    /* ★ 微信内置浏览器：走复制到剪贴板方案 */
+    if (isWeChat()) {
+      showWeChatExportDialog(jsonText, name);
+      resetSync();
+      return;
+    }
+
+    /* 普通浏览器：Blob 下载 */
     let blob, url;
     try {
-      blob = new Blob([JSON.stringify(payload, null, 2)],
-                      { type: 'application/json;charset=utf-8' });
+      blob = new Blob([jsonText], { type: 'application/json;charset=utf-8' });
       url = URL.createObjectURL(blob);
     } catch (e) {
       showToast('导出失败，请换个浏览器试试');
       resetSync();
       return;
     }
-
-    const name = `南开经济学知识库-备份-`
-      + now.getFullYear() + pad2(now.getMonth() + 1) + pad2(now.getDate())
-      + '-' + pad2(now.getHours()) + pad2(now.getMinutes()) + '.json';
 
     const a = document.createElement('a');
     a.href = url;
