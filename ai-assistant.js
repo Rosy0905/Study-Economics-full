@@ -561,8 +561,29 @@
     saveCfg(); showChat(); showToast('配置已保存 ✓');
   });
 
-/* ===================== 读取页面上下文 ===================== */
-function buildPageContext() {
+  /* ===================== 读取页面上下文 ===================== */
+
+  /* 追踪"最近展开的卡片"：点开答案/笔记区的那张作为"当前卡" */
+  var lastOpenedCardId = null;
+
+  document.addEventListener('click', function (e) {
+    var q = e.target.closest && e.target.closest('.card-question');
+    if (!q) return;
+    var card = q.closest('.card-item');
+    if (!card || !card.dataset.id) return;
+    var id = card.dataset.id;
+    // 等页面自己的 click 处理跑完，再检查展开状态
+    setTimeout(function () {
+      var isOpen = !!card.querySelector('.card-answer.open, .card-note-area.open');
+      if (isOpen) {
+        lastOpenedCardId = id;
+      } else if (lastOpenedCardId === id) {
+        lastOpenedCardId = null;
+      }
+    }, 0);
+  }, true);
+
+  function buildPageContext() {
     var ctx = '';
     var h1 = document.querySelector('.app-header h1, header h1, h1');
     var pageTitle = h1 ? h1.textContent.replace(/^[^\u4e00-\u9fa5A-Za-z]+/, '').trim() : '';
@@ -600,6 +621,20 @@ function buildPageContext() {
       scored.push({ el: item, score: score, ratio: ratio });
     });
     scored.sort(function (a, b) { return b.score - a.score; });
+
+    // 如果最近展开过某张卡，且它还在视口内，就只读它
+    if (lastOpenedCardId) {
+      var inView = scored.some(function (sc) {
+        return sc.el.dataset.id === lastOpenedCardId;
+      });
+      if (inView) {
+        scored = scored.filter(function (sc) {
+          return sc.el.dataset.id === lastOpenedCardId;
+        });
+      } else {
+        lastOpenedCardId = null;
+      }
+    }
 
     var cards = [];
     var seenQ = {};
