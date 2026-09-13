@@ -996,17 +996,33 @@
     if (!node) return;
     stickBottom = false;
 
-    // 先闪一下
-    node.classList.remove('flash');
-    void node.offsetWidth;
-    node.classList.add('flash');
-    setTimeout(function () { node.classList.remove('flash'); }, 1000);
+    // 临时关掉 CSS 平滑，瞬间定位，绝无抖动
+    var oldBehavior = msgsEl.style.scrollBehavior;
+    msgsEl.style.scrollBehavior = 'auto';
 
-    // 计算目标位置，用 scrollTop 赋值让 CSS 处理平滑
     var msgsRect = msgsEl.getBoundingClientRect();
     var tRect = node.getBoundingClientRect();
     var delta = tRect.top - msgsRect.top;
-    msgsEl.scrollTop = msgsEl.scrollTop + delta - 20;
+    msgsEl.scrollTop = msgsEl.scrollTop + delta - 8;
+
+    msgsEl.style.scrollBehavior = oldBehavior;
+
+    // 立即高亮当前项（不依赖滚动事件回调）
+    navTicks.forEach(function (t, k) {
+      t.classList.toggle('active', k === i);
+    });
+    var panelInner = document.getElementById('aiProgressPanelInner');
+    if (panelInner) {
+      panelInner.querySelectorAll('.ai-progress-item').forEach(function (it, k) {
+        it.classList.toggle('active', k === i);
+      });
+    }
+
+    // 目标消息闪一下
+    node.classList.remove('flash');
+    void node.offsetWidth;
+    node.classList.add('flash');
+    setTimeout(function () { node.classList.remove('flash'); }, 900);
   }
 
   function initNavEvents() {
@@ -1021,14 +1037,12 @@
       panelEl.classList.remove('show');
     });
 
-    var navRaf = false;
+    var navTimer = null;
     msgsEl.addEventListener('scroll', function () {
-      if (navRaf) return;
-      navRaf = true;
-      requestAnimationFrame(function () {
-        navRaf = false;
+      if (navTimer) clearTimeout(navTimer);
+      navTimer = setTimeout(function () {
         navUpdateActive();
-      });
+      }, 80);
     });
   }
 
