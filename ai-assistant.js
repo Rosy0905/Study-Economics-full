@@ -185,24 +185,6 @@
   font-weight:600;
 }
 
-/* 跳转时高亮闪烁（用伪元素，不动消息本身的阴影） */
-@keyframes navFlash {
-  0%   { box-shadow: 0 0 0 0 rgba(63,168,122,0); }
-  40%  { box-shadow: 0 0 0 4px rgba(63,168,122,.45); }
-  100% { box-shadow: 0 0 0 0 rgba(63,168,122,0); }
-}
-.ai-msg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 0;
-}
-.ai-msg.flash::before {
-  animation: navFlash .9s ease-out;
-}
-
 /* ===== Markdown 元素 ===== */
 .ai-msg.ai p{margin:0 0 .55em 0;}
 .ai-msg.ai p:last-child{margin-bottom:0;}
@@ -1040,12 +1022,6 @@
         it.classList.toggle('active', k === i);
       });
     }
-
-    // 目标消息闪一下
-    node.classList.remove('flash');
-    void node.offsetWidth;
-    node.classList.add('flash');
-    setTimeout(function () { node.classList.remove('flash'); }, 900);
   }
 
   function initNavEvents() {
