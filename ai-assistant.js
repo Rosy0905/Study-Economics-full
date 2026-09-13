@@ -523,10 +523,10 @@
   }
   function closePanel() {
     panel.classList.remove('show');
-    fab.classList.add('hidden');
+    fab.classList.remove('hidden');    // ← remove
     stopStream();
     try { savedScrollTop = msgsEl.scrollTop; } catch (e) {}
-  }
+}
 
   fab.addEventListener('click', openPanel);
   closeBtn.addEventListener('click', closePanel);
@@ -995,14 +995,18 @@
     var node = navUserMsgs[i];
     if (!node) return;
     stickBottom = false;
-    var msgsRect = msgsEl.getBoundingClientRect();
-    var tRect = node.getBoundingClientRect();
-    var delta = tRect.top - msgsRect.top;
-    msgsEl.scrollTo({ top: msgsEl.scrollTop + delta - 20, behavior: 'smooth' });
+
+    // 先闪一下
     node.classList.remove('flash');
     void node.offsetWidth;
     node.classList.add('flash');
     setTimeout(function () { node.classList.remove('flash'); }, 1000);
+
+    // 计算目标位置，用 scrollTop 赋值让 CSS 处理平滑
+    var msgsRect = msgsEl.getBoundingClientRect();
+    var tRect = node.getBoundingClientRect();
+    var delta = tRect.top - msgsRect.top;
+    msgsEl.scrollTop = msgsEl.scrollTop + delta - 20;
   }
 
   function initNavEvents() {
