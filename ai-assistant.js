@@ -557,18 +557,51 @@
     saveCfg(); showChat(); showToast('配置已保存 ✓');
   });
 
-  /* ===================== 读取页面上下文 ===================== */
-  function buildPageContext() {
+/* ===================== 读取页面上下文 ===================== */
+function buildPageContext() {
     var ctx = '';
     var h1 = document.querySelector('.app-header h1, header h1, h1');
     var pageTitle = h1 ? h1.textContent.replace(/^[^\u4e00-\u9fa5A-Za-z]+/, '').trim() : '';
     if (pageTitle) ctx += '【当前模块】' + pageTitle + '\n';
-    ctx += '【★★★ 下面"用户正在查看的内容"是用户此刻最新的卡片，以它为准；历史对话中若涉及其他题号，请忽略，不要再回答旧题。★★★】\n';
+    ctx += '【★★★ 下面"用户正在查看的内容"是用户此刻屏幕上实际显示的卡片，以它为准；历史对话中若涉及其他题号，请忽略，不要再回答旧题。★★★】\n';
+
+    var vh = window.innerHeight;
+    var vw = window.innerWidth;
+
+    /* 收集所有卡片（多套选择器兜底） */
+    var allCards = [];
+    function collect(sel) {
+      Array.prototype.forEach.call(document.querySelectorAll(sel), function (el) {
+        if (allCards.indexOf(el) === -1) allCards.push(el);
+      });
+    }
+    collect('.card-item');
+    if (!allCards.length) {
+      collect('[class*="card-item"]');
+      collect('.question-card');
+      collect('[data-card]');
+    }
+
+    /* 按"可见程度 + 离视口中心距离"打分，只挑当前屏幕上的 */
+    var scored = [];
+    allCards.forEach(function (item) {
+      var r = item.getBoundingClientRect();
+      if (r.bottom <= 0 || r.top >= vh || r.right <= 0 || r.left >= vw) return;
+      var visibleH = Math.min(vh, r.bottom) - Math.max(0, r.top);
+      var ratio = r.height > 0 ? visibleH / r.height : 0;
+      var cardCenter = (r.top + r.bottom) / 2;
+      var distToCenter = Math.abs(cardCenter - vh / 2);
+      // 可见比例为主，离中心近为辅
+      var score = ratio * 1000 - distToCenter;
+      scored.push({ el: item, score: score, ratio: ratio });
+    });
+    scored.sort(function (a, b) { return b.score - a.score; });
 
     var cards = [];
     var seenQ = {};
-    function addCard(item) {
-      if (!item || cards.length >= 3) return;
+    scored.forEach(function (sc) {
+      if (cards.length >= 3) return;
+      var item = sc.el;
       var qEl = item.querySelector('.q-text');
       var q = (qEl ? qEl.textContent : '').trim();
       if (!q || seenQ[q]) return;
@@ -581,26 +614,30 @@
       var n = nEl ? nEl.textContent.trim() : '';
       if (n && n.indexOf('点击写下笔记') > -1) n = '';
       cards.push({ label: label, q: q, a: a, n: n });
-    }
-    Array.prototype.forEach.call(document.querySelectorAll('.card-answer.open'), function (el) {
-      addCard(el.closest('.card-item'));
     });
+
+    /* 兜底：视口内确实没有卡片时，才去用"最近展开过的那张" */
     if (cards.length === 0) {
-      Array.prototype.forEach.call(document.querySelectorAll('.card-note-area.open'), function (el) {
-        addCard(el.closest('.card-item'));
-      });
+      var opened = document.querySelectorAll('.card-answer.open, .card-note-area.open');
+      if (opened.length) {
+        var lastOpened = opened[opened.length - 1].closest('.card-item');
+        if (lastOpened) {
+          var qEl = lastOpened.querySelector('.q-text');
+          var q = (qEl ? qEl.textContent : '').trim();
+          if (q) {
+            var aEl = lastOpened.querySelector('.card-answer.open .answer-inner');
+            var a = aEl ? aEl.textContent.trim() : '';
+            var nEl = lastOpened.querySelector('.card-note-area .note-editor');
+            var n = nEl ? nEl.textContent.trim() : '';
+            if (n && n.indexOf('点击写下笔记') > -1) n = '';
+            cards.push({ label: '', q: q, a: a, n: n });
+          }
+        }
+      }
     }
-    if (cards.length === 0) {
-      var vh = window.innerHeight;
-      Array.prototype.forEach.call(document.querySelectorAll('.card-item'), function (item) {
-        if (cards.length >= 3) return;
-        var r = item.getBoundingClientRect();
-        var cy = (r.top + r.bottom) / 2;
-        if (cy > 0 && cy < vh) addCard(item);
-      });
-    }
+
     if (cards.length) {
-      ctx += '\n【用户正在查看的内容】\n';
+      ctx += '\n【用户正在查看的内容（屏幕上的卡片）】\n';
       cards.forEach(function (c, i) {
         ctx += '\n— 第 ' + (i + 1) + ' 张 —\n';
         if (c.label) ctx += '标签：' + c.label.slice(0, 80) + '\n';
@@ -608,6 +645,8 @@
         if (c.a) ctx += '答案：' + c.a.slice(0, 1600) + '\n';
         if (c.n) ctx += '用户笔记：' + c.n.slice(0, 800) + '\n';
       });
+    } else {
+      ctx += '\n【用户当前屏幕上没有可见的卡片】\n';
     }
 
     var subj = document.querySelector('#filterSubject option:checked');
@@ -617,6 +656,13 @@
 
     return ctx.trim();
   }
+
+  /* 诊断用：在浏览器控制台输入 __AI_DIAG__() 可看当前读到的上下文 */
+  window.__AI_DIAG__ = function () {
+    var t = buildPageContext();
+    console.log(t);
+    return t;
+  };
 
   /* ===================== 渲染工具 ===================== */
   function escapeHtml(s) {
