@@ -159,13 +159,24 @@
 .ai-send{flex:0 0 auto;width:46px;height:46px;border-radius:14px;border:none;background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(63,168,122,.28);}
 .ai-send:hover{filter:brightness(1.06);}
 .ai-send svg{width:20px;height:20px;display:block;}
-.ai-send.stop{background:linear-gradient(135deg,#e8a08a,#d9735a);}
+.ai-send.stop{background:linear-gradient(135deg,#e88ba0,#cf6a86);}
 
 @media (max-width:640px){
   .ai-fab{right:16px;bottom:16px;width:52px;height:52px;border-width:2px;}
   .ai-fab::before{inset:4px;}
   .ai-fab svg{width:21px;height:21px;}
-  .ai-panel{right:0;bottom:0;width:100vw !important;height:100vh !important;max-height:100vh;border-radius:0;}
+  .ai-panel{
+    right:0;
+    bottom:0;
+    top:0;
+    left:0;
+    width:auto !important;
+    height:auto !important;
+    max-height:none !important;
+    border-radius:0;
+    padding-top:env(safe-area-inset-top, 0px);
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+  }
   .ai-resize{display:none;}
   .ai-msg{max-width:92%;font-size:14px;}
   .ai-copy-btn{opacity:.65;}
@@ -439,11 +450,13 @@
     saveCfg(); showChat(); showToast('配置已保存 ✓');
   });
 
-  function buildPageContext() {
+    function buildPageContext() {
     var ctx = '';
     var h1 = document.querySelector('.app-header h1, header h1, h1');
     var pageTitle = h1 ? h1.textContent.replace(/^[^\u4e00-\u9fa5A-Za-z]+/, '').trim() : '';
-    if (pageTitle) ctx += '【当前模块】' + pageTitle + '\n';
+        if (pageTitle) ctx += '【当前模块】' + pageTitle + '\n';
+    ctx += '【★★★ 下面"用户正在查看的内容"是用户此刻最新的卡片，' 
+         + '以它为准；历史对话中若涉及其他题号，请忽略，不要再回答旧题。★★★】\n';
 
     var cards = [];
     var seenQ = {};
@@ -452,19 +465,35 @@
       var qEl = item.querySelector('.q-text');
       var q = (qEl ? qEl.textContent : '').trim();
       if (!q || seenQ[q]) return;
+      seenQ[q] = 1;
+
+      // 卡片上方小标签（专项 / 题号 / 图示 等）
+      var labelEl = item.querySelector('.card-header .label');
+      var label = labelEl ? labelEl.textContent.replace(/\s+/g, ' ').trim() : '';
+
+      // 答案：仅在展开时读
       var aEl = item.querySelector('.card-answer.open .answer-inner');
       var a = aEl ? aEl.textContent.trim() : '';
-      seenQ[q] = 1;
-      cards.push({ q: q, a: a });
+
+      // 笔记：非空才读，且排除占位符
+      var nEl = item.querySelector('.card-note-area .note-editor');
+      var n = nEl ? nEl.textContent.trim() : '';
+      if (n && n.indexOf('点击写下笔记') > -1) n = '';
+
+      cards.push({ label: label, q: q, a: a, n: n });
     }
+
+    // 优先级 1：答案展开的卡片
     Array.prototype.forEach.call(document.querySelectorAll('.card-answer.open'), function (el) {
       addCard(el.closest('.card-item'));
     });
+    // 优先级 2：笔记区展开的卡片
     if (cards.length === 0) {
       Array.prototype.forEach.call(document.querySelectorAll('.card-note-area.open'), function (el) {
         addCard(el.closest('.card-item'));
       });
     }
+    // 优先级 3：视口内可见的卡片
     if (cards.length === 0) {
       var vh = window.innerHeight;
       Array.prototype.forEach.call(document.querySelectorAll('.card-item'), function (item) {
@@ -474,11 +503,15 @@
         if (cy > 0 && cy < vh) addCard(item);
       });
     }
+
     if (cards.length) {
       ctx += '\n【用户正在查看的内容】\n';
       cards.forEach(function (c, i) {
-        ctx += '\n— 第 ' + (i + 1) + ' 张 —\n题目：' + c.q.slice(0, 400) + '\n';
-        if (c.a) ctx += '内容：' + c.a.slice(0, 1600) + '\n';
+        ctx += '\n— 第 ' + (i + 1) + ' 张 —\n';
+        if (c.label) ctx += '标签：' + c.label.slice(0, 80) + '\n';
+        ctx += '题目：' + c.q.slice(0, 400) + '\n';
+        if (c.a) ctx += '答案：' + c.a.slice(0, 1600) + '\n';
+        if (c.n) ctx += '用户笔记：' + c.n.slice(0, 800) + '\n';
       });
     }
 
@@ -595,7 +628,7 @@
     var sepRegex = /^\s*\|[\s\-:|]+\|\s*$/;
     var quoteRegex = /^\s*&gt;\s?(.*)$/;
 
-    while (i < lines.length) {
+        while (i < lines.length) {
       var line = lines[i];
 
       if (tableRegex.test(line) && i + 1 < lines.length && sepRegex.test(lines[i + 1])) {
@@ -621,6 +654,12 @@
         continue;
       }
 
+      // 水平分隔线 --- / *** / ___ ：直接丢弃
+      if (/^\s*[-*_]{3,}\s*$/.test(line)) {
+        i++;
+        continue;
+      }
+
       out.push(line);
       i++;
     }
@@ -639,7 +678,9 @@
     /* 7. 列表 */
     t = t.replace(/^[ \t]*[-*+]\s+(.+)$/gm, '<li>$1</li>');
     t = t.replace(/^[ \t]*\d+\.\s+(.+)$/gm, '<li>$1</li>');
-    t = t.replace(/(?:<li>[\s\S]*?<\/li>\s*)+/g, function (m) { return '<ul>' + m + '</ul>'; });
+   t = t.replace(/(?:<li>[\s\S]*?<\/li>\s*)+/g, function (m) {
+  return '<ul>' + m.replace(/\n+/g, '') + '</ul>';
+});
 
     /* 8. 段落 */
     t = t.replace(/\n{2,}/g, '</p><p>');
@@ -730,8 +771,20 @@
     if (role === 'user' || role === 'ai') attachCopyBtn(div, text);
     msgsEl.appendChild(div); scrollToBottom(); return div;
   }
+  var stickBottom = true;
+  msgsEl.addEventListener('scroll', function () {
+    var gap = msgsEl.scrollHeight - msgsEl.scrollTop - msgsEl.clientHeight;
+    stickBottom = gap < 60;
+  });
+  var rafPending = false;
   function scrollToBottom() {
-    requestAnimationFrame(function () { msgsEl.scrollTop = msgsEl.scrollHeight; });
+    if (!stickBottom) return;
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(function () {
+      rafPending = false;
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+    });
   }
   function renderHistory() {
     msgsEl.innerHTML = '';
@@ -806,6 +859,30 @@
       var reader = res.body.getReader();
       var decoder = new TextDecoder('utf-8');
       var buffer = '';
+      // ——— 打字机缓冲 ———
+      var target = '';   // 后端已吐出的全部内容
+      var shown = '';    // 已经显示出来的部分
+      var typeTimer = null;
+      function tickType() {
+        if (shown.length >= target.length) {
+          clearInterval(typeTimer);
+          typeTimer = null;
+          return;
+        }
+        var remain = target.length - shown.length;
+        // 自适应步长：剩得多就快一点，剩得少就慢一点
+        var step = remain > 200 ? 6 : remain > 60 ? 3 : 1;
+        shown = target.slice(0, shown.length + step);
+        aiDiv.innerHTML = renderMD(shown);
+        aiDiv.appendChild(cursor);
+        scrollToBottom();
+      }
+      function ensureTyping() {
+        if (typeTimer) return;
+        typeTimer = setInterval(tickType, 30);
+      }
+      // ——————————————————
+
       function pump() {
         return reader.read().then(function (r) {
           if (r.done) return;
@@ -823,9 +900,8 @@
                        || '';
               if (delta) {
                 acc += delta;
-                aiDiv.innerHTML = renderMD(acc);
-                aiDiv.appendChild(cursor);
-                scrollToBottom();
+                target += delta;   // 只更新目标，不直接渲染
+                ensureTyping();
               }
             } catch (e) {}
           }
@@ -835,6 +911,15 @@
       return pump();
     })
     .then(function () {
+      // 等打字机把 target 全部显示完
+      if (typeTimer) {
+        clearInterval(typeTimer);
+        typeTimer = null;
+      }
+      if (shown.length < target.length) {
+        shown = target;
+        aiDiv.innerHTML = renderMD(shown);
+      }
       cursor.remove();
       if (!acc.trim()) {
         aiDiv.className = 'ai-msg err';
@@ -843,8 +928,7 @@
       }
       history.push({ role: 'assistant', content: acc }); saveHistory();
       attachCopyBtn(aiDiv, acc);
-    })
-    .catch(function (err) {
+    })    .catch(function (err) {
       cursor.remove();
       if (err.name === 'AbortError') {
         if (acc.trim()) {
