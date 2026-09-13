@@ -82,6 +82,35 @@
 .ai-msg{position:relative;max-width:88%;padding:10px 14px;border-radius:14px;font-size:13.8px;line-height:1.72;word-break:break-word;animation:aiMsgIn .28s ease;}
 @keyframes aiMsgIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 .ai-msg.user{align-self:flex-end;background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;border-bottom-right-radius:4px;box-shadow:0 3px 10px rgba(63,168,122,.22);}
+/* ===== 跳转时的极淡缩放光晕 ===== */
+.ai-msg.user{
+  transform-origin:center center;
+}
+.ai-msg.user.jump{
+  animation:jumpScale .78s cubic-bezier(.33,1,.68,1);
+}
+@keyframes jumpScale{
+  0%{transform:scale(1);}
+  32%{transform:scale(1.014);}
+  100%{transform:scale(1);}
+}
+.ai-msg.user::before{
+  content:'';
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  pointer-events:none;
+  z-index:0;
+  box-shadow:0 0 0 0 rgba(63,168,122,0);
+}
+.ai-msg.user.jump::before{
+  animation:jumpGlow .82s cubic-bezier(.33,1,.68,1);
+}
+@keyframes jumpGlow{
+  0%{box-shadow:0 0 0 0 rgba(63,168,122,0);}
+  28%{box-shadow:0 0 0 7px rgba(63,168,122,.12), 0 0 18px 2px rgba(63,168,122,.09);}
+  100%{box-shadow:0 0 0 14px rgba(63,168,122,0), 0 0 22px 0 rgba(63,168,122,0);}
+}
 .ai-msg.ai{align-self:flex-start;background:#f3faf6;color:#1c3322;border:1px solid #e2f0e8;border-bottom-left-radius:4px;}
 .ai-msg.sys{align-self:center;font-size:12px;color:#a0b8ab;padding:4px 10px;text-align:center;}
 .ai-msg.err{align-self:stretch;max-width:100%;background:#fdf2ee;color:#c2563a;border:1px solid #f8ddd4;font-size:12.5px;line-height:1.7;}
@@ -223,8 +252,11 @@
 .ai-send{flex:0 0 auto;width:46px;height:46px;border-radius:14px;border:none;background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(63,168,122,.28);}
 .ai-send:hover{filter:brightness(1.06);}
 .ai-send svg{width:20px;height:20px;display:block;}
-.ai-send.stop{background:linear-gradient(135deg,#ffd9e7,#ffb3d0);}
-
+.ai-send.stop{
+  background:linear-gradient(135deg,#fff4c9,#ffe08a);
+  color:#8a6a1a;
+  box-shadow:0 4px 12px rgba(214,168,60,.28);
+}
 @media (max-width:640px){
   .ai-fab{right:16px;bottom:16px;width:52px;height:52px;border-width:2px;}
   .ai-fab::before{inset:4px;}
@@ -1042,7 +1074,7 @@ function buildPageContext() {
     }
   }
 
-  function navScrollTo(i) {
+   function navScrollTo(i) {
     var node = navUserMsgs[i];
     if (!node) return;
     stickBottom = false;
@@ -1068,8 +1100,13 @@ function buildPageContext() {
         it.classList.toggle('active', k === i);
       });
     }
-  }
 
+    // 目标消息：极淡缩放光晕
+    node.classList.remove('jump');
+    void node.offsetWidth;
+    node.classList.add('jump');
+    setTimeout(function () { node.classList.remove('jump'); }, 820);
+  }
   function initNavEvents() {
     var progress = document.getElementById('aiProgress');
     var panelEl = document.getElementById('aiProgressPanel');
