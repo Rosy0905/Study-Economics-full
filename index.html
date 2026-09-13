@@ -437,42 +437,33 @@ header p {
 .clear-btn {
   position: relative;
   z-index: 20;
-  --btn-c:   #f3d27c;
-  --btn-d:   #b8891f;
-  --btn-rgb: 245, 214, 122;
-}
-.clear-btn,
-.sync-btn {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  border: 2px solid var(--btn-c);
+  border: 2px solid #f3d27c;
   background: #fff;
-  color: var(--btn-d);
+  color: #b8891f;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .4px;
   cursor: pointer;
   font-family: inherit;
-  box-shadow: 0 0 0 3px rgba(var(--btn-rgb), .18),
-              0 2px 8px rgba(var(--btn-rgb), .15),
-              0 0 12px 2px rgba(var(--btn-rgb), .18);
+  box-shadow: 0 0 0 3px rgba(245, 214, 122, .22),
+              0 2px 8px rgba(212, 162, 78, .18),
+              0 0 12px 2px rgba(255, 220, 130, .25);
   transition: transform .2s ease,
               box-shadow .25s ease,
               color .25s ease,
               border-color .25s ease,
-              background .25s ease,
               font-size .2s ease;
 }
-.clear-btn:hover,
-.sync-btn:hover {
+.clear-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 0 4px rgba(var(--btn-rgb), .26),
-              0 4px 12px rgba(var(--btn-rgb), .20),
-              0 0 16px 3px rgba(var(--btn-rgb), .24);
+  box-shadow: 0 0 0 4px rgba(245, 214, 122, .3),
+              0 4px 12px rgba(212, 162, 78, .22),
+              0 0 16px 3px rgba(255, 220, 130, .3);
 }
-.clear-btn:active,
-.sync-btn:active { transform: scale(.97); }
+.clear-btn:active { transform: scale(.97); }
 
 .clear-btn.check-mode {
   font-size: 20px;
@@ -499,13 +490,30 @@ header p {
 .sync-btn {
   position: relative;
   z-index: 26;
-  width: 46px;.sync-btn {
-  position: relative;
-  z-index: 26;
-  --btn-c:   #a8cfe8;
-  --btn-d:   #2e6a99;
-  --btn-rgb: 168, 207, 232;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid #a8cfe8;
+  background: #fff;
+  color: #2e6a99;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 0 0 3px rgba(168, 207, 232, .22),
+              0 2px 8px rgba(79, 148, 196, .18),
+              0 0 12px 2px rgba(139, 194, 228, .25);
+  transition: transform .2s ease, box-shadow .25s ease,
+              color .25s ease, border-color .25s ease, background .25s ease;
 }
+.sync-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 4px rgba(168, 207, 232, .3),
+              0 4px 12px rgba(79, 148, 196, .22),
+              0 0 16px 3px rgba(139, 194, 228, .3);
+}
+.sync-btn:active { transform: scale(.97); }
 .sync-btn.open {
   background: #eaf4fc;
   transform: scale(1.05);
@@ -796,9 +804,9 @@ footer {
   .tts-range { width: 52px; }
   .tts-val { font-size: 10px; min-width: 34px; padding: 2px 6px; }
 
-  .clear-btn,
-  .sync-btn { width: 40px; height: 40px; font-size: 10.5px; }
+  .clear-btn { width: 40px; height: 40px; font-size: 10.5px; }
   .clear-btn.check-mode { font-size: 18px; }
+  .sync-btn { width: 40px; height: 40px; font-size: 10.5px; }
   .petal-num { font-size: 8px; }
   .petal-ic { font-size: 11px; }
   .sync-orb .orb-ic { font-size: 12px; }
