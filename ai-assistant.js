@@ -74,7 +74,7 @@
 .ai-body{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;position:relative;}
 .ai-body.hide{display:none;}
 
-/* ===== 消息区（右侧留 44px 给进度条） ===== */
+/* ===== 消息区 ===== */
 .ai-msgs{flex:1;overflow-y:auto;padding:16px 44px 6px 16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;}
 .ai-msgs::-webkit-scrollbar{width:6px;}
 .ai-msgs::-webkit-scrollbar-thumb{background:#c9e4d5;border-radius:10px;}
@@ -149,18 +149,32 @@
 .ai-msg.ai .ai-table th{background:#eaf8f2;color:#1e5a3a;font-weight:700;white-space:nowrap;}
 .ai-msg.ai .ai-table tbody tr:nth-child(even) td{background:#fafdfc;}
 
-/* ===== 输入区（纵向：附件条 + 输入行） ===== */
+/* ===== 输入区 ===== */
 .ai-input-wrap{flex:0 0 auto;padding:10px 12px 12px;border-top:1px solid #e8f2ec;background:#fbfefc;display:flex;flex-direction:column;gap:8px;}
 .ai-input-row{display:flex;gap:8px;align-items:flex-end;}
 .ai-input-wrap textarea{flex:1;min-height:42px;max-height:140px;padding:10px 14px;border:1.5px solid #d8ebdf;border-radius:14px;background:#fff;font-size:13.8px;color:#1e3a2a;font-family:inherit;line-height:1.55;resize:none;outline:none;overflow-y:auto;}
 .ai-input-wrap textarea:focus{border-color:#5ec99a;box-shadow:0 0 0 3px rgba(94,201,154,.15);}
 .ai-input-wrap textarea::placeholder{color:#a8c2b4;}
-.ai-send{flex:0 0 auto;width:46px;height:46px;border-radius:14px;border:none;background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(63,168,122,.28);}
+.ai-send{flex:0 0 auto;width:46px;height:46px;border-radius:14px;border:none;background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(63,168,122,.28);transition:background .18s, transform .12s;}
 .ai-send:hover{filter:brightness(1.06);}
+.ai-send:active{transform:scale(.95);}
 .ai-send svg{width:20px;height:20px;display:block;}
-.ai-send.stop{background:linear-gradient(135deg,#fff4c9,#ffe08a);color:#8a6a1a;box-shadow:0 4px 12px rgba(214,168,60,.28);}
+/* 暂停态 → 暖黄色播放按钮 */
+.ai-send.paused{background:linear-gradient(135deg,#fff4c9,#ffe08a);color:#8a6a1a;box-shadow:0 4px 12px rgba(214,168,60,.28);}
 
-/* ===== 附件：上传按钮（发送键左边） ===== */
+/* ===== 停止按钮（流式输出时出现） ===== */
+.ai-stop-btn{
+  flex:0 0 auto;width:46px;height:46px;border-radius:14px;
+  border:1.5px solid #f0d5d5;background:#fff;color:#c25a5a;
+  cursor:pointer;display:none;align-items:center;justify-content:center;
+  padding:0;transition:background .15s, border-color .15s, transform .12s;
+}
+.ai-stop-btn.show{display:flex;}
+.ai-stop-btn:hover{background:#fdf2f2;border-color:#e8b9b9;}
+.ai-stop-btn:active{transform:scale(.94);}
+.ai-stop-btn svg{width:18px;height:18px;display:block;}
+
+/* ===== 附件上传按钮 ===== */
 .ai-attach-btn{
   flex:0 0 auto;width:46px;height:46px;border-radius:14px;
   border:1.5px solid #d8ebdf;background:#fff;color:#5a8068;
@@ -171,7 +185,7 @@
 .ai-attach-btn:active{transform:scale(.94);}
 .ai-attach-btn svg{width:19px;height:19px;display:block;}
 
-/* ===== 附件：待发送预览条 ===== */
+/* ===== 附件预览条 ===== */
 .ai-attach-bar{display:flex;flex-wrap:wrap;gap:7px;}
 .ai-attach-bar:empty{display:none;}
 .ai-chip{
@@ -239,6 +253,7 @@
   .ai-input-wrap textarea{min-height:38px;padding:9px 12px;font-size:14px;}
   .ai-attach-btn{width:42px;height:42px;border-radius:12px;}
   .ai-send{width:42px;height:42px;border-radius:12px;}
+  .ai-stop-btn{width:42px;height:42px;border-radius:12px;}
 }`;
   var styleEl = document.createElement('style');
   styleEl.textContent = CSS;
@@ -288,6 +303,9 @@
     +           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
     +             '<path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>'
     +           '</svg>'
+    +         '</button>'
+    +         '<button class="ai-stop-btn" id="aiStopBtn" type="button" title="停止生成">'
+    +           '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>'
     +         '</button>'
     +         '<button class="ai-send" id="aiSend" type="button" title="发送"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>'
     +       '</div>'
@@ -382,6 +400,7 @@
       resizeHandle = $('aiResize'),
       configEl = $('aiConfig'), bodyEl = $('aiBody'),
       msgsEl = $('aiMsgs'), inputEl = $('aiInput'), sendBtn = $('aiSend'),
+      stopBtn = $('aiStopBtn'),
       attachBtn = $('aiAttachBtn'), fileInput = $('aiFileInput'),
       headTitle = $('aiHeadTitle'),
       cfgPreset = $('cfgPreset'), cfgPresetHint = $('cfgPresetHint'),
@@ -395,6 +414,24 @@
   var isStreaming = false;
   var stickBottom = true;
   var savedScrollTop = null;
+
+  /* ============================================================
+     暂停 / 继续 机制状态
+     ============================================================ */
+  var streamPaused = false;    // 是否暂停中
+  var pauseWaiters = [];       // 暂停时挂起的 resolve 队列
+
+  /* ============================================================
+     打字机状态（模块级，才能被暂停逻辑控制）
+     ============================================================ */
+  var TICK_MS    = 50;         // 每帧间隔（毫秒）——调大=更慢
+  var typeTimer  = null;
+  var typeShown  = '';         // 已显示的内容
+  var typeTarget = '';         // 已收到（完整）的内容
+  var typeDiv    = null;
+  var typeCursor = null;
+  var typeDone   = false;      // 流是否已结束（数据层面）
+  var finishHandled = false;   // 是否已收尾
 
   /* 待发送附件（内存中） */
   var pendingAttachments = [];
@@ -1043,6 +1080,11 @@
   var REGEN_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 9"/></svg>';
   var DEL_ICON   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>';
 
+  /* 发送/暂停/播放 三态图标 */
+  var SEND_ICON  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+  var PAUSE_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.9" y="5" width="3.6" height="14" rx="1.2"/></svg>';
+  var PLAY_ICON  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5.5v13a1 1 0 0 0 1.53.85l10.5-6.5a1 1 0 0 0 0-1.7L8.53 4.65A1 1 0 0 0 7 5.5z"/></svg>';
+
   function attachMsgActions(div, rawText, role, idx) {
     var wrap = document.createElement('div');
     wrap.className = 'ai-msg-actions';
@@ -1558,9 +1600,182 @@
     t._timer = setTimeout(function () { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(12px)'; }, 1800);
   }
 
+  /* ============================================================
+     暂停 / 继续 核心逻辑
+     ============================================================ */
+
+  /* 若处于暂停态，挂起，直到「继续」或「停止」 */
+  function waitIfPaused() {
+    if (!streamPaused) return Promise.resolve();
+    return new Promise(function (resolve) { pauseWaiters.push(resolve); });
+  }
+  function releasePauseWaiters() {
+    var ws = pauseWaiters; pauseWaiters = [];
+    ws.forEach(function (r) { try { r(); } catch (e) {} });
+  }
+
+  /* 暂停 ↔ 继续 切换 */
+  function toggleStreamPause() {
+    if (!isStreaming) return;
+    streamPaused = !streamPaused;
+
+    if (streamPaused) {
+      /* —— 暂停 —— */
+      if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
+      setSendBtn('paused');
+      showToast('⏸ 已暂停生成');
+    } else {
+      /* —— 继续 —— */
+      releasePauseWaiters();
+      ensureTyping();
+      setSendBtn('streaming');
+      showToast('▶ 继续生成');
+    }
+  }
+
+  /* 停止（彻底中断） */
+  function stopStream() {
+    if (!isStreaming) return;
+    releasePauseWaiters();
+    streamPaused = false;
+    if (controller) {
+      try { controller.abort(); } catch (e) {}
+      controller = null;
+    }
+    finishAborted();
+  }
+
+  /* 收尾：把状态全部复位 */
+  function cleanupStream() {
+    if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
+    releasePauseWaiters();
+    isStreaming = false;
+    streamPaused = false;
+    pauseWaiters = [];
+    controller = null;
+    typeDiv = null;
+    typeCursor = null;
+    typeDone = false;
+    setSendBtn('idle');
+    scrollToBottom();
+    buildNav();
+  }
+
+  /* 正常完成 */
+  function finishSuccess() {
+    if (finishHandled) return;
+    finishHandled = true;
+
+    var aiDiv = typeDiv;
+    var cursor = typeCursor;
+    if (cursor && cursor.parentNode) cursor.parentNode.removeChild(cursor);
+
+    if (aiDiv && typeShown.trim()) {
+      history.push({ role: 'assistant', content: typeShown });
+      saveHistory();
+      attachMsgActions(aiDiv, typeShown, 'ai', history.length - 1);
+    }
+    cleanupStream();
+  }
+
+  /* 出错 */
+  function finishError(msg) {
+    if (finishHandled) return;
+    finishHandled = true;
+
+    var aiDiv = typeDiv;
+    var cursor = typeCursor;
+    if (cursor && cursor.parentNode) cursor.parentNode.removeChild(cursor);
+
+    if (aiDiv) {
+      aiDiv.className = 'ai-msg err';
+      aiDiv.innerHTML = msg;
+    }
+    cleanupStream();
+  }
+
+  /* 被主动停止 / 中止 */
+  function finishAborted() {
+    if (finishHandled) return;
+    finishHandled = true;
+
+    var aiDiv = typeDiv;
+    var cursor = typeCursor;
+    if (cursor && cursor.parentNode) cursor.parentNode.removeChild(cursor);
+
+    /* 如果流已经结束，内容全了 → 直接显示完整内容 */
+    if (typeDone && typeShown.length < typeTarget.length) {
+      typeShown = typeTarget;
+      if (aiDiv) aiDiv.innerHTML = renderMD(typeShown);
+    }
+
+    if (aiDiv && typeShown.trim()) {
+      history.push({ role: 'assistant', content: typeShown });
+      saveHistory();
+      attachMsgActions(aiDiv, typeShown, 'ai', history.length - 1);
+    } else if (aiDiv && aiDiv.parentNode) {
+      aiDiv.parentNode.removeChild(aiDiv);
+    }
+    cleanupStream();
+  }
+
+  /* ============================================================
+     慢速打字机（模块级函数，供暂停/继续控制）
+     ============================================================ */
+  function typeTick() {
+    if (streamPaused || !typeDiv) return;
+
+    if (typeShown.length < typeTarget.length) {
+      var remain = typeTarget.length - typeShown.length;
+      /* 剩余越多越快，剩余少时慢下来 —— 越接近结尾越慢，方便你按暂停 */
+      var step;
+      if (remain > 2000)      step = 12;
+      else if (remain > 1000) step = 6;
+      else if (remain > 400)  step = 3;
+      else if (remain > 120)  step = 2;
+      else                    step = 1;
+
+      typeShown = typeTarget.slice(0, typeShown.length + step);
+      typeDiv.innerHTML = renderMD(typeShown);
+      if (typeCursor) typeDiv.appendChild(typeCursor);
+      scrollToBottom();
+    }
+
+    /* 流已结束，且内容也全显示完了 → 收尾 */
+    if (typeDone && typeShown.length >= typeTarget.length) {
+      finishSuccess();
+    }
+  }
+
+  function ensureTyping() {
+    if (typeTimer) return;
+    if (streamPaused) return;
+    typeTimer = setInterval(typeTick, TICK_MS);
+  }
+
+  /* 按钮三态：idle / streaming（可暂停） / paused（可继续） */
+  function setSendBtn(state) {
+    sendBtn.classList.remove('paused');
+    if (state === 'idle') {
+      sendBtn.innerHTML = SEND_ICON;
+      sendBtn.title = '发送';
+      stopBtn.classList.remove('show');
+    } else if (state === 'streaming') {
+      sendBtn.innerHTML = PAUSE_ICON;
+      sendBtn.title = '暂停生成';
+      stopBtn.classList.add('show');
+    } else if (state === 'paused') {
+      sendBtn.classList.add('paused');
+      sendBtn.innerHTML = PLAY_ICON;
+      sendBtn.title = '继续生成';
+      stopBtn.classList.add('show');
+    }
+  }
+
   /* ===================== 发送 ===================== */
   function send() {
-    if (isStreaming) { stopStream(); return; }
+    /* 流式输出中：忽略（Enter 也不会掐断） */
+    if (isStreaming) return;
 
     var text = inputEl.value.trim();
     if (!text && !pendingAttachments.length) return;
@@ -1597,30 +1812,19 @@
     cursor.className = 'ai-cursor';
     aiDiv.appendChild(cursor);
 
-    var acc = '';
-    isStreaming = true;
-    setSendBtn(true);
-    controller = new AbortController();
+    /* —— 重置打字机状态 —— */
+    typeShown = '';
+    typeTarget = '';
+    typeDiv = aiDiv;
+    typeCursor = cursor;
+    typeDone = false;
+    finishHandled = false;
 
-    var target = '';
-    var shown = '';
-    var typeTimer = null;
-    function tickType() {
-      if (shown.length >= target.length) {
-        if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
-        return;
-      }
-      var remain = target.length - shown.length;
-      var step = remain > 200 ? 6 : remain > 60 ? 3 : 1;
-      shown = target.slice(0, shown.length + step);
-      aiDiv.innerHTML = renderMD(shown);
-      aiDiv.appendChild(cursor);
-      scrollToBottom();
-    }
-    function ensureTyping() {
-      if (typeTimer) return;
-      typeTimer = setInterval(tickType, 30);
-    }
+    isStreaming = true;
+    streamPaused = false;
+    pauseWaiters = [];
+    setSendBtn('streaming');
+    controller = new AbortController();
 
     var url = cfg.base.replace(/\/+$/, '') + '/chat/completions';
     fetch(url, {
@@ -1643,8 +1847,11 @@
       var buffer = '';
 
       function pump() {
-        return reader.read().then(function (r) {
-          if (r.done) return;
+        /* ★ 关键：每次读取下一个 chunk 之前，先检查是否暂停 */
+        return waitIfPaused().then(function () {
+          return reader.read();
+        }).then(function (r) {
+          if (!r || r.done) return;
           buffer += decoder.decode(r.value, { stream: true });
           var lines = buffer.split('\n'); buffer = lines.pop();
           for (var i = 0; i < lines.length; i++) {
@@ -1658,8 +1865,7 @@
                        || (json.choices && json.choices[0] && json.choices[0].message && json.choices[0].message.content)
                        || '';
               if (delta) {
-                acc += delta;
-                target += delta;
+                typeTarget += delta;
                 ensureTyping();
               }
             } catch (e) {}
@@ -1670,56 +1876,28 @@
       return pump();
     })
     .then(function () {
-      if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
-      if (shown.length < target.length) {
-        shown = target;
-        aiDiv.innerHTML = renderMD(shown);
-      }
-      cursor.remove();
-      if (!acc.trim()) {
-        aiDiv.className = 'ai-msg err';
-        aiDiv.textContent = '未收到回复，请检查 API Key、模型名称或账户余额。';
+      if (finishHandled) return;
+      typeDone = true;
+
+      if (typeTarget.length === 0) {
+        finishError('未收到回复，请检查 API Key、模型名称或账户余额。');
         return;
       }
-      history.push({ role: 'assistant', content: acc }); saveHistory();
-      attachMsgActions(aiDiv, acc, 'ai', history.length - 1);
-      buildNav();
+      ensureTyping();
+      /* 如果打字机已经追上（例如极短回复），立即收尾 */
+      if (typeShown.length >= typeTarget.length) {
+        finishSuccess();
+      }
+      /* 否则等 typeTick 慢慢打完，期间随时可暂停 */
     })
     .catch(function (err) {
-      if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
-      cursor.remove();
-      if (err.name === 'AbortError') {
-        if (acc.trim()) {
-          history.push({ role: 'assistant', content: acc }); saveHistory();
-          attachMsgActions(aiDiv, acc, 'ai', history.length - 1);
-          buildNav();
-        } else aiDiv.remove();
-        return;
-      }
-      aiDiv.className = 'ai-msg err';
-      aiDiv.innerHTML = '❌ 请求失败：' + escapeHtml(err.message || '未知错误')
-        + '<br><br>常见原因：<br>· API Key 错误或余额不足<br>· Base URL 或模型名填错<br>· 网络无法访问该接口<br>· 服务商未开放浏览器直连（需换服务商或走代理）<br>· 上传了图片但当前模型不支持视觉（请换 qwen-vl-max / glm-4v / gpt-4o 等）';
-    })
-    .then(function () {
-      isStreaming = false; controller = null; setSendBtn(false); scrollToBottom();
-      buildNav();
+      if (finishHandled) return;
+      if (err.name === 'AbortError') { finishAborted(); return; }
+      finishError(
+        '❌ 请求失败：' + escapeHtml(err.message || '未知错误')
+        + '<br><br>常见原因：<br>· API Key 错误或余额不足<br>· Base URL 或模型名填错<br>· 网络无法访问该接口<br>· 服务商未开放浏览器直连（需换服务商或走代理）<br>· 上传了图片但当前模型不支持视觉（请换 qwen-vl-max / glm-4v / gpt-4o 等）'
+      );
     });
-  }
-
-  function stopStream() {
-    if (controller) { try { controller.abort(); } catch (e) {} controller = null; }
-    isStreaming = false; setSendBtn(false);
-  }
-  function setSendBtn(streaming) {
-    if (streaming) {
-      sendBtn.classList.add('stop');
-      sendBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
-      sendBtn.title = '停止';
-    } else {
-      sendBtn.classList.remove('stop');
-      sendBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
-      sendBtn.title = '发送';
-    }
   }
 
   /* ===================== 事件绑定 ===================== */
@@ -1756,16 +1934,36 @@
   }
   inputEl.addEventListener('paste', handlePaste);
   document.addEventListener('paste', function (e) {
-  if (!panel.classList.contains('show')) return;
-  if (document.activeElement === inputEl) return;
-  if (!panel.contains(e.target)) return;   // 只处理面板内的粘贴
-  handlePaste(e);
-});
-
-  sendBtn.addEventListener('click', send);
-  inputEl.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); }
+    if (!panel.classList.contains('show')) return;
+    if (document.activeElement === inputEl) return;
+    if (!panel.contains(e.target)) return;
+    handlePaste(e);
   });
+
+  /* ★ 发送按钮：空闲 → 发送；流式 → 暂停；暂停 → 继续 */
+  sendBtn.addEventListener('click', function () {
+    if (isStreaming) toggleStreamPause();
+    else send();
+  });
+
+  /* ★ 停止按钮 */
+  stopBtn.addEventListener('click', function () {
+    stopStream();
+    showToast('已停止生成');
+  });
+
+  /* ★ Enter：流式输出时不掐断，只给提示 */
+  inputEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+      e.preventDefault();
+      if (isStreaming) {
+        showToast(streamPaused ? '已暂停，点 ▶ 继续或 ■ 停止' : '正在生成中，点 ⏸ 暂停或 ■ 停止');
+        return;
+      }
+      send();
+    }
+  });
+
   inputEl.addEventListener('input', function () {
     inputEl.style.height = 'auto';
     inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + 'px';
@@ -1790,4 +1988,5 @@
   fillConfigForm();
   initNavEvents();
   renderAttachBar();
+  setSendBtn('idle');
 })();
