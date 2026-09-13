@@ -431,9 +431,11 @@
   }
 
   function saveHistory() {
-    try {
-      var source = history.length > 40 ? history.slice(-40) : history;
-      var budget = 1.6 * 1024 * 1024;
+    var CHAR_BUDGET = 700 * 1024;
+    var MAX_MSGS = 40;
+
+    function buildWithAttachments() {
+      var source = history.length > MAX_MSGS ? history.slice(-MAX_MSGS) : history;
       var used = 0;
       var out = [];
       for (var i = source.length - 1; i >= 0; i--) {
@@ -444,15 +446,75 @@
           m.attachments.forEach(function (a) {
             sz += a.dataUrl ? a.dataUrl.length : (a.text ? a.text.length : 0);
           });
-          if (used + sz <= budget) {
+          if (used + sz <= CHAR_BUDGET * 0.8) {
             copy.attachments = m.attachments;
             used += sz;
           }
         }
         out.unshift(copy);
       }
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(out));
-    } catch (e) {}
+      return out;
+    }
+
+    function buildTextOnly() {
+      var source = history.length > MAX_MSGS ? history.slice(-MAX_MSGS) : history;
+      return source.map(function (m) {
+        var text = m.content || '';
+        if (m.attachments && m.attachments.length) {
+          var names = m.attachments.map(function (a) {
+            return a.name || (a.type === 'image' ? '图片' : '文件');
+          }).join('、');
+          text = (text ? text + '\n' : '') + '【附件已省略以节省空间：' + names + '】';
+        }
+        return { role: m.role, content: text };
+      });
+    }
+
+    function buildMinimal(limit) {
+      var source = history.length > limit ? history.slice(-limit) : history;
+      return source.map(function (m) {
+        return { role: m.role, content: (m.content || '').slice(0, 2000) };
+      });
+    }
+
+    var attempts = [
+      { name: '完整版',   build: buildWithAttachments },
+      { name: '去附件版', build: buildTextOnly },
+      { name: '精简版',   build: function () { return buildMinimal(20); } },
+      { name: '极简版',   build: function () { return buildMinimal(6); } }
+    ];
+
+    function isQuotaError(e) {
+      if (!e) return false;
+      return e.name === 'QuotaExceededError'
+          || e.name === 'NS_ERROR_DOM_QUOTA_REACHED'
+          || e.name === 'QUOTA_EXCEEDED_ERR'
+          || e.code === 22 || e.code === 1014;
+    }
+
+    var lastErr = null;
+    for (var k = 0; k < attempts.length; k++) {
+      var payload;
+      try {
+        payload = JSON.stringify(attempts[k].build());
+      } catch (e) { lastErr = e; continue; }
+
+      if (payload.length > CHAR_BUDGET && k < attempts.length - 1) continue;
+
+      try {
+        localStorage.setItem(HISTORY_KEY, payload);
+        if (k > 0) showToast('历史记录过大，已用「' + attempts[k].name + '」保存');
+        return true;
+      } catch (e) {
+        lastErr = e;
+        if (isQuotaError(e)) continue;
+        break;
+      }
+    }
+
+    console.warn('[AI助手] 历史保存失败：', lastErr);
+    try { showToast('⚠️ 历史记录无法保存（存储空间不足）'); } catch (e) {}
+    return false;
   }
 
   /* ---------- 面板尺寸记忆 ---------- */
@@ -669,7 +731,7 @@
     }, 0);
   }, true);
 
-  function buildPageContext() {
+  function buildPageContext(commit) {
     var vh = window.innerHeight, vw = window.innerWidth;
 
     var allCards = [];
@@ -753,12 +815,16 @@
         });
       }
 
-      lastSentFocusKey   = fc.key;
-      lastSentFocusLabel = focusLabel;
+      if (commit) {
+        lastSentFocusKey   = fc.key;
+        lastSentFocusLabel = focusLabel;
+      }
     } else {
       ctx += '\n【用户当前屏幕上没有可见的卡片】\n';
-      lastSentFocusKey   = null;
-      lastSentFocusLabel = '';
+      if (commit) {
+        lastSentFocusKey   = null;
+        lastSentFocusLabel = '';
+      }
     }
 
     var subj  = document.querySelector('#filterSubject option:checked');
@@ -1519,7 +1585,7 @@
     savedScrollTop = null;
     addMsg('user', text, history.length - 1, { attachments: atts });
 
-    var pageCtx = buildPageContext();
+    var pageCtx = buildPageContext(true);
     var systemContent = cfg.system + (pageCtx ? '\n\n===== 当前页面上下文 =====\n' + pageCtx : '');
     var messages = buildApiMessages(systemContent);
 
@@ -1636,6 +1702,7 @@
     })
     .then(function () {
       isStreaming = false; controller = null; setSendBtn(false); scrollToBottom();
+      buildNav();
     });
   }
 
