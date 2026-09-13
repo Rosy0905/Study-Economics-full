@@ -103,88 +103,20 @@
 .ai-msg.user .ai-act-copy.copied{background:rgba(255,255,255,.5);color:#fff;}
 
 /* ===== 对话进度条 ===== */
-.ai-progress{
-  position:absolute;
-  right:12px;
-  top:50%;
-  transform:translateY(-50%);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:0;
-  padding:6px 0;
-  z-index:10;
-  pointer-events:auto;
-}
-.ai-tick{
-  position:relative;
-  z-index:5;
-  width:16px;
-  height:24px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-}
-.ai-tick::after{
-  content:'';
-  display:block;
-  width:12px;height:2.5px;
-  border-radius:2px;
-  background:#cfe4d8;
-  transition:width .18s, background .18s;
-}
+.ai-progress{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;z-index:10;pointer-events:auto;}
+.ai-tick{position:relative;z-index:5;width:16px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.ai-tick::after{content:'';display:block;width:12px;height:2.5px;border-radius:2px;background:#cfe4d8;transition:width .18s, background .18s;}
 .ai-tick:hover::after{width:18px;background:#5ec99a;}
 .ai-tick.active::after{width:18px;background:#3fa87a;}
 
-.ai-progress-panel{
-  position:absolute;
-  right:-8px;
-  top:0;                                  /* ← 由 50% 改成 0 */
-  transform:translateX(8px);              /* ← 去掉 translateY(-50%) */
-  width:270px;
-  max-height:100%;                        /* ← 新增，防止溢出 */
-  background:#ffffff;
-  border-radius:14px;
-  box-shadow:0 12px 40px rgba(30,70,45,.16), 0 0 0 1px rgba(180,220,200,.35);
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .18s, transform .18s;
-  z-index:1;
-  overflow:hidden;
-}
-.ai-progress-panel.show{
-  opacity:1;pointer-events:auto;
-  transform:translateX(0);                /* ← 去掉 translateY(-50%) */
-}
-.ai-progress-panel-inner{
-  max-height:340px;
-  overflow-y:auto;
-  padding:6px 0;
-}
+.ai-progress-panel{position:absolute;right:-8px;top:0;transform:translateX(8px);width:270px;max-height:100%;background:#ffffff;border-radius:14px;box-shadow:0 12px 40px rgba(30,70,45,.16), 0 0 0 1px rgba(180,220,200,.35);opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;z-index:1;overflow:hidden;}
+.ai-progress-panel.show{opacity:1;pointer-events:auto;transform:translateX(0);}
+.ai-progress-panel-inner{max-height:340px;overflow-y:auto;padding:6px 0;}
 .ai-progress-panel-inner::-webkit-scrollbar{width:5px;}
 .ai-progress-panel-inner::-webkit-scrollbar-thumb{background:#cfe8db;border-radius:10px;}
-
-.ai-progress-item{
-  height:24px;
-  padding:0 34px 0 14px;
-  font-size:12.5px;
-  line-height:24px;
-  color:#3a5a48;
-  cursor:pointer;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  border-left:2px solid transparent;
-  transition:background .12s, color .12s, border-color .12s;
-}
+.ai-progress-item{height:24px;padding:0 34px 0 14px;font-size:12.5px;line-height:24px;color:#3a5a48;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:2px solid transparent;transition:background .12s, color .12s, border-color .12s;}
 .ai-progress-item:hover{background:#f0faf5;color:#1e4a2a;}
-.ai-progress-item.active{
-  color:#2a8a5e;
-  border-left-color:#3fa87a;
-  background:#eaf8f2;
-  font-weight:600;
-}
+.ai-progress-item.active{color:#2a8a5e;border-left-color:#3fa87a;background:#eaf8f2;font-weight:600;}
 
 /* ===== Markdown 元素 ===== */
 .ai-msg.ai p{margin:0 0 .55em 0;}
@@ -217,18 +149,70 @@
 .ai-msg.ai .ai-table th{background:#eaf8f2;color:#1e5a3a;font-weight:700;white-space:nowrap;}
 .ai-msg.ai .ai-table tbody tr:nth-child(even) td{background:#fafdfc;}
 
-.ai-input-wrap{flex:0 0 auto;padding:10px 12px 12px;border-top:1px solid #e8f2ec;background:#fbfefc;display:flex;gap:8px;align-items:flex-end;}
+/* ===== 输入区（纵向：附件条 + 输入行） ===== */
+.ai-input-wrap{flex:0 0 auto;padding:10px 12px 12px;border-top:1px solid #e8f2ec;background:#fbfefc;display:flex;flex-direction:column;gap:8px;}
+.ai-input-row{display:flex;gap:8px;align-items:flex-end;}
 .ai-input-wrap textarea{flex:1;min-height:42px;max-height:140px;padding:10px 14px;border:1.5px solid #d8ebdf;border-radius:14px;background:#fff;font-size:13.8px;color:#1e3a2a;font-family:inherit;line-height:1.55;resize:none;outline:none;overflow-y:auto;}
 .ai-input-wrap textarea:focus{border-color:#5ec99a;box-shadow:0 0 0 3px rgba(94,201,154,.15);}
 .ai-input-wrap textarea::placeholder{color:#a8c2b4;}
 .ai-send{flex:0 0 auto;width:46px;height:46px;border-radius:14px;border:none;background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(63,168,122,.28);}
 .ai-send:hover{filter:brightness(1.06);}
 .ai-send svg{width:20px;height:20px;display:block;}
-.ai-send.stop{
-  background:linear-gradient(135deg,#fff4c9,#ffe08a);
-  color:#8a6a1a;
-  box-shadow:0 4px 12px rgba(214,168,60,.28);
+.ai-send.stop{background:linear-gradient(135deg,#fff4c9,#ffe08a);color:#8a6a1a;box-shadow:0 4px 12px rgba(214,168,60,.28);}
+
+/* ===== 附件：上传按钮（发送键左边） ===== */
+.ai-attach-btn{
+  flex:0 0 auto;width:46px;height:46px;border-radius:14px;
+  border:1.5px solid #d8ebdf;background:#fff;color:#5a8068;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  padding:0;transition:border-color .18s, color .18s, background .18s, transform .12s;
 }
+.ai-attach-btn:hover{border-color:#5ec99a;color:#3fa87a;background:#f2fbf6;}
+.ai-attach-btn:active{transform:scale(.94);}
+.ai-attach-btn svg{width:19px;height:19px;display:block;}
+
+/* ===== 附件：待发送预览条 ===== */
+.ai-attach-bar{display:flex;flex-wrap:wrap;gap:7px;}
+.ai-attach-bar:empty{display:none;}
+.ai-chip{
+  display:flex;align-items:center;gap:6px;max-width:190px;
+  padding:4px 6px 4px 5px;background:#eef9f3;border:1px solid #d3ecdf;border-radius:10px;
+  font-size:12px;color:#2a6a4a;animation:aiMsgIn .2s ease;
+}
+.ai-chip img{width:32px;height:32px;object-fit:cover;border-radius:7px;display:block;flex:0 0 auto;background:#fff;}
+.ai-chip-icon{font-size:16px;line-height:1;flex:0 0 auto;}
+.ai-chip-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:96px;flex:1 1 auto;}
+.ai-chip-x{
+  flex:0 0 auto;width:18px;height:18px;border:none;background:transparent;color:#8fb3a2;
+  cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  padding:0;transition:.15s;
+}
+.ai-chip-x svg{width:11px;height:11px;display:block;}
+.ai-chip-x:hover{background:#fdecec;color:#c25a5a;}
+
+/* ===== 消息气泡内的附件 ===== */
+.ai-msg-attach{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+.ai-msg-attach img{
+  max-width:210px;max-height:210px;border-radius:10px;display:block;cursor:zoom-in;
+  border:1px solid rgba(0,0,0,.08);background:#fff;
+}
+.ai-msg.user .ai-msg-attach img{border-color:rgba(255,255,255,.45);}
+.ai-file-chip{
+  font-size:12px;padding:4px 9px;border-radius:8px;background:#e6f6ee;color:#2a6a4a;
+  border:1px solid #cfeadd;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.ai-msg.user .ai-file-chip{background:rgba(255,255,255,.25);color:#fff;border-color:rgba(255,255,255,.4);}
+.ai-msg-text{white-space:pre-wrap;word-break:break-word;}
+
+/* ===== 大图查看 ===== */
+.ai-lightbox{
+  position:fixed;inset:0;z-index:3000;background:rgba(16,40,28,.82);
+  display:flex;align-items:center;justify-content:center;padding:28px;
+  opacity:0;transition:opacity .2s;cursor:zoom-out;
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+}
+.ai-lightbox.show{opacity:1;}
+.ai-lightbox img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.4);background:#fff;}
 
 @media (max-width:640px){
   .ai-fab{right:16px;bottom:16px;width:52px;height:52px;border-width:2px;}
@@ -252,6 +236,8 @@
   .ai-tick:hover::after,.ai-tick.active::after{width:14px;}
   .ai-progress-panel{display:none;}
   .ai-input-wrap{padding:8px 10px calc(8px + env(safe-area-inset-bottom));}
+  .ai-attach-btn{width:42px;height:42px;border-radius:12px;}
+  .ai-send{width:42px;height:42px;border-radius:12px;}
 }`;
   var styleEl = document.createElement('style');
   styleEl.textContent = CSS;
@@ -281,7 +267,7 @@
     +     '<div class="ai-cfg-desc">所有配置仅保存在你自己的浏览器本地。</div>'
     +     '<div class="ai-cfg-field"><label>服务商</label><select id="cfgPreset"></select><div class="ai-cfg-hint" id="cfgPresetHint"></div></div>'
     +     '<div class="ai-cfg-field"><label>API 地址（Base URL）</label><input type="text" id="cfgBase" placeholder="https://api.deepseek.com/v1" /></div>'
-    +     '<div class="ai-cfg-field"><label>模型名称</label><input type="text" id="cfgModel" placeholder="deepseek-chat" /></div>'
+    +     '<div class="ai-cfg-field"><label>模型名称</label><input type="text" id="cfgModel" placeholder="deepseek-chat" /><div class="ai-cfg-hint">💡 想让它“看懂图片”，请填支持视觉的模型：qwen-vl-max、glm-4v、gpt-4o 等</div></div>'
     +     '<div class="ai-cfg-field"><label>API Key</label><input type="password" id="cfgKey" placeholder="sk-..." autocomplete="off" /><div class="ai-cfg-hint">🔒 只存在你本地浏览器</div></div>'
     +     '<div class="ai-cfg-field"><label>系统提示词（可改）</label><textarea id="cfgSystem" rows="10"></textarea></div>'
     +     '<button class="ai-save" id="aiSaveCfg">保存并开始使用</button>'
@@ -294,8 +280,17 @@
     +       '</div>'
     +     '</div>'
     +     '<div class="ai-input-wrap">'
-    +       '<textarea id="aiInput" rows="1" placeholder="输入问题…（Enter 发送，Shift+Enter 换行）"></textarea>'
-    +       '<button class="ai-send" id="aiSend" title="发送"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>'
+    +       '<div class="ai-attach-bar" id="aiAttachBar"></div>'
+    +       '<div class="ai-input-row">'
+    +         '<textarea id="aiInput" rows="1" placeholder="输入问题…（Enter 发送，Shift+Enter 换行，可直接粘贴图片）"></textarea>'
+    +         '<button class="ai-attach-btn" id="aiAttachBtn" type="button" title="上传图片或文件（也可直接 Ctrl+V 粘贴图片）">'
+    +           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    +             '<path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>'
+    +           '</svg>'
+    +         '</button>'
+    +         '<button class="ai-send" id="aiSend" type="button" title="发送"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>'
+    +       '</div>'
+    +       '<input type="file" id="aiFileInput" multiple accept="image/*,.txt,.md,.markdown,.csv,.json,.log,.tex,.py,.js,.ts,.c,.cpp,.java,.html,.css" style="display:none" />'
     +     '</div>'
     +   '</div>'
     + '</div>';
@@ -307,8 +302,8 @@
   /* ---------- 配置数据 ---------- */
   var PRESETS = {
     deepseek: { name: 'DeepSeek（推荐）', base: 'https://api.deepseek.com/v1', model: 'deepseek-chat', hint: '便宜好用 → platform.deepseek.com' },
-    zhipu:    { name: '智谱 GLM',       base: 'https://open.bigmodel.cn/api/paas/v4', model: 'glm-4-flash', hint: 'glm-4-flash 免费 → open.bigmodel.cn' },
-    qwen:     { name: '通义千问',       base: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen-plus', hint: '阿里云 → dashscope.aliyun.com' },
+    zhipu:    { name: '智谱 GLM',       base: 'https://open.bigmodel.cn/api/paas/v4', model: 'glm-4-flash', hint: 'glm-4-flash 免费；看图填 glm-4v → open.bigmodel.cn' },
+    qwen:     { name: '通义千问',       base: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen-plus', hint: '阿里云 → dashscope.aliyun.com；看图填 qwen-vl-max' },
     moonshot: { name: 'Kimi (Moonshot)', base: 'https://api.moonshot.cn/v1', model: 'moonshot-v1-8k', hint: '长文本 → platform.moonshot.cn' },
     custom:   { name: '自定义（OpenAI 兼容）', base: '', model: '', hint: '兼容 /chat/completions 的接口' }
   };
@@ -331,6 +326,12 @@
     '（3）计算类：按"列式 → 求解 → 说明经济含义"三步走，标注易错点。',
     '（4）对比类：必须用表格。',
     '（5）答题类：按"总—分—总"给框架。',
+    '',
+    '【关于用户上传的图片与文件】',
+    '用户可能上传题目截图、手写笔记照片、讲义图片或文本文件。',
+    '请先看清图片/文件里的题目原文再作答，不要凭猜测编题。',
+    '若图片模糊、被截断或关键信息缺失，直接说明"这里看不清/缺了哪一部分"，请用户补充，不要硬答。',
+    '若图片内容与页面卡片题目相关，可结合卡片上下文一起回答。',
     '',
     '【卡片指代规则】',
     '提到用户在看的内容时，一律用卡片的【标签】指代（如"你现在看的这道消费者行为题"），',
@@ -380,6 +381,7 @@
       resizeHandle = $('aiResize'),
       configEl = $('aiConfig'), bodyEl = $('aiBody'),
       msgsEl = $('aiMsgs'), inputEl = $('aiInput'), sendBtn = $('aiSend'),
+      attachBtn = $('aiAttachBtn'), fileInput = $('aiFileInput'),
       headTitle = $('aiHeadTitle'),
       cfgPreset = $('cfgPreset'), cfgPresetHint = $('cfgPresetHint'),
       cfgBase = $('cfgBase'), cfgModel = $('cfgModel'),
@@ -392,6 +394,18 @@
   var isStreaming = false;
   var stickBottom = true;
   var savedScrollTop = null;
+
+  /* 待发送附件（内存中） */
+  var pendingAttachments = [];
+
+  /* 附件限制 */
+  var MAX_FILES       = 6;
+  var MAX_IMG_BYTES   = 12 * 1024 * 1024;
+  var MAX_TXT_BYTES   = 2 * 1024 * 1024;
+  var MAX_TXT_CHARS   = 20000;
+  var IMG_MAX_DIM     = 1200;
+  var IMG_QUALITY     = 0.82;
+  var MAX_IMAGES_REQ  = 6;
 
   function loadCfg() {
     try { var r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch (e) {}
@@ -414,8 +428,30 @@
     try { var r = localStorage.getItem(HISTORY_KEY); if (r) return JSON.parse(r) || []; } catch (e) {}
     return [];
   }
+
   function saveHistory() {
-    try { if (history.length > 40) history = history.slice(-40); localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch (e) {}
+    try {
+      if (history.length > 40) history = history.slice(-40);
+      var budget = 1.6 * 1024 * 1024;
+      var used = 0;
+      var out = [];
+      for (var i = history.length - 1; i >= 0; i--) {
+        var m = history[i];
+        var copy = { role: m.role, content: m.content };
+        if (m.attachments && m.attachments.length) {
+          var sz = 0;
+          m.attachments.forEach(function (a) {
+            sz += a.dataUrl ? a.dataUrl.length : (a.text ? a.text.length : 0);
+          });
+          if (used + sz <= budget) {
+            copy.attachments = m.attachments;
+            used += sz;
+          }
+        }
+        out.unshift(copy);
+      }
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(out));
+    } catch (e) {}
   }
 
   /* ---------- 面板尺寸记忆 ---------- */
@@ -507,11 +543,10 @@
     configEl.classList.remove('hide'); bodyEl.classList.add('hide');
     headTitle.textContent = 'AI 答疑助手 · 设置'; fillConfigForm();
   }
-    function showChat() {
+  function showChat() {
     configEl.classList.add('hide'); bodyEl.classList.remove('hide');
     headTitle.textContent = 'AI 答疑助手';
 
-    // 先禁用自动滚底，避免 renderHistory 把位置重置到底部
     stickBottom = false;
     renderHistory();
 
@@ -539,10 +574,10 @@
   }
   function closePanel() {
     panel.classList.remove('show');
-    fab.classList.remove('hidden');    // ← remove
+    fab.classList.remove('hidden');
     stopStream();
     try { savedScrollTop = msgsEl.scrollTop; } catch (e) {}
-}
+  }
 
   fab.addEventListener('click', openPanel);
   closeBtn.addEventListener('click', closePanel);
@@ -570,184 +605,169 @@
 
   /* ===================== 读取页面上下文 ===================== */
 
-/* ============ 卡片稳定标识：data-id → 标签 → 题干 ============ */
-function cardKey(card) {
-  if (!card) return '';
-  if (card.dataset && card.dataset.id) return 'id:' + card.dataset.id;
-  var labelEl = card.querySelector('.card-header .label');
-  var label = labelEl ? labelEl.textContent.replace(/\s+/g, ' ').trim() : '';
-  if (label) return 'label:' + label;
-  var qEl = card.querySelector('.q-text');
-  return 'q:' + ((qEl ? qEl.textContent : '').trim().slice(0, 120));
-}
-
-function cardLabel(card) {
-  var labelEl = card.querySelector('.card-header .label');
-  var label = labelEl ? labelEl.textContent.replace(/\s+/g, ' ').trim() : '';
-  if (label) return label.slice(0, 80);
-  var qEl = card.querySelector('.q-text');
-  var q = qEl ? qEl.textContent.trim() : '';
-  return q ? ('（无标签）' + q.slice(0, 30)) : '（无标签卡片）';
-}
-
-function readCard(card, withAnswer) {
-  var qEl = card.querySelector('.q-text');
-  var q = (qEl ? qEl.textContent : '').trim();
-  var label = cardLabel(card);
-  var a = '', n = '';
-  if (withAnswer) {
-    var aEl = card.querySelector('.card-answer.open .answer-inner');
-    a = aEl ? aEl.textContent.trim() : '';
-    var nEl = card.querySelector('.card-note-area .note-editor');
-    n = nEl ? nEl.textContent.trim() : '';
-    if (n && n.indexOf('点击写下笔记') > -1) n = '';
+  function cardKey(card) {
+    if (!card) return '';
+    if (card.dataset && card.dataset.id) return 'id:' + card.dataset.id;
+    var labelEl = card.querySelector('.card-header .label');
+    var label = labelEl ? labelEl.textContent.replace(/\s+/g, ' ').trim() : '';
+    if (label) return 'label:' + label;
+    var qEl = card.querySelector('.q-text');
+    return 'q:' + ((qEl ? qEl.textContent : '').trim().slice(0, 120));
   }
-  return { key: cardKey(card), label: label, q: q, a: a, n: n };
-}
 
-/* 追踪焦点：lastFocusedCardKey 是「卡片稳定键」，不是序号 */
-var lastFocusedCardKey = null;   // 用户此刻在看的卡
-var lastSentFocusKey   = null;   // 上一轮发消息时看的卡（用来检测"切换"）
-var lastSentFocusLabel = '';
+  function cardLabel(card) {
+    var labelEl = card.querySelector('.card-header .label');
+    var label = labelEl ? labelEl.textContent.replace(/\s+/g, ' ').trim() : '';
+    if (label) return label.slice(0, 80);
+    var qEl = card.querySelector('.q-text');
+    var q = qEl ? qEl.textContent.trim() : '';
+    return q ? ('（无标签）' + q.slice(0, 30)) : '（无标签卡片）';
+  }
 
-document.addEventListener('click', function (e) {
-  var q = e.target.closest && e.target.closest('.card-question');
-  if (!q) return;
-  var card = q.closest('.card-item');
-  if (!card) return;
-  var key = cardKey(card);
-  setTimeout(function () {
-    var isOpen = !!card.querySelector('.card-answer.open, .card-note-area.open');
-    if (isOpen) { lastFocusedCardKey = key; return; }
-    // 当前卡被收起：看视口里还有没有别的展开的卡
-    if (lastFocusedCardKey !== key) return;
-    lastFocusedCardKey = null;
+  function readCard(card, withAnswer) {
+    var qEl = card.querySelector('.q-text');
+    var q = (qEl ? qEl.textContent : '').trim();
+    var label = cardLabel(card);
+    var a = '', n = '';
+    if (withAnswer) {
+      var aEl = card.querySelector('.card-answer.open .answer-inner');
+      a = aEl ? aEl.textContent.trim() : '';
+      var nEl = card.querySelector('.card-note-area .note-editor');
+      n = nEl ? nEl.textContent.trim() : '';
+      if (n && n.indexOf('点击写下笔记') > -1) n = '';
+    }
+    return { key: cardKey(card), label: label, q: q, a: a, n: n };
+  }
+
+  var lastFocusedCardKey = null;
+  var lastSentFocusKey   = null;
+  var lastSentFocusLabel = '';
+
+  document.addEventListener('click', function (e) {
+    var q = e.target.closest && e.target.closest('.card-question');
+    if (!q) return;
+    var card = q.closest('.card-item');
+    if (!card) return;
+    var key = cardKey(card);
+    setTimeout(function () {
+      var isOpen = !!card.querySelector('.card-answer.open, .card-note-area.open');
+      if (isOpen) { lastFocusedCardKey = key; return; }
+      if (lastFocusedCardKey !== key) return;
+      lastFocusedCardKey = null;
+      var vh = window.innerHeight, vw = window.innerWidth;
+      var all = document.querySelectorAll('.card-item');
+      for (var i = 0; i < all.length; i++) {
+        var it = all[i];
+        if (it === card) continue;
+        if (!it.querySelector('.card-answer.open, .card-note-area.open')) continue;
+        var r = it.getBoundingClientRect();
+        if (r.bottom <= 0 || r.top >= vh || r.right <= 0 || r.left >= vw) continue;
+        lastFocusedCardKey = cardKey(it);
+        break;
+      }
+    }, 0);
+  }, true);
+
+  function buildPageContext() {
     var vh = window.innerHeight, vw = window.innerWidth;
-    var all = document.querySelectorAll('.card-item');
-    for (var i = 0; i < all.length; i++) {
-      var it = all[i];
-      if (it === card) continue;
-      if (!it.querySelector('.card-answer.open, .card-note-area.open')) continue;
-      var r = it.getBoundingClientRect();
-      if (r.bottom <= 0 || r.top >= vh || r.right <= 0 || r.left >= vw) continue;
-      lastFocusedCardKey = cardKey(it);
-      break;
-    }
-  }, 0);
-}, true);
 
-function buildPageContext() {
-  var vh = window.innerHeight, vw = window.innerWidth;
-
-  /* 收集所有卡片 */
-  var allCards = [];
-  function collect(sel) {
-    Array.prototype.forEach.call(document.querySelectorAll(sel), function (el) {
-      if (allCards.indexOf(el) === -1) allCards.push(el);
-    });
-  }
-  collect('.card-item');
-  if (!allCards.length) {
-    collect('[class*="card-item"]');
-    collect('.question-card');
-    collect('[data-card]');
-  }
-
-  /* 视口内卡片打分：可见比例 + 离中心距离 + 展开加权 */
-  var visible = [];
-  allCards.forEach(function (item) {
-    var r = item.getBoundingClientRect();
-    if (r.bottom <= 0 || r.top >= vh || r.right <= 0 || r.left >= vw) return;
-    var visibleH = Math.min(vh, r.bottom) - Math.max(0, r.top);
-    var ratio = r.height > 0 ? visibleH / r.height : 0;
-    var center = (r.top + r.bottom) / 2;
-    var dist = Math.abs(center - vh / 2);
-    var isOpen = !!item.querySelector('.card-answer.open, .card-note-area.open');
-    var score = ratio * 1000 - dist + (isOpen ? 500 : 0);
-    visible.push({ el: item, score: score, isOpen: isOpen });
-  });
-  visible.sort(function (a, b) { return b.score - a.score; });
-
-  /* 决定「当前卡片」：已展开的优先，其次用户最近点开的那张 */
-  var focusEl = null;
-
-  // 优先级 1：用户最近点开的那张，且还在视口里
-  if (lastFocusedCardKey) {
-    for (var i = 0; i < visible.length; i++) {
-      if (cardKey(visible[i].el) === lastFocusedCardKey) { focusEl = visible[i].el; break; }
-    }
-    if (!focusEl) lastFocusedCardKey = null;  // 已滚出视口，作废
-  }
-  // 优先级 2：视口内第一张展开的
-  if (!focusEl) {
-    for (var j = 0; j < visible.length; j++) {
-      if (visible[j].isOpen) { focusEl = visible[j].el; break; }
-    }
-  }
-  // 优先级 3：可见度最高的
-  if (!focusEl && visible.length) focusEl = visible[0].el;
-
-  /* 拼上下文 */
-  var ctx = '';
-  var h1 = document.querySelector('.app-header h1, header h1, h1');
-  var pageTitle = h1 ? h1.textContent.replace(/^[^\u4e00-\u9fa5A-Za-z]+/, '').trim() : '';
-  if (pageTitle) ctx += '【当前模块】' + pageTitle + '\n';
-
-  ctx += '【★★★ 唯一判定标准：下面「当前卡片」就是用户此刻屏幕上正在看的那张，以它的【标签】为准。'
-       + '对话历史里出现过的任何其他标签、题号、"第N张"一律作废，绝对不要再说"还在看第几张"。★★★】\n';
-
-  if (focusEl) {
-    var fc = readCard(focusEl, true);
-    var focusLabel = fc.label;
-
-    /* ★ 焦点切换信号 ★ */
-    if (lastSentFocusKey && lastSentFocusKey !== fc.key) {
-      ctx += '\n【★★★ 焦点已切换 ★★★】\n'
-           + '上一轮用户看的是「' + lastSentFocusLabel + '」，'
-           + '现在屏幕上显示的是「' + focusLabel + '」。\n'
-           + '用户说"看新题""换一道"时，就是这张。请直接按新卡片回答，'
-           + '不要再说"仍在上一张 / 还是第一张 / 没看到切换"。\n';
-    }
-
-    ctx += '\n【当前卡片】\n';
-    ctx += '标签：' + focusLabel + '\n';
-    if (fc.q) ctx += '题目：' + fc.q.slice(0, 400) + '\n';
-    if (fc.a) ctx += '答案：' + fc.a.slice(0, 1600) + '\n';
-    if (fc.n) ctx += '用户笔记：' + fc.n.slice(0, 800) + '\n';
-
-    /* 同屏其他卡片：只给标签 + 题干开头，明确说"不是重点" */
-    var refs = [];
-    for (var k = 0; k < visible.length && refs.length < 2; k++) {
-      if (visible[k].el === focusEl) continue;
-      var rc = readCard(visible[k].el, false);
-      if (!rc.label && !rc.q) continue;
-      refs.push(rc);
-    }
-    if (refs.length) {
-      ctx += '\n【同屏其他卡片（仅供消歧，不是用户当前关注的重点，回答时不要拿它们当主角）】\n';
-      refs.forEach(function (r) {
-        ctx += '· 标签：' + r.label + ' ｜ 题干：' + (r.q ? r.q.slice(0, 60) : '') + '\n';
+    var allCards = [];
+    function collect(sel) {
+      Array.prototype.forEach.call(document.querySelectorAll(sel), function (el) {
+        if (allCards.indexOf(el) === -1) allCards.push(el);
       });
     }
+    collect('.card-item');
+    if (!allCards.length) {
+      collect('[class*="card-item"]');
+      collect('.question-card');
+      collect('[data-card]');
+    }
 
-    /* 记下本轮焦点，供下一轮比较 */
-    lastSentFocusKey   = fc.key;
-    lastSentFocusLabel = focusLabel;
-  } else {
-    ctx += '\n【用户当前屏幕上没有可见的卡片】\n';
-    lastSentFocusKey   = null;
-    lastSentFocusLabel = '';
+    var visible = [];
+    allCards.forEach(function (item) {
+      var r = item.getBoundingClientRect();
+      if (r.bottom <= 0 || r.top >= vh || r.right <= 0 || r.left >= vw) return;
+      var visibleH = Math.min(vh, r.bottom) - Math.max(0, r.top);
+      var ratio = r.height > 0 ? visibleH / r.height : 0;
+      var center = (r.top + r.bottom) / 2;
+      var dist = Math.abs(center - vh / 2);
+      var isOpen = !!item.querySelector('.card-answer.open, .card-note-area.open');
+      var score = ratio * 1000 - dist + (isOpen ? 500 : 0);
+      visible.push({ el: item, score: score, isOpen: isOpen });
+    });
+    visible.sort(function (a, b) { return b.score - a.score; });
+
+    var focusEl = null;
+    if (lastFocusedCardKey) {
+      for (var i = 0; i < visible.length; i++) {
+        if (cardKey(visible[i].el) === lastFocusedCardKey) { focusEl = visible[i].el; break; }
+      }
+      if (!focusEl) lastFocusedCardKey = null;
+    }
+    if (!focusEl) {
+      for (var j = 0; j < visible.length; j++) {
+        if (visible[j].isOpen) { focusEl = visible[j].el; break; }
+      }
+    }
+    if (!focusEl && visible.length) focusEl = visible[0].el;
+
+    var ctx = '';
+    var h1 = document.querySelector('.app-header h1, header h1, h1');
+    var pageTitle = h1 ? h1.textContent.replace(/^[^\u4e00-\u9fa5A-Za-z]+/, '').trim() : '';
+    if (pageTitle) ctx += '【当前模块】' + pageTitle + '\n';
+
+    ctx += '【★★★ 唯一判定标准：下面「当前卡片」就是用户此刻屏幕上正在看的那张，以它的【标签】为准。'
+         + '对话历史里出现过的任何其他标签、题号、"第N张"一律作废，绝对不要再说"还在看第几张"。★★★】\n';
+
+    if (focusEl) {
+      var fc = readCard(focusEl, true);
+      var focusLabel = fc.label;
+
+      if (lastSentFocusKey && lastSentFocusKey !== fc.key) {
+        ctx += '\n【★★★ 焦点已切换 ★★★】\n'
+             + '上一轮用户看的是「' + lastSentFocusLabel + '」，'
+             + '现在屏幕上显示的是「' + focusLabel + '」。\n'
+             + '用户说"看新题""换一道"时，就是这张。请直接按新卡片回答，'
+             + '不要再说"仍在上一张 / 还是第一张 / 没看到切换"。\n';
+      }
+
+      ctx += '\n【当前卡片】\n';
+      ctx += '标签：' + focusLabel + '\n';
+      if (fc.q) ctx += '题目：' + fc.q.slice(0, 400) + '\n';
+      if (fc.a) ctx += '答案：' + fc.a.slice(0, 1600) + '\n';
+      if (fc.n) ctx += '用户笔记：' + fc.n.slice(0, 800) + '\n';
+
+      var refs = [];
+      for (var k = 0; k < visible.length && refs.length < 2; k++) {
+        if (visible[k].el === focusEl) continue;
+        var rc = readCard(visible[k].el, false);
+        if (!rc.label && !rc.q) continue;
+        refs.push(rc);
+      }
+      if (refs.length) {
+        ctx += '\n【同屏其他卡片（仅供消歧，不是用户当前关注的重点，回答时不要拿它们当主角）】\n';
+        refs.forEach(function (r) {
+          ctx += '· 标签：' + r.label + ' ｜ 题干：' + (r.q ? r.q.slice(0, 60) : '') + '\n';
+        });
+      }
+
+      lastSentFocusKey   = fc.key;
+      lastSentFocusLabel = focusLabel;
+    } else {
+      ctx += '\n【用户当前屏幕上没有可见的卡片】\n';
+      lastSentFocusKey   = null;
+      lastSentFocusLabel = '';
+    }
+
+    var subj  = document.querySelector('#filterSubject option:checked');
+    var paper = document.querySelector('#filterPaper option:checked');
+    if (subj  && subj.value  !== 'all') ctx += '\n【筛选·专业】' + subj.textContent;
+    if (paper && paper.value !== 'all') ctx += '\n【筛选·套卷】' + paper.textContent;
+
+    return ctx.trim();
   }
 
-  var subj  = document.querySelector('#filterSubject option:checked');
-  var paper = document.querySelector('#filterPaper option:checked');
-  if (subj  && subj.value  !== 'all') ctx += '\n【筛选·专业】' + subj.textContent;
-  if (paper && paper.value !== 'all') ctx += '\n【筛选·套卷】' + paper.textContent;
-
-  return ctx.trim();
-}
-
-  /* 诊断用：在浏览器控制台输入 __AI_DIAG__() 可看当前读到的上下文 */
   window.__AI_DIAG__ = function () {
     var t = buildPageContext();
     console.log(t);
@@ -966,7 +986,7 @@ function buildPageContext() {
     copyBtn.innerHTML = COPY_ICON;
     copyBtn.addEventListener('click', function (e) {
       e.stopPropagation();
-      copyToClipboard(rawText, function () {
+      copyToClipboard(rawText || '', function () {
         copyBtn.classList.add('copied');
         copyBtn.innerHTML = CHECK_ICON;
         copyBtn.title = '已复制';
@@ -1012,7 +1032,7 @@ function buildPageContext() {
     var m = history[idx];
     var preview = (m.content || '').replace(/\s+/g, ' ').slice(0, 40);
     var roleName = m.role === 'user' ? '你的提问' : 'AI 回复';
-    if (!confirm('删除这条' + roleName + '？\n\n' + preview + (m.content.length > 40 ? '…' : ''))) return;
+    if (!confirm('删除这条' + roleName + '？\n\n' + preview + ((m.content || '').length > 40 ? '…' : ''))) return;
     history.splice(idx, 1);
     saveHistory();
     renderHistory();
@@ -1026,23 +1046,262 @@ function buildPageContext() {
       if (history[i].role === 'user') { userIdx = i; break; }
     }
     if (userIdx < 0) { showToast('找不到对应的提问'); return; }
-    var userText = history[userIdx].content;
+
+    var userMsg = history[userIdx];
+    var userText = userMsg.content || '';
+    var atts = (userMsg.attachments || []).slice();
+
     history = history.slice(0, userIdx);
     saveHistory();
     renderHistory();
+
     inputEl.value = userText;
+    inputEl.style.height = 'auto';
+    pendingAttachments = atts;
+    renderAttachBar();
+
     send();
+  }
+
+  /* ===================== 附件处理 ===================== */
+
+  function compressImage(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onerror = function () { reject(new Error('读取失败')); };
+      reader.onload = function (ev) {
+        var img = new Image();
+        img.onerror = function () { reject(new Error('图片解析失败')); };
+        img.onload = function () {
+          var w = img.naturalWidth || img.width;
+          var h = img.naturalHeight || img.height;
+          var scale = Math.min(1, IMG_MAX_DIM / Math.max(w, h));
+          var nw = Math.max(1, Math.round(w * scale));
+          var nh = Math.max(1, Math.round(h * scale));
+
+          var cv = document.createElement('canvas');
+          cv.width = nw; cv.height = nh;
+          var ctx = cv.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, nw, nh);
+          ctx.drawImage(img, 0, 0, nw, nh);
+
+          var url;
+          try { url = cv.toDataURL('image/jpeg', IMG_QUALITY); }
+          catch (e) { url = ev.target.result; }
+
+          resolve({ dataUrl: url, w: nw, h: nh });
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function readTextFile(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onerror = function () { reject(new Error('读取失败')); };
+      reader.onload = function (ev) {
+        var t = String(ev.target.result || '');
+        if (t.length > MAX_TXT_CHARS) t = t.slice(0, MAX_TXT_CHARS) + '\n\n…（文件过长，已截断）';
+        resolve(t);
+      };
+      reader.readAsText(file, 'utf-8');
+    });
+  }
+
+  function isImageFile(f) {
+    return /^image\//i.test(f.type || '') || /\.(png|jpe?g|gif|webp|bmp)$/i.test(f.name || '');
+  }
+
+  function addFiles(fileList) {
+    var files = Array.prototype.slice.call(fileList || []);
+    if (!files.length) return;
+
+    var jobs = [];
+    files.forEach(function (f) {
+      if (pendingAttachments.length + jobs.length >= MAX_FILES) {
+        showToast('最多同时上传 ' + MAX_FILES + ' 个附件');
+        return;
+      }
+      if (isImageFile(f)) {
+        if (f.size > MAX_IMG_BYTES) { showToast((f.name || '图片') + ' 超过 12MB，已跳过'); return; }
+        jobs.push(
+          compressImage(f).then(function (c) {
+            pendingAttachments.push({
+              type: 'image',
+              name: f.name || '粘贴的图片',
+              dataUrl: c.dataUrl,
+              w: c.w, h: c.h
+            });
+          }).catch(function () { showToast('图片处理失败：' + (f.name || '')); })
+        );
+      } else {
+        if (f.size > MAX_TXT_BYTES) { showToast((f.name || '文件') + ' 超过 2MB，已跳过'); return; }
+        jobs.push(
+          readTextFile(f).then(function (txt) {
+            pendingAttachments.push({ type: 'text', name: f.name || '文本文件', text: txt });
+          }).catch(function () { showToast('文件读取失败：' + (f.name || '')); })
+        );
+      }
+    });
+
+    if (!jobs.length) return;
+    Promise.all(jobs).then(function () {
+      renderAttachBar();
+      if (pendingAttachments.length) showToast('已添加 ' + pendingAttachments.length + ' 个附件');
+    });
+  }
+
+  function renderAttachBar() {
+    var bar = $('aiAttachBar');
+    if (!bar) return;
+    bar.innerHTML = '';
+
+    pendingAttachments.forEach(function (a, i) {
+      var chip = document.createElement('div');
+      chip.className = 'ai-chip';
+
+      if (a.type === 'image') {
+        var im = document.createElement('img');
+        im.src = a.dataUrl;
+        im.alt = a.name || '';
+        chip.appendChild(im);
+      } else {
+        var ic = document.createElement('span');
+        ic.className = 'ai-chip-icon';
+        ic.textContent = '📄';
+        chip.appendChild(ic);
+      }
+
+      var nm = document.createElement('span');
+      nm.className = 'ai-chip-name';
+      nm.textContent = a.name || (a.type === 'image' ? '图片' : '文件');
+      nm.title = nm.textContent;
+      chip.appendChild(nm);
+
+      var x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'ai-chip-x';
+      x.title = '移除';
+      x.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+      x.addEventListener('click', function () {
+        pendingAttachments.splice(i, 1);
+        renderAttachBar();
+      });
+      chip.appendChild(x);
+
+      bar.appendChild(chip);
+    });
+  }
+
+  function buildAttachView(atts) {
+    var wrap = document.createElement('div');
+    wrap.className = 'ai-msg-attach';
+    (atts || []).forEach(function (a) {
+      if (a.type === 'image' && a.dataUrl) {
+        var img = document.createElement('img');
+        img.src = a.dataUrl;
+        img.alt = a.name || '';
+        img.title = '点击查看大图';
+        img.addEventListener('click', function (e) {
+          e.stopPropagation();
+          openLightbox(a.dataUrl);
+        });
+        wrap.appendChild(img);
+      } else {
+        var f = document.createElement('div');
+        f.className = 'ai-file-chip';
+        f.textContent = '📄 ' + (a.name || '文件');
+        wrap.appendChild(f);
+      }
+    });
+    return wrap;
+  }
+
+  function openLightbox(src) {
+    var lb = document.createElement('div');
+    lb.className = 'ai-lightbox';
+    var img = document.createElement('img');
+    img.src = src;
+    lb.appendChild(img);
+    lb.addEventListener('click', function () { lb.remove(); });
+    document.body.appendChild(lb);
+    requestAnimationFrame(function () { lb.classList.add('show'); });
+  }
+
+  function buildApiMessages(systemContent) {
+    var out = [{ role: 'system', content: systemContent }];
+    var recent = history.slice(-20);
+
+    var imgCount = 0;
+    var allowImg = [];
+    for (var i = recent.length - 1; i >= 0; i--) {
+      var m = recent[i];
+      allowImg[i] = false;
+      if (m.role === 'user' && m.attachments && m.attachments.length) {
+        var n = 0;
+        m.attachments.forEach(function (a) { if (a.type === 'image') n++; });
+        if (n > 0 && imgCount + n <= MAX_IMAGES_REQ) {
+          allowImg[i] = true;
+          imgCount += n;
+        }
+      }
+    }
+
+    recent.forEach(function (m, i) {
+      if (m.role === 'user' && m.attachments && m.attachments.length) {
+        var parts = [];
+        if (m.content) parts.push({ type: 'text', text: m.content });
+        m.attachments.forEach(function (a) {
+          if (a.type === 'image') {
+            if (allowImg[i] && a.dataUrl) {
+              parts.push({ type: 'image_url', image_url: { url: a.dataUrl } });
+            } else {
+              parts.push({ type: 'text', text: '【早前上传的图片：' + (a.name || '图片') + '（为节省上下文已省略图片内容）】' });
+            }
+          } else if (a.type === 'text') {
+            parts.push({ type: 'text', text: '【用户上传的文件：' + (a.name || '文件') + '】\n' + a.text });
+          }
+        });
+        out.push({ role: 'user', content: parts });
+      } else if (m.content) {
+        out.push({ role: m.role, content: m.content });
+      }
+    });
+
+    return out;
   }
 
   /* ===================== 消息创建 ===================== */
   function addMsg(role, text, idx, opts) {
+    opts = opts || {};
     var div = document.createElement('div');
     div.className = 'ai-msg ' + role;
-    if (role === 'ai') div.innerHTML = renderMD(text);
-    else div.textContent = text;
-    if (role === 'user') div.dataset.q = '1';
-    if ((role === 'user' || role === 'ai') && typeof idx === 'number' && idx >= 0 && !(opts && opts.noActions)) {
-      attachMsgActions(div, text, role, idx);
+
+    var copyText = text || '';
+
+    if (role === 'ai') {
+      div.innerHTML = renderMD(text);
+    } else {
+      if (opts.attachments && opts.attachments.length) {
+        div.appendChild(buildAttachView(opts.attachments));
+        copyText = (text ? text + '\n' : '') + opts.attachments.map(function (a) {
+          return '【附件：' + (a.name || '文件') + '】';
+        }).join('\n');
+      }
+      if (text) {
+        var t = document.createElement('div');
+        t.className = 'ai-msg-text';
+        t.textContent = text;
+        div.appendChild(t);
+      }
+      div.dataset.q = '1';
+    }
+
+    if ((role === 'user' || role === 'ai') && typeof idx === 'number' && idx >= 0 && !opts.noActions) {
+      attachMsgActions(div, copyText, role, idx);
     }
     msgsEl.appendChild(div); scrollToBottom(); return div;
   }
@@ -1070,7 +1329,6 @@ function buildPageContext() {
   function buildNav() {
     var progress = document.getElementById('aiProgress');
     var panelInner = document.getElementById('aiProgressPanelInner');
-    var panelEl = document.getElementById('aiProgressPanel');
     if (!progress) return;
 
     progress.querySelectorAll('.ai-tick').forEach(function (t) { t.remove(); });
@@ -1095,14 +1353,14 @@ function buildPageContext() {
         var item = document.createElement('div');
         item.className = 'ai-progress-item';
         item.dataset.idx = i;
-        item.textContent = uNode.textContent.trim().slice(0, 40) || ('提问 ' + (i + 1));
+        item.textContent = (uNode.textContent || '').trim().slice(0, 40) || ('提问 ' + (i + 1));
         item.addEventListener('click', function (e) {
           e.stopPropagation();
           navScrollTo(i);
         });
         panelInner.appendChild(item);
       }
-      
+
       tick.addEventListener('click', function (e) {
         e.stopPropagation();
         navScrollTo(i);
@@ -1137,7 +1395,6 @@ function buildPageContext() {
     if (!node) return;
     stickBottom = false;
 
-    // 临时关掉 CSS 平滑，瞬间定位，绝无抖动
     var oldBehavior = msgsEl.style.scrollBehavior;
     msgsEl.style.scrollBehavior = 'auto';
 
@@ -1148,7 +1405,6 @@ function buildPageContext() {
 
     msgsEl.style.scrollBehavior = oldBehavior;
 
-    // 立即高亮当前项（不依赖滚动事件回调）
     navTicks.forEach(function (t, k) {
       t.classList.toggle('active', k === i);
     });
@@ -1194,13 +1450,28 @@ function buildPageContext() {
     history.forEach(function (m, i) {
       var div = document.createElement('div');
       div.className = 'ai-msg ' + (m.role === 'user' ? 'user' : 'ai');
+
+      var copyText = m.content || '';
+
       if (m.role === 'user') {
-        div.textContent = m.content;
+        if (m.attachments && m.attachments.length) {
+          div.appendChild(buildAttachView(m.attachments));
+          copyText = ((m.content || '') ? m.content + '\n' : '') + m.attachments.map(function (a) {
+            return '【附件：' + (a.name || '文件') + '】';
+          }).join('\n');
+        }
+        if (m.content) {
+          var t = document.createElement('div');
+          t.className = 'ai-msg-text';
+          t.textContent = m.content;
+          div.appendChild(t);
+        }
         div.dataset.q = '1';
       } else {
         div.innerHTML = renderMD(m.content);
       }
-      attachMsgActions(div, m.content, m.role, i);
+
+      attachMsgActions(div, copyText, m.role, i);
       msgsEl.appendChild(div);
     });
     scrollToBottom();
@@ -1223,19 +1494,33 @@ function buildPageContext() {
   /* ===================== 发送 ===================== */
   function send() {
     if (isStreaming) { stopStream(); return; }
+
     var text = inputEl.value.trim();
-    if (!text) return;
+    if (!text && !pendingAttachments.length) return;
     if (!hasValidCfg()) { showConfig(); return; }
+
     inputEl.value = ''; inputEl.style.height = 'auto';
+
+    var atts = pendingAttachments.slice();
+    pendingAttachments = [];
+    renderAttachBar();
+
     var sys = msgsEl.querySelector('.ai-msg.sys'); if (sys) sys.remove();
-        history.push({ role: 'user', content: text }); saveHistory();
+
+    history.push({
+      role: 'user',
+      content: text,
+      attachments: atts.length ? atts : undefined
+    });
+    saveHistory();
+
     stickBottom = true;
     savedScrollTop = null;
-    addMsg('user', text, history.length - 1);
+    addMsg('user', text, history.length - 1, { attachments: atts });
 
     var pageCtx = buildPageContext();
     var systemContent = cfg.system + (pageCtx ? '\n\n===== 当前页面上下文 =====\n' + pageCtx : '');
-    var messages = [{ role: 'system', content: systemContent }].concat(history.slice(-20));
+    var messages = buildApiMessages(systemContent);
 
     var aiDiv = document.createElement('div');
     aiDiv.className = 'ai-msg ai';
@@ -1250,7 +1535,6 @@ function buildPageContext() {
     setSendBtn(true);
     controller = new AbortController();
 
-    /* ——— 打字机缓冲（在 send 作用域声明，所有 then/catch 都能访问） ——— */
     var target = '';
     var shown = '';
     var typeTimer = null;
@@ -1270,7 +1554,6 @@ function buildPageContext() {
       if (typeTimer) return;
       typeTimer = setInterval(tickType, 30);
     }
-    /* —————————————————————————————————————————————————— */
 
     var url = cfg.base.replace(/\/+$/, '') + '/chat/completions';
     fetch(url, {
@@ -1348,7 +1631,7 @@ function buildPageContext() {
       }
       aiDiv.className = 'ai-msg err';
       aiDiv.innerHTML = '❌ 请求失败：' + escapeHtml(err.message || '未知错误')
-        + '<br><br>常见原因：<br>· API Key 错误或余额不足<br>· Base URL 或模型名填错<br>· 网络无法访问该接口<br>· 服务商未开放浏览器直连（需换服务商或走代理）';
+        + '<br><br>常见原因：<br>· API Key 错误或余额不足<br>· Base URL 或模型名填错<br>· 网络无法访问该接口<br>· 服务商未开放浏览器直连（需换服务商或走代理）<br>· 上传了图片但当前模型不支持视觉（请换 qwen-vl-max / glm-4v / gpt-4o 等）';
     })
     .then(function () {
       isStreaming = false; controller = null; setSendBtn(false); scrollToBottom();
@@ -1371,6 +1654,45 @@ function buildPageContext() {
     }
   }
 
+  /* ===================== 事件绑定 ===================== */
+
+  attachBtn.addEventListener('click', function () { fileInput.click(); });
+  fileInput.addEventListener('change', function () {
+    addFiles(fileInput.files);
+    fileInput.value = '';
+  });
+
+  function handlePaste(e) {
+    var cd = e.clipboardData || window.clipboardData;
+    if (!cd) return;
+
+    var imgs = [];
+    if (cd.items && cd.items.length) {
+      for (var i = 0; i < cd.items.length; i++) {
+        var it = cd.items[i];
+        if (it.kind === 'file' && /^image\//i.test(it.type || '')) {
+          var f = it.getAsFile();
+          if (f) imgs.push(f);
+        }
+      }
+    }
+    if (!imgs.length && cd.files && cd.files.length) {
+      for (var j = 0; j < cd.files.length; j++) {
+        if (/^image\//i.test(cd.files[j].type || '')) imgs.push(cd.files[j]);
+      }
+    }
+    if (!imgs.length) return;
+
+    e.preventDefault();
+    addFiles(imgs);
+  }
+  inputEl.addEventListener('paste', handlePaste);
+  document.addEventListener('paste', function (e) {
+    if (!panel.classList.contains('show')) return;
+    if (document.activeElement === inputEl) return;
+    handlePaste(e);
+  });
+
   sendBtn.addEventListener('click', send);
   inputEl.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); }
@@ -1380,10 +1702,14 @@ function buildPageContext() {
     inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + 'px';
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && panel.classList.contains('show')) closePanel();
+    if (e.key !== 'Escape') return;
+    var lb = document.querySelector('.ai-lightbox');
+    if (lb) { lb.remove(); return; }
+    if (panel.classList.contains('show')) closePanel();
   });
 
   initPresetSelect();
   fillConfigForm();
   initNavEvents();
+  renderAttachBar();
 })();
