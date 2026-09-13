@@ -236,6 +236,7 @@
   .ai-tick:hover::after,.ai-tick.active::after{width:14px;}
   .ai-progress-panel{display:none;}
   .ai-input-wrap{padding:8px 10px calc(8px + env(safe-area-inset-bottom));}
+  .ai-input-wrap textarea{min-height:38px;padding:9px 12px;font-size:14px;}
   .ai-attach-btn{width:42px;height:42px;border-radius:12px;}
   .ai-send{width:42px;height:42px;border-radius:12px;}
 }`;
@@ -282,7 +283,7 @@
     +     '<div class="ai-input-wrap">'
     +       '<div class="ai-attach-bar" id="aiAttachBar"></div>'
     +       '<div class="ai-input-row">'
-    +         '<textarea id="aiInput" rows="1" placeholder="输入问题…（Enter 发送，Shift+Enter 换行，可直接粘贴图片）"></textarea>'
+    +         '<textarea id="aiInput" rows="1" placeholder="输入问题…"></textarea>'
     +         '<button class="ai-attach-btn" id="aiAttachBtn" type="button" title="上传图片或文件（也可直接 Ctrl+V 粘贴图片）">'
     +           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
     +             '<path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>'
@@ -1707,6 +1708,15 @@
     if (lb) { lb.remove(); return; }
     if (panel.classList.contains('show')) closePanel();
   });
+
+  /* ---------- 手机端输入框提示词 ---------- */
+  function syncInputPlaceholder() {
+    inputEl.placeholder = window.innerWidth <= 640
+      ? '输入问题…'
+      : '输入问题…（Enter 发送，Shift+Enter 换行，可直接粘贴图片）';
+  }
+  syncInputPlaceholder();
+  window.addEventListener('resize', syncInputPlaceholder);
 
   initPresetSelect();
   fillConfigForm();
