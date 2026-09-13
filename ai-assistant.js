@@ -95,31 +95,41 @@
 .ai-cursor{display:inline-block;width:7px;height:15px;background:#3fa87a;border-radius:2px;margin-left:2px;vertical-align:text-bottom;animation:aiCursor 1s steps(1) infinite;}
 @keyframes aiCursor{0%,50%{opacity:1}51%,100%{opacity:0}}
 
-/* ===== 复制按钮 ===== */
-.ai-copy-btn{
+/* ===== 消息操作按钮：复制 / 重新生成 / 删除 ===== */
+.ai-msg-actions{
   position:absolute;
   bottom:5px;right:5px;
+  display:flex;
+  gap:4px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .15s;
+  z-index:3;
+}
+.ai-msg:hover .ai-msg-actions{opacity:1;pointer-events:auto;}
+.ai-act-btn{
   width:24px;height:24px;
   border:none;
   background:rgba(255,255,255,.85);
   border-radius:7px;
   cursor:pointer;
-  opacity:0;
-  transition:opacity .15s, background .15s, color .15s;
   color:#6a8f76;
   display:flex;align-items:center;justify-content:center;
   padding:0;
   backdrop-filter:blur(4px);
   -webkit-backdrop-filter:blur(4px);
   box-shadow:0 1px 4px rgba(0,0,0,.06);
+  transition:background .15s, color .15s, transform .15s;
 }
-.ai-copy-btn svg{width:13px;height:13px;display:block;}
-.ai-msg:hover .ai-copy-btn{opacity:1;}
-.ai-copy-btn:hover{background:#eaf8f2;color:#3fa87a;}
-.ai-copy-btn.copied{background:#d8f0e4;color:#2a8a5e;}
-.ai-msg.user .ai-copy-btn{background:rgba(255,255,255,.25);color:#fff;box-shadow:none;}
-.ai-msg.user .ai-copy-btn:hover{background:rgba(255,255,255,.4);color:#fff;}
-.ai-msg.user .ai-copy-btn.copied{background:rgba(255,255,255,.45);color:#fff;}
+.ai-act-btn svg{width:13px;height:13px;display:block;pointer-events:none;}
+.ai-act-btn:hover{background:#eaf8f2;color:#3fa87a;transform:scale(1.08);}
+.ai-act-btn:active{transform:scale(.94);}
+.ai-act-copy.copied{background:#d8f0e4;color:#2a8a5e;}
+.ai-act-regen:hover{background:#eef5fb;color:#4a86b8;}
+.ai-act-del:hover{background:#fdecec;color:#c25a5a;}
+.ai-msg.user .ai-act-btn{background:rgba(255,255,255,.28);color:#fff;box-shadow:none;}
+.ai-msg.user .ai-act-btn:hover{background:rgba(255,255,255,.45);color:#fff;}
+.ai-msg.user .ai-act-copy.copied{background:rgba(255,255,255,.5);color:#fff;}
 
 /* Markdown 元素 */
 .ai-msg.ai p{margin:0 0 .55em 0;}
@@ -741,34 +751,94 @@
 
   var COPY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
   var CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+  var REGEN_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 9"/></svg>';
+  var DEL_ICON   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>';
 
-  function attachCopyBtn(div, rawText) {
-    var btn = document.createElement('button');
-    btn.className = 'ai-copy-btn';
-    btn.title = '复制';
-    btn.innerHTML = COPY_ICON;
-    btn.addEventListener('click', function (e) {
+  function attachMsgActions(div, rawText, role, idx) {
+    var wrap = document.createElement('div');
+    wrap.className = 'ai-msg-actions';
+
+    /* 复制 */
+    var copyBtn = document.createElement('button');
+    copyBtn.className = 'ai-act-btn ai-act-copy';
+    copyBtn.title = '复制';
+    copyBtn.innerHTML = COPY_ICON;
+    copyBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       copyToClipboard(rawText, function () {
-        btn.classList.add('copied');
-        btn.innerHTML = CHECK_ICON;
-        btn.title = '已复制';
+        copyBtn.classList.add('copied');
+        copyBtn.innerHTML = CHECK_ICON;
+        copyBtn.title = '已复制';
         setTimeout(function () {
-          btn.classList.remove('copied');
-          btn.innerHTML = COPY_ICON;
-          btn.title = '复制';
+          copyBtn.classList.remove('copied');
+          copyBtn.innerHTML = COPY_ICON;
+          copyBtn.title = '复制';
         }, 1400);
       });
     });
-    div.appendChild(btn);
+    wrap.appendChild(copyBtn);
+
+    /* 重新生成（只给 AI 消息加） */
+    if (role === 'ai' && typeof idx === 'number' && idx >= 0) {
+      var regenBtn = document.createElement('button');
+      regenBtn.className = 'ai-act-btn ai-act-regen';
+      regenBtn.title = '重新生成';
+      regenBtn.innerHTML = REGEN_ICON;
+      regenBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        regenerateFrom(idx);
+      });
+      wrap.appendChild(regenBtn);
+    }
+
+    /* 删除 */
+    if (typeof idx === 'number' && idx >= 0) {
+      var delBtn = document.createElement('button');
+      delBtn.className = 'ai-act-btn ai-act-del';
+      delBtn.title = '删除这条消息';
+      delBtn.innerHTML = DEL_ICON;
+      delBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        deleteMsgAt(idx);
+      });
+      wrap.appendChild(delBtn);
+    }
+
+    div.appendChild(wrap);
   }
 
-  function addMsg(role, text) {
+  function deleteMsgAt(idx) {
+    if (isStreaming) { showToast('正在回复中，请稍候'); return; }
+    if (idx < 0 || idx >= history.length) return;
+    history.splice(idx, 1);
+    saveHistory();
+    renderHistory();
+    showToast('已删除该条消息');
+  }
+
+  function regenerateFrom(idx) {
+    if (isStreaming) { showToast('正在回复中，请稍候'); return; }
+    var userIdx = -1;
+    for (var i = idx - 1; i >= 0; i--) {
+      if (history[i].role === 'user') { userIdx = i; break; }
+    }
+    if (userIdx < 0) { showToast('找不到对应的提问'); return; }
+    var userText = history[userIdx].content;
+    history = history.slice(0, userIdx);
+    saveHistory();
+    renderHistory();
+    inputEl.value = userText;
+    send();
+  }
+
+  function addMsg(role, text, idx) {
     var div = document.createElement('div');
     div.className = 'ai-msg ' + role;
     if (role === 'ai') div.innerHTML = renderMD(text);
     else div.textContent = text;
-    if (role === 'user' || role === 'ai') attachCopyBtn(div, text);
+    if ((role === 'user' || role === 'ai') && typeof idx === 'number' && idx >= 0) {
+      attachMsgActions(div, text, role, idx);
+    }
     msgsEl.appendChild(div); scrollToBottom(); return div;
   }
   var stickBottom = true;
@@ -793,12 +863,12 @@
       tip.className = 'ai-msg sys'; tip.textContent = '有什么想问的？';
       msgsEl.appendChild(tip); return;
     }
-    history.forEach(function (m) {
+    history.forEach(function (m, i) {
       var div = document.createElement('div');
       div.className = 'ai-msg ' + (m.role === 'user' ? 'user' : 'ai');
       if (m.role === 'user') div.textContent = m.content;
       else div.innerHTML = renderMD(m.content);
-      attachCopyBtn(div, m.content);
+      attachMsgActions(div, m.content, m.role, i);
       msgsEl.appendChild(div);
     });
     scrollToBottom();
@@ -824,21 +894,40 @@
     if (!hasValidCfg()) { showConfig(); return; }
     inputEl.value = ''; inputEl.style.height = 'auto';
     var sys = msgsEl.querySelector('.ai-msg.sys'); if (sys) sys.remove();
-    history.push({ role: 'user', content: text }); saveHistory();
-    addMsg('user', text);
+        history.push({ role: 'user', content: text }); saveHistory();
+    addMsg('user', text, history.length - 1);
 
     var pageCtx = buildPageContext();
     var systemContent = cfg.system + (pageCtx ? '\n\n===== 当前页面上下文 =====\n' + pageCtx : '');
     var messages = [{ role: 'system', content: systemContent }].concat(history.slice(-12));
 
     var aiDiv = addMsg('ai', '');
-    // 移除临时复制按钮（等回复完再加）
-    var tempBtn = aiDiv.querySelector('.ai-copy-btn');
-    if (tempBtn) tempBtn.remove();
 
     var cursor = document.createElement('span'); cursor.className = 'ai-cursor'; aiDiv.appendChild(cursor);
     var acc = ''; isStreaming = true; setSendBtn(true);
     controller = new AbortController();
+
+    /* ——— 打字机缓冲（提前声明，供所有 then/catch 访问） ——— */
+    var target = '';
+    var shown = '';
+    var typeTimer = null;
+    function tickType() {
+      if (shown.length >= target.length) {
+        if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
+        return;
+      }
+      var remain = target.length - shown.length;
+      var step = remain > 200 ? 6 : remain > 60 ? 3 : 1;
+      shown = target.slice(0, shown.length + step);
+      aiDiv.innerHTML = renderMD(shown);
+      aiDiv.appendChild(cursor);
+      scrollToBottom();
+    }
+    function ensureTyping() {
+      if (typeTimer) return;
+      typeTimer = setInterval(tickType, 30);
+    }
+    /* ———————————————————————————————————————————— */
 
     var url = cfg.base.replace(/\/+$/, '') + '/chat/completions';
     fetch(url, {
@@ -859,29 +948,7 @@
       var reader = res.body.getReader();
       var decoder = new TextDecoder('utf-8');
       var buffer = '';
-      // ——— 打字机缓冲 ———
-      var target = '';   // 后端已吐出的全部内容
-      var shown = '';    // 已经显示出来的部分
-      var typeTimer = null;
-      function tickType() {
-        if (shown.length >= target.length) {
-          clearInterval(typeTimer);
-          typeTimer = null;
-          return;
-        }
-        var remain = target.length - shown.length;
-        // 自适应步长：剩得多就快一点，剩得少就慢一点
-        var step = remain > 200 ? 6 : remain > 60 ? 3 : 1;
-        shown = target.slice(0, shown.length + step);
-        aiDiv.innerHTML = renderMD(shown);
-        aiDiv.appendChild(cursor);
-        scrollToBottom();
-      }
-      function ensureTyping() {
-        if (typeTimer) return;
-        typeTimer = setInterval(tickType, 30);
-      }
-      // ——————————————————
+
 
       function pump() {
         return reader.read().then(function (r) {
@@ -927,13 +994,13 @@
         return;
       }
       history.push({ role: 'assistant', content: acc }); saveHistory();
-      attachCopyBtn(aiDiv, acc);
+            attachMsgActions(aiDiv, acc, 'ai', history.length - 1);
     })    .catch(function (err) {
       cursor.remove();
       if (err.name === 'AbortError') {
         if (acc.trim()) {
           history.push({ role: 'assistant', content: acc }); saveHistory();
-          attachCopyBtn(aiDiv, acc);
+                attachMsgActions(aiDiv, acc, 'ai', history.length - 1);
         } else aiDiv.remove();
         return;
       }
