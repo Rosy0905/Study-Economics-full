@@ -492,7 +492,7 @@
     headTitle.textContent = 'AI 答疑助手 · 设置'; fillConfigForm();
   }
     function showChat() {
-    configEl.classList.add('hide'); bodyEl.classList.add('hide');
+    configEl.classList.add('hide'); bodyEl.classList.remove('hide');
     headTitle.textContent = 'AI 答疑助手';
 
     // 先禁用自动滚底，避免 renderHistory 把位置重置到底部
