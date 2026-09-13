@@ -1689,10 +1689,11 @@
   }
   inputEl.addEventListener('paste', handlePaste);
   document.addEventListener('paste', function (e) {
-    if (!panel.classList.contains('show')) return;
-    if (document.activeElement === inputEl) return;
-    handlePaste(e);
-  });
+  if (!panel.classList.contains('show')) return;
+  if (document.activeElement === inputEl) return;
+  if (!panel.contains(e.target)) return;   // 只处理面板内的粘贴
+  handlePaste(e);
+});
 
   sendBtn.addEventListener('click', send);
   inputEl.addEventListener('keydown', function (e) {
