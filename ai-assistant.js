@@ -573,12 +573,26 @@
     if (!card || !card.dataset.id) return;
     var id = card.dataset.id;
     // 等页面自己的 click 处理跑完，再检查展开状态
-    setTimeout(function () {
+       setTimeout(function () {
       var isOpen = !!card.querySelector('.card-answer.open, .card-note-area.open');
       if (isOpen) {
         lastOpenedCardId = id;
-      } else if (lastOpenedCardId === id) {
+        return;
+      }
+      // 收回的是当前卡：看视口里还有没有别的展开的卡，有就顶替
+      if (lastOpenedCardId === id) {
         lastOpenedCardId = null;
+        var vh = window.innerHeight, vw = window.innerWidth;
+        var all = document.querySelectorAll('.card-item');
+        for (var i = 0; i < all.length; i++) {
+          var it = all[i];
+          if (it.dataset.id === id) continue;
+          if (!it.querySelector('.card-answer.open, .card-note-area.open')) continue;
+          var r = it.getBoundingClientRect();
+          if (r.bottom <= 0 || r.top >= vh || r.right <= 0 || r.left >= vw) continue;
+          lastOpenedCardId = it.dataset.id;
+          break;
+        }
       }
     }, 0);
   }, true);
