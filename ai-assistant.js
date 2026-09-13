@@ -106,18 +106,18 @@
 .ai-progress{
   position:absolute;
   right:12px;
-  top:0;               /* 由 JS 覆盖，覆盖 msgsEl 的垂直区域 */
-  width:16px;
-  height:0;            /* 由 JS 覆盖 */
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0;
+  padding:6px 0;
   z-index:10;
-  pointer-events:none; /* 容器不拦截事件，仅刻度可点 */
+  pointer-events:auto;
 }
-
 .ai-tick{
-  position:absolute;   /* 改为绝对定位，由 JS 设置 translateY */
-  left:0;
-  top:0;
-  margin-top:-12px;    /* 24px 高度，让中心落在 top 上 */
+  position:relative;
   z-index:5;
   width:16px;
   height:24px;
@@ -125,7 +125,6 @@
   align-items:center;
   justify-content:center;
   cursor:pointer;
-  pointer-events:auto; /* 继承自 .ai-progress 的 none 需要重新开启 */
 }
 .ai-tick::after{
   content:'';
@@ -141,9 +140,10 @@
 .ai-progress-panel{
   position:absolute;
   right:-8px;
-  top:50%;
-  transform:translateY(-50%) translateX(8px);
+  top:0;                                  /* ← 由 50% 改成 0 */
+  transform:translateX(8px);              /* ← 去掉 translateY(-50%) */
   width:270px;
+  max-height:100%;                        /* ← 新增，防止溢出 */
   background:#ffffff;
   border-radius:14px;
   box-shadow:0 12px 40px rgba(30,70,45,.16), 0 0 0 1px rgba(180,220,200,.35);
@@ -155,7 +155,7 @@
 }
 .ai-progress-panel.show{
   opacity:1;pointer-events:auto;
-  transform:translateY(-50%) translateX(0);
+  transform:translateX(0);                /* ← 去掉 translateY(-50%) */
 }
 .ai-progress-panel-inner{
   max-height:340px;
@@ -1075,34 +1075,6 @@
     });
 
     navUpdateActive();
-
-    // 面板有显示过渡动画，getBoundingClientRect 会漂移，多刷两次
-    requestAnimationFrame(positionTicks);
-    setTimeout(positionTicks, 320);
-  }
-
-  /* ===== 让刻度跟随消息在视口中的实际位置 ===== */
-  function positionTicks() {
-    var progress = document.getElementById('aiProgress');
-    if (!progress || !navTicks.length || !navUserMsgs.length) return;
-
-    var msgsRect = msgsEl.getBoundingClientRect();
-    var bodyRect = bodyEl.getBoundingClientRect();
-    var H = msgsRect.height;
-    if (H < 24) return;
-
-    progress.style.top    = (msgsRect.top - bodyRect.top) + 'px';
-    progress.style.height = H + 'px';
-
-    navUserMsgs.forEach(function (n, i) {
-      var tick = navTicks[i];
-      if (!tick) return;
-      var r = n.getBoundingClientRect();
-      var cy = r.top + r.height / 2 - msgsRect.top;
-      if (cy < 12) cy = 12;
-      if (cy > H - 12) cy = H - 12;
-      tick.style.transform = 'translateY(' + cy + 'px)';
-    });
   }
 
   function navUpdateActive() {
@@ -1171,21 +1143,6 @@
       navTimer = setTimeout(function () {
         navUpdateActive();
       }, 80);
-    });
-
-    // 滚动时让刻度实时跟手（rAF 节流）
-    var tickRaf = null;
-    msgsEl.addEventListener('scroll', function () {
-      if (tickRaf) return;
-      tickRaf = requestAnimationFrame(function () {
-        tickRaf = null;
-        positionTicks();
-      });
-    }, { passive: true });
-
-    // 窗口缩放时刷新
-    window.addEventListener('resize', function () {
-      requestAnimationFrame(positionTicks);
     });
   }
 
