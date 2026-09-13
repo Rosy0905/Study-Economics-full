@@ -155,23 +155,51 @@
 .ai-input-wrap textarea{flex:1;min-height:42px;max-height:140px;padding:10px 14px;border:1.5px solid #d8ebdf;border-radius:14px;background:#fff;font-size:13.8px;color:#1e3a2a;font-family:inherit;line-height:1.55;resize:none;outline:none;overflow-y:auto;}
 .ai-input-wrap textarea:focus{border-color:#5ec99a;box-shadow:0 0 0 3px rgba(94,201,154,.15);}
 .ai-input-wrap textarea::placeholder{color:#a8c2b4;}
-.ai-send{flex:0 0 auto;width:46px;height:46px;border-radius:14px;border:none;background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(63,168,122,.28);transition:background .18s, transform .12s;}
-.ai-send:hover{filter:brightness(1.06);}
+
+/* ===== 发送按钮（三态：发送 / 暂停 / 继续） ===== */
+.ai-send{
+  flex:0 0 auto;width:46px;height:46px;border-radius:14px;border:none;
+  background:linear-gradient(135deg,#5ec99a,#3fa87a);
+  color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 12px rgba(63,168,122,.28);
+  transition:background .2s, box-shadow .2s, transform .12s;
+}
+.ai-send:hover{
+  background:linear-gradient(135deg,#4dbf8e,#359a6c);
+  box-shadow:0 6px 16px rgba(63,168,122,.4);
+  transform:translateY(-1px);
+}
 .ai-send:active{transform:scale(.95);}
 .ai-send svg{width:20px;height:20px;display:block;}
-/* 暂停态 → 暖黄色播放按钮 */
-.ai-send.paused{background:linear-gradient(135deg,#fff4c9,#ffe08a);color:#8a6a1a;box-shadow:0 4px 12px rgba(214,168,60,.28);}
 
-/* ===== 停止按钮（流式输出时出现） ===== */
+/* 暂停态 → 暖黄播放按钮 */
+.ai-send.paused{
+  background:linear-gradient(135deg,#fff4c9,#ffe08a);
+  color:#8a6a1a;
+  box-shadow:0 4px 12px rgba(214,168,60,.28);
+}
+.ai-send.paused:hover{
+  background:linear-gradient(135deg,#ffeaa8,#ffd25e);
+  box-shadow:0 6px 16px rgba(214,168,60,.42);
+  transform:translateY(-1px);
+}
+
+/* ===== 停止按钮 ===== */
 .ai-stop-btn{
   flex:0 0 auto;width:46px;height:46px;border-radius:14px;
   border:1.5px solid #f0d5d5;background:#fff;color:#c25a5a;
   cursor:pointer;display:none;align-items:center;justify-content:center;
-  padding:0;transition:background .15s, border-color .15s, transform .12s;
+  padding:0;transition:background .18s, border-color .18s, color .18s, box-shadow .18s, transform .12s;
 }
 .ai-stop-btn.show{display:flex;}
-.ai-stop-btn:hover{background:#fdf2f2;border-color:#e8b9b9;}
-.ai-stop-btn:active{transform:scale(.94);}
+.ai-stop-btn:hover{
+  background:linear-gradient(135deg,#fdecec,#fbdada);
+  border-color:#e8b9b9;
+  color:#a83e3e;
+  box-shadow:0 6px 16px rgba(194,90,90,.22);
+  transform:translateY(-1px);
+}
+.ai-stop-btn:active{transform:scale(.95);}
 .ai-stop-btn svg{width:18px;height:18px;display:block;}
 
 /* ===== 附件上传按钮 ===== */
@@ -418,20 +446,23 @@
   /* ============================================================
      暂停 / 继续 机制状态
      ============================================================ */
-  var streamPaused = false;    // 是否暂停中
-  var pauseWaiters = [];       // 暂停时挂起的 resolve 队列
+  var streamPaused = false;
+  var pauseWaiters = [];
 
   /* ============================================================
-     打字机状态（模块级，才能被暂停逻辑控制）
+     打字机参数（速度就调这里）
+       TICK_MS：每帧间隔（毫秒）—— 数字越大越慢
+                 30 ≈ 原速；36 ≈ 慢一点点；50 ≈ 明显慢
+       步长逻辑：剩余越多，每帧吃掉的字符越多
      ============================================================ */
-  var TICK_MS    = 50;         // 每帧间隔（毫秒）——调大=更慢
+  var TICK_MS    = 36;
   var typeTimer  = null;
-  var typeShown  = '';         // 已显示的内容
-  var typeTarget = '';         // 已收到（完整）的内容
+  var typeShown  = '';
+  var typeTarget = '';
   var typeDiv    = null;
   var typeCursor = null;
-  var typeDone   = false;      // 流是否已结束（数据层面）
-  var finishHandled = false;   // 是否已收尾
+  var typeDone   = false;
+  var finishHandled = false;
 
   /* 待发送附件（内存中） */
   var pendingAttachments = [];
@@ -467,6 +498,7 @@
     return [];
   }
 
+  /* ---------- 历史保存（保持原版逻辑，未做任何优化） ---------- */
   function saveHistory() {
     var CHAR_BUDGET = 700 * 1024;
     var MAX_MSGS = 40;
@@ -1604,7 +1636,6 @@
      暂停 / 继续 核心逻辑
      ============================================================ */
 
-  /* 若处于暂停态，挂起，直到「继续」或「停止」 */
   function waitIfPaused() {
     if (!streamPaused) return Promise.resolve();
     return new Promise(function (resolve) { pauseWaiters.push(resolve); });
@@ -1614,18 +1645,15 @@
     ws.forEach(function (r) { try { r(); } catch (e) {} });
   }
 
-  /* 暂停 ↔ 继续 切换 */
   function toggleStreamPause() {
     if (!isStreaming) return;
     streamPaused = !streamPaused;
 
     if (streamPaused) {
-      /* —— 暂停 —— */
       if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
       setSendBtn('paused');
       showToast('⏸ 已暂停生成');
     } else {
-      /* —— 继续 —— */
       releasePauseWaiters();
       ensureTyping();
       setSendBtn('streaming');
@@ -1633,7 +1661,6 @@
     }
   }
 
-  /* 停止（彻底中断） */
   function stopStream() {
     if (!isStreaming) return;
     releasePauseWaiters();
@@ -1645,7 +1672,6 @@
     finishAborted();
   }
 
-  /* 收尾：把状态全部复位 */
   function cleanupStream() {
     if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
     releasePauseWaiters();
@@ -1661,7 +1687,6 @@
     buildNav();
   }
 
-  /* 正常完成 */
   function finishSuccess() {
     if (finishHandled) return;
     finishHandled = true;
@@ -1678,7 +1703,6 @@
     cleanupStream();
   }
 
-  /* 出错 */
   function finishError(msg) {
     if (finishHandled) return;
     finishHandled = true;
@@ -1694,7 +1718,6 @@
     cleanupStream();
   }
 
-  /* 被主动停止 / 中止 */
   function finishAborted() {
     if (finishHandled) return;
     finishHandled = true;
@@ -1703,7 +1726,6 @@
     var cursor = typeCursor;
     if (cursor && cursor.parentNode) cursor.parentNode.removeChild(cursor);
 
-    /* 如果流已经结束，内容全了 → 直接显示完整内容 */
     if (typeDone && typeShown.length < typeTarget.length) {
       typeShown = typeTarget;
       if (aiDiv) aiDiv.innerHTML = renderMD(typeShown);
@@ -1720,20 +1742,14 @@
   }
 
   /* ============================================================
-     慢速打字机（模块级函数，供暂停/继续控制）
+     打字机（步长逻辑回到原版 6/3/1，只把 TICK_MS 稍微调大）
      ============================================================ */
   function typeTick() {
     if (streamPaused || !typeDiv) return;
 
     if (typeShown.length < typeTarget.length) {
       var remain = typeTarget.length - typeShown.length;
-      /* 剩余越多越快，剩余少时慢下来 —— 越接近结尾越慢，方便你按暂停 */
-      var step;
-      if (remain > 2000)      step = 12;
-      else if (remain > 1000) step = 6;
-      else if (remain > 400)  step = 3;
-      else if (remain > 120)  step = 2;
-      else                    step = 1;
+      var step = remain > 200 ? 6 : remain > 60 ? 3 : 1;
 
       typeShown = typeTarget.slice(0, typeShown.length + step);
       typeDiv.innerHTML = renderMD(typeShown);
@@ -1741,7 +1757,6 @@
       scrollToBottom();
     }
 
-    /* 流已结束，且内容也全显示完了 → 收尾 */
     if (typeDone && typeShown.length >= typeTarget.length) {
       finishSuccess();
     }
@@ -1753,7 +1768,6 @@
     typeTimer = setInterval(typeTick, TICK_MS);
   }
 
-  /* 按钮三态：idle / streaming（可暂停） / paused（可继续） */
   function setSendBtn(state) {
     sendBtn.classList.remove('paused');
     if (state === 'idle') {
@@ -1774,7 +1788,6 @@
 
   /* ===================== 发送 ===================== */
   function send() {
-    /* 流式输出中：忽略（Enter 也不会掐断） */
     if (isStreaming) return;
 
     var text = inputEl.value.trim();
@@ -1812,7 +1825,6 @@
     cursor.className = 'ai-cursor';
     aiDiv.appendChild(cursor);
 
-    /* —— 重置打字机状态 —— */
     typeShown = '';
     typeTarget = '';
     typeDiv = aiDiv;
@@ -1847,7 +1859,6 @@
       var buffer = '';
 
       function pump() {
-        /* ★ 关键：每次读取下一个 chunk 之前，先检查是否暂停 */
         return waitIfPaused().then(function () {
           return reader.read();
         }).then(function (r) {
@@ -1884,11 +1895,9 @@
         return;
       }
       ensureTyping();
-      /* 如果打字机已经追上（例如极短回复），立即收尾 */
       if (typeShown.length >= typeTarget.length) {
         finishSuccess();
       }
-      /* 否则等 typeTick 慢慢打完，期间随时可暂停 */
     })
     .catch(function (err) {
       if (finishHandled) return;
@@ -1940,19 +1949,16 @@
     handlePaste(e);
   });
 
-  /* ★ 发送按钮：空闲 → 发送；流式 → 暂停；暂停 → 继续 */
   sendBtn.addEventListener('click', function () {
     if (isStreaming) toggleStreamPause();
     else send();
   });
 
-  /* ★ 停止按钮 */
   stopBtn.addEventListener('click', function () {
     stopStream();
     showToast('已停止生成');
   });
 
-  /* ★ Enter：流式输出时不掐断，只给提示 */
   inputEl.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
@@ -1975,7 +1981,6 @@
     if (panel.classList.contains('show')) closePanel();
   });
 
-  /* ---------- 手机端输入框提示词 ---------- */
   function syncInputPlaceholder() {
     inputEl.placeholder = window.innerWidth <= 640
       ? '输入问题…'
