@@ -4,7 +4,7 @@ personal workspace
 
 ---
 
-- [help](help.md)
-- [log](log.md)
+- [help](_docs/help.md)
+- [log](_docs/log.md)
 
 私下使用，请勿引用。
