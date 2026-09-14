@@ -159,6 +159,7 @@
 .ai-send:hover{filter:brightness(1.06);}
 .ai-send svg{width:20px;height:20px;display:block;}
 .ai-send.stop{background:linear-gradient(135deg,#fff4c9,#ffe08a);color:#8a6a1a;box-shadow:0 4px 12px rgba(214,168,60,.28);}
+.ai-send.paused{background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;box-shadow:0 4px 12px rgba(63,168,122,.28);}
 
 /* ===== 附件：上传按钮（发送键左边） ===== */
 .ai-attach-btn{
@@ -213,6 +214,39 @@
 }
 .ai-lightbox.show{opacity:1;}
 .ai-lightbox img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.4);background:#fff;}
+
+/* ===== 自定义确认框（替代 window.confirm，规避微信内核 bug） ===== */
+.ai-confirm-overlay{
+  position:fixed;inset:0;z-index:4000;background:rgba(16,40,28,.42);
+  display:flex;align-items:center;justify-content:center;padding:24px;
+  opacity:0;transition:opacity .18s;
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+}
+.ai-confirm-overlay.show{opacity:1;}
+.ai-confirm-box{
+  width:min(320px,100%);background:#fff;border-radius:16px;
+  box-shadow:0 20px 60px rgba(20,50,30,.28);
+  padding:20px 20px 16px;transform:translateY(8px) scale(.96);
+  transition:transform .22s cubic-bezier(.34,1.56,.64,1);
+}
+.ai-confirm-overlay.show .ai-confirm-box{transform:translateY(0) scale(1);}
+.ai-confirm-title{font-size:15px;font-weight:700;color:#1e4a2a;margin-bottom:8px;}
+.ai-confirm-msg{font-size:13.5px;color:#4a6a58;line-height:1.65;
+  white-space:pre-wrap;word-break:break-word;margin-bottom:16px;
+  max-height:40vh;overflow-y:auto;}
+.ai-confirm-actions{display:flex;gap:10px;justify-content:flex-end;}
+.ai-confirm-btn{
+  flex:0 0 auto;min-width:76px;padding:9px 16px;border-radius:10px;
+  font-size:13.5px;font-weight:600;cursor:pointer;border:none;font-family:inherit;
+  transition:.15s;
+}
+.ai-confirm-btn.cancel{background:#f0f5f2;color:#5a7a68;}
+.ai-confirm-btn.cancel:hover{background:#e4eee8;}
+.ai-confirm-btn.ok{background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;
+  box-shadow:0 3px 10px rgba(63,168,122,.26);}
+.ai-confirm-btn.ok.danger{background:linear-gradient(135deg,#f08a72,#e05a4a);
+  box-shadow:0 3px 10px rgba(224,90,74,.26);}
+.ai-confirm-btn.ok:hover{filter:brightness(1.05);}
 
 @media (max-width:640px){
   .ai-fab{right:16px;bottom:16px;width:52px;height:52px;border-width:2px;}
@@ -393,8 +427,20 @@
   var history = loadHistory();
   var controller = null;
   var isStreaming = false;
+  var isPaused = false;              // 新增：暂停状态
+  var streamFinished = false;        // 新增：API 是否已经吐完
   var stickBottom = true;
   var savedScrollTop = null;
+
+  /* 打字机状态（提升为模块级，便于 togglePause 访问） */
+  var typeState = {
+    target: '',
+    shown: '',
+    timer: null,
+    el: null,
+    cursor: null,
+    acc: ''
+  };
 
   /* 待发送附件（内存中） */
   var pendingAttachments = [];
@@ -407,6 +453,8 @@
   var IMG_MAX_DIM     = 1200;
   var IMG_QUALITY     = 0.82;
   var MAX_IMAGES_REQ  = 6;
+
+  function isMobile() { return window.innerWidth <= 640; }
 
   function loadCfg() {
     try { var r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch (e) {}
@@ -519,7 +567,7 @@
 
   /* ---------- 面板尺寸记忆 ---------- */
   function applySavedSize() {
-    if (window.innerWidth <= 640) return;
+    if (isMobile()) return;
     try {
       var s = JSON.parse(localStorage.getItem(SIZE_KEY) || 'null');
       if (s && s.w && s.h) {
@@ -529,7 +577,7 @@
     } catch (e) {}
   }
   function saveSize() {
-    if (window.innerWidth <= 640) return;
+    if (isMobile()) return;
     try {
       var rect = panel.getBoundingClientRect();
       localStorage.setItem(SIZE_KEY, JSON.stringify({ w: Math.round(rect.width), h: Math.round(rect.height) }));
@@ -538,7 +586,7 @@
 
   /* ---------- 拖拽调整大小 ---------- */
   function startResize(e) {
-    if (window.innerWidth <= 640) return;
+    if (isMobile()) return;
     e.preventDefault(); e.stopPropagation();
 
     var rect = panel.getBoundingClientRect();
@@ -573,7 +621,7 @@
   resizeHandle.addEventListener('pointerdown', startResize);
 
   window.addEventListener('resize', function () {
-    if (window.innerWidth <= 640) {
+    if (isMobile()) {
       panel.style.width = ''; panel.style.height = '';
       return;
     }
@@ -648,10 +696,18 @@
     if (configEl.classList.contains('hide')) showConfig();
     else if (hasValidCfg()) showChat();
   });
+
+  /* 清空对话 —— 用自定义确认框 */
   clearBtn.addEventListener('click', function () {
     if (!history.length) return;
-    if (!confirm('确定清空所有对话记录吗？')) return;
-    history = []; saveHistory(); renderHistory(); showToast('已清空对话');
+    showConfirm({
+      title: '清空对话',
+      message: '确定清空所有对话记录吗？此操作不可恢复。',
+      okText: '清空', cancelText: '取消', danger: true
+    }).then(function (ok) {
+      if (!ok) return;
+      history = []; saveHistory(); renderHistory(); showToast('已清空对话');
+    });
   });
 
   saveCfgBtn.addEventListener('click', function () {
@@ -665,6 +721,47 @@
     cfg = { preset: cfgPreset.value, base: base, model: model, key: key, system: system };
     saveCfg(); showChat(); showToast('配置已保存 ✓');
   });
+
+  /* ===================== 自定义确认框 ===================== */
+  function showConfirm(opts) {
+    opts = opts || {};
+    return new Promise(function (resolve) {
+      var overlay = document.createElement('div');
+      overlay.className = 'ai-confirm-overlay';
+overlay.innerHTML =
+  '<div class="ai-confirm-box">' +
+    '<div class="ai-confirm-title">' + escapeHtml(opts.title || '确认') + '</div>' +
+    '<div class="ai-confirm-msg">' + escapeHtml(opts.message || '') + '</div>' +
+    '<div class="ai-confirm-actions">' +
+      '<button class="ai-confirm-btn ok' + (opts.danger ? ' danger' : '') + '">' + escapeHtml(opts.okText || '确定') + '</button>' +
+      '<button class="ai-confirm-btn cancel">' + escapeHtml(opts.cancelText || '取消') + '</button>' +
+    '</div>' +
+  '</div>';
+      document.body.appendChild(overlay);
+      requestAnimationFrame(function () { overlay.classList.add('show'); });
+
+      var settled = false;
+      function close(result) {
+        if (settled) return; settled = true;
+        overlay.classList.remove('show');
+        setTimeout(function () { overlay.remove(); }, 200);
+        resolve(result);
+      }
+      overlay.querySelector('.ai-confirm-btn.cancel').addEventListener('click', function (e) {
+        e.stopPropagation(); close(false);
+      });
+      overlay.querySelector('.ai-confirm-btn.ok').addEventListener('click', function (e) {
+        e.stopPropagation(); close(true);
+      });
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) close(false);
+      });
+      var esc = function (e) {
+        if (e.key === 'Escape') { document.removeEventListener('keydown', esc); close(false); }
+      };
+      document.addEventListener('keydown', esc);
+    });
+  }
 
   /* ===================== 读取页面上下文 ===================== */
 
@@ -920,8 +1017,9 @@
     t = t.replace(/\$([^\$\n]+?)\$/g, function (m, expr) {
       var e = expr.trim();
       if (!e) return m;
-      if (/^[\d\s,\.]+$/.test(e)) return m;
-      if (/^[\u4e00-\u9fa5\u3000-\u303f]+$/.test(e)) return m;
+      // 纯数字 / 纯中文 —— 不当公式，但要去掉包裹的 $ 符号
+      if (/^[\d\s,\.]+$/.test(e)) return e;
+      if (/^[\u4e00-\u9fa5\u3000-\u303f]+$/.test(e)) return e;
       if (e.length > 150) return m;
       return pushFormula(expr, false);
     });
@@ -1043,6 +1141,10 @@
   var REGEN_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 9"/></svg>';
   var DEL_ICON   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>';
 
+  var SEND_ICON  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+  var PAUSE_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+  var PLAY_ICON  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>';
+
   function attachMsgActions(div, rawText, role, idx) {
     var wrap = document.createElement('div');
     wrap.className = 'ai-msg-actions';
@@ -1099,11 +1201,17 @@
     var m = history[idx];
     var preview = (m.content || '').replace(/\s+/g, ' ').slice(0, 40);
     var roleName = m.role === 'user' ? '你的提问' : 'AI 回复';
-    if (!confirm('删除这条' + roleName + '？\n\n' + preview + ((m.content || '').length > 40 ? '…' : ''))) return;
-    history.splice(idx, 1);
-    saveHistory();
-    renderHistory();
-    showToast('已删除该条消息');
+    showConfirm({
+      title: '删除消息',
+      message: '删除这条' + roleName + '？\n\n' + preview + ((m.content || '').length > 40 ? '…' : ''),
+      okText: '删除', cancelText: '取消', danger: true
+    }).then(function (ok) {
+      if (!ok) return;
+      history.splice(idx, 1);
+      saveHistory();
+      renderHistory();
+      showToast('已删除该条消息');
+    });
   }
 
   function regenerateFrom(idx) {
@@ -1558,9 +1666,87 @@
     t._timer = setTimeout(function () { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(12px)'; }, 1800);
   }
 
+  /* ===================== 打字机 ===================== */
+  function tickType() {
+    if (isPaused) return;                       // ← 暂停时不推进
+    var st = typeState;
+    if (st.shown.length >= st.target.length) {
+      if (st.timer) { clearInterval(st.timer); st.timer = null; }
+      return;
+    }
+    var remain = st.target.length - st.shown.length;
+    var step = remain > 200 ? 6 : remain > 60 ? 3 : 1;
+    st.shown = st.target.slice(0, st.shown.length + step);
+    st.el.innerHTML = renderMD(st.shown);
+    if (st.cursor) st.el.appendChild(st.cursor);
+    scrollToBottom();
+  }
+
+  function ensureTyping() {
+    if (typeState.timer) return;
+    typeState.timer = setInterval(tickType, 30);
+  }
+
+  function togglePause() {
+    if (!isStreaming) return;
+    isPaused = !isPaused;
+    setSendBtn(true, isPaused);
+    if (!isPaused) {
+      if (streamFinished) finalizeStream();     // API 已吐完 → 直接收尾
+      else ensureTyping();                      // 否则继续打字
+    }
+  }
+
+  function finalizeStream(error) {
+    if (!isStreaming) return;
+    var st = typeState;
+
+    if (st.timer) { clearInterval(st.timer); st.timer = null; }
+    if (st.shown.length < st.target.length) {
+      st.shown = st.target;
+      st.el.innerHTML = renderMD(st.shown);
+    }
+    if (st.cursor && st.cursor.parentNode) st.cursor.remove();
+
+    if (error) {
+      if (error.name === 'AbortError') {
+        if (st.acc.trim()) {
+          history.push({ role: 'assistant', content: st.acc });
+          saveHistory();
+          attachMsgActions(st.el, st.acc, 'ai', history.length - 1);
+          buildNav();
+        } else {
+          st.el.remove();
+        }
+      } else {
+        st.el.className = 'ai-msg err';
+        st.el.innerHTML = '❌ 请求失败：' + escapeHtml(error.message || '未知错误')
+          + '<br><br>常见原因：<br>· API Key 错误或余额不足<br>· Base URL 或模型名填错<br>· 网络无法访问该接口<br>· 服务商未开放浏览器直连（需换服务商或走代理）<br>· 上传了图片但当前模型不支持视觉（请换 qwen-vl-max / glm-4v / gpt-4o 等）';
+      }
+    } else {
+      if (!st.acc.trim()) {
+        st.el.className = 'ai-msg err';
+        st.el.textContent = '未收到回复，请检查 API Key、模型名称或账户余额。';
+      } else {
+        history.push({ role: 'assistant', content: st.acc });
+        saveHistory();
+        attachMsgActions(st.el, st.acc, 'ai', history.length - 1);
+        buildNav();
+      }
+    }
+
+    isStreaming = false;
+    isPaused = false;
+    streamFinished = false;
+    controller = null;
+    setSendBtn(false);
+    scrollToBottom();
+    buildNav();
+  }
+
   /* ===================== 发送 ===================== */
   function send() {
-    if (isStreaming) { stopStream(); return; }
+    if (isStreaming) return;                 // 流式中：忽略（暂停/继续由按钮控制）
 
     var text = inputEl.value.trim();
     if (!text && !pendingAttachments.length) return;
@@ -1597,30 +1783,19 @@
     cursor.className = 'ai-cursor';
     aiDiv.appendChild(cursor);
 
-    var acc = '';
-    isStreaming = true;
-    setSendBtn(true);
-    controller = new AbortController();
+    /* 初始化打字机状态 */
+    typeState.target = '';
+    typeState.shown  = '';
+    typeState.timer  = null;
+    typeState.el     = aiDiv;
+    typeState.cursor = cursor;
+    typeState.acc    = '';
 
-    var target = '';
-    var shown = '';
-    var typeTimer = null;
-    function tickType() {
-      if (shown.length >= target.length) {
-        if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
-        return;
-      }
-      var remain = target.length - shown.length;
-      var step = remain > 200 ? 6 : remain > 60 ? 3 : 1;
-      shown = target.slice(0, shown.length + step);
-      aiDiv.innerHTML = renderMD(shown);
-      aiDiv.appendChild(cursor);
-      scrollToBottom();
-    }
-    function ensureTyping() {
-      if (typeTimer) return;
-      typeTimer = setInterval(tickType, 30);
-    }
+    isStreaming = true;
+    isPaused = false;
+    streamFinished = false;
+    setSendBtn(true, false);
+    controller = new AbortController();
 
     var url = cfg.base.replace(/\/+$/, '') + '/chat/completions';
     fetch(url, {
@@ -1658,8 +1833,8 @@
                        || (json.choices && json.choices[0] && json.choices[0].message && json.choices[0].message.content)
                        || '';
               if (delta) {
-                acc += delta;
-                target += delta;
+                typeState.acc += delta;
+                typeState.target += delta;
                 ensureTyping();
               }
             } catch (e) {}
@@ -1670,55 +1845,40 @@
       return pump();
     })
     .then(function () {
-      if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
-      if (shown.length < target.length) {
-        shown = target;
-        aiDiv.innerHTML = renderMD(shown);
-      }
-      cursor.remove();
-      if (!acc.trim()) {
-        aiDiv.className = 'ai-msg err';
-        aiDiv.textContent = '未收到回复，请检查 API Key、模型名称或账户余额。';
-        return;
-      }
-      history.push({ role: 'assistant', content: acc }); saveHistory();
-      attachMsgActions(aiDiv, acc, 'ai', history.length - 1);
-      buildNav();
+      streamFinished = true;
+      if (!isPaused) finalizeStream();
+      // 暂停中：等用户点“继续”时再收尾
     })
     .catch(function (err) {
-      if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
-      cursor.remove();
-      if (err.name === 'AbortError') {
-        if (acc.trim()) {
-          history.push({ role: 'assistant', content: acc }); saveHistory();
-          attachMsgActions(aiDiv, acc, 'ai', history.length - 1);
-          buildNav();
-        } else aiDiv.remove();
-        return;
-      }
-      aiDiv.className = 'ai-msg err';
-      aiDiv.innerHTML = '❌ 请求失败：' + escapeHtml(err.message || '未知错误')
-        + '<br><br>常见原因：<br>· API Key 错误或余额不足<br>· Base URL 或模型名填错<br>· 网络无法访问该接口<br>· 服务商未开放浏览器直连（需换服务商或走代理）<br>· 上传了图片但当前模型不支持视觉（请换 qwen-vl-max / glm-4v / gpt-4o 等）';
-    })
-    .then(function () {
-      isStreaming = false; controller = null; setSendBtn(false); scrollToBottom();
-      buildNav();
+      streamFinished = true;
+      isPaused = false;
+      finalizeStream(err);
     });
   }
 
   function stopStream() {
     if (controller) { try { controller.abort(); } catch (e) {} controller = null; }
-    isStreaming = false; setSendBtn(false);
+    isStreaming = false;
+    isPaused = false;
+    streamFinished = false;
+    setSendBtn(false);
   }
-  function setSendBtn(streaming) {
-    if (streaming) {
-      sendBtn.classList.add('stop');
-      sendBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
-      sendBtn.title = '停止';
-    } else {
-      sendBtn.classList.remove('stop');
-      sendBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+
+  function setSendBtn(streaming, paused) {
+    if (!streaming) {
+      sendBtn.classList.remove('stop', 'paused');
+      sendBtn.innerHTML = SEND_ICON;
       sendBtn.title = '发送';
+    } else if (paused) {
+      sendBtn.classList.remove('stop');
+      sendBtn.classList.add('paused');
+      sendBtn.innerHTML = PLAY_ICON;
+      sendBtn.title = '继续生成';
+    } else {
+      sendBtn.classList.remove('paused');
+      sendBtn.classList.add('stop');
+      sendBtn.innerHTML = PAUSE_ICON;
+      sendBtn.title = '暂停生成';
     }
   }
 
@@ -1756,31 +1916,45 @@
   }
   inputEl.addEventListener('paste', handlePaste);
   document.addEventListener('paste', function (e) {
-  if (!panel.classList.contains('show')) return;
-  if (document.activeElement === inputEl) return;
-  if (!panel.contains(e.target)) return;   // 只处理面板内的粘贴
-  handlePaste(e);
-});
-
-  sendBtn.addEventListener('click', send);
-  inputEl.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); }
+    if (!panel.classList.contains('show')) return;
+    if (document.activeElement === inputEl) return;
+    if (!panel.contains(e.target)) return;
+    handlePaste(e);
   });
+
+  /* 发送按钮：流式中 → 暂停/继续；空闲 → 发送 */
+  sendBtn.addEventListener('click', function () {
+    if (isStreaming) { togglePause(); return; }
+    send();
+  });
+
+  /* 键盘：移动端 Enter 换行；桌面端 Enter 发送，Shift+Enter 换行 */
+  inputEl.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || e.isComposing) return;
+    if (isMobile()) return;                 // 移动端：默认行为 = 换行
+    if (e.shiftKey) return;                 // 桌面端：Shift+Enter 换行
+    e.preventDefault();
+    send();
+  });
+
   inputEl.addEventListener('input', function () {
     inputEl.style.height = 'auto';
     inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + 'px';
   });
+
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
     var lb = document.querySelector('.ai-lightbox');
     if (lb) { lb.remove(); return; }
+    var cf = document.querySelector('.ai-confirm-overlay');
+    if (cf) return;                         // 确认框自己处理 ESC
     if (panel.classList.contains('show')) closePanel();
   });
 
   /* ---------- 手机端输入框提示词 ---------- */
   function syncInputPlaceholder() {
-    inputEl.placeholder = window.innerWidth <= 640
-      ? '输入问题…'
+    inputEl.placeholder = isMobile()
+      ? '输入问题…（回车换行）'
       : '输入问题…（Enter 发送，Shift+Enter 换行，可直接粘贴图片）';
   }
   syncInputPlaceholder();
