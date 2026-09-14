@@ -732,6 +732,117 @@ header p {
 }
 .cbtn-ok:hover { filter: brightness(1.05); }
 
+/* ================= 导出选择弹层 ================= */
+.confirm-box.export-box {
+  width: min(92vw, 400px);
+  padding: 22px 20px 18px;
+}
+
+.export-opts {
+  margin-top: 14px;
+  text-align: left;
+}
+
+.exp-opt {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+  background: #f9fdfb;
+  border: 1.5px solid #e2f0e8;
+  border-radius: 12px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: border-color .18s ease, background .18s ease, opacity .18s ease;
+}
+.exp-opt + .exp-opt { margin-top: 8px; }
+.exp-opt:hover { border-color: #b9e2cd; background: #f4fbf7; }
+
+.exp-opt.disabled {
+  cursor: not-allowed;
+  opacity: .45;
+  background: #f7faf8;
+}
+.exp-opt.disabled:hover { border-color: #e2f0e8; background: #f7faf8; }
+
+.exp-opt input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.exp-tick {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.8px solid #c8ded2;
+  background: #fff;
+  position: relative;
+  transition: background .18s ease, border-color .18s ease;
+}
+.exp-tick::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform .18s cubic-bezier(.34,1.56,.64,1);
+}
+.exp-opt input:checked ~ .exp-tick {
+  background: #3fa87a;
+  border-color: #3fa87a;
+}
+.exp-opt input:checked ~ .exp-tick::after { transform: rotate(45deg) scale(1); }
+
+.exp-txt {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.exp-txt b {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e4a2a;
+  letter-spacing: .2px;
+}
+.exp-txt i {
+  font-style: normal;
+  font-size: 11px;
+  color: #8aaa95;
+  line-height: 1.45;
+}
+
+.exp-badge {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 700;
+  color: #3fa87a;
+  background: #e8f7f0;
+  border-radius: 20px;
+  padding: 3px 8px;
+  letter-spacing: .3px;
+}
+
+.export-size {
+  margin-top: 12px;
+  font-size: 11.5px;
+  color: #7a9a88;
+  text-align: center;
+  letter-spacing: .3px;
+}
+.export-size b { color: #3d8f6e; }
+
 /* ================= 提示 toast ================= */
 .toast {
   position: fixed;
@@ -811,6 +922,11 @@ footer {
   .petal-ic { font-size: 11px; }
   .sync-orb .orb-ic { font-size: 12px; }
   .sync-orb .orb-tx { font-size: 7.5px; }
+
+  .confirm-box.export-box { padding: 20px 15px 16px; }
+  .exp-opt { padding: 10px 11px; gap: 9px; }
+  .exp-txt b { font-size: 12.5px; }
+  .exp-txt i { font-size: 10.5px; }
 }
 
 @media (max-width: 380px) {
@@ -888,7 +1004,7 @@ footer {
 <!-- 隐藏的文件选择器（导入用） -->
 <input type="file" id="importFile" accept=".json,application/json" style="display:none" />
 
-<!-- ============ 确认弹层 ============ -->
+<!-- ============ 确认清除弹层 ============ -->
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-box">
     <div class="confirm-icon">⚠️</div>
@@ -899,6 +1015,52 @@ footer {
     <div class="confirm-btns">
       <button class="cbtn cbtn-cancel" id="confirmCancel" type="button">取消</button>
       <button class="cbtn cbtn-ok" id="confirmOk" type="button">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 导出选择弹层 ============ -->
+<div class="confirm-overlay" id="exportOverlay">
+  <div class="confirm-box export-box">
+    <div class="confirm-icon">📤</div>
+    <p class="confirm-title">导出数据</p>
+    <p class="confirm-desc">勾选需要备份的内容</p>
+
+    <div class="export-opts">
+      <label class="exp-opt" id="optStudy">
+        <input type="checkbox" id="expStudy" checked disabled />
+        <span class="exp-tick"></span>
+        <span class="exp-txt">
+          <b>学习数据</b>
+          <i>收藏 / 笔记 / 编辑 / 学习进度</i>
+        </span>
+        <span class="exp-badge">必导</span>
+      </label>
+
+      <label class="exp-opt" id="optHistory">
+        <input type="checkbox" id="expHistory" />
+        <span class="exp-tick"></span>
+        <span class="exp-txt">
+          <b>AI 对话历史</b>
+          <i>体积最大，通常占 80% 以上</i>
+        </span>
+      </label>
+
+      <label class="exp-opt" id="optConfig">
+        <input type="checkbox" id="expConfig" />
+        <span class="exp-tick"></span>
+        <span class="exp-txt">
+          <b>AI 配置</b>
+          <i>提示词 / 面板尺寸（不含 API Key）</i>
+        </span>
+      </label>
+    </div>
+
+    <p class="export-size" id="exportSize"></p>
+
+    <div class="confirm-btns">
+      <button class="cbtn cbtn-cancel" id="exportCancel" type="button">取消</button>
+      <button class="cbtn cbtn-ok" id="exportOk" type="button">导出</button>
     </div>
   </div>
 </div>
@@ -987,7 +1149,7 @@ function showToast(msg) {
   toast.textContent = msg;
   toast.classList.add('show');
   clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => toast.classList.remove('show'), 1900);
+  showToast._t = setTimeout(() => toast.classList.remove('show'), 2200);
 }
 
 /* ==========================================================
@@ -1359,9 +1521,10 @@ function renderHome() {
    同步内容：
    - 8 个模块的学习数据（收藏 / 笔记 / 编辑）
    - 学习进度记录
-   - AI 助手：提示词 / 对话历史 / 面板尺寸
+   - AI 助手：提示词 / 对话历史 / 面板尺寸（可选）
    注意：
-   - 导出时会剔除 AI 的 API Key，防止泄露
+   - 导出时可自由勾选需要的内容
+   - 导出 AI 配置时会自动剔除 API Key，防止泄露
    - 导入时会保留本机已有的 API Key，不会被覆盖
    ========================================================== */
 (function () {
@@ -1371,25 +1534,36 @@ function renderHome() {
   const orbExport    = document.getElementById('orbExport');
   const fileInput    = document.getElementById('importFile');
 
-  /* 8 个模块的存储前缀 */
+  /* 导出选择弹层 */
+  const exportOverlay = document.getElementById('exportOverlay');
+  const expHistory    = document.getElementById('expHistory');
+  const expConfig     = document.getElementById('expConfig');
+  const exportSizeEl  = document.getElementById('exportSize');
+  const exportOk      = document.getElementById('exportOk');
+  const exportCancel  = document.getElementById('exportCancel');
+
+  /* ---------- 存储 key 分类 ---------- */
   const MODULE_PREFIXES = MODULES.map(m => m.storagePrefix).filter(Boolean);
 
-  /* AI 助手相关前缀（key 在导出时会被剔除） */
-  const EXTRA_PREFIXES = [
-    'ai_assistant_cfg_',      // AI 配置（key 会被剔除）
-    'ai_assistant_history_',  // 对话记录
-    'ai_assistant_size_',     // 面板尺寸
-    'ai_assistant_sys_ver'    // 提示词版本号
+  /* 学习数据（全局） */
+  const ALLOW = ['eco_kb_progress', 'eco_kb_tts_rate'];
+
+  /* AI 对话历史 */
+  const AI_HISTORY_PREFIXES = ['ai_assistant_history_'];
+
+  /* AI 配置（提示词 / 面板尺寸 / 版本号） */
+  const AI_CONFIG_PREFIXES  = [
+    'ai_assistant_cfg_',
+    'ai_assistant_size_',
+    'ai_assistant_sys_ver'
   ];
 
-  const PREFIXES = MODULE_PREFIXES.concat(EXTRA_PREFIXES);
-  const ALLOW    = ['eco_kb_progress'];
-
-  /* AI 配置的 key 名（用于导出时剔除 key / 导入时保留 key） */
-  const AI_CFG_KEY = 'ai_assistant_cfg_v1';
+  /* AI 配置的 key 名（导出时剔除 key / 导入时保留 key） */
+  const AI_CFG_PREFIX = 'ai_assistant_cfg_';
 
   let isOpen = false;
 
+  /* ---------- 打开 / 关闭同步小球 ---------- */
   function openSync() {
     if (typeof window.closePetals === 'function') window.closePetals();
     isOpen = true;
@@ -1419,22 +1593,153 @@ function renderHome() {
     if (e.key === 'Escape' && isOpen) resetSync();
   });
 
-  function collectData() {
-    const data = {};
+  /* ==========================================================
+     数据分类 / 收集
+     ========================================================== */
+  function classifyKey(key) {
+    if (!key) return null;
+
+    for (let i = 0; i < ALLOW.length; i++) {
+      if (key === ALLOW[i]) return 'study';
+    }
+    for (let i = 0; i < MODULE_PREFIXES.length; i++) {
+      if (key.indexOf(MODULE_PREFIXES[i]) === 0) return 'study';
+    }
+    for (let i = 0; i < AI_HISTORY_PREFIXES.length; i++) {
+      if (key.indexOf(AI_HISTORY_PREFIXES[i]) === 0) return 'aiHistory';
+    }
+    for (let i = 0; i < AI_CONFIG_PREFIXES.length; i++) {
+      if (key.indexOf(AI_CONFIG_PREFIXES[i]) === 0) return 'aiConfig';
+    }
+    return null;
+  }
+
+  function collectAll() {
+    const buckets = { study: {}, aiHistory: {}, aiConfig: {} };
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (!key) continue;
-        const hit = ALLOW.indexOf(key) >= 0 ||
-                    PREFIXES.some(p => key.indexOf(p) === 0);
-        if (hit) data[key] = localStorage.getItem(key);
+        const cat = classifyKey(key);
+        if (!cat) continue;
+        const val = localStorage.getItem(key);
+        if (typeof val !== 'string') continue;
+        buckets[cat][key] = val;
       }
     } catch (e) {
       console.warn('读取本地数据失败', e);
     }
-    return data;
+    return buckets;
   }
 
+  /* ---------- 体积估算 ---------- */
+  function utf8Len(str) {
+    let n = 0;
+    for (let i = 0; i < str.length; i++) {
+      const c = str.charCodeAt(i);
+      if (c < 0x80) n += 1;
+      else if (c < 0x800) n += 2;
+      else if (c >= 0xD800 && c <= 0xDBFF) { n += 4; i++; }
+      else n += 3;
+    }
+    return n;
+  }
+
+  function fmtSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+  }
+
+  function estimateBytes(opts, buckets) {
+    const b = buckets || collectAll();
+    let total = 120; // payload 外壳
+    const add = obj => {
+      Object.keys(obj).forEach(k => {
+        total += utf8Len(k) + utf8Len(obj[k]) + 8;
+      });
+    };
+    add(b.study);
+    if (opts.aiHistory) add(b.aiHistory);
+    if (opts.aiConfig)  add(b.aiConfig);
+    return total;
+  }
+
+  /* ==========================================================
+     导出选择弹层
+     ========================================================== */
+  function currentOpts() {
+    return {
+      aiHistory: expHistory.checked,
+      aiConfig:  expConfig.checked
+    };
+  }
+
+  function refreshExportSize() {
+    const bytes = estimateBytes(currentOpts());
+    exportSizeEl.innerHTML = '预计文件大小：<b>' + fmtSize(bytes) + '</b>';
+  }
+
+  function setOptEnabled(input, enabled) {
+    input.disabled = !enabled;
+    if (!enabled) input.checked = false;
+    const lab = input.closest('.exp-opt');
+    if (lab) lab.classList.toggle('disabled', !enabled);
+  }
+
+  function openExportDialog() {
+    const buckets = collectAll();
+    const hasStudy   = Object.keys(buckets.study).length > 0;
+    const hasHistory = Object.keys(buckets.aiHistory).length > 0;
+    const hasConfig  = Object.keys(buckets.aiConfig).length > 0;
+
+    if (!hasStudy && !hasHistory && !hasConfig) {
+      showToast('本机暂无学习记录，先学一点再导出吧~~');
+      return;
+    }
+
+    setOptEnabled(expHistory, hasHistory);
+    setOptEnabled(expConfig, hasConfig);
+
+    /* 默认：学习数据必带；AI 历史体积大默认不勾；AI 配置体积小默认带上 */
+    expHistory.checked = false;
+    expConfig.checked  = hasConfig;
+
+    refreshExportSize();
+    exportOverlay.classList.add('show');
+  }
+
+  function closeExportDialog() {
+    exportOverlay.classList.remove('show');
+  }
+
+  expHistory.addEventListener('change', refreshExportSize);
+  expConfig.addEventListener('change', refreshExportSize);
+
+  exportOk.addEventListener('click', () => {
+    const opts = currentOpts();
+    closeExportDialog();
+    doExport(opts);
+  });
+
+  exportCancel.addEventListener('click', e => {
+    e.stopPropagation();
+    closeExportDialog();
+  });
+
+  exportOverlay.addEventListener('click', e => {
+    if (e.target === exportOverlay) closeExportDialog();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && exportOverlay.classList.contains('show')) {
+      closeExportDialog();
+    }
+  });
+
+  /* ==========================================================
+     日期
+     ========================================================== */
   function pad2(n) { return String(n).padStart(2, '0'); }
 
   /* ---------- 微信环境检测 ---------- */
@@ -1442,7 +1747,11 @@ function renderHome() {
     return /MicroMessenger/i.test(navigator.userAgent);
   }
 
-  /* ---------- 微信里的导出浮层：分段复制 JSON ---------- */
+  /* ==========================================================
+     微信里的导出浮层：分段复制 JSON
+     ----------------------------------------------------------
+     分段长度 4500 字（微信剪贴板约 4500，留少量余量）
+     ========================================================== */
   function showWeChatExportDialog(jsonText, fileName) {
     var old = document.getElementById('wxExportOverlay');
     if (old) old.remove();
@@ -1544,8 +1853,8 @@ function renderHome() {
       document.head.appendChild(st);
     }
 
-    /* 分块：微信剪贴板约 4500 字，留余量用 4000 */
-    var CHUNK = 4000;
+    /* 分块：微信剪贴板约 4500 字，留少量余量用 4400 */
+    var CHUNK = 4400;
     var chunks = [];
     for (var p = 0; p < jsonText.length; p += CHUNK) {
       chunks.push(jsonText.slice(p, p + CHUNK));
@@ -1640,26 +1949,51 @@ function renderHome() {
     });
   }
 
-  /* ---------- 导出 ---------- */
-  function doExport() {
-    const data = collectData();
+  /* ==========================================================
+     导出（按勾选项组装数据）
+     ========================================================== */
+  function doExport(opts) {
+    opts = opts || { aiHistory: false, aiConfig: false };
+
+    const buckets = collectAll();
+    const data = {};
+
+    /* 学习数据：必导 */
+    Object.keys(buckets.study).forEach(k => { data[k] = buckets.study[k]; });
+
+    /* AI 对话历史：可选 */
+    if (opts.aiHistory) {
+      Object.keys(buckets.aiHistory).forEach(k => { data[k] = buckets.aiHistory[k]; });
+    }
+
+    /* AI 配置：可选，导出时剔除 API Key */
+    let aiCfgIncluded = false;
+    if (opts.aiConfig) {
+      Object.keys(buckets.aiConfig).forEach(k => {
+        let v = buckets.aiConfig[k];
+        if (k.indexOf(AI_CFG_PREFIX) === 0) {
+          try {
+            const cfg = JSON.parse(v);
+            if (cfg && typeof cfg === 'object') {
+              delete cfg.key;
+              v = JSON.stringify(cfg);
+              aiCfgIncluded = true;
+            }
+          } catch (e) {}
+        }
+        data[k] = v;
+      });
+    }
+
     const keys = Object.keys(data);
     if (!keys.length) {
-      showToast('本机暂无学习记录，先学一点再导出吧~~');
-      resetSync();
+      showToast('没有可导出的内容');
       return;
     }
 
-    /* ★ 剔除 AI 配置里的 API Key */
-    let aiCfgIncluded = false;
-    if (data[AI_CFG_KEY]) {
-      try {
-        const cfg = JSON.parse(data[AI_CFG_KEY]);
-        delete cfg.key;
-        data[AI_CFG_KEY] = JSON.stringify(cfg);
-        aiCfgIncluded = true;
-      } catch (e) {}
-    }
+    const parts = ['学习数据'];
+    if (opts.aiHistory) parts.push('AI 对话历史');
+    if (opts.aiConfig)  parts.push('AI 配置（不含 API Key）');
 
     const now = new Date();
     const payload = {
@@ -1667,20 +2001,19 @@ function renderHome() {
       version: 1,
       exportedAt: now.toISOString(),
       count: keys.length,
-      note: aiCfgIncluded ? '含 AI 助手配置（不含 API Key）' : '',
+      note: '包含：' + parts.join('、'),
       data: data
     };
 
     const jsonText = JSON.stringify(payload);
 
-    const name = `南开经济学知识库-备份-`
+    const name = '南开经济学知识库-备份-'
       + now.getFullYear() + pad2(now.getMonth() + 1) + pad2(now.getDate())
       + '-' + pad2(now.getHours()) + pad2(now.getMinutes()) + '.json';
 
-    /* ★ 微信内置浏览器：走复制到剪贴板方案 */
+    /* 微信内置浏览器：走复制到剪贴板方案 */
     if (isWeChat()) {
       showWeChatExportDialog(jsonText, name);
-      resetSync();
       return;
     }
 
@@ -1691,7 +2024,6 @@ function renderHome() {
       url = URL.createObjectURL(blob);
     } catch (e) {
       showToast('导出失败，请换个浏览器试试');
-      resetSync();
       return;
     }
 
@@ -1705,11 +2037,14 @@ function renderHome() {
 
     setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} }, 2000);
 
-    showToast(`导出成功！${keys.length} 条记录已保存` + (aiCfgIncluded ? '（含 AI 配置，不含 Key）' : ''));
-    resetSync();
+    let msg = '导出成功！' + keys.length + ' 条记录已保存';
+    if (aiCfgIncluded) msg += '（含 AI 配置，不含 Key）';
+    showToast(msg);
   }
 
-  /* ---------- 导入 ---------- */
+  /* ==========================================================
+     导入
+     ========================================================== */
   function handleFile(file) {
     if (!file) return;
 
@@ -1742,10 +2077,10 @@ function renderHome() {
         return;
       }
 
-      const hasAI = keys.some(k => k === AI_CFG_KEY);
+      const hasAI = keys.some(k => k.indexOf(AI_CFG_PREFIX) === 0);
       const ok = window.confirm(
         '即将导入 ' + keys.length + ' 条数据。\n\n'
-        + (hasAI ? '📦 包含 AI 助手配置（提示词 / 对话历史等），但不含 API Key。\n导入后本机已有的 API Key 会保留。\n\n' : '')
+        + (hasAI ? '📦 包含 AI 助手配置（提示词 / 面板尺寸等），但不含 API Key。\n导入后本机已有的 API Key 会保留。\n\n' : '')
         + '同名的记录会被覆盖，本机独有而文件里没有的记录会保留。\n\n'
         + '确定继续吗？'
       );
@@ -1754,13 +2089,13 @@ function renderHome() {
       let done = 0;
       try {
         keys.forEach(k => {
-          /* ★ 导入 AI 配置时，保留本机已有的 API Key */
-          if (k === AI_CFG_KEY) {
+          /* 导入 AI 配置时，保留本机已有的 API Key */
+          if (k.indexOf(AI_CFG_PREFIX) === 0) {
             try {
               const incoming = JSON.parse(data[k]);
-              const existing = JSON.parse(localStorage.getItem(AI_CFG_KEY) || '{}');
-              // 文件里没带 key，但本机有 key → 用本机的
-              if (!incoming.key && existing.key) {
+              const existing = JSON.parse(localStorage.getItem(k) || '{}');
+              if (incoming && typeof incoming === 'object' &&
+                  !incoming.key && existing && existing.key) {
                 incoming.key = existing.key;
               }
               localStorage.setItem(k, JSON.stringify(incoming));
@@ -1790,9 +2125,11 @@ function renderHome() {
     reader.readAsText(file, 'utf-8');
   }
 
+  /* ---------- 事件绑定 ---------- */
   orbExport.addEventListener('click', e => {
     e.stopPropagation();
-    doExport();
+    resetSync();          // 先收起小球
+    openExportDialog();   // 再弹出选择层
   });
 
   orbImport.addEventListener('click', e => {
