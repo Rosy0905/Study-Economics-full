@@ -1037,21 +1037,21 @@ footer {
         <span class="exp-badge">必导</span>
       </label>
 
-      <label class="exp-opt" id="optHistory">
-        <input type="checkbox" id="expHistory" />
-        <span class="exp-tick"></span>
-        <span class="exp-txt">
-          <b>AI 对话历史</b>
-          <i>体积最大，通常占 80% 以上</i>
-        </span>
-      </label>
-
       <label class="exp-opt" id="optConfig">
-        <input type="checkbox" id="expConfig" />
+        <input type="checkbox" id="expConfig" checked />
         <span class="exp-tick"></span>
         <span class="exp-txt">
           <b>AI 配置</b>
           <i>提示词 / 面板尺寸（不含 API Key）</i>
+        </span>
+      </label>
+
+      <label class="exp-opt" id="optHistory">
+        <input type="checkbox" id="expHistory" checked />
+        <span class="exp-tick"></span>
+        <span class="exp-txt">
+          <b>AI 对话历史</b>
+          <i>体积最大，通常占 80% 以上</i>
         </span>
       </label>
     </div>
@@ -1523,7 +1523,7 @@ function renderHome() {
    - 学习进度记录
    - AI 助手：提示词 / 对话历史 / 面板尺寸（可选）
    注意：
-   - 导出时可自由勾选需要的内容
+   - 导出时可自由勾选需要的内容，默认全选
    - 导出 AI 配置时会自动剔除 API Key，防止泄露
    - 导入时会保留本机已有的 API Key，不会被覆盖
    ========================================================== */
@@ -1680,9 +1680,9 @@ function renderHome() {
     exportSizeEl.innerHTML = '预计文件大小：<b>' + fmtSize(bytes) + '</b>';
   }
 
-  function setOptEnabled(input, enabled) {
+  function setOptEnabled(input, enabled, defaultChecked) {
     input.disabled = !enabled;
-    if (!enabled) input.checked = false;
+    input.checked = enabled ? !!defaultChecked : false;
     const lab = input.closest('.exp-opt');
     if (lab) lab.classList.toggle('disabled', !enabled);
   }
@@ -1698,12 +1698,9 @@ function renderHome() {
       return;
     }
 
-    setOptEnabled(expHistory, hasHistory);
-    setOptEnabled(expConfig, hasConfig);
-
-    /* 默认：学习数据必带；AI 历史体积大默认不勾；AI 配置体积小默认带上 */
-    expHistory.checked = false;
-    expConfig.checked  = hasConfig;
+    /* 默认：三项全部勾选（有数据才可选） */
+    setOptEnabled(expConfig,  hasConfig,  true);
+    setOptEnabled(expHistory, hasHistory, true);
 
     refreshExportSize();
     exportOverlay.classList.add('show');
@@ -1750,7 +1747,7 @@ function renderHome() {
   /* ==========================================================
      微信里的导出浮层：分段复制 JSON
      ----------------------------------------------------------
-     分段长度 4500 字（微信剪贴板约 4500，留少量余量）
+     分段长度 4400 字（微信剪贴板约 4500，留少量余量）
      ========================================================== */
   function showWeChatExportDialog(jsonText, fileName) {
     var old = document.getElementById('wxExportOverlay');
