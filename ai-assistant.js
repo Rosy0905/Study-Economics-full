@@ -158,7 +158,7 @@
 .ai-send{flex:0 0 auto;width:46px;height:46px;border-radius:14px;border:none;background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(63,168,122,.28);}
 .ai-send:hover{filter:brightness(1.06);}
 .ai-send svg{width:20px;height:20px;display:block;}
-.ai-send.stop,.ai-send.paused{background:linear-gradient(135deg,#fff4c9,#ffe08a);color:#8a6a1a;box-shadow:0 4px 12px rgba(214,168,60,.28);}
+.ai-send.stop{background:linear-gradient(135deg,#fff4c9,#ffe08a);color:#8a6a1a;box-shadow:0 4px 12px rgba(214,168,60,.28);}
 .ai-send:disabled{cursor:not-allowed;opacity:.55;}
 .ai-send:disabled:hover{filter:none;}
 
@@ -447,10 +447,10 @@
   var isStreaming = false;
   var isPaused = false;
   var streamFinished = false;
+  var streamToken = 0;          // 用于区分"哪一轮流"，避免旧流回调污染新流
   var stickBottom = true;
   var savedScrollTop = null;
 
-  /* 打字机状态（提升为模块级，便于 pause/resume 访问） */
   var typeState = {
     target: '',
     shown: '',
@@ -461,10 +461,8 @@
     continueBtn: null
   };
 
-  /* 待发送附件（内存中） */
   var pendingAttachments = [];
 
-  /* 附件限制 */
   var MAX_FILES       = 6;
   var MAX_IMG_BYTES   = 12 * 1024 * 1024;
   var MAX_TXT_BYTES   = 2 * 1024 * 1024;
@@ -716,7 +714,6 @@
     else if (hasValidCfg()) showChat();
   });
 
-  /* 清空对话 —— 用自定义确认框 */
   clearBtn.addEventListener('click', function () {
     if (!history.length) return;
     showConfirm({
@@ -1036,7 +1033,6 @@ overlay.innerHTML =
     t = t.replace(/\$([^\$\n]+?)\$/g, function (m, expr) {
       var e = expr.trim();
       if (!e) return m;
-      // 纯数字 / 纯中文 —— 不当公式，但要去掉包裹的 $ 符号
       if (/^[\d\s,\.]+$/.test(e)) return e;
       if (/^[\u4e00-\u9fa5\u3000-\u303f]+$/.test(e)) return e;
       if (e.length > 150) return m;
@@ -1707,6 +1703,16 @@ overlay.innerHTML =
     typeState.timer = setInterval(tickType, 30);
   }
 
+  function updateInputPlaceholder() {
+    if (isStreaming && isPaused) {
+      inputEl.placeholder = '当前回答已暂停：输入新问题会截断它；直接 Enter 继续生成';
+    } else if (isMobile()) {
+      inputEl.placeholder = '输入问题…（回车换行）';
+    } else {
+      inputEl.placeholder = '输入问题…（Enter 发送/暂停，Shift+Enter 换行，可直接粘贴图片）';
+    }
+  }
+
   /* ---------- 暂停生成 ---------- */
   function pauseStream() {
     if (!isStreaming || isPaused) return;
@@ -1717,6 +1723,7 @@ overlay.innerHTML =
 
     setSendBtn(true, true);
     showContinueButton();
+    updateInputPlaceholder();
   }
 
   /* ---------- 继续生成 ---------- */
@@ -1728,12 +1735,23 @@ overlay.innerHTML =
     if (typeState.cursor) typeState.cursor.style.display = '';
 
     setSendBtn(true, false);
+    updateInputPlaceholder();
 
     if (streamFinished && typeState.shown.length >= typeState.target.length) {
       finalizeStream();
     } else {
       ensureTyping();
     }
+  }
+
+  /* ---------- 真正截断当前流（用于"暂停后发送新消息"） ---------- */
+  function abortCurrentStream() {
+    if (!isStreaming) return;
+    // 递增 token，让旧 fetch 的 .then/.catch 全部失效
+    streamToken++;
+    if (controller) { try { controller.abort(); } catch (e) {} }
+    // 用 AbortError 收尾：把已收到的部分存成完整消息
+    finalizeStream({ name: 'AbortError' });
   }
 
   /* ---------- 「继续生成」按钮挂载/卸载 ---------- */
@@ -1810,17 +1828,24 @@ overlay.innerHTML =
     streamFinished = false;
     controller = null;
     setSendBtn(false);
+    updateInputPlaceholder();
     scrollToBottom();
     buildNav();
   }
 
   /* ===================== 发送 ===================== */
   function send() {
-    if (isStreaming) return;
+    // 生成中（未暂停）不允许发送
+    if (isStreaming && !isPaused) return;
 
     var text = inputEl.value.trim();
-    if (!text && !pendingAttachments.length) return;
+    if (!text && !pendingAttachments.length) return;   // 无内容直接返回
     if (!hasValidCfg()) { showConfig(); return; }
+
+    // 有内容 + 暂停态 → 真正截断上一轮
+    if (isStreaming && isPaused) {
+      abortCurrentStream();
+    }
 
     inputEl.value = ''; inputEl.style.height = 'auto';
 
@@ -1865,6 +1890,9 @@ overlay.innerHTML =
     isPaused = false;
     streamFinished = false;
     setSendBtn(true, false);
+    updateInputPlaceholder();
+
+    var myToken = ++streamToken;      // 本轮流的唯一编号
     controller = new AbortController();
 
     var url = cfg.base.replace(/\/+$/, '') + '/chat/completions';
@@ -1875,6 +1903,7 @@ overlay.innerHTML =
       signal: controller.signal
     })
     .then(function (res) {
+      if (myToken !== streamToken) throw new Error('__stale_stream__');
       if (!res.ok) {
         return res.text().then(function (txt) {
           var errMsg = 'HTTP ' + res.status;
@@ -1889,6 +1918,7 @@ overlay.innerHTML =
 
       function pump() {
         return reader.read().then(function (r) {
+          if (myToken !== streamToken) return;
           if (r.done) return;
           buffer += decoder.decode(r.value, { stream: true });
           var lines = buffer.split('\n'); buffer = lines.pop();
@@ -1915,6 +1945,7 @@ overlay.innerHTML =
       return pump();
     })
     .then(function () {
+      if (myToken !== streamToken) return;
       streamFinished = true;
       if (!isPaused) {
         if (typeState.shown.length >= typeState.target.length) {
@@ -1925,6 +1956,8 @@ overlay.innerHTML =
       }
     })
     .catch(function (err) {
+      if (myToken !== streamToken) return;   // 被新的流顶掉了，忽略
+      if (err.message === '__stale_stream__') return;
       streamFinished = true;
       isPaused = false;
       finalizeStream(err);
@@ -1932,6 +1965,7 @@ overlay.innerHTML =
   }
 
   function stopStream() {
+    streamToken++;                       // 让当前流的所有回调失效
     if (controller) { try { controller.abort(); } catch (e) {} controller = null; }
     isStreaming = false;
     isPaused = false;
@@ -1939,21 +1973,18 @@ overlay.innerHTML =
     removeContinueButton();
     if (typeState.timer) { clearInterval(typeState.timer); typeState.timer = null; }
     setSendBtn(false);
+    updateInputPlaceholder();
   }
 
   function setSendBtn(streaming, paused) {
-    if (!streaming) {
+    if (!streaming || paused) {
+      // 空闲 或 暂停态：显示发送键（暂停态下也允许发送新消息）
       sendBtn.classList.remove('stop', 'paused');
       sendBtn.disabled = false;
       sendBtn.innerHTML = SEND_ICON;
-      sendBtn.title = '发送';
-    } else if (paused) {
-      sendBtn.classList.remove('stop');
-      sendBtn.classList.add('paused');
-      sendBtn.disabled = true;
-      sendBtn.innerHTML = PLAY_ICON;
-      sendBtn.title = '已暂停，点下方「继续生成」';
+      sendBtn.title = paused ? '发送新消息（会截断当前回答）' : '发送';
     } else {
+      // 生成中：显示暂停键
       sendBtn.classList.remove('paused');
       sendBtn.classList.add('stop');
       sendBtn.disabled = false;
@@ -2002,26 +2033,41 @@ overlay.innerHTML =
     handlePaste(e);
   });
 
-  /* 发送按钮：流式中 → 暂停；已暂停时按钮被 disabled；空闲 → 发送 */
+  /* 发送按钮：
+     - 空闲 → 发送
+     - 生成中（未暂停）→ 暂停
+     - 已暂停 → 有输入就发送新消息（截断旧的），否则继续生成
+  */
   sendBtn.addEventListener('click', function () {
     if (isStreaming) {
-      if (isPaused) return;
-      pauseStream();
+      if (!isPaused) { pauseStream(); return; }
+      var hasContent = inputEl.value.trim().length > 0 || pendingAttachments.length > 0;
+      if (hasContent) { send(); return; }
+      resumeStream();
       return;
     }
     send();
   });
 
-  /* 键盘：移动端 Enter 换行；桌面端 Enter = 发送 / 暂停 / 继续，Shift+Enter 换行 */
+  /* 键盘：
+     - 移动端：Enter = 换行
+     - 桌面端 Shift+Enter = 换行
+     - 桌面端 Enter：
+         · 空闲 → 发送
+         · 生成中（未暂停）→ 暂停
+         · 已暂停 → 有输入就发送新消息（截断旧的），否则继续生成
+  */
   inputEl.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter' || e.isComposing) return;
-    if (isMobile()) return;                 // 移动端：Enter 换行
-    if (e.shiftKey) return;                 // Shift+Enter 换行
+    if (isMobile()) return;
+    if (e.shiftKey) return;
     e.preventDefault();
 
     if (isStreaming) {
-      if (!isPaused) pauseStream();         // 生成中 → 暂停
-      else resumeStream();                  // 已暂停 → 继续
+      if (!isPaused) { pauseStream(); return; }
+      var hasContent = inputEl.value.trim().length > 0 || pendingAttachments.length > 0;
+      if (hasContent) { send(); return; }
+      resumeStream();
       return;
     }
     send();
@@ -2041,17 +2087,11 @@ overlay.innerHTML =
     if (panel.classList.contains('show')) closePanel();
   });
 
-  /* ---------- 手机端输入框提示词 ---------- */
-  function syncInputPlaceholder() {
-    inputEl.placeholder = isMobile()
-      ? '输入问题…（回车换行）'
-      : '输入问题…（Enter 发送/暂停，Shift+Enter 换行，可直接粘贴图片）';
-  }
-  syncInputPlaceholder();
-  window.addEventListener('resize', syncInputPlaceholder);
+  window.addEventListener('resize', updateInputPlaceholder);
 
   initPresetSelect();
   fillConfigForm();
   initNavEvents();
   renderAttachBar();
+  updateInputPlaceholder();
 })();
