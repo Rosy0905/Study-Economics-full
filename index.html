@@ -448,20 +448,20 @@ header p {
   letter-spacing: .4px;
   cursor: pointer;
   font-family: inherit;
-  box-shadow: 0 0 0 3px rgba(245, 214, 122, .22),
-              0 2px 8px rgba(212, 162, 78, .18),
-              0 0 12px 2px rgba(255, 220, 130, .25);
+  box-shadow: 0 0 0 3px rgba(245, 214, 122, .20),
+              0 2px 8px rgba(212, 162, 78, .16);
   transition: transform .2s ease,
               box-shadow .25s ease,
               color .25s ease,
               border-color .25s ease,
               font-size .2s ease;
 }
+@media (hover: hover) and (pointer: fine) {
 .clear-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 0 4px rgba(245, 214, 122, .3),
-              0 4px 12px rgba(212, 162, 78, .22),
-              0 0 16px 3px rgba(255, 220, 130, .3);
+  box-shadow: 0 0 0 4px rgba(245, 214, 122, .28),
+              0 4px 12px rgba(212, 162, 78, .20);
+}
 }
 .clear-btn:active { transform: scale(.97); }
 
@@ -501,17 +501,17 @@ header p {
   letter-spacing: .4px;
   cursor: pointer;
   font-family: inherit;
-  box-shadow: 0 0 0 3px rgba(168, 207, 232, .22),
-              0 2px 8px rgba(79, 148, 196, .18),
-              0 0 12px 2px rgba(139, 194, 228, .25);
+  box-shadow: 0 0 0 3px rgba(168, 207, 232, .20),
+              0 2px 8px rgba(79, 148, 196, .16);
   transition: transform .2s ease, box-shadow .25s ease,
               color .25s ease, border-color .25s ease, background .25s ease;
 }
+@media (hover: hover) and (pointer: fine) {
 .sync-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 0 4px rgba(168, 207, 232, .3),
-              0 4px 12px rgba(79, 148, 196, .22),
-              0 0 16px 3px rgba(139, 194, 228, .3);
+  box-shadow: 0 0 0 4px rgba(168, 207, 232, .28),
+              0 4px 12px rgba(79, 148, 196, .20);
+}
 }
 .sync-btn:active { transform: scale(.97); }
 .sync-btn.open {
@@ -583,13 +583,17 @@ header p {
   transition-delay: .08s;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .sync-section.open .sync-orb.import:hover {
   transform: translateY(calc(-1 * var(--orb-dist))) scale(1.08);
   box-shadow: 0 4px 14px rgba(90, 140, 115, .22);
 }
+}
+@media (hover: hover) and (pointer: fine) {
 .sync-section.open .sync-orb.export:hover {
   transform: translateY(var(--orb-dist)) scale(1.08);
   box-shadow: 0 4px 14px rgba(90, 140, 115, .22);
+}
 }
 
 .sync-orb.import {

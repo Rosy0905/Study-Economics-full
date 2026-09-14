@@ -40,8 +40,12 @@
   transition:border-color .25s;
 }
 .ai-fab svg{position:relative;z-index:2;width:23px;height:23px;display:block;}
-.ai-fab:hover{transform:scale(1.06);border-color:#8ed4b0;color:#3fa87a;box-shadow:0 5px 16px rgba(63,168,122,.2);}
-.ai-fab:hover::before{border-color:#8ed4b0;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-fab:hover{transform:scale(1.06);border-color:#8ed4b0;color:#3fa87a;box-shadow:0 5px 16px rgba(63,168,122,.2);}
+}
+@media (hover: hover) and (pointer: fine) {
+  .ai-fab:hover::before{border-color:#8ed4b0;}
+}
 .ai-fab:active{transform:scale(.96);}
 .ai-fab.hidden{opacity:0;pointer-events:none;transform:scale(.5);}
 
@@ -50,7 +54,9 @@
 .ai-panel.show{opacity:1;pointer-events:auto;transform:translateY(0) scale(1);}
 
 .ai-resize{position:absolute;left:0;top:0;width:34px;height:34px;cursor:nwse-resize;z-index:20;border-radius:20px 0 0 0;transition:background .15s;}
-.ai-resize:hover{background:rgba(94,201,154,.10);}
+@media (hover: hover) and (pointer: fine) {
+  .ai-resize:hover{background:rgba(94,201,154,.10);}
+}
 .ai-resize.dragging{background:rgba(94,201,154,.20);}
 
 .ai-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(135deg,#eaf8f2,#dff2e8);border-bottom:1px solid #e0efe6;}
@@ -58,7 +64,10 @@
 .ai-dot{width:9px;height:9px;border-radius:50%;background:#3fae8c;box-shadow:0 0 0 3px rgba(63,174,140,.2);}
 .ai-head-r{display:flex;gap:4px;}
 .ai-head-r button{width:32px;height:32px;border:none;background:transparent;cursor:pointer;border-radius:9px;color:#5a8068;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
-.ai-head-r button:hover{background:#d3ecdf;color:#1e4a2a;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-head-r button:hover{background:#d3ecdf;color:#1e4a2a;}
+}
+.ai-head-r button:active{background:#d3ecdf;color:#1e4a2a;}
 .ai-config{flex:1;overflow-y:auto;padding:22px 20px;display:flex;flex-direction:column;gap:14px;background:#fbfefc;}
 .ai-config.hide{display:none;}
 .ai-cfg-title{font-size:15px;font-weight:700;color:#1e4a2a;}
@@ -70,7 +79,9 @@
 .ai-cfg-field textarea{resize:vertical;min-height:64px;line-height:1.6;}
 .ai-cfg-hint{font-size:11.5px;color:#9ab5a5;line-height:1.6;}
 .ai-save{margin-top:6px;padding:12px;border:none;border-radius:12px;background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(63,168,122,.28);}
-.ai-save:hover{filter:brightness(1.05);}
+@media (hover: hover) and (pointer: fine) {
+  .ai-save:hover{filter:brightness(1.05);}
+}
 .ai-body{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;position:relative;}
 .ai-body.hide{display:none;}
 
@@ -90,23 +101,81 @@
 
 /* ===== 消息操作按钮 ===== */
 .ai-msg-actions{position:absolute;bottom:5px;right:5px;display:flex;gap:4px;opacity:0;pointer-events:none;transition:opacity .15s;z-index:3;}
-.ai-msg:hover .ai-msg-actions{opacity:1;pointer-events:auto;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-msg:hover .ai-msg-actions{opacity:1;pointer-events:auto;}
+}
 .ai-act-btn{width:24px;height:24px;border:none;background:rgba(255,255,255,.85);border-radius:7px;cursor:pointer;color:#6a8f76;display:flex;align-items:center;justify-content:center;padding:0;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:0 1px 4px rgba(0,0,0,.06);transition:background .15s, color .15s, transform .15s;}
 .ai-act-btn svg{width:13px;height:13px;display:block;pointer-events:none;}
-.ai-act-btn:hover{background:#eaf8f2;color:#3fa87a;transform:scale(1.08);}
+@media (hover: hover) and (pointer: fine) {
+  .ai-act-btn:hover{background:#eaf8f2;color:#3fa87a;transform:scale(1.08);}
+}
+.ai-act-btn:active{background:#eaf8f2;color:#3fa87a;}
 .ai-act-btn:active{transform:scale(.94);}
 .ai-act-copy.copied{background:#d8f0e4;color:#2a8a5e;}
-.ai-act-regen:hover{background:#eef5fb;color:#4a86b8;}
-.ai-act-del:hover{background:#fdecec;color:#c25a5a;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-act-regen:hover{background:#eef5fb;color:#4a86b8;}
+}
+.ai-act-regen:active{background:#eef5fb;color:#4a86b8;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-act-del:hover{background:#fdecec;color:#c25a5a;}
+}
+.ai-act-del:active{background:#fdecec;color:#c25a5a;}
 .ai-msg.user .ai-act-btn{background:rgba(255,255,255,.28);color:#fff;box-shadow:none;}
-.ai-msg.user .ai-act-btn:hover{background:rgba(255,255,255,.45);color:#fff;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-msg.user .ai-act-btn:hover{background:rgba(255,255,255,.45);color:#fff;}
+}
 .ai-msg.user .ai-act-copy.copied{background:rgba(255,255,255,.5);color:#fff;}
+
+/* ---- 选择性分享（仿 DeepSeek：勾选片段再生成链接） ---- */
+.ai-msgs.selecting .ai-msg{cursor:pointer;}
+.ai-select-box{position:absolute;top:7px;left:7px;width:20px;height:20px;border-radius:6px;border:2px solid rgba(69,185,140,.75);background:rgba(255,255,255,.9);display:none;align-items:center;justify-content:center;z-index:4;transition:background .12s,border-color .12s;}
+.ai-select-box svg{width:13px;height:13px;stroke:#fff;opacity:0;transition:opacity .12s;}
+.ai-msgs.selecting .ai-select-box{display:flex;}
+.ai-msg.selected{border-color:#45b98c !important;box-shadow:0 0 0 2px rgba(69,185,140,.32);}
+.ai-msg.selected .ai-select-box{background:#45b98c;border-color:#45b98c;}
+.ai-msg.selected .ai-select-box svg{opacity:1;}
+.ai-share-bar{position:absolute;left:50%;bottom:18px;transform:translateX(-50%) translateY(22px);display:flex;align-items:center;gap:10px;background:#fff;padding:9px 14px;border-radius:30px;box-shadow:0 10px 30px rgba(40,90,70,.24);border:1px solid #e6f2ec;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;z-index:40;font-size:13px;white-space:nowrap;}
+.ai-share-bar.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);}
+.ai-share-count{font-weight:600;color:#1e5a3a;}
+.ai-share-bar button{border:none;cursor:pointer;border-radius:20px;padding:7px 15px;font-size:13px;font-weight:600;transition:background .18s,color .18s;}
+.ai-share-all{background:#eef8f2;color:#2a6a4a;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-share-all:hover{background:#e0f2e8;}
+}
+.ai-share-all:active{background:#e0f2e8;}
+.ai-share-gen{background:#45b98c;color:#fff;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-share-gen:hover{background:#3aa87a;}
+}
+.ai-share-gen:active{background:#3aa87a;}
+.ai-share-gen:disabled{background:#cfe6da;cursor:not-allowed;}
+.ai-share-cancel{background:transparent;color:#9bb0a5;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-share-cancel:hover{color:#6b8579;}
+}
+.ai-share-cancel:active{color:#6b8579;}
+.ai-shared-banner{margin:0 auto 12px;max-width:94%;text-align:center;font-size:12px;color:#5e8a72;background:#eef8f2;border:1px solid #e0f0e7;border-radius:12px;padding:8px 12px;align-self:center;}
+
+/* ===== 分享链接独占模式：只显示 AI 窗口，隐藏整个知识库页面 ===== */
+body.shared-ai-view{overflow:hidden;background:#f4f8f6;}
+body.shared-ai-view > *:not(.ai-panel){display:none !important;}
+body.shared-ai-view .ai-panel{
+  right:0;bottom:0;top:0;left:0;
+  width:100vw;height:100vh;max-width:none;max-height:none;
+  border-radius:0;box-shadow:none;z-index:99999;
+}
+body.shared-ai-view .ai-close{display:none;}
 
 /* ===== 对话进度条 ===== */
 .ai-progress{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;z-index:10;pointer-events:auto;}
+.ai-progress-list{display:flex;flex-direction:column;align-items:center;gap:6px;max-height:78vh;overflow-y:auto;padding:2px 0;scrollbar-width:thin;}
+.ai-progress-list::-webkit-scrollbar{width:4px;}
+.ai-progress-list::-webkit-scrollbar-thumb{background:#cfe8db;border-radius:10px;}
 .ai-tick{position:relative;z-index:5;width:16px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .ai-tick::after{content:'';display:block;width:12px;height:2.5px;border-radius:2px;background:#cfe4d8;transition:width .18s, background .18s;}
-.ai-tick:hover::after{width:18px;background:#5ec99a;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-tick:hover::after{width:18px;background:#5ec99a;}
+}
 .ai-tick.active::after{width:18px;background:#3fa87a;}
 
 .ai-progress-panel{position:absolute;right:-8px;top:0;transform:translateX(8px);width:270px;max-height:100%;background:#ffffff;border-radius:14px;box-shadow:0 12px 40px rgba(30,70,45,.16), 0 0 0 1px rgba(180,220,200,.35);opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;z-index:1;overflow:hidden;}
@@ -115,7 +184,9 @@
 .ai-progress-panel-inner::-webkit-scrollbar{width:5px;}
 .ai-progress-panel-inner::-webkit-scrollbar-thumb{background:#cfe8db;border-radius:10px;}
 .ai-progress-item{height:24px;padding:0 34px 0 14px;font-size:12.5px;line-height:24px;color:#3a5a48;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:2px solid transparent;transition:background .12s, color .12s, border-color .12s;}
-.ai-progress-item:hover{background:#f0faf5;color:#1e4a2a;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-progress-item:hover{background:#f0faf5;color:#1e4a2a;}
+}
 .ai-progress-item.active{color:#2a8a5e;border-left-color:#3fa87a;background:#eaf8f2;font-weight:600;}
 
 /* ===== Markdown 元素 ===== */
@@ -156,11 +227,15 @@
 .ai-input-wrap textarea:focus{border-color:#5ec99a;box-shadow:0 0 0 3px rgba(94,201,154,.15);}
 .ai-input-wrap textarea::placeholder{color:#a8c2b4;}
 .ai-send{flex:0 0 auto;width:46px;height:46px;border-radius:14px;border:none;background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(63,168,122,.28);}
-.ai-send:hover{filter:brightness(1.06);}
+@media (hover: hover) and (pointer: fine) {
+  .ai-send:hover{filter:brightness(1.06);}
+}
 .ai-send svg{width:20px;height:20px;display:block;}
 .ai-send.stop{background:linear-gradient(135deg,#fff4c9,#ffe08a);color:#8a6a1a;box-shadow:0 4px 12px rgba(214,168,60,.28);}
 .ai-send:disabled{cursor:not-allowed;opacity:.55;}
-.ai-send:disabled:hover{filter:none;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-send:disabled:hover{filter:none;}
+}
 
 /* ===== 暂停后气泡下方的「继续生成」按钮 ===== */
 .ai-continue-btn{
@@ -175,7 +250,10 @@
   transition:background .18s,border-color .18s,color .18s,transform .12s;
   animation:aiMsgIn .25s ease;
 }
-.ai-continue-btn:hover{background:#f2fbf6;border-color:#5ec99a;color:#2a8a5e;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-continue-btn:hover{background:#f2fbf6;border-color:#5ec99a;color:#2a8a5e;}
+}
+.ai-continue-btn:active{background:#f2fbf6;border-color:#5ec99a;color:#2a8a5e;}
 .ai-continue-btn:active{transform:scale(.96);}
 .ai-continue-btn svg{width:13px;height:13px;display:block;}
 
@@ -186,8 +264,10 @@
   cursor:pointer;display:flex;align-items:center;justify-content:center;
   padding:0;transition:border-color .18s, color .18s, background .18s, transform .12s;
 }
-.ai-attach-btn:hover{border-color:#5ec99a;color:#3fa87a;background:#f2fbf6;}
-.ai-attach-btn:active{transform:scale(.94);}
+@media (hover: hover) and (pointer: fine) {
+  .ai-attach-btn:hover{border-color:#5ec99a;color:#3fa87a;background:#f2fbf6;}
+}
+.ai-attach-btn:active{border-color:#5ec99a;color:#3fa87a;background:#f2fbf6;transform:scale(.94);}
 .ai-attach-btn svg{width:19px;height:19px;display:block;}
 
 /* ===== 附件：待发送预览条 ===== */
@@ -207,7 +287,10 @@
   padding:0;transition:.15s;
 }
 .ai-chip-x svg{width:11px;height:11px;display:block;}
-.ai-chip-x:hover{background:#fdecec;color:#c25a5a;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-chip-x:hover{background:#fdecec;color:#c25a5a;}
+}
+.ai-chip-x:active{background:#fdecec;color:#c25a5a;}
 
 /* ===== 消息气泡内的附件 ===== */
 .ai-msg-attach{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
@@ -259,12 +342,18 @@
   transition:.15s;
 }
 .ai-confirm-btn.cancel{background:#f0f5f2;color:#5a7a68;}
-.ai-confirm-btn.cancel:hover{background:#e4eee8;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-confirm-btn.cancel:hover{background:#e4eee8;}
+}
+.ai-confirm-btn.cancel:active{background:#e4eee8;}
 .ai-confirm-btn.ok{background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;
   box-shadow:0 3px 10px rgba(63,168,122,.26);}
 .ai-confirm-btn.ok.danger{background:linear-gradient(135deg,#f08a72,#e05a4a);
   box-shadow:0 3px 10px rgba(224,90,74,.26);}
-.ai-confirm-btn.ok:hover{filter:brightness(1.05);}
+@media (hover: hover) and (pointer: fine) {
+  .ai-confirm-btn.ok:hover{filter:brightness(1.05);}
+}
+.ai-confirm-btn.ok:active{filter:brightness(1.05);}
 
 @media (max-width:640px){
   .ai-fab{right:16px;bottom:16px;width:52px;height:52px;border-width:2px;}
@@ -285,7 +374,7 @@
   .ai-progress{right:6px;padding:4px 0;}
   .ai-tick{width:14px;height:22px;}
   .ai-tick::after{width:10px;height:2px;}
-  .ai-tick:hover::after,.ai-tick.active::after{width:14px;}
+  .ai-tick.active::after{width:14px;}
   .ai-progress-panel{display:none;}
   .ai-input-wrap{padding:8px 10px calc(8px + env(safe-area-inset-bottom));}
   .ai-input-wrap textarea{min-height:38px;padding:9px 12px;font-size:14px;}
@@ -312,6 +401,7 @@
     +     '<div class="ai-head-r">'
     +       '<button id="aiClear" title="清空对话"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>'
     +       '<button id="aiSetting" title="设置"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>'
+    +       '<button id="aiShare" title="复制分享链接"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>'
     +       '<button id="aiClose" title="关闭"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>'
     +     '</div>'
     +   '</div>'
@@ -328,6 +418,7 @@
     +   '<div class="ai-body hide" id="aiBody">'
     +     '<div class="ai-msgs" id="aiMsgs"></div>'
     +     '<div class="ai-progress" id="aiProgress">'
+    +       '<div class="ai-progress-list" id="aiProgressList"></div>'
     +       '<div class="ai-progress-panel" id="aiProgressPanel">'
     +         '<div class="ai-progress-panel-inner" id="aiProgressPanelInner"></div>'
     +       '</div>'
@@ -345,6 +436,12 @@
     +       '</div>'
     +       '<input type="file" id="aiFileInput" multiple accept="image/*,.txt,.md,.markdown,.csv,.json,.log,.tex,.py,.js,.ts,.c,.cpp,.java,.html,.css" style="display:none" />'
     +     '</div>'
+    +   '</div>'
+    +   '<div class="ai-share-bar" id="aiShareBar">'
+    +     '<span class="ai-share-count" id="aiShareCount">已选 0 条</span>'
+    +     '<button type="button" class="ai-share-all" id="aiShareAll">全选</button>'
+    +     '<button type="button" class="ai-share-gen" id="aiShareGen" disabled>生成链接</button>'
+    +     '<button type="button" class="ai-share-cancel" id="aiShareCancel">取消</button>'
     +   '</div>'
     + '</div>';
 
@@ -430,7 +527,7 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var fab = $('aiFab'), panel = $('aiPanel'), closeBtn = $('aiClose'),
-      clearBtn = $('aiClear'), settingBtn = $('aiSetting'),
+      clearBtn = $('aiClear'), settingBtn = $('aiSetting'), shareBtn = $('aiShare'),
       resizeHandle = $('aiResize'),
       configEl = $('aiConfig'), bodyEl = $('aiBody'),
       msgsEl = $('aiMsgs'), inputEl = $('aiInput'), sendBtn = $('aiSend'),
@@ -443,6 +540,23 @@
 
   var cfg = loadCfg();
   var history = loadHistory();
+  var isSharedView = false;
+  var selecting = false;        // 是否处于"勾选分享"模式
+  var selectedSet = {};         // { 消息索引: true }
+  var sharedLinkBroken = false;   // 链接里有 #conv= 却解析不出内容（多半是转发时被截断）
+  /* 带 #conv= 链接打开时，还原分享的对话（仅查看，不覆盖本地记录） */
+  (function loadSharedConv() {
+    var m = /(?:^|[#&])conv=([^&]+)/.exec(location.hash || '');
+    if (m) {
+      var dec = decodeConv(decodeURIComponent(m[1]));
+      if (dec && dec.length) { history = dec; isSharedView = true; }
+      else { sharedLinkBroken = true; }
+    }
+  })();
+  if (isSharedView) {
+    document.body.classList.add('shared-ai-view'); // 独占模式：隐藏整页，只留 AI 窗口
+    document.title = '来自分享的对话';               // 标签页不暴露子页面名称
+  }
   var controller = null;
   var isStreaming = false;
   var isPaused = false;
@@ -496,6 +610,7 @@
   }
 
   function saveHistory() {
+    if (isSharedView) return;   // 分享链接查看模式：不覆盖本地对话记录
     var CHAR_BUDGET = 700 * 1024;
     var MAX_MSGS = 40;
 
@@ -668,6 +783,7 @@
     cfgPresetHint.textContent = p.hint || '';
   }
   function showConfig() {
+    if (isSharedView) return;              /* 分享视图禁止打开配置页 */
     configEl.classList.remove('hide'); bodyEl.classList.add('hide');
     headTitle.textContent = 'AI 答疑助手 · 设置'; fillConfigForm();
   }
@@ -694,10 +810,54 @@
   }
   function hasValidCfg() { return cfg.key && cfg.base && cfg.model; }
 
+  /* ===================== 对话分享（可分享链接） ===================== */
+  function encodeConv(h) {
+    try {
+      var slim = (h || []).map(function (m) {
+        var c = (m.content || '').replace(/<img[^>]*>/gi, '');
+        return { role: m.role, content: c };
+      });
+      return btoa(unescape(encodeURIComponent(JSON.stringify(slim))));
+    } catch (e) { return ''; }
+  }
+  function decodeConv(s) {
+    try {
+      var json = decodeURIComponent(escape(atob(s)));
+      var arr = JSON.parse(json);
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) { return []; }
+  }
+
+  function setSharedReadOnly(on) {
+    var wrap = panel.querySelector('.ai-input-wrap');
+    if (wrap) wrap.style.display = on ? 'none' : '';
+    var prog = $('aiProgress');
+    if (prog) prog.style.display = on ? 'none' : '';
+    /* 分享视图为纯只读：隐藏头部全部按钮（清空/设置/分享/关闭）与拖拽手柄 */
+    var headR = panel.querySelector('.ai-head-r');
+    if (headR) headR.style.display = on ? 'none' : '';
+    var resize = panel.querySelector('.ai-resize');
+    if (resize) resize.style.display = on ? 'none' : '';
+    var title = $('aiHeadTitle');
+    if (title) title.textContent = on ? 'AI 答疑助手 · 分享片段' : 'AI 答疑助手';
+  }
+
   function openPanel() {
     panel.classList.add('show'); fab.classList.add('hidden');
-    applySavedSize();
-    if (hasValidCfg()) showChat(); else showConfig();
+    if (isSharedView) {
+      /* 分享独占模式：强制全屏，不被 applySavedSize 的内联尺寸覆盖 */
+      panel.style.position = 'fixed';
+      panel.style.top = '0'; panel.style.left = '0';
+      panel.style.right = '0'; panel.style.bottom = '0';
+      panel.style.width = '100vw'; panel.style.height = '100vh';
+      panel.style.maxWidth = 'none'; panel.style.maxHeight = 'none';
+      panel.style.borderRadius = '0'; panel.style.boxShadow = 'none';
+      panel.style.zIndex = '99999';
+    } else {
+      applySavedSize();
+    }
+    if (isSharedView || hasValidCfg()) showChat(); else showConfig();
+    setSharedReadOnly(isSharedView);
     setTimeout(buildNav, 260);
   }
   function closePanel() {
@@ -708,13 +868,18 @@
   }
 
   fab.addEventListener('click', openPanel);
-  closeBtn.addEventListener('click', closePanel);
+  closeBtn.addEventListener('click', function () {
+    if (isSharedView) return;              /* 分享视图不可关闭（会留下空白页） */
+    closePanel();
+  });
   settingBtn.addEventListener('click', function () {
+    if (isSharedView) return;              /* 分享视图禁止进入设置 */
     if (configEl.classList.contains('hide')) showConfig();
     else if (hasValidCfg()) showChat();
   });
 
   clearBtn.addEventListener('click', function () {
+    if (isSharedView) return;              /* 分享视图禁止清空 */
     if (!history.length) return;
     showConfirm({
       title: '清空对话',
@@ -725,6 +890,98 @@
       history = []; saveHistory(); renderHistory(); showToast('已清空对话');
     });
   });
+
+  shareBtn.addEventListener('click', function () {
+    if (isSharedView) { showToast('分享链接为只读，无法再分享'); return; }
+    enterSelectMode();
+  });
+
+  /* 进入"勾选分享"模式：每条消息可点选，仅把选中的部分生成链接 */
+  /* 消息点击统一用事件委托：只在勾选模式下生效，
+     避免逐条绑定点击监听后退出模式仍残留导致正常状态下点消息出现高亮 */
+  msgsEl.addEventListener('click', function (e) {
+    if (!selecting) return;
+    var div = e.target && e.target.closest ? e.target.closest('.ai-msg') : null;
+    if (!div) return;
+    if (div.classList.contains('sys') || div.classList.contains('err')) return;
+    var idx = +div.dataset.idx;
+    if (selectedSet[idx]) { delete selectedSet[idx]; div.classList.remove('selected'); }
+    else { selectedSet[idx] = true; div.classList.add('selected'); }
+    updateShareCount();
+  });
+
+  function enterSelectMode() {
+    if (!history.length) { showToast('暂无可分享的对话'); return; }
+    if (selecting) return;
+    selecting = true; selectedSet = {};
+    msgsEl.classList.add('selecting');
+    var iw = panel.querySelector('.ai-input-wrap');
+    if (iw) iw.style.display = 'none';
+    var nodes = msgsEl.querySelectorAll('.ai-msg');
+    nodes.forEach(function (div) {
+      if (div.classList.contains('sys') || div.classList.contains('err')) return;
+      var box = document.createElement('div');
+      box.className = 'ai-select-box';
+      box.innerHTML = CHECK_ICON;
+      div.appendChild(box);
+    });
+    updateShareCount();
+    var bar = $('aiShareBar'); if (bar) bar.classList.add('show');
+    showToast('点选要分享的对话，再点"生成链接"');
+  }
+
+  function exitSelectMode() {
+    selecting = false; selectedSet = {};
+    msgsEl.classList.remove('selecting');
+    msgsEl.querySelectorAll('.ai-select-box').forEach(function (b) { b.remove(); });
+    msgsEl.querySelectorAll('.ai-msg.selected').forEach(function (d) { d.classList.remove('selected'); });
+    var iw = panel.querySelector('.ai-input-wrap');
+    if (iw) iw.style.display = '';
+    var bar = $('aiShareBar'); if (bar) { bar.classList.remove('show'); }
+    var all = $('aiShareAll'); if (all) all.textContent = '全选';
+  }
+
+  function countSelectable() {
+    return msgsEl.querySelectorAll('.ai-msg:not(.sys):not(.err)').length;
+  }
+
+  function updateShareCount() {
+    var n = Object.keys(selectedSet).length;
+    var c = $('aiShareCount'); if (c) c.textContent = '已选 ' + n + ' 条';
+    var g = $('aiShareGen'); if (g) g.disabled = n === 0;
+  }
+
+  function genShareLink() {
+    var picked = [];
+    history.forEach(function (m, i) { if (selectedSet[i]) picked.push(m); });
+    if (!picked.length) { showToast('请先勾选要分享的消息'); return; }
+    var enc = encodeConv(picked);
+    if (!enc) { showToast('暂无可分享的内容'); return; }
+    if (enc.length > 16000) { showToast('所选内容过长，请减少勾选'); return; }
+    var url = location.href.split('#')[0] + '#conv=' + encodeURIComponent(enc);
+    try { window.history.replaceState(null, '', '#conv=' + encodeURIComponent(enc)); } catch (e) {}
+    copyToClipboard(url, function () {
+      showToast('已复制分享链接（仅含所选 ' + picked.length + ' 条）✅');
+      exitSelectMode();
+    });
+  }
+
+  var shareBar = $('aiShareBar');
+  if (shareBar) {
+    $('aiShareGen').addEventListener('click', genShareLink);
+    $('aiShareCancel').addEventListener('click', exitSelectMode);
+    $('aiShareAll').addEventListener('click', function () {
+      var allSel = Object.keys(selectedSet).length === countSelectable() && countSelectable() > 0;
+      msgsEl.querySelectorAll('.ai-msg').forEach(function (div) {
+        if (div.classList.contains('sys') || div.classList.contains('err')) return;
+        var idx = +div.dataset.idx;
+        if (allSel) { delete selectedSet[idx]; div.classList.remove('selected'); }
+        else { selectedSet[idx] = true; div.classList.add('selected'); }
+      });
+      $('aiShareAll').textContent = allSel ? '全选' : '取消全选';
+      updateShareCount();
+    });
+  }
 
   saveCfgBtn.addEventListener('click', function () {
     var base = cfgBase.value.trim().replace(/\/+$/, '');
@@ -805,7 +1062,8 @@ overlay.innerHTML =
     var q = (qEl ? qEl.textContent : '').trim();
     var label = cardLabel(card);
     var a = '', n = '';
-    if (withAnswer) {
+    /* 自测模式开启时不把答案喂给 AI，避免剧透（关闭时行为完全不变） */
+    if (withAnswer && !window.__selfTestOn) {
       var aEl = card.querySelector('.card-answer.open .answer-inner');
       a = aEl ? aEl.textContent.trim() : '';
       var nEl = card.querySelector('.card-note-area .note-editor');
@@ -1183,7 +1441,8 @@ overlay.innerHTML =
     });
     wrap.appendChild(copyBtn);
 
-    if ((role === 'ai' || role === 'assistant') && typeof idx === 'number' && idx >= 0) {
+    /* 分享视图只读：只保留"复制"，不渲染"重新生成"（避免消耗 tokens）与"删除" */
+    if (!isSharedView && (role === 'ai' || role === 'assistant') && typeof idx === 'number' && idx >= 0) {
       var regenBtn = document.createElement('button');
       regenBtn.className = 'ai-act-btn ai-act-regen';
       regenBtn.title = '重新生成';
@@ -1195,7 +1454,7 @@ overlay.innerHTML =
       wrap.appendChild(regenBtn);
     }
 
-    if (typeof idx === 'number' && idx >= 0) {
+    if (!isSharedView && typeof idx === 'number' && idx >= 0) {
       var delBtn = document.createElement('button');
       delBtn.className = 'ai-act-btn ai-act-del';
       delBtn.title = '删除这条消息';
@@ -1211,6 +1470,7 @@ overlay.innerHTML =
   }
 
   function deleteMsgAt(idx) {
+    if (isSharedView) return;               /* 分享视图只读：禁止删除 */
     if (isStreaming) { showToast('正在回复中，请稍候'); return; }
     if (idx < 0 || idx >= history.length) return;
     var m = history[idx];
@@ -1230,6 +1490,7 @@ overlay.innerHTML =
   }
 
   function regenerateFrom(idx) {
+    if (isSharedView) return;               /* 分享视图只读：禁止重新生成（不消耗 tokens） */
     if (isStreaming) { showToast('正在回复中，请稍候'); return; }
     var userIdx = -1;
     for (var i = idx - 1; i >= 0; i--) {
@@ -1518,6 +1779,7 @@ overlay.innerHTML =
 
   function buildNav() {
     var progress = document.getElementById('aiProgress');
+    var list = document.getElementById('aiProgressList');
     var panelInner = document.getElementById('aiProgressPanelInner');
     if (!progress) return;
 
@@ -1536,7 +1798,7 @@ overlay.innerHTML =
       var tick = document.createElement('div');
       tick.className = 'ai-tick';
       tick.dataset.idx = i;
-      progress.appendChild(tick);
+      if (list) list.appendChild(tick); else progress.appendChild(tick);
       navTicks.push(tick);
 
       if (panelInner) {
@@ -1638,8 +1900,15 @@ overlay.innerHTML =
       return;
     }
     history.forEach(function (m, i) {
+      if (isSharedView && i === 0) {
+        var banner = document.createElement('div');
+        banner.className = 'ai-shared-banner';
+        banner.textContent = '📖 这是分享的对话片段（仅含对方选中的部分，只读）';
+        msgsEl.appendChild(banner);
+      }
       var div = document.createElement('div');
       div.className = 'ai-msg ' + (m.role === 'user' ? 'user' : 'ai');
+      div.dataset.idx = i;
 
       var copyText = m.content || '';
 
@@ -1757,6 +2026,7 @@ overlay.innerHTML =
   /* ---------- 「继续生成」按钮挂载/卸载 ---------- */
   function showContinueButton() {
     removeContinueButton();
+    if (isSharedView) return;               /* 分享视图只读：不出现「继续生成」 */
     if (!typeState.el || !typeState.el.parentNode) return;
 
     var btn = document.createElement('button');
@@ -1835,6 +2105,7 @@ overlay.innerHTML =
 
   /* ===================== 发送 ===================== */
   function send() {
+    if (isSharedView) return;               /* 分享视图只读：禁止发送消息（不消耗 tokens） */
     // 生成中（未暂停）不允许发送
     if (isStreaming && !isPaused) return;
 
@@ -2080,6 +2351,7 @@ overlay.innerHTML =
 
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
+    if (isSharedView) return; // 分享独占模式：ESC 不关闭，避免整页空白
     var lb = document.querySelector('.ai-lightbox');
     if (lb) { lb.remove(); return; }
     var cf = document.querySelector('.ai-confirm-overlay');
@@ -2094,4 +2366,13 @@ overlay.innerHTML =
   initNavEvents();
   renderAttachBar();
   updateInputPlaceholder();
+
+  /* 分享链接：自动以独占模式打开 AI 窗口 */
+  if (isSharedView) { openPanel(); }
+
+  /* 链接损坏（有 #conv= 但解析失败）时给明确提示，不再静默退化成普通页面 */
+  if (sharedLinkBroken) {
+    openPanel();
+    showToast('⚠️ 分享链接不完整，可能转发时被截断了，请让对方重新生成');
+  }
 })();

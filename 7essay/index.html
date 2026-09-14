@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>南开经济学 · 论述题记忆卡</title>
+    <title>论述题 · 记忆卡</title>
     <style>
         * {
             margin: 0;
@@ -750,7 +751,8 @@
     .app-header .header-left { gap: 10px; }
     .back-home { padding: 6px 13px 6px 10px; font-size: 12.5px; }
 }
-    </style>
+    
+</style>
 </head>
 <body>
 
@@ -1818,15 +1820,21 @@ GDP核算理论则说明，经济增长直观地来源于消费、投资、政�
         }
 
         function saveFavs() {
-            localStorage.setItem('essay_favs', JSON.stringify(favorites));
+            try {
+                localStorage.setItem('essay_favs', JSON.stringify(favorites));
+            } catch (err) { var _f=(err&&(err.name==='QuotaExceededError'||err.code===22||err.code===1014)); var _m=_f?'⚠️ 存储空间不足，这次没能保存！建议删掉笔记里的大图，或先「导出」备份再清理。':'⚠️ 保存失败'; try{ if(typeof showToast==='function'){showToast(_m);} else {alert(_m);} }catch(_x){alert(_m);} }
         }
 
         function saveNotes() {
-            localStorage.setItem('essay_notes', JSON.stringify(notes));
+            try {
+                localStorage.setItem('essay_notes', JSON.stringify(notes));
+            } catch (err) { var _f=(err&&(err.name==='QuotaExceededError'||err.code===22||err.code===1014)); var _m=_f?'⚠️ 存储空间不足，这次没能保存！建议删掉笔记里的大图，或先「导出」备份再清理。':'⚠️ 保存失败'; try{ if(typeof showToast==='function'){showToast(_m);} else {alert(_m);} }catch(_x){alert(_m);} }
         }
 
         function saveEdits() {
-            localStorage.setItem('essay_edits', JSON.stringify(edits));
+            try {
+                localStorage.setItem('essay_edits', JSON.stringify(edits));
+            } catch (err) { var _f=(err&&(err.name==='QuotaExceededError'||err.code===22||err.code===1014)); var _m=_f?'⚠️ 存储空间不足，这次没能保存！建议删掉笔记里的大图，或先「导出」备份再清理。':'⚠️ 保存失败'; try{ if(typeof showToast==='function'){showToast(_m);} else {alert(_m);} }catch(_x){alert(_m);} }
         }
 
         // ---- 答案段落渲染 ----
@@ -2155,6 +2163,7 @@ GDP核算理论则说明，经济增长直观地来源于消费、投资、政�
         }
 
         // ---- 渲染 ----
+
         function render(singleId = null) {
             if (singleId !== null && singleModeId === null) {
                 const ids = getFilteredIds();
@@ -2248,7 +2257,7 @@ GDP核算理论则说明，经济增长直观地来源于消费、投资、政�
                             <div class="answer-inner">${aHtml}</div>
                         </div>
                         <div class="card-note-area" data-id="${d.id}">
-                            <div class="note-editor" contenteditable="true" data-id="${d.id}">${noteHtml}</div>
+                            <div class="note-editor" contenteditable="false" data-id="${d.id}">${noteHtml}</div>
                             <div class="img-resize-control" data-id="${d.id}">
                                 <span>📐 大小</span>
                                 <input type="range" min="10" max="200" value="100" step="2" />
@@ -2346,7 +2355,7 @@ GDP核算理论则说明，经济增长直观地来源于消费、投资、政�
                         noteArea.classList.add('open');
                         this.classList.add('active');
                         const editor = noteArea.querySelector('.note-editor');
-                        if (editor) setTimeout(() => editor.focus(), 100);
+                        /* 默认查看：打开笔记不再自动聚焦进入编辑 */
                     }
                 });
             });
@@ -2372,6 +2381,7 @@ GDP核算理论则说明，经济增长直观地来源于消费、投资、政�
                         reader.onload = function(ev) {
                             const img = document.createElement('img');
                             img.src = ev.target.result;
+                            try { __shrinkNoteImg(img, ev.target.result); } catch (e) {}
                             img.alt = '笔记图片';
                             img.style.maxWidth = '100%';
                             img.style.maxHeight = '300px';
@@ -2446,6 +2456,7 @@ GDP核算理论则说明，经济增长直观地来源于消费、投资、政�
                     const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
                     if (editor) {
                         editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                        editor.setAttribute('contenteditable', 'false');
                         delete notes[id];
                         saveNotes();
                         const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
@@ -2472,6 +2483,7 @@ GDP核算理论则说明，经济增长直观地来源于消费、投资、政�
                             reader.onload = function(ev) {
                                 const img = document.createElement('img');
                                 img.src = ev.target.result;
+                                try { __shrinkNoteImg(img, ev.target.result); } catch (e) {}
                                 img.alt = '粘贴图片';
                                 img.style.maxWidth = '100%';
                                 img.style.maxHeight = '300px';
@@ -2517,6 +2529,12 @@ GDP核算理论则说明，经济增长直观地来源于消费、投资、政�
                 editor.addEventListener('blur', function() {
                     if (this.innerHTML.trim() === '' || this.innerHTML === '<br>') {
                         this.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
+                    }
+                });
+                editor.addEventListener('click', function() {
+                    if (this.getAttribute('contenteditable') === 'false') {
+                        this.setAttribute('contenteditable', 'true');
+                        this.focus();
                     }
                 });
             });
@@ -2715,6 +2733,87 @@ GDP核算理论则说明，经济增长直观地来源于消费、投资、政�
             });
         }, 100);
     </script>
+<script src="../self-test.js"></script>
 <script src="../ai-assistant.js"></script>
+
+
+<script>
+/* ===== 存储安全：图片压缩 + 笔记自动保存 + 离开提醒 ===== */
+(function () {
+    var MAXW = 1200, QUALITY = 0.72, KEEP_UNDER = 220 * 1024;
+    var dirty = false, timer = null;
+
+    /* 压缩笔记里的图片：原图 base64 极易撑爆 localStorage（约 5MB 上限） */
+    window.__shrinkNoteImg = function (img, dataUrl) {
+        if (!img || !dataUrl || dataUrl.indexOf('data:image/') !== 0) return;
+        if (dataUrl.length < KEEP_UNDER) return;
+        var im = new Image();
+        im.onload = function () {
+            try {
+                var w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
+                var scale = Math.min(1, MAXW / (w || 1));
+                var c = document.createElement('canvas');
+                c.width = Math.max(1, Math.round(w * scale));
+                c.height = Math.max(1, Math.round(h * scale));
+                var ctx = c.getContext('2d');
+                ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+                ctx.drawImage(im, 0, 0, c.width, c.height);
+                var out = c.toDataURL('image/jpeg', QUALITY);
+                if (out && out.length < dataUrl.length) {
+                    img.src = out;
+                    img.dataset.shrunk = '1';
+                    schedule(img);
+                }
+            } catch (e) {}
+        };
+        im.src = dataUrl;
+    };
+
+    function saveFrom(el) {
+        var ed = el && el.closest ? el.closest('.note-editor') : null;
+        if (!ed) return;
+        try {
+            var id = ed.dataset.id;
+            var content = (ed.innerHTML || '').trim();
+            if (content === '<br>' || content === '') content = '';
+            if (content) { notes[id] = content; } else { delete notes[id]; }
+            saveNotes();
+        } catch (e) {
+            var btn = document.querySelector('.note-save[data-id="' + (ed.dataset.id || '') + '"]');
+            if (btn) btn.click();
+        }
+    }
+
+    function schedule(el) {
+        dirty = true;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            try { saveFrom(el); dirty = false; } catch (e) {}
+        }, 900);
+    }
+
+    document.addEventListener('input', function (e) {
+        var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
+        if (ed) schedule(ed);
+    }, true);
+
+    document.addEventListener('paste', function (e) {
+        var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
+        if (ed) setTimeout(function () { schedule(ed); }, 150);
+    }, true);
+
+    /* 手动点过保存就认为已保存，不再拦离开 */
+    document.addEventListener('click', function (e) {
+        if (e.target && e.target.closest && e.target.closest('.note-save')) dirty = false;
+    }, true);
+
+    window.addEventListener('beforeunload', function (e) {
+        if (!dirty) return;
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+    });
+})();
+</script>
 </body>
 </html>
