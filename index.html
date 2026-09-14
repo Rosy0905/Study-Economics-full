@@ -715,7 +715,9 @@ header p {
   font-family: inherit;
   cursor: pointer;
   letter-spacing: .5px;
-  transition: transform .15s ease, filter .15s ease, background .15s ease;
+  /* 统一白色文字，避免继承 body 深绿色 */
+  color: #fff;
+  transition: transform .15s ease, filter .15s ease, background .15s ease, box-shadow .2s ease;
 }
 .cbtn:active { transform: scale(.97); }
 
@@ -725,12 +727,21 @@ header p {
 }
 .cbtn-cancel:hover { background: #e4f0e9; }
 
+/* 默认“确认”按钮：橘红警示色（用于清除数据） */
 .cbtn-ok {
   background: linear-gradient(135deg, #f3a98c, #e57c62);
   color: #fff;
   box-shadow: 0 4px 12px rgba(229, 124, 98, .28);
 }
 .cbtn-ok:hover { filter: brightness(1.05); }
+
+/* ★ 导出按钮：绿色系，与页面主调统一 */
+.cbtn-export {
+  background: linear-gradient(135deg, #6fc9a3, #3fa87a);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(63, 168, 122, .28);
+}
+.cbtn-export:hover { filter: brightness(1.05); }
 
 /* ================= 导出选择弹层 ================= */
 .confirm-box.export-box {
@@ -1014,6 +1025,7 @@ footer {
     <p class="confirm-warn">此操作不可恢复，请谨慎操作</p>
     <div class="confirm-btns">
       <button class="cbtn cbtn-cancel" id="confirmCancel" type="button">取消</button>
+      <!-- 清除确认：橘红警示色 -->
       <button class="cbtn cbtn-ok" id="confirmOk" type="button">确认</button>
     </div>
   </div>
@@ -1060,7 +1072,8 @@ footer {
 
     <div class="confirm-btns">
       <button class="cbtn cbtn-cancel" id="exportCancel" type="button">取消</button>
-      <button class="cbtn cbtn-ok" id="exportOk" type="button">导出</button>
+      <!-- 导出按钮：绿色系 -->
+      <button class="cbtn cbtn-export" id="exportOk" type="button">导出</button>
     </div>
   </div>
 </div>
@@ -1747,7 +1760,7 @@ function renderHome() {
   /* ==========================================================
      微信里的导出浮层：分段复制 JSON
      ----------------------------------------------------------
-     分段长度 4400 字（微信剪贴板约 4500，留少量余量）
+     分段长度 4500 字（微信剪贴板约 4500，减少分段次数）
      ========================================================== */
   function showWeChatExportDialog(jsonText, fileName) {
     var old = document.getElementById('wxExportOverlay');
@@ -1850,8 +1863,8 @@ function renderHome() {
       document.head.appendChild(st);
     }
 
-    /* 分块：微信剪贴板约 4500 字，留少量余量用 4400 */
-    var CHUNK = 4400;
+    /* 分块：微信剪贴板约 4500 字，用 4500 减少分段次数 */
+    var CHUNK = 4500;
     var chunks = [];
     for (var p = 0; p < jsonText.length; p += CHUNK) {
       chunks.push(jsonText.slice(p, p + CHUNK));
