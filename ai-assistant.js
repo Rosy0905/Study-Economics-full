@@ -2012,12 +2012,18 @@ overlay.innerHTML =
     send();
   });
 
-  /* 键盘：移动端 Enter 换行；桌面端 Enter 发送，Shift+Enter 换行 */
+  /* 键盘：移动端 Enter 换行；桌面端 Enter = 发送 / 暂停 / 继续，Shift+Enter 换行 */
   inputEl.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter' || e.isComposing) return;
-    if (isMobile()) return;
-    if (e.shiftKey) return;
+    if (isMobile()) return;                 // 移动端：Enter 换行
+    if (e.shiftKey) return;                 // Shift+Enter 换行
     e.preventDefault();
+
+    if (isStreaming) {
+      if (!isPaused) pauseStream();         // 生成中 → 暂停
+      else resumeStream();                  // 已暂停 → 继续
+      return;
+    }
     send();
   });
 
@@ -2039,7 +2045,7 @@ overlay.innerHTML =
   function syncInputPlaceholder() {
     inputEl.placeholder = isMobile()
       ? '输入问题…（回车换行）'
-      : '输入问题…（Enter 发送，Shift+Enter 换行，可直接粘贴图片）';
+      : '输入问题…（Enter 发送/暂停，Shift+Enter 换行，可直接粘贴图片）';
   }
   syncInputPlaceholder();
   window.addEventListener('resize', syncInputPlaceholder);
