@@ -158,8 +158,26 @@
 .ai-send{flex:0 0 auto;width:46px;height:46px;border-radius:14px;border:none;background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(63,168,122,.28);}
 .ai-send:hover{filter:brightness(1.06);}
 .ai-send svg{width:20px;height:20px;display:block;}
-.ai-send.stop{background:linear-gradient(135deg,#fff4c9,#ffe08a);color:#8a6a1a;box-shadow:0 4px 12px rgba(214,168,60,.28);}
-.ai-send.paused{background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;box-shadow:0 4px 12px rgba(63,168,122,.28);}
+.ai-send.stop,.ai-send.paused{background:linear-gradient(135deg,#fff4c9,#ffe08a);color:#8a6a1a;box-shadow:0 4px 12px rgba(214,168,60,.28);}
+.ai-send:disabled{cursor:not-allowed;opacity:.55;}
+.ai-send:disabled:hover{filter:none;}
+
+/* ===== 暂停后气泡下方的「继续生成」按钮 ===== */
+.ai-continue-btn{
+  align-self:flex-start;
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:-6px;margin-left:2px;
+  padding:7px 15px 7px 12px;
+  border:1.5px solid #d3ecdf;border-radius:20px;
+  background:#fff;color:#3fa87a;
+  font-size:12.5px;font-weight:600;font-family:inherit;
+  cursor:pointer;
+  transition:background .18s,border-color .18s,color .18s,transform .12s;
+  animation:aiMsgIn .25s ease;
+}
+.ai-continue-btn:hover{background:#f2fbf6;border-color:#5ec99a;color:#2a8a5e;}
+.ai-continue-btn:active{transform:scale(.96);}
+.ai-continue-btn svg{width:13px;height:13px;display:block;}
 
 /* ===== 附件：上传按钮（发送键左边） ===== */
 .ai-attach-btn{
@@ -427,19 +445,20 @@
   var history = loadHistory();
   var controller = null;
   var isStreaming = false;
-  var isPaused = false;              // 新增：暂停状态
-  var streamFinished = false;        // 新增：API 是否已经吐完
+  var isPaused = false;
+  var streamFinished = false;
   var stickBottom = true;
   var savedScrollTop = null;
 
-  /* 打字机状态（提升为模块级，便于 togglePause 访问） */
+  /* 打字机状态（提升为模块级，便于 pause/resume 访问） */
   var typeState = {
     target: '',
     shown: '',
     timer: null,
     el: null,
     cursor: null,
-    acc: ''
+    acc: '',
+    continueBtn: null
   };
 
   /* 待发送附件（内存中） */
@@ -1668,10 +1687,11 @@ overlay.innerHTML =
 
   /* ===================== 打字机 ===================== */
   function tickType() {
-    if (isPaused) return;                       // ← 暂停时不推进
+    if (isPaused) return;
     var st = typeState;
     if (st.shown.length >= st.target.length) {
       if (st.timer) { clearInterval(st.timer); st.timer = null; }
+      if (streamFinished && isStreaming) finalizeStream();
       return;
     }
     var remain = st.target.length - st.shown.length;
@@ -1687,21 +1707,71 @@ overlay.innerHTML =
     typeState.timer = setInterval(tickType, 30);
   }
 
-  function togglePause() {
-    if (!isStreaming) return;
-    isPaused = !isPaused;
-    setSendBtn(true, isPaused);
-    if (!isPaused) {
-      if (streamFinished) finalizeStream();     // API 已吐完 → 直接收尾
-      else ensureTyping();                      // 否则继续打字
+  /* ---------- 暂停生成 ---------- */
+  function pauseStream() {
+    if (!isStreaming || isPaused) return;
+    isPaused = true;
+
+    if (typeState.timer) { clearInterval(typeState.timer); typeState.timer = null; }
+    if (typeState.cursor) typeState.cursor.style.display = 'none';
+
+    setSendBtn(true, true);
+    showContinueButton();
+  }
+
+  /* ---------- 继续生成 ---------- */
+  function resumeStream() {
+    if (!isStreaming || !isPaused) return;
+    isPaused = false;
+
+    removeContinueButton();
+    if (typeState.cursor) typeState.cursor.style.display = '';
+
+    setSendBtn(true, false);
+
+    if (streamFinished && typeState.shown.length >= typeState.target.length) {
+      finalizeStream();
+    } else {
+      ensureTyping();
     }
+  }
+
+  /* ---------- 「继续生成」按钮挂载/卸载 ---------- */
+  function showContinueButton() {
+    removeContinueButton();
+    if (!typeState.el || !typeState.el.parentNode) return;
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ai-continue-btn';
+    btn.innerHTML = PLAY_ICON + '<span>继续生成</span>';
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      resumeStream();
+    });
+
+    var parent = typeState.el.parentNode;
+    if (typeState.el.nextSibling) parent.insertBefore(btn, typeState.el.nextSibling);
+    else parent.appendChild(btn);
+
+    typeState.continueBtn = btn;
+    scrollToBottom();
+  }
+
+  function removeContinueButton() {
+    if (typeState.continueBtn && typeState.continueBtn.parentNode) {
+      typeState.continueBtn.parentNode.removeChild(typeState.continueBtn);
+    }
+    typeState.continueBtn = null;
   }
 
   function finalizeStream(error) {
     if (!isStreaming) return;
     var st = typeState;
 
+    removeContinueButton();
     if (st.timer) { clearInterval(st.timer); st.timer = null; }
+
     if (st.shown.length < st.target.length) {
       st.shown = st.target;
       st.el.innerHTML = renderMD(st.shown);
@@ -1746,7 +1816,7 @@ overlay.innerHTML =
 
   /* ===================== 发送 ===================== */
   function send() {
-    if (isStreaming) return;                 // 流式中：忽略（暂停/继续由按钮控制）
+    if (isStreaming) return;
 
     var text = inputEl.value.trim();
     if (!text && !pendingAttachments.length) return;
@@ -1783,13 +1853,13 @@ overlay.innerHTML =
     cursor.className = 'ai-cursor';
     aiDiv.appendChild(cursor);
 
-    /* 初始化打字机状态 */
     typeState.target = '';
     typeState.shown  = '';
     typeState.timer  = null;
     typeState.el     = aiDiv;
     typeState.cursor = cursor;
     typeState.acc    = '';
+    typeState.continueBtn = null;
 
     isStreaming = true;
     isPaused = false;
@@ -1835,7 +1905,7 @@ overlay.innerHTML =
               if (delta) {
                 typeState.acc += delta;
                 typeState.target += delta;
-                ensureTyping();
+                if (!isPaused) ensureTyping();
               }
             } catch (e) {}
           }
@@ -1846,8 +1916,13 @@ overlay.innerHTML =
     })
     .then(function () {
       streamFinished = true;
-      if (!isPaused) finalizeStream();
-      // 暂停中：等用户点“继续”时再收尾
+      if (!isPaused) {
+        if (typeState.shown.length >= typeState.target.length) {
+          finalizeStream();
+        } else {
+          ensureTyping();
+        }
+      }
     })
     .catch(function (err) {
       streamFinished = true;
@@ -1861,22 +1936,27 @@ overlay.innerHTML =
     isStreaming = false;
     isPaused = false;
     streamFinished = false;
+    removeContinueButton();
+    if (typeState.timer) { clearInterval(typeState.timer); typeState.timer = null; }
     setSendBtn(false);
   }
 
   function setSendBtn(streaming, paused) {
     if (!streaming) {
       sendBtn.classList.remove('stop', 'paused');
+      sendBtn.disabled = false;
       sendBtn.innerHTML = SEND_ICON;
       sendBtn.title = '发送';
     } else if (paused) {
       sendBtn.classList.remove('stop');
       sendBtn.classList.add('paused');
+      sendBtn.disabled = true;
       sendBtn.innerHTML = PLAY_ICON;
-      sendBtn.title = '继续生成';
+      sendBtn.title = '已暂停，点下方「继续生成」';
     } else {
       sendBtn.classList.remove('paused');
       sendBtn.classList.add('stop');
+      sendBtn.disabled = false;
       sendBtn.innerHTML = PAUSE_ICON;
       sendBtn.title = '暂停生成';
     }
@@ -1922,17 +2002,21 @@ overlay.innerHTML =
     handlePaste(e);
   });
 
-  /* 发送按钮：流式中 → 暂停/继续；空闲 → 发送 */
+  /* 发送按钮：流式中 → 暂停；已暂停时按钮被 disabled；空闲 → 发送 */
   sendBtn.addEventListener('click', function () {
-    if (isStreaming) { togglePause(); return; }
+    if (isStreaming) {
+      if (isPaused) return;
+      pauseStream();
+      return;
+    }
     send();
   });
 
   /* 键盘：移动端 Enter 换行；桌面端 Enter 发送，Shift+Enter 换行 */
   inputEl.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter' || e.isComposing) return;
-    if (isMobile()) return;                 // 移动端：默认行为 = 换行
-    if (e.shiftKey) return;                 // 桌面端：Shift+Enter 换行
+    if (isMobile()) return;
+    if (e.shiftKey) return;
     e.preventDefault();
     send();
   });
@@ -1947,7 +2031,7 @@ overlay.innerHTML =
     var lb = document.querySelector('.ai-lightbox');
     if (lb) { lb.remove(); return; }
     var cf = document.querySelector('.ai-confirm-overlay');
-    if (cf) return;                         // 确认框自己处理 ESC
+    if (cf) return;
     if (panel.classList.contains('show')) closePanel();
   });
 
