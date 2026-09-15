@@ -1019,10 +1019,10 @@ function render(singleId = null){
   });
 
   document.querySelectorAll('.note-clear').forEach(btn => {
-    btn.addEventListener('click', function(e){
+    btn.addEventListener('click', async function(e){
       e.stopPropagation();
       const id = this.dataset.id;
-      if(!confirm('⚠️ 确定要清空这条笔记吗？')) return;
+      if(!(await window.showConfirm({ title: '清空笔记', message: '确定要清空这条笔记吗？', okText: '清空', danger: true }))) return;
       const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
       if(editor){
         editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';

@@ -1799,74 +1799,54 @@
             });
 
             // 2. 收藏
-            document.querySelectorAll('.btn-fav').forEach(btn => {
-                btn.addEventListener('click', function(e) {
+                        document.querySelectorAll('.btn-fav').forEach(btn => {
+                btn.addEventListener('click', function(e){
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const idx = favorites.indexOf(id);
-                    if (idx > -1) {
-                        favorites.splice(idx, 1);
-                        this.classList.remove('active');
-                        this.textContent = '☆';
-                    } else {
-                        favorites.push(id);
-                        this.classList.add('active');
-                        this.textContent = '⭐';
-                    }
+                    if(idx > -1){favorites.splice(idx,1);this.classList.remove('active');this.textContent = '☆';}
+                    else{favorites.push(id);this.classList.add('active');this.textContent = '⭐';}
                     saveFavs();
                     const card = this.closest('.card-item');
-                    if (card) {
-                        if (favorites.includes(id)) {
-                            card.classList.add('favorited');
-                        } else {
-                            card.classList.remove('favorited');
-                        }
-                    }
+                    if(card) card.classList.toggle('favorited', favorites.includes(id));
                     favSpan.textContent = favorites.length;
                 });
             });
 
-            // 3. 笔记按钮
             document.querySelectorAll('.btn-note').forEach(btn => {
-                btn.addEventListener('click', function(e) {
+                btn.addEventListener('click', function(e){
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
-
-                    if (!noteArea) return;
-
-                    const isOpen = noteArea.classList.contains('open');
-                    if (isOpen) {
+                    if(!noteArea) return;
+                    if(noteArea.classList.contains('open')){
                         noteArea.classList.remove('open');
                         this.classList.remove('active');
                     } else {
                         noteArea.classList.add('open');
                         this.classList.add('active');
                         const editor = noteArea.querySelector('.note-editor');
-                        /* 默认查看：打开笔记不再自动聚焦进入编辑 */
+                        if(editor) setTimeout(()=>editor.focus(),100);
                     }
                 });
             });
 
-            // 4. 插入图片
             document.querySelectorAll('.btn-insert-img').forEach(btn => {
-                btn.addEventListener('click', function(e) {
+                btn.addEventListener('click', function(e){
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
-                    if (!editor) return;
-
+                    if(!editor) return;
                     const fileInput = document.createElement('input');
                     fileInput.type = 'file';
                     fileInput.accept = 'image/*';
                     fileInput.style.display = 'none';
                     document.body.appendChild(fileInput);
-
-                    fileInput.onchange = function() {
+                    fileInput.onchange = function(){
                         const file = this.files[0];
-                        if (!file) { document.body.removeChild(fileInput); return; }
+                        if(!file){document.body.removeChild(fileInput);return;}
                         const reader = new FileReader();
-                        reader.onload = function(ev) {
+                        reader.onload = function(ev){
                             const img = document.createElement('img');
                             img.src = ev.target.result;
                             try { __shrinkNoteImg(img, ev.target.result); } catch (e) {}
@@ -1876,19 +1856,16 @@
                             img.style.borderRadius = '10px';
                             img.style.margin = '6px 0';
                             img.style.display = 'block';
-                            img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
                             img.dataset.noteImg = 'true';
                             const sel = window.getSelection();
-                            if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+                            if(sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)){
                                 const range = sel.getRangeAt(0);
                                 range.insertNode(img);
                                 range.setStartAfter(img);
                                 range.collapse(true);
                                 sel.removeAllRanges();
                                 sel.addRange(range);
-                            } else {
-                                editor.appendChild(img);
-                            }
+                            } else editor.appendChild(img);
                             showToast('🖼️ 图片已插入，点击图片可调大小');
                             document.body.removeChild(fileInput);
                             bindImgClick(editor);
@@ -1899,60 +1876,46 @@
                 });
             });
 
-            // 5. 保存笔记
             document.querySelectorAll('.note-save').forEach(btn => {
-                btn.addEventListener('click', function(e) {
+                btn.addEventListener('click', function(e){
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
-                    if (!editor) return;
-
+                    if(!editor) return;
                     let content = editor.innerHTML.trim();
-                    if (content === '<br>' || content === '') {
-                        content = '';
-                    }
-                    if (content) {
-                        notes[id] = content;
-                    } else {
-                        delete notes[id];
-                    }
+                    if(content === '<br>' || content === '') content = '';
+                    if(content) notes[id] = content;
+                    else delete notes[id];
                     saveNotes();
                     const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
-                    if (noteBtn) {
-                        if (content) {
-                            noteBtn.classList.add('active');
-                        } else {
-                            noteBtn.classList.remove('active');
-                        }
-                    }
-                    if (content) {
+                    if(noteBtn) noteBtn.classList.toggle('active', !!content);
+                    if(content){
                         const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
-                        if (noteArea) noteArea.classList.add('open');
+                        if(noteArea) noteArea.classList.add('open');
                     }
                     const orig = btn.textContent;
                     btn.textContent = '✅ 已保存';
-                    setTimeout(() => { btn.textContent = orig; }, 1200);
+                    setTimeout(()=>{btn.textContent = orig;},1200);
                 });
             });
 
-            // 6. 清空笔记
             document.querySelectorAll('.note-clear').forEach(btn => {
-                btn.addEventListener('click', function(e) {
+                btn.addEventListener('click', async function(e){
                     e.stopPropagation();
                     const id = this.dataset.id;
-                    if (!confirm('⚠️ 确定要清空这条笔记吗？')) return;
+                    if(!(await window.showConfirm({ title: '清空笔记', message: '确定要清空这条笔记吗？', okText: '清空', danger: true }))) return;
                     const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
-                    if (editor) {
+                    if(editor){
                         editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
                         editor.setAttribute('contenteditable', 'false');
                         delete notes[id];
                         saveNotes();
                         const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
-                        if (noteBtn) noteBtn.classList.remove('active');
+                        if(noteBtn) noteBtn.classList.remove('active');
                         const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
-                        if (noteArea) noteArea.classList.remove('open');
+                        if(noteArea) noteArea.classList.remove('open');
                         const rc = document.querySelector(`.img-resize-control[data-id="${id}"]`);
-                        if (rc) rc.classList.remove('show');
+                        if(rc) rc.classList.remove('show');
                         showToast('🗑️ 笔记已清空');
                     }
                 });

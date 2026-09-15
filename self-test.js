@@ -185,6 +185,7 @@
             revealed[id] = !revealed[id];
             applyMask(card);
             refreshCard(card);
+            window.__stFocusId = id; // 告知 AI：这张是当前正在看/刚揭晓的卡片
         });
     }
 
@@ -197,6 +198,7 @@
         if (marks[id] === level) delete marks[id];   // 再点一次 = 清除
         else marks[id] = level;
         revealed[id] = !!marks[id];
+        window.__stFocusId = id; // 告知 AI：这张是当前正在自评的卡片
         save();
         applyAll();
     }
@@ -289,6 +291,7 @@
     toggle.addEventListener('change', function () {
         ON = toggle.checked;
         window.__selfTestOn = ON;                 // AI 据此不读答案
+        window.__stFocusId = null;               // 切换开关时重置焦点标记
         document.body.classList.toggle('st-on', ON);
 
         if (ON) {
@@ -323,6 +326,8 @@
         // 只阻止「点题目收起答案」，不自动揭晓——揭晓统一走「查看答案」按钮
         e.stopPropagation();
         e.preventDefault();
+        var _c = q.closest('.card-item');
+        if (_c) window.__stFocusId = _c.getAttribute('data-id'); // 点题目即视为正在看这张
     }, true);
 
     /* ---------- 卡片重渲染（搜索/筛选）后重新套用 ---------- */

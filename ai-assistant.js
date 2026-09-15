@@ -149,11 +149,12 @@
 }
 .ai-share-gen:active{background:#3aa87a;}
 .ai-share-gen:disabled{background:#cfe6da;cursor:not-allowed;}
-.ai-share-cancel{background:transparent;color:#9bb0a5;}
+.ai-share-cancel{background:transparent;color:#6b8579;}
 @media (hover: hover) and (pointer: fine) {
-  .ai-share-cancel:hover{color:#6b8579;}
+  .ai-share-cancel:hover{background:#eef4f1;box-shadow:0 2px 8px rgba(40,90,70,.14);}
 }
-.ai-share-cancel:active{color:#6b8579;}
+.ai-share-cancel:active{background:#e6efe9;box-shadow:0 1px 4px rgba(40,90,70,.18);}
+.ai-cfg-key{-webkit-text-security:disc;text-security:disc;}
 .ai-shared-banner{margin:0 auto 12px;max-width:94%;text-align:center;font-size:12px;color:#5e8a72;background:#eef8f2;border:1px solid #e0f0e7;border-radius:12px;padding:8px 12px;align-self:center;}
 
 /* ===== 分享链接独占模式：只显示 AI 窗口，隐藏整个知识库页面 ===== */
@@ -411,7 +412,7 @@ body.shared-ai-view .ai-close{display:none;}
     +     '<div class="ai-cfg-field"><label>服务商</label><select id="cfgPreset"></select><div class="ai-cfg-hint" id="cfgPresetHint"></div></div>'
     +     '<div class="ai-cfg-field"><label>API 地址（Base URL）</label><input type="text" id="cfgBase" placeholder="https://api.deepseek.com/v1" /></div>'
     +     '<div class="ai-cfg-field"><label>模型名称</label><input type="text" id="cfgModel" placeholder="deepseek-chat" /><div class="ai-cfg-hint">💡 想让它“看懂图片”，请填支持视觉的模型：qwen-vl-max、glm-4v、gpt-4o 等</div></div>'
-    +     '<div class="ai-cfg-field"><label>API Key</label><input type="password" id="cfgKey" placeholder="sk-..." autocomplete="off" /><div class="ai-cfg-hint">🔒 只存在你本地浏览器</div></div>'
+    +     '<div class="ai-cfg-field"><label>API Key</label><input type="text" id="cfgKey" class="ai-cfg-key" placeholder="sk-..." autocomplete="off" data-1p-ignore data-lpignore="true" data-bwignore="true" data-form-type="other" /><div class="ai-cfg-hint">🔒 只存在你本地浏览器</div></div>'
     +     '<div class="ai-cfg-field"><label>系统提示词（可改）</label><textarea id="cfgSystem" rows="10"></textarea></div>'
     +     '<button class="ai-save" id="aiSaveCfg">保存并开始使用</button>'
     +   '</div>'
@@ -556,6 +557,8 @@ body.shared-ai-view .ai-close{display:none;}
   if (isSharedView) {
     document.body.classList.add('shared-ai-view'); // 独占模式：隐藏整页，只留 AI 窗口
     document.title = '来自分享的对话';               // 标签页不暴露子页面名称
+    var _pk = document.getElementById('cfgKey');
+    if (_pk) _pk.remove(); // 分享只读视图不渲染密码框，避免浏览器弹出"保存密码"
   }
   var controller = null;
   var isStreaming = false;
@@ -796,7 +799,9 @@ body.shared-ai-view .ai-close{display:none;}
 
     setTimeout(function () {
       try {
-        if (savedScrollTop !== null) {
+        if (isSharedView) {
+          msgsEl.scrollTop = 0;            // 分享视图：从头开始看
+        } else if (savedScrollTop !== null) {
           msgsEl.scrollTop = savedScrollTop;
         } else {
           msgsEl.scrollTop = msgsEl.scrollHeight;
@@ -804,7 +809,7 @@ body.shared-ai-view .ai-close{display:none;}
         var gap = msgsEl.scrollHeight - msgsEl.scrollTop - msgsEl.clientHeight;
         stickBottom = gap < 60;
       } catch (e) {}
-      inputEl.focus();
+      if (!isSharedView) inputEl.focus();
       buildNav();
     }, 120);
   }
@@ -842,8 +847,26 @@ body.shared-ai-view .ai-close{display:none;}
     if (title) title.textContent = on ? 'AI 答疑助手 · 分享片段' : 'AI 答疑助手';
   }
 
+  var _lockedScrollY = 0;
+  function lockBodyScroll() {
+    _lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = (-_lockedScrollY) + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+  }
+  function unlockBodyScroll() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, _lockedScrollY);
+  }
   function openPanel() {
     panel.classList.add('show'); fab.classList.add('hidden');
+    if (!isSharedView && isMobile()) lockBodyScroll();
     if (isSharedView) {
       /* 分享独占模式：强制全屏，不被 applySavedSize 的内联尺寸覆盖 */
       panel.style.position = 'fixed';
@@ -863,6 +886,7 @@ body.shared-ai-view .ai-close{display:none;}
   function closePanel() {
     panel.classList.remove('show');
     fab.classList.remove('hidden');
+    if (!isSharedView && isMobile()) unlockBodyScroll();
     stopStream();
     try { savedScrollTop = msgsEl.scrollTop; } catch (e) {}
   }
@@ -958,8 +982,8 @@ body.shared-ai-view .ai-close{display:none;}
     var enc = encodeConv(picked);
     if (!enc) { showToast('暂无可分享的内容'); return; }
     if (enc.length > 16000) { showToast('所选内容过长，请减少勾选'); return; }
-    var url = location.href.split('#')[0] + '#conv=' + encodeURIComponent(enc);
-    try { window.history.replaceState(null, '', '#conv=' + encodeURIComponent(enc)); } catch (e) {}
+    var base = location.href.split('#')[0].replace(/[^/]*$/, 'share.html');
+    var url = base + '#conv=' + encodeURIComponent(enc);
     copyToClipboard(url, function () {
       showToast('已复制分享链接（仅含所选 ' + picked.length + ' 条）✅');
       exitSelectMode();
@@ -1035,6 +1059,7 @@ overlay.innerHTML =
       document.addEventListener('keydown', esc);
     });
   }
+  window.showConfirm = showConfirm; // 供各子页复用统一的自定义确认框
 
   /* ===================== 读取页面上下文 ===================== */
 
@@ -1062,13 +1087,16 @@ overlay.innerHTML =
     var q = (qEl ? qEl.textContent : '').trim();
     var label = cardLabel(card);
     var a = '', n = '';
-    /* 自测模式开启时不把答案喂给 AI，避免剧透（关闭时行为完全不变） */
-    if (withAnswer && !window.__selfTestOn) {
+    /* 答案当前对用户可见（未遮罩）才喂给 AI；自测遮罩态不喂，避免剧透 */
+    if (withAnswer) {
       var aEl = card.querySelector('.card-answer.open .answer-inner');
-      a = aEl ? aEl.textContent.trim() : '';
-      var nEl = card.querySelector('.card-note-area .note-editor');
-      n = nEl ? nEl.textContent.trim() : '';
-      if (n && n.indexOf('点击写下笔记') > -1) n = '';
+      var masked = aEl && aEl.closest('.st-mask');
+      if (aEl && !masked) {
+        a = aEl.textContent.trim();
+        var nEl = card.querySelector('.card-note-area .note-editor');
+        n = nEl ? nEl.textContent.trim() : '';
+        if (n && n.indexOf('点击写下笔记') > -1) n = '';
+      }
     }
     return { key: cardKey(card), label: label, q: q, a: a, n: n };
   }
@@ -1145,6 +1173,14 @@ overlay.innerHTML =
       }
     }
     if (!focusEl && visible.length) focusEl = visible[0].el;
+
+    /* 自测模式下，以"刚揭晓/刚标记"的卡片为焦点，贴合用户正在看的那张 */
+    if (window.__selfTestOn && window.__stFocusId) {
+      for (var s = 0; s < visible.length; s++) {
+        var _sid = visible[s].el.getAttribute ? visible[s].el.getAttribute('data-id') : null;
+        if (_sid === window.__stFocusId) { focusEl = visible[s].el; break; }
+      }
+    }
 
     var ctx = '';
     var h1 = document.querySelector('.app-header h1, header h1, h1');
@@ -1933,7 +1969,7 @@ overlay.innerHTML =
       attachMsgActions(div, copyText, m.role === 'user' ? 'user' : 'ai', i);
       msgsEl.appendChild(div);
     });
-    scrollToBottom();
+    if (isSharedView) { try { msgsEl.scrollTop = 0; } catch (e) {} } else { scrollToBottom(); }
     buildNav();
   }
 
