@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+<link rel="icon" href="../icons/icon.svg">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#3FA87A">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>历年真题 · 记忆卡</title>
@@ -46,13 +49,17 @@
         background: #cfe2cf; border: none; padding: 6px 18px; border-radius: 30px;
         font-size: 13px; cursor: pointer; color: #1e4a2a; font-weight: 500; transition: background 0.2s;
     }
-    .filter-bar .btn-clear-filter:hover { background: #b8d4b8; }
+    @media (hover: hover) and (pointer: fine) {
+        .filter-bar .btn-clear-filter:hover { background: #b8d4b8; }
+    }
     .filter-bar .btn-random {
         background: #d4c49a; border: none; padding: 6px 22px; border-radius: 30px;
         font-size: 14px; cursor: pointer; color: #3f3a1a; font-weight: 600;
         transition: background 0.2s, transform 0.1s;
     }
-    .filter-bar .btn-random:hover { background: #c9b888; transform: scale(1.02); }
+    @media (hover: hover) and (pointer: fine) {
+        .filter-bar .btn-random:hover { background: #c9b888; transform: scale(1.02); }
+    }
     .filter-bar .btn-random:active { transform: scale(0.96); }
 
     .single-mode-bar {
@@ -68,7 +75,9 @@
         padding: 2px 10px; border-radius: 8px; color: #7a5a2a;
         transition: background 0.15s, transform 0.1s; line-height: 1;
     }
-    .single-mode-bar .mode-left .btn-nav:hover { background: #e8ddd0; transform: scale(1.05); }
+    @media (hover: hover) and (pointer: fine) {
+        .single-mode-bar .mode-left .btn-nav:hover { background: #e8ddd0; transform: scale(1.05); }
+    }
     .single-mode-bar .mode-left .btn-nav:active { transform: scale(0.92); }
     .single-mode-bar .mode-left .btn-nav.disabled { opacity: 0.35; pointer-events: none; }
     .single-mode-bar .card-id-badge {
@@ -81,7 +90,9 @@
         padding: 2px 10px; border-radius: 8px; color: #8a5a4a;
         transition: background 0.15s, transform 0.1s; line-height: 1;
     }
-    .single-mode-bar .btn-exit-single:hover { background: #e8d5d0; transform: scale(1.05); }
+    @media (hover: hover) and (pointer: fine) {
+        .single-mode-bar .btn-exit-single:hover { background: #e8d5d0; transform: scale(1.05); }
+    }
     .single-mode-bar .btn-exit-single:active { transform: scale(0.92); }
 
     .card-grid {
@@ -99,7 +110,9 @@
         border-left: 6px solid #8fbe8f; transition: box-shadow 0.25s, transform 0.15s, border-color 0.3s;
         overflow: hidden; position: relative;
     }
-    .card-item:hover { box-shadow: 0 8px 24px rgba(50, 100, 50, 0.13); }
+    @media (hover: hover) and (pointer: fine) {
+        .card-item:hover { box-shadow: 0 8px 24px rgba(50, 100, 50, 0.13); }
+    }
     .card-item.favorited { border-left-color: #d4a24e; background: #fcf9f0; }
     .card-item.note-type { border-left-color: #7ea8c4; background: #f7fbfd; }
     .card-item.note-type.favorited { border-left-color: #d4a24e; }
@@ -129,7 +142,9 @@
         padding: 4px 6px; border-radius: 10px;
         transition: background 0.15s, transform 0.1s; line-height: 1; color: #3f6a3f;
     }
-    .card-actions button:hover { background: #e6f0e6; transform: scale(1.05); }
+    @media (hover: hover) and (pointer: fine) {
+        .card-actions button:hover { background: #e6f0e6; transform: scale(1.05); }
+    }
     .card-actions .btn-fav { color: #b8a06a; }
     .card-actions .btn-fav.active { color: #d4a24e; }
     .card-actions .btn-note { color: #4f7a4f; }
@@ -198,7 +213,9 @@
         background: #dcebd9; border: none; padding: 2px 14px; border-radius: 30px;
         font-size: 12px; cursor: pointer; color: #1e4a2a; transition: background 0.2s;
     }
-    .card-note-area .img-resize-control .btn-reset-size:hover { background: #c2ddc2; }
+    @media (hover: hover) and (pointer: fine) {
+        .card-note-area .img-resize-control .btn-reset-size:hover { background: #c2ddc2; }
+    }
 
     .card-note-area .note-actions {
         display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: center;
@@ -208,14 +225,22 @@
         font-size: 13px; cursor: pointer; color: #1e4a2a; font-weight: 500;
         transition: background 0.2s, transform 0.1s;
     }
-    .card-note-area .note-actions button:hover { background: #c2ddc2; }
+    @media (hover: hover) and (pointer: fine) {
+        .card-note-area .note-actions button:hover { background: #c2ddc2; }
+    }
     .card-note-area .note-actions button:active { transform: scale(0.96); }
     .card-note-area .note-actions .btn-insert-img { background: #d4d9c4; color: #2f4a2f; }
-    .card-note-area .note-actions .btn-insert-img:hover { background: #c4cdb0; }
+    @media (hover: hover) and (pointer: fine) {
+        .card-note-area .note-actions .btn-insert-img:hover { background: #c4cdb0; }
+    }
     .card-note-area .note-actions .note-save { background: #a8c8a8; color: #1a3a1a; }
-    .card-note-area .note-actions .note-save:hover { background: #94b894; }
+    @media (hover: hover) and (pointer: fine) {
+        .card-note-area .note-actions .note-save:hover { background: #94b894; }
+    }
     .card-note-area .note-actions .note-clear { background: #e6d6d6; color: #6a3a3a; }
-    .card-note-area .note-actions .note-clear:hover { background: #dcc4c4; }
+    @media (hover: hover) and (pointer: fine) {
+        .card-note-area .note-actions .note-clear:hover { background: #dcc4c4; }
+    }
     .card-note-area .note-actions .note-size-hint {
         font-size: 12px; color: #6f8f6f; margin-left: auto; opacity: 0.7;
     }
@@ -259,7 +284,9 @@
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #dce8dc; border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: #8fbe8f; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #6f9e6f; }
+    @media (hover: hover) and (pointer: fine) {
+        ::-webkit-scrollbar-thumb:hover { background: #6f9e6f; }
+    }
 /* ================= 返回主页按钮 ================= */
 .app-header .header-left {
     display: flex;
@@ -284,18 +311,22 @@
     box-shadow: 0 1px 3px rgba(60, 110, 60, 0.10);
     transition: background .2s, transform .2s, box-shadow .2s;
 }
-.back-home:hover {
-    background: #a8d0a8;
-    transform: translateX(-2px);
-    box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+@media (hover: hover) and (pointer: fine) {
+    .back-home:hover {
+        background: #a8d0a8;
+        transform: translateX(-2px);
+        box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+    }
 }
 .back-home .arrow {
     font-size: 15px;
     line-height: 1;
     transition: transform .2s;
 }
-.back-home:hover .arrow {
-    transform: translateX(-3px);
+@media (hover: hover) and (pointer: fine) {
+    .back-home:hover .arrow {
+        transform: translateX(-3px);
+    }
 }
 
 /* 移动端微调 */
@@ -304,6 +335,11 @@
     .back-home { padding: 6px 13px 6px 10px; font-size: 12.5px; }
 }
 
+/* 触摸设备：按下反馈（悬停效果已在支持鼠标的设备上保留） */
+.card-actions button:active { background: #d8ead8; transform: scale(0.94); }
+.filter-bar .btn-clear-filter:active { background: #b8d4b8; transform: scale(0.96); }
+.back-home:active { background: #a8d0a8; transform: translateX(-1px); }
+.card-note-area .img-resize-control .btn-reset-size:active { background: #b2d2b2; transform: scale(0.96); }
 </style>
 </head>
 <body>
@@ -374,6 +410,7 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="../shared/escape.js"></script>
 <script>
 // ============================================================
 // 数据
@@ -2446,6 +2483,21 @@ let history = [];
 let historyIndex = -1;
 
 const grid = document.getElementById('cardGrid');
+
+/* 事件委托：监听器只绑一次，卡片重绘后依然有效（原来是每次 render 重绑 2800+ 个） */
+var __delegated = Object.create(null);
+function delegateOnce(selector, type, handler) {
+    var k = type + '::' + selector;
+    if (__delegated[k]) return;
+    __delegated[k] = 1;
+    grid.addEventListener(type, function (e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+        var el = t.closest(selector);
+        if (!el || !grid.contains(el)) return;
+        return handler.call(el, e);
+    });
+}
 const totalSpan = document.getElementById('totalCards');
 const favSpan = document.getElementById('favCount');
 const filterSubject = document.getElementById('filterSubject');
@@ -2476,14 +2528,7 @@ function saveFavs() { try { localStorage.setItem('past_exams_favs', JSON.stringi
 function saveNotes() { try { localStorage.setItem('past_exams_notes', JSON.stringify(notes)); } catch (err) { var _f=(err&&(err.name==='QuotaExceededError'||err.code===22||err.code===1014)); var _m=_f?'⚠️ 存储空间不足，这次没能保存！建议删掉笔记里的大图，或先「导出」备份再清理。':'⚠️ 保存失败'; try{ if(typeof showToast==='function'){showToast(_m);} else {alert(_m);} }catch(_x){alert(_m);} } }
 function saveEdits() { try { localStorage.setItem('past_exams_edits', JSON.stringify(edits)); } catch (err) { var _f=(err&&(err.name==='QuotaExceededError'||err.code===22||err.code===1014)); var _m=_f?'⚠️ 存储空间不足，这次没能保存！建议删掉笔记里的大图，或先「导出」备份再清理。':'⚠️ 保存失败'; try{ if(typeof showToast==='function'){showToast(_m);} else {alert(_m);} }catch(_x){alert(_m);} } }
 
-// ---- HTML 转义，防止题目中的 < > 破坏页面 ----
-function escapeHtml(text) {
-    if (text === null || text === undefined) return '';
-    return String(text)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-}
+/* safeText() 已统一到 shared/escape.js */
 
 // ---- 获取卡片数据（含编辑） ----
 function getCardData(id) {
@@ -2500,7 +2545,7 @@ function initSubjectOptions() {
     const subjects = [];
     cardData.forEach(d => { if (!subjects.includes(d.subject)) subjects.push(d.subject); });
     filterSubject.innerHTML = '<option value="all">全部专业</option>' +
-        subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+        subjects.map(s => `<option value="${safeText(s)}">${safeText(s)}</option>`).join('');
 }
 
 // ---- 动态填充套卷下拉框 ----
@@ -2518,7 +2563,7 @@ function updatePaperOptions() {
         return 0;
     });
     filterPaper.innerHTML = '<option value="all">全部套卷</option>' +
-        papers.map(p => `<option value="${p}">${p === '真题说明' ? '📌 真题说明' : p}</option>`).join('');
+        papers.map(p => `<option value="${safeText(p)}">${p === '真题说明' ? '📌 真题说明' : safeText(p)}</option>`).join('');
     // 尽量保留原选择
     if (papers.includes(prevVal)) {
         filterPaper.value = prevVal;
@@ -2686,7 +2731,7 @@ function cancelEdit(id) {
     }
     delete editBackups[id];
     exitEditMode(id, false);
-    showToast('↩️ 已取消编辑');
+    showToast('🔙 已取消编辑');
 }
 
 function exitEditMode(id, saved) {
@@ -2792,16 +2837,16 @@ function render(singleId = null) {
         const isFav = favorites.includes(d.id);
         const note = notes[d.id] || '';
         const isNote = d.type === '说明';
-        const qText = escapeHtml(d.question);
+        const qText = safeText(d.question);
 
         html += `
             <div class="card-item ${isFav ? 'favorited' : ''} ${isNote ? 'note-type' : ''}" data-id="${d.id}">
                 <div class="card-header">
                     <div class="label">
-                        <span class="tag">${escapeHtml(d.subject)}</span>
-                        <span class="paper-tag">${escapeHtml(d.paper)}</span>
-                        ${d.type !== '说明' ? `<span class="type-tag">${escapeHtml(d.type)}</span>` : ''}
-                        ${d.type !== '说明' ? `<span class="qid">第${escapeHtml(d.qid)}题</span>` : ''}
+                        <span class="tag">${safeText(d.subject)}</span>
+                        <span class="paper-tag">${safeText(d.paper)}</span>
+                        ${d.type !== '说明' ? `<span class="type-tag">${safeText(d.type)}</span>` : ''}
+                        ${d.type !== '说明' ? `<span class="qid">第${safeText(d.qid)}题</span>` : ''}
                     </div>
                     <div class="card-actions" data-id="${d.id}">
                         <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${d.id}" title="收藏">${isFav ? '⭐' : '☆'}</button>
@@ -2837,8 +2882,7 @@ function render(singleId = null) {
     // ---- 事件绑定 ----
 
     // 1. 点击题目展开/收起作答区
-    document.querySelectorAll('.card-question').forEach(el => {
-        el.addEventListener('click', function(e) {
+        delegateOnce('.card-question', 'click', function (e) {
             if (this.classList.contains('editable')) return;
             const id = this.dataset.id;
             const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
@@ -2855,11 +2899,9 @@ function render(singleId = null) {
                 const editor = noteArea.querySelector('.note-editor');
             }
         });
-    });
 
     // 2. 收藏
-        document.querySelectorAll('.btn-fav').forEach(btn => {
-        btn.addEventListener('click', function(e){
+                delegateOnce('.btn-fav', 'click', function (e) {
             e.stopPropagation();
             const id = this.dataset.id;
             const idx = favorites.indexOf(id);
@@ -2870,10 +2912,8 @@ function render(singleId = null) {
             if(card) card.classList.toggle('favorited', favorites.includes(id));
             favSpan.textContent = favorites.length;
         });
-    });
 
-    document.querySelectorAll('.btn-note').forEach(btn => {
-        btn.addEventListener('click', function(e){
+        delegateOnce('.btn-note', 'click', function (e) {
             e.stopPropagation();
             const id = this.dataset.id;
             const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
@@ -2888,10 +2928,8 @@ function render(singleId = null) {
                 if(editor) setTimeout(()=>editor.focus(),100);
             }
         });
-    });
 
-    document.querySelectorAll('.btn-insert-img').forEach(btn => {
-        btn.addEventListener('click', function(e){
+        delegateOnce('.btn-insert-img', 'click', function (e) {
             e.stopPropagation();
             const id = this.dataset.id;
             const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
@@ -2933,10 +2971,8 @@ function render(singleId = null) {
             };
             fileInput.click();
         });
-    });
 
-    document.querySelectorAll('.note-save').forEach(btn => {
-        btn.addEventListener('click', function(e){
+        delegateOnce('.note-save', 'click', function (e) {
             e.stopPropagation();
             const id = this.dataset.id;
             const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
@@ -2952,14 +2988,12 @@ function render(singleId = null) {
                 const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
                 if(noteArea) noteArea.classList.add('open');
             }
-            const orig = btn.textContent;
-            btn.textContent = '✅ 已保存';
-            setTimeout(()=>{btn.textContent = orig;},1200);
+            const orig = this.textContent;
+            this.textContent = '✅ 已保存';
+            setTimeout(()=>{this.textContent = orig;},1200);
         });
-    });
 
-    document.querySelectorAll('.note-clear').forEach(btn => {
-        btn.addEventListener('click', async function(e){
+        delegateOnce('.note-clear', 'click', async function (e) {
             e.stopPropagation();
             const id = this.dataset.id;
             if(!(await window.showConfirm({ title: '清空笔记', message: '确定要清空这条笔记吗？', okText: '清空', danger: true }))) return;
@@ -2978,11 +3012,10 @@ function render(singleId = null) {
                 showToast('🗑️ 笔记已清空');
             }
         });
-    });
 
     // 7. 粘贴图片
-    document.querySelectorAll('.note-editor').forEach(editor => {
-        editor.addEventListener('paste', function(e) {
+        delegateOnce('.note-editor', 'paste', function (e) {
+        var editor = this;
             const items = e.clipboardData && e.clipboardData.items;
             if (!items) return;
             for (let item of items) {
@@ -3019,38 +3052,38 @@ function render(singleId = null) {
                 }
             }
         });
-    });
 
     // 8. 笔记编辑器占位
-    document.querySelectorAll('.note-editor').forEach(editor => {
+        grid.querySelectorAll('.note-editor').forEach(editor => {
+
         const id = editor.dataset.id;
         const content = notes[id] || '';
         if (!content || content.trim() === '') {
             editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记、作答思路，支持粘贴/插入图片…</span>';
         }
-        editor.addEventListener('focus', function() {
+        bindImgClick(editor);
+    });
+    delegateOnce('.note-editor', 'focusin', function () {
             const placeholder = this.querySelector('.note-placeholder');
             if (placeholder) this.innerHTML = '';
-        });
-        editor.addEventListener('blur', function() {
+            });
+    delegateOnce('.note-editor', 'focusout', function () {
             if (this.innerHTML.trim() === '' || this.innerHTML === '<br>') {
                 this.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记、作答思路，支持粘贴/插入图片…</span>';
             }
-        });
-        editor.addEventListener('click', function() {
+            });
+    delegateOnce('.note-editor', 'click', function () {
             if (this.getAttribute('contenteditable') === 'false') {
                 this.setAttribute('contenteditable', 'true');
                 this.focus();
             }
-        });
-    });
+            });
 
     // 9. 绑定图片点击
-    document.querySelectorAll('.note-editor').forEach(editor => { bindImgClick(editor); });
+    
 
     // 10. 重置图片大小
-    document.querySelectorAll('.btn-reset-size').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        delegateOnce('.btn-reset-size', 'click', function (e) {
             e.stopPropagation();
             const id = this.dataset.id;
             const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
@@ -3069,11 +3102,9 @@ function render(singleId = null) {
             }
             showToast('📐 图片大小已重置');
         });
-    });
 
     // 11. 滑块调整图片大小
-    document.querySelectorAll('.img-resize-control input[type="range"]').forEach(slider => {
-        slider.addEventListener('input', function() {
+        delegateOnce('.img-resize-control input[type="range"]', 'input', function (e) {
             const id = this.closest('.img-resize-control').dataset.id;
             const val = parseInt(this.value);
             const valSpan = this.closest('.img-resize-control').querySelector('.size-val');
@@ -3088,17 +3119,14 @@ function render(singleId = null) {
                 }
             });
         });
-    });
 
     // 12. 编辑按钮
-    document.querySelectorAll('.btn-edit').forEach(btn => {
-        btn.onclick = function(e) {
+        delegateOnce('.btn-edit', 'click', function (e) {
             e.stopPropagation();
             const id = this.dataset.id;
             if (this.classList.contains('is-editing')) return;
             enterEditMode(id);
-        };
-    });
+        });
 
     if (isSingleMode) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3176,7 +3204,12 @@ filterSubject.addEventListener('change', function() {
 filterPaper.addEventListener('change', onFilterChange);
 filterType.addEventListener('change', onFilterChange);
 filterFav.addEventListener('change', onFilterChange);
-filterSearch.addEventListener('input', onFilterChange);
+/* 搜索防抖：避免每敲一个字就全量重绘所有卡片 */
+var __searchTimer = null;
+filterSearch.addEventListener('input', function () {
+    clearTimeout(__searchTimer);
+    __searchTimer = setTimeout(onFilterChange, 220);
+});
 
 clearBtn.addEventListener('click', function() {
     filterSubject.value = 'all';
@@ -3230,87 +3263,11 @@ setTimeout(() => {
     });
 }, 100);
 </script>
+<script src="../shared/confirm.js"></script>
 <script src="../self-test.js"></script>
 <script src="../ai-assistant.js"></script>
 
 
-<script>
-/* ===== 存储安全：图片压缩 + 笔记自动保存 + 离开提醒 ===== */
-(function () {
-    var MAXW = 1200, QUALITY = 0.72, KEEP_UNDER = 220 * 1024;
-    var dirty = false, timer = null;
-
-    /* 压缩笔记里的图片：原图 base64 极易撑爆 localStorage（约 5MB 上限） */
-    window.__shrinkNoteImg = function (img, dataUrl) {
-        if (!img || !dataUrl || dataUrl.indexOf('data:image/') !== 0) return;
-        if (dataUrl.length < KEEP_UNDER) return;
-        var im = new Image();
-        im.onload = function () {
-            try {
-                var w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
-                var scale = Math.min(1, MAXW / (w || 1));
-                var c = document.createElement('canvas');
-                c.width = Math.max(1, Math.round(w * scale));
-                c.height = Math.max(1, Math.round(h * scale));
-                var ctx = c.getContext('2d');
-                ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
-                ctx.drawImage(im, 0, 0, c.width, c.height);
-                var out = c.toDataURL('image/jpeg', QUALITY);
-                if (out && out.length < dataUrl.length) {
-                    img.src = out;
-                    img.dataset.shrunk = '1';
-                    schedule(img);
-                }
-            } catch (e) {}
-        };
-        im.src = dataUrl;
-    };
-
-    function saveFrom(el) {
-        var ed = el && el.closest ? el.closest('.note-editor') : null;
-        if (!ed) return;
-        try {
-            var id = ed.dataset.id;
-            var content = (ed.innerHTML || '').trim();
-            if (content === '<br>' || content === '') content = '';
-            if (content) { notes[id] = content; } else { delete notes[id]; }
-            saveNotes();
-        } catch (e) {
-            var btn = document.querySelector('.note-save[data-id="' + (ed.dataset.id || '') + '"]');
-            if (btn) btn.click();
-        }
-    }
-
-    function schedule(el) {
-        dirty = true;
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-            try { saveFrom(el); dirty = false; } catch (e) {}
-        }, 900);
-    }
-
-    document.addEventListener('input', function (e) {
-        var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
-        if (ed) schedule(ed);
-    }, true);
-
-    document.addEventListener('paste', function (e) {
-        var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
-        if (ed) setTimeout(function () { schedule(ed); }, 150);
-    }, true);
-
-    /* 手动点过保存就认为已保存，不再拦离开 */
-    document.addEventListener('click', function (e) {
-        if (e.target && e.target.closest && e.target.closest('.note-save')) dirty = false;
-    }, true);
-
-    window.addEventListener('beforeunload', function (e) {
-        if (!dirty) return;
-        e.preventDefault();
-        e.returnValue = '';
-        return '';
-    });
-})();
-</script>
+<script src="../shared/storage-guard.js"></script>
 </body>
 </html>

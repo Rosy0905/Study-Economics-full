@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+<link rel="icon" href="../icons/icon.svg">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#3FA87A">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>微观简答 · 记忆卡</title>
@@ -98,8 +101,10 @@
             font-weight: 500;
             transition: background 0.2s;
         }
-        .filter-bar .btn-clear-filter:hover {
-            background: #b8d4b8;
+        @media (hover: hover) and (pointer: fine) {
+            .filter-bar .btn-clear-filter:hover {
+                background: #b8d4b8;
+            }
         }
         .filter-bar .btn-random {
             background: #d4c49a;
@@ -112,9 +117,11 @@
             font-weight: 600;
             transition: background 0.2s, transform 0.1s;
         }
-        .filter-bar .btn-random:hover {
-            background: #c9b888;
-            transform: scale(1.02);
+        @media (hover: hover) and (pointer: fine) {
+            .filter-bar .btn-random:hover {
+                background: #c9b888;
+                transform: scale(1.02);
+            }
         }
         .filter-bar .btn-random:active {
             transform: scale(0.96);
@@ -155,9 +162,11 @@
             transition: background 0.15s, transform 0.1s;
             line-height: 1;
         }
-        .single-mode-bar .mode-left .btn-nav:hover {
-            background: #e8ddd0;
-            transform: scale(1.05);
+        @media (hover: hover) and (pointer: fine) {
+            .single-mode-bar .mode-left .btn-nav:hover {
+                background: #e8ddd0;
+                transform: scale(1.05);
+            }
         }
         .single-mode-bar .mode-left .btn-nav:active {
             transform: scale(0.92);
@@ -191,9 +200,11 @@
             transition: background 0.15s, transform 0.1s;
             line-height: 1;
         }
-        .single-mode-bar .btn-exit-single:hover {
-            background: #e8d5d0;
-            transform: scale(1.05);
+        @media (hover: hover) and (pointer: fine) {
+            .single-mode-bar .btn-exit-single:hover {
+                background: #e8d5d0;
+                transform: scale(1.05);
+            }
         }
         .single-mode-bar .btn-exit-single:active {
             transform: scale(0.92);
@@ -223,8 +234,10 @@
             overflow: hidden;
             position: relative;
         }
-        .card-item:hover {
-            box-shadow: 0 8px 24px rgba(50, 100, 50, 0.13);
+        @media (hover: hover) and (pointer: fine) {
+            .card-item:hover {
+                box-shadow: 0 8px 24px rgba(50, 100, 50, 0.13);
+            }
         }
         .card-item.favorited {
             border-left-color: #d4a24e;
@@ -289,9 +302,11 @@
             line-height: 1;
             color: #3f6a3f;
         }
-        .card-actions button:hover {
-            background: #e6f0e6;
-            transform: scale(1.05);
+        @media (hover: hover) and (pointer: fine) {
+            .card-actions button:hover {
+                background: #e6f0e6;
+                transform: scale(1.05);
+            }
         }
         .card-actions .btn-fav {
             color: #b8a06a;
@@ -525,8 +540,10 @@
             color: #1e4a2a;
             transition: background 0.2s;
         }
-        .card-note-area .img-resize-control .btn-reset-size:hover {
-            background: #c2ddc2;
+        @media (hover: hover) and (pointer: fine) {
+            .card-note-area .img-resize-control .btn-reset-size:hover {
+                background: #c2ddc2;
+            }
         }
 
         .card-note-area .note-actions {
@@ -547,8 +564,10 @@
             font-weight: 500;
             transition: background 0.2s, transform 0.1s;
         }
-        .card-note-area .note-actions button:hover {
-            background: #c2ddc2;
+        @media (hover: hover) and (pointer: fine) {
+            .card-note-area .note-actions button:hover {
+                background: #c2ddc2;
+            }
         }
         .card-note-area .note-actions button:active {
             transform: scale(0.96);
@@ -557,22 +576,28 @@
             background: #d4d9c4;
             color: #2f4a2f;
         }
-        .card-note-area .note-actions .btn-insert-img:hover {
-            background: #c4cdb0;
+        @media (hover: hover) and (pointer: fine) {
+            .card-note-area .note-actions .btn-insert-img:hover {
+                background: #c4cdb0;
+            }
         }
         .card-note-area .note-actions .note-save {
             background: #a8c8a8;
             color: #1a3a1a;
         }
-        .card-note-area .note-actions .note-save:hover {
-            background: #94b894;
+        @media (hover: hover) and (pointer: fine) {
+            .card-note-area .note-actions .note-save:hover {
+                background: #94b894;
+            }
         }
         .card-note-area .note-actions .note-clear {
             background: #e6d6d6;
             color: #6a3a3a;
         }
-        .card-note-area .note-actions .note-clear:hover {
-            background: #dcc4c4;
+        @media (hover: hover) and (pointer: fine) {
+            .card-note-area .note-actions .note-clear:hover {
+                background: #dcc4c4;
+            }
         }
         .card-note-area .note-actions .note-size-hint {
             font-size: 12px;
@@ -697,8 +722,10 @@
             background: #8fbe8f;
             border-radius: 10px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6f9e6f;
+        @media (hover: hover) and (pointer: fine) {
+            ::-webkit-scrollbar-thumb:hover {
+                background: #6f9e6f;
+            }
         }
 /* ================= 返回主页按钮 ================= */
 .app-header .header-left {
@@ -724,18 +751,22 @@
     box-shadow: 0 1px 3px rgba(60, 110, 60, 0.10);
     transition: background .2s, transform .2s, box-shadow .2s;
 }
-.back-home:hover {
-    background: #a8d0a8;
-    transform: translateX(-2px);
-    box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+@media (hover: hover) and (pointer: fine) {
+    .back-home:hover {
+        background: #a8d0a8;
+        transform: translateX(-2px);
+        box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+    }
 }
 .back-home .arrow {
     font-size: 15px;
     line-height: 1;
     transition: transform .2s;
 }
-.back-home:hover .arrow {
-    transform: translateX(-3px);
+@media (hover: hover) and (pointer: fine) {
+    .back-home:hover .arrow {
+        transform: translateX(-3px);
+    }
 }
 
 /* 移动端微调 */
@@ -744,6 +775,11 @@
     .back-home { padding: 6px 13px 6px 10px; font-size: 12.5px; }
 }
     
+/* 触摸设备：按下反馈（悬停效果已在支持鼠标的设备上保留） */
+.card-actions button:active { background: #d8ead8; transform: scale(0.94); }
+.filter-bar .btn-clear-filter:active { background: #b8d4b8; transform: scale(0.96); }
+.back-home:active { background: #a8d0a8; transform: translateX(-1px); }
+.card-note-area .img-resize-control .btn-reset-size:active { background: #b2d2b2; transform: scale(0.96); }
 </style>
 </head>
 <body>
@@ -798,7 +834,8 @@
 
     <div class="toast" id="toast"></div>
 
-    <script>
+    <script src="../shared/escape.js"></script>
+<script>
         // ============================================================
         // 数据
         // ============================================================
@@ -811,7 +848,7 @@
                 answer: '劣等品是指需求的收入弹性小于0的商品。如果 xᵢ(p,m) 是第 i 种商品的马歇尔需求函数，那么商品 i 是劣等品就意味着 ∂xᵢ/∂m · m/xᵢ < 0。\n预算约束恒成立：Σ pᵢ·xᵢ(pᵢ,m)=m。两侧对收入 m 求偏导：Σ pᵢ·∂xᵢ/∂m = 1。\n令 ηᵢ = pᵢxᵢ/m (0<ηᵢ<1)，Σηᵢ=1。由于前 n-1 种商品均为劣等品，Σ_{i=1}^{n-1} (pᵢxᵢ/m)·(∂xᵢ/∂m)·(m/xᵢ) < 0。\n因此 ∂xₙ/∂m · m/xₙ = [1 - Σ_{i=1}^{n-1} (pᵢxᵢ/m)·(∂xᵢ/∂m)·(m/xᵢ)] / (pₙxₙ/m) > 1。\n所以第 n 种商品一定是正常品，并且是正常品中的奢侈品。\n【恩格尔加总等式推论】消费者消费的 n 种商品不可能都是劣等品；也不可能都是奢侈品。',
                 hasImage: false },
             { id: 's1q3', special: '消费者行为理论', qid: '3', question: '为什么在商品配给制的情况下，消费者往往会受损？',
-                answer: '在无配给制时，预算线 AB 与无差异曲线 U₁ 的切点 E 决定了消费者的最优选择，两种商品的最优组合为 (X₁,Y₁)。此时在 E 点处，MRS_XY = P_X/P_Y。\n假定对商品 X 实行配给，将商品 X 消费量控制在 X₂，且 X₂&lt;X₁，消费者的预算线由 AB 变为 AFC，此时消费者效用最大化的点为 F，在该点，MRS_XY&gt;P_X/P_Y，经过 F 点的无差异曲线 U₂ 位于 U₁ 的下方，因而消费者获得的效用水平下降，消费者的境况变坏。\n但是，如果将商品 X 的消费量控制在 X₁ 或者大于 X₁ 时，消费者的最优选择点仍是 E 点，消费者的境况不变。\n综上所述，配给制可能使消费者的境况变差。\n【本题有图示】',
+                answer: '在无配给制时，预算线 AB 与无差异曲线 U₁ 的切点 E 决定了消费者的最优选择，两种商品的最优组合为 (X₁,Y₁)。此时在 E 点处，MRS_XY = P_X/P_Y。\n假定对商品 X 实行配给，将商品 X 消费量控制在 X₂，且 X₂<X₁，消费者的预算线由 AB 变为 AFC，此时消费者效用最大化的点为 F，在该点，MRS_XY>P_X/P_Y，经过 F 点的无差异曲线 U₂ 位于 U₁ 的下方，因而消费者获得的效用水平下降，消费者的境况变坏。\n但是，如果将商品 X 的消费量控制在 X₁ 或者大于 X₁ 时，消费者的最优选择点仍是 E 点，消费者的境况不变。\n综上所述，配给制可能使消费者的境况变差。\n【本题有图示】',
                 hasImage: true },
             { id: 's1q4', special: '消费者行为理论', qid: '4',
                 question: '假设政府对一个每月收入400美元的贫困家庭进行补贴。补贴方案有三种：\n（1）政府允许该家庭购买400美元的食品券，单位美元食品券的价格为0.5美元；\n（2）政府直接发放给该家庭200美元的食品券补贴；\n（3）政府直接发给该家庭200美元的货币补贴。\n尝试画出该家庭的无差异曲线，解释该家庭的最优消费决策，并据此对比分析这三种方案的优劣。',
@@ -884,7 +921,7 @@
                 hasImage: true },
             { id: 's1q22', special: '消费者行为理论', qid: '22',
                 question: '假设消费者两时期内分别有 i₁ 和 i₂ 的收入，市场利率为 r（假定储蓄与借款的利率相同），使用替代效应和收入效应解释利率的改变与储蓄的关系。（南开2006年考题）',
-                answer: '（1）在终值预算约束下，利率变动意味着第一期消费的价格 (p₁=1+r) 发生变动，此时的斯勒茨基方程为：Δc₁ˢ/Δp₁ = Δc₁ˢ/Δp₁ + (m₁-c₁)·Δc₁ᵐ/Δm。\n其中 Δc₁ˢ/Δp₁ 为替代效应，一般为负，表示利率上升，第一期消费下降。(m₁-c₁)·Δc₁ᵐ/Δm 为收入效应，包括普通收入效应与禀赋收入效应，由于消费一般是正常商品，Δc₁ᵐ/Δm>0，收入效应的正负取决于消费者初始是借款者还是贷款者。\n（2）① 如果消费者初始是借款者，即 m₁&lt;c₁，则收入效应  < 0，总效应 < 0，第一期消费与利率反向变动。利率上升，第一期消费减少，储蓄增加；利率下降，第一期消费增加，储蓄减少。\n② 如果消费者初始是贷款者，即 m₁&gt;c₁，则收入效应 > 0，总效应正负无法判断，无法判断储蓄的变动。',
+                answer: '（1）在终值预算约束下，利率变动意味着第一期消费的价格 (p₁=1+r) 发生变动，此时的斯勒茨基方程为：Δc₁ˢ/Δp₁ = Δc₁ˢ/Δp₁ + (m₁-c₁)·Δc₁ᵐ/Δm。\n其中 Δc₁ˢ/Δp₁ 为替代效应，一般为负，表示利率上升，第一期消费下降。(m₁-c₁)·Δc₁ᵐ/Δm 为收入效应，包括普通收入效应与禀赋收入效应，由于消费一般是正常商品，Δc₁ᵐ/Δm>0，收入效应的正负取决于消费者初始是借款者还是贷款者。\n（2）① 如果消费者初始是借款者，即 m₁<c₁，则收入效应  < 0，总效应 < 0，第一期消费与利率反向变动。利率上升，第一期消费减少，储蓄增加；利率下降，第一期消费增加，储蓄减少。\n② 如果消费者初始是贷款者，即 m₁>c₁，则收入效应 > 0，总效应正负无法判断，无法判断储蓄的变动。',
                 hasImage: false },
             { id: 's1q23', special: '消费者行为理论', qid: '23',
                 question: '（1）如果一个投资者在有风险的股票和无风险的国债之间选择了股票，是否可以说他是风险爱好者？为什么？\n（2）股市有一种追涨现象，即有人喜欢买价格上涨了的股票。这是否说明对这些人来说，股票是劣等品？或者奢侈品？吉芬品？为什么？',
@@ -904,7 +941,7 @@
                 hasImage: true },
             { id: 's2q3', special: '生产者行为理论', qid: '3',
                 question: '证明一般行业短期边际成本曲线 MC 与平均总成本曲线 AC、平均可变成本曲线 AVC 相交，且交点为 AC 和 AVC 的最低点。',
-                answer: '（1）首先证明 MC 曲线的形状：\nMC = w/MP_L，由以上等式可知，MC 与 MP_L 反向变动，由于边际报酬递减规律，MP_L 曲线为先递增后递减的倒U形曲线，所以 MC 曲线为先递减后递增的 U 形曲线。\n（2）证明 AC 曲线和 MC 曲线的关系：\ndAC/dQ = d(TC/Q)/dQ = (MC - AC)/Q，由于 Q>0，所以 MC&lt;AC 时，AC 曲线下降；MC&gt;AC 时，AC 曲线上升；MC=AC 时，AC 曲线达到极值点。由于 MC 先下降后上升，所以 AC 曲线也是先下降后上升，因此 MC 曲线相交于 AC 曲线的最低点。\n（3）证明 AVC 曲线和 MC 曲线的关系：\ndAVC/dQ = d(TVC/Q)/dQ = (MC - AVC)/Q，同理，MC 曲线相交于 AVC 曲线的最低点。\n【提示】证明 MC 曲线相交于 AC、AVC 最低点时，必须先证明 MC 曲线为 U 形，因为根据 MC 与 AC、AVC 的数理关系，只能得到 MC 与 AC、AVC 相等时，AC、AVC 达到极值点，不能说明这一点就是极小值点。',
+                answer: '（1）首先证明 MC 曲线的形状：\nMC = w/MP_L，由以上等式可知，MC 与 MP_L 反向变动，由于边际报酬递减规律，MP_L 曲线为先递增后递减的倒U形曲线，所以 MC 曲线为先递减后递增的 U 形曲线。\n（2）证明 AC 曲线和 MC 曲线的关系：\ndAC/dQ = d(TC/Q)/dQ = (MC - AC)/Q，由于 Q>0，所以 MC<AC 时，AC 曲线下降；MC>AC 时，AC 曲线上升；MC=AC 时，AC 曲线达到极值点。由于 MC 先下降后上升，所以 AC 曲线也是先下降后上升，因此 MC 曲线相交于 AC 曲线的最低点。\n（3）证明 AVC 曲线和 MC 曲线的关系：\ndAVC/dQ = d(TVC/Q)/dQ = (MC - AVC)/Q，同理，MC 曲线相交于 AVC 曲线的最低点。\n【提示】证明 MC 曲线相交于 AC、AVC 最低点时，必须先证明 MC 曲线为 U 形，因为根据 MC 与 AC、AVC 的数理关系，只能得到 MC 与 AC、AVC 相等时，AC、AVC 达到极值点，不能说明这一点就是极小值点。',
                 hasImage: false },
             { id: 's2q4', special: '生产者行为理论', qid: '4',
                 question: '如果厂商的平均成本曲线为 U 形，为什么其平均可变成本曲线比平均总成本曲线在较低的产出水平上达到其最低点？',
@@ -947,7 +984,7 @@
                 hasImage: true },
             { id: 's2q14', special: '生产者行为理论', qid: '14',
                 question: '结合图形的方式说明规模经济和范围经济的含义，并进一步说明如何度量规模经济和范围经济？',
-                answer: '（1）规模经济：\n① 含义：规模经济是指厂商产量增加的倍数大于成本增加的倍数。规模不经济则是指厂商产量增加的倍数小于成本增加的倍数。U 形的长期平均成本曲线表示厂商在产出较低时表现为规模经济，在产出较高时表现为规模不经济。\n② 度量：规模经济通常用成本-产出弹性 E_c 来衡量，E_c = (ΔC/C)/(Δq/q) = MC/AC。\n当 E_c=1 时，MC=AC，既不存在规模经济也不存在规模不经济；当 E_c&lt;1 时，MC< AC，存在规模经济；当 E_c&gt;1 时，MC>AC，存在规模不经济。\n（2）范围经济：\n① 含义：范围经济是指一个厂商以相同的资源生产两种产品的产量超过两个厂商各生产一种产品的总产量。范围不经济则相反。\n② 度量：SC = [C(q₁)+C(q₂)-C(q₁,q₂)] / C(q₁,q₂)。\n当存在范围经济时，SC>0，SC 的值越大，范围经济的程度就越高；存在范围不经济时，SC<0。\n【本题有图示】',
+                answer: '（1）规模经济：\n① 含义：规模经济是指厂商产量增加的倍数大于成本增加的倍数。规模不经济则是指厂商产量增加的倍数小于成本增加的倍数。U 形的长期平均成本曲线表示厂商在产出较低时表现为规模经济，在产出较高时表现为规模不经济。\n② 度量：规模经济通常用成本-产出弹性 E_c 来衡量，E_c = (ΔC/C)/(Δq/q) = MC/AC。\n当 E_c=1 时，MC=AC，既不存在规模经济也不存在规模不经济；当 E_c<1 时，MC< AC，存在规模经济；当 E_c>1 时，MC>AC，存在规模不经济。\n（2）范围经济：\n① 含义：范围经济是指一个厂商以相同的资源生产两种产品的产量超过两个厂商各生产一种产品的总产量。范围不经济则相反。\n② 度量：SC = [C(q₁)+C(q₂)-C(q₁,q₂)] / C(q₁,q₂)。\n当存在范围经济时，SC>0，SC 的值越大，范围经济的程度就越高；存在范围不经济时，SC<0。\n【本题有图示】',
                 hasImage: true },
             { id: 's2q15', special: '生产者行为理论', qid: '15', question: '证明：在完全竞争条件下，一个利润最大化的厂商总是成本最小化的。',
                 answer: '假设 x 和 w 都是向量，x 为要素投入，w 为对应的要素价格，p 为对应的产品价格，此时厂商利润最大化的问题可以表述为：max p f(x) - wx。\n若一个厂商实现了最大利润，则存在 x* 使得：π_max = p f(x*) - wx*。\n对于给定的 q* = f(x*)，成本最小化问题可以表述为：min wx s.t. f(x)=q*。\n若存在 x′ 满足 f(x′)=q* 且 wx′ < wx*，则 p f(x′) - wx′ > p f(x*) - wx*，这就与利润最大化的假设相矛盾，因此实现利润最大化的厂商总是成本最小化的。',
@@ -960,11 +997,11 @@
                 answer: '完全竞争企业在利润最大化产量上生产也可能会亏损。这是因为，在利润最大化产量上，完全竞争企业的平均成本可能大于平均收益（即产品的市场价格）。在这种情况下，完全竞争企业即使按照利润最大化原则去进行生产，仍然会遭受亏损。\n企业是否达到利润最大化与企业利润大于零还是小于零并不是一回事。前者只是表示，企业在现有的条件下已经做到了最好，即在最优产量处进行生产。但是，由于客观条件的限制（如市场需求太低导致价格太低），即使是在最优产量处，厂商仍然有可能会发生亏损。在发生亏损的情况下，利润最大化意味着，企业已经尽可能地把亏损降到了最小，此时的利润最大化等价于损失的最小化。',
                 hasImage: false },
             { id: 's3m1q3', special: '完全竞争市场', qid: '3', question: '画图说明，在完全竞争市场中，企业短期利润最大化时的停产条件。',
-                answer: '企业在短期是否生产取决于企业生产利润与不生产利润的大小关系。企业在短期不生产的利润为 -TFC，短期生产时获得的利润为：π=PQ-TVC-TFC=Q(P-AVC)-TFC。\n当均衡产量处的 P 大于 AVC 时，企业会生产；P 等于 AVC 时，企业生产与不生产无差别；P 小于 AVC 时，企业会停止生产。\n在完全竞争市场中，企业会按照 P=MC(Q) 的原则去确定均衡产量。如果此均衡产量处满足 P=MC&lt;AVC，企业会停止生产。\nMC 曲线与 AVC 曲线相交于后者的最低点。如果企业利润最大化的点位于 AVC 曲线最低点的右侧，满足 P₁=MC₁ &gt; AVC₁，企业会选择继续生产；如果位于 AVC 曲线最低点的左侧，满足 P₃=MC₃&lt;AVC₃，企业会选择停产。\n综上，企业短期利润最大化时的停产条件为 P&lt;AVC_min。\n【本题有图示】',
+                answer: '企业在短期是否生产取决于企业生产利润与不生产利润的大小关系。企业在短期不生产的利润为 -TFC，短期生产时获得的利润为：π=PQ-TVC-TFC=Q(P-AVC)-TFC。\n当均衡产量处的 P 大于 AVC 时，企业会生产；P 等于 AVC 时，企业生产与不生产无差别；P 小于 AVC 时，企业会停止生产。\n在完全竞争市场中，企业会按照 P=MC(Q) 的原则去确定均衡产量。如果此均衡产量处满足 P=MC<AVC，企业会停止生产。\nMC 曲线与 AVC 曲线相交于后者的最低点。如果企业利润最大化的点位于 AVC 曲线最低点的右侧，满足 P₁=MC₁ > AVC₁，企业会选择继续生产；如果位于 AVC 曲线最低点的左侧，满足 P₃=MC₃<AVC₃，企业会选择停产。\n综上，企业短期利润最大化时的停产条件为 P<AVC_min。\n【本题有图示】',
                 hasImage: true },
             { id: 's3m1q4', special: '完全竞争市场', qid: '4',
                 question: '"只要完全竞争厂商利润最大化点处的生产者剩余大于零，厂商就会继续生产。"该说法是否正确，请解释。',
-                answer: '（1）经济利润是指经济利润或称超额利润，等于总收益减总成本（含显成本和隐成本）。生产者剩余是生产者愿意接受的产品卖价与他实际获得的产品卖价的差额。\n（2）生产者剩余与利润密切相关，但两者不相等。\n短期内，生产者剩余等于收入减去可变成本，即 PS=PQ₀-∫₀^{Q₀} MC(Q)dQ=TR-TVC；经济利润等于总收益减去总成本，即 π=TR-TVC-TFC。因此短期内存在 PS=π+TFC。\n长期内，由于厂商没有固定成本，因此长期内存在 PS=π。\n（3）在短期内，完全竞争厂商在利润最大化点处生产者剩余意味着 PS=π+TFC&gt;0，此时厂商生产的经济利润 π>-TFC，即此时厂商选择生产可以弥补一部分固定成本，因此厂商继续生产；而在长期内，利润最大化点处生产者剩余大于零说明 PS=π>0，厂商也会继续生产。',
+                answer: '（1）经济利润是指经济利润或称超额利润，等于总收益减总成本（含显成本和隐成本）。生产者剩余是生产者愿意接受的产品卖价与他实际获得的产品卖价的差额。\n（2）生产者剩余与利润密切相关，但两者不相等。\n短期内，生产者剩余等于收入减去可变成本，即 PS=PQ₀-∫₀^{Q₀} MC(Q)dQ=TR-TVC；经济利润等于总收益减去总成本，即 π=TR-TVC-TFC。因此短期内存在 PS=π+TFC。\n长期内，由于厂商没有固定成本，因此长期内存在 PS=π。\n（3）在短期内，完全竞争厂商在利润最大化点处生产者剩余意味着 PS=π+TFC>0，此时厂商生产的经济利润 π>-TFC，即此时厂商选择生产可以弥补一部分固定成本，因此厂商继续生产；而在长期内，利润最大化点处生产者剩余大于零说明 PS=π>0，厂商也会继续生产。',
                 hasImage: false },
             { id: 's3m1q5', special: '完全竞争市场', qid: '5',
                 question: '完全竞争厂商的长期经济利润为零，说明企业的经营结果与企业家才能的高低无关。这个观点正确吗？为什么？',
@@ -1214,6 +1251,21 @@
         let historyIndex = -1;
 
         const grid = document.getElementById('cardGrid');
+
+        /* 事件委托：监听器只绑一次，卡片重绘后依然有效（原来是每次 render 重绑 2800+ 个） */
+        var __delegated = Object.create(null);
+        function delegateOnce(selector, type, handler) {
+            var k = type + '::' + selector;
+            if (__delegated[k]) return;
+            __delegated[k] = 1;
+            grid.addEventListener(type, function (e) {
+                var t = e.target;
+                if (!t || !t.closest) return;
+                var el = t.closest(selector);
+                if (!el || !grid.contains(el)) return;
+                return handler.call(el, e);
+            });
+        }
         const totalSpan = document.getElementById('totalCards');
         const favSpan = document.getElementById('favCount');
         const filterSpecial = document.getElementById('filterSpecial');
@@ -1266,31 +1318,11 @@
             } catch (err) { var _f=(err&&(err.name==='QuotaExceededError'||err.code===22||err.code===1014)); var _m=_f?'⚠️ 存储空间不足，这次没能保存！建议删掉笔记里的大图，或先「导出」备份再清理。':'⚠️ 保存失败'; try{ if(typeof showToast==='function'){showToast(_m);} else {alert(_m);} }catch(_x){alert(_m);} }
         }
 
-        // ---- HTML 转义（统一处理） ----
-        // 先把已存在的 HTML 实体解码成裸字符，再统一转义，避免出现 &amp;lt; 这种二次转义
-        function decodeEntities(text) {
-            return String(text)
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .replace(/&quot;/g, '"')
-                .replace(/&#39;/g, "'")
-                .replace(/&amp;/g, '&');
-        }
+        /* decodeEntities() 已统一到 shared/escape.js */
 
-        function escapeHtml(text) {
-            return String(text)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
-        }
+        /* escapeHtml() 已统一到 shared/escape.js */
 
-        // 题目/答案等纯文本统一走这里
-        function safeText(text) {
-            if (text === null || text === undefined) return '';
-            return escapeHtml(decodeEntities(text));
-        }
+        /* safeText() 已统一到 shared/escape.js */
 
         // ---- 答案段落渲染（核心修复） ----
         function renderAnswerParagraphs(text) {
@@ -1477,7 +1509,7 @@
             if (paragraphs.length === 0) {
                 editA.innerHTML = '<p><br></p>';
             } else {
-                editA.innerHTML = paragraphs.map(p => `<p>${escapeHtml(p)}</p>`).join('');
+                editA.innerHTML = paragraphs.map(p => `<p>${safeText(p)}</p>`).join('');
             }
             editA.style.cssText =
                 'background:transparent;border-left:none;padding:4px 6px;min-height:40px;outline:none;border:2px dashed #6a9e9e;border-radius:8px;';
@@ -1584,7 +1616,7 @@
 
             delete editBackups[id];
             exitEditMode(id, false);
-            showToast('↩️ 已取消编辑');
+            showToast('🔙 已取消编辑');
         }
 
         function exitEditMode(id, saved) {
@@ -1722,7 +1754,7 @@
                             </div>
                         </div>
                         <div class="card-question" data-id="${d.id}">
-                            <span class="q-text">${escapeHtml(qText)}</span>
+                            <span class="q-text">${safeText(qText)}</span>
                             <span class="toggle-hint">(点击展开答案)</span>
                         </div>
                         <div class="card-answer" data-id="${d.id}">
@@ -1752,8 +1784,7 @@
             // ---- 事件绑定 ----
 
             // 1. 点击题目切换答案
-            document.querySelectorAll('.card-question').forEach(el => {
-                el.addEventListener('click', function(e) {
+                        delegateOnce('.card-question', 'click', function (e) {
                     if (this.classList.contains('editable')) return;
                     const id = this.dataset.id;
                     const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
@@ -1780,11 +1811,9 @@
                         }
                     }
                 });
-            });
 
             // 2. 收藏
-                        document.querySelectorAll('.btn-fav').forEach(btn => {
-                btn.addEventListener('click', function(e){
+                                                delegateOnce('.btn-fav', 'click', function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const idx = favorites.indexOf(id);
@@ -1795,10 +1824,8 @@
                     if(card) card.classList.toggle('favorited', favorites.includes(id));
                     favSpan.textContent = favorites.length;
                 });
-            });
 
-            document.querySelectorAll('.btn-note').forEach(btn => {
-                btn.addEventListener('click', function(e){
+                        delegateOnce('.btn-note', 'click', function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
@@ -1813,10 +1840,8 @@
                         if(editor) setTimeout(()=>editor.focus(),100);
                     }
                 });
-            });
 
-            document.querySelectorAll('.btn-insert-img').forEach(btn => {
-                btn.addEventListener('click', function(e){
+                        delegateOnce('.btn-insert-img', 'click', function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
@@ -1858,10 +1883,8 @@
                     };
                     fileInput.click();
                 });
-            });
 
-            document.querySelectorAll('.note-save').forEach(btn => {
-                btn.addEventListener('click', function(e){
+                        delegateOnce('.note-save', 'click', function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
@@ -1877,14 +1900,12 @@
                         const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
                         if(noteArea) noteArea.classList.add('open');
                     }
-                    const orig = btn.textContent;
-                    btn.textContent = '✅ 已保存';
-                    setTimeout(()=>{btn.textContent = orig;},1200);
+                    const orig = this.textContent;
+                    this.textContent = '✅ 已保存';
+                    setTimeout(()=>{this.textContent = orig;},1200);
                 });
-            });
 
-            document.querySelectorAll('.note-clear').forEach(btn => {
-                btn.addEventListener('click', async function(e){
+                        delegateOnce('.note-clear', 'click', async function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     if(!(await window.showConfirm({ title: '清空笔记', message: '确定要清空这条笔记吗？', okText: '清空', danger: true }))) return;
@@ -1903,11 +1924,10 @@
                         showToast('🗑️ 笔记已清空');
                     }
                 });
-            });
 
             // 7. 粘贴图片到笔记
-            document.querySelectorAll('.note-editor').forEach(editor => {
-                editor.addEventListener('paste', function(e) {
+                        delegateOnce('.note-editor', 'paste', function (e) {
+                var editor = this;
                     const items = e.clipboardData && e.clipboardData.items;
                     if (!items) return;
                     for (let item of items) {
@@ -1946,42 +1966,40 @@
                         }
                     }
                 });
-            });
 
             // 8. 笔记编辑器占位
-            document.querySelectorAll('.note-editor').forEach(editor => {
+                        grid.querySelectorAll('.note-editor').forEach(editor => {
+
                 const id = editor.dataset.id;
                 const content = notes[id] || '';
                 if (!content || content.trim() === '') {
                     editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
                 }
-                editor.addEventListener('focus', function() {
+                bindImgClick(editor);
+            });
+            delegateOnce('.note-editor', 'focusin', function () {
                     const placeholder = this.querySelector('.note-placeholder');
                     if (placeholder) {
                         this.innerHTML = '';
                     }
-                });
-                editor.addEventListener('blur', function() {
+                            });
+            delegateOnce('.note-editor', 'focusout', function () {
                     if (this.innerHTML.trim() === '' || this.innerHTML === '<br>') {
                         this.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
                     }
-                });
-                editor.addEventListener('click', function() {
+                            });
+            delegateOnce('.note-editor', 'click', function () {
                     if (this.getAttribute('contenteditable') === 'false') {
                         this.setAttribute('contenteditable', 'true');
                         this.focus();
                     }
-                });
-            });
+                            });
 
             // 9. 图片点击 + 滑块控制
-            document.querySelectorAll('.note-editor').forEach(editor => {
-                bindImgClick(editor);
-            });
+            
 
             // 10. 重置图片大小
-            document.querySelectorAll('.btn-reset-size').forEach(btn => {
-                btn.addEventListener('click', function(e) {
+                        delegateOnce('.btn-reset-size', 'click', function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
@@ -2001,11 +2019,9 @@
                     }
                     showToast('📐 图片大小已重置');
                 });
-            });
 
             // 11. 滑块调整图片大小
-            document.querySelectorAll('.img-resize-control input[type="range"]').forEach(slider => {
-                slider.addEventListener('input', function() {
+                        delegateOnce('.img-resize-control input[type="range"]', 'input', function (e) {
                     const id = this.closest('.img-resize-control').dataset.id;
                     const val = parseInt(this.value);
                     const valSpan = this.closest('.img-resize-control').querySelector('.size-val');
@@ -2020,17 +2036,14 @@
                         }
                     });
                 });
-            });
 
             // 12. 编辑按钮
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.onclick = function(e) {
+                        delegateOnce('.btn-edit', 'click', function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     if (this.classList.contains('is-editing')) return;
                     enterEditMode(id);
-                };
-            });
+                });
 
 
             if (isSingleMode) {
@@ -2107,7 +2120,12 @@
 
         filterSpecial.addEventListener('change', onFilterChange);
         filterFav.addEventListener('change', onFilterChange);
-        filterSearch.addEventListener('input', onFilterChange);
+                /* 搜索防抖：避免每敲一个字就全量重绘所有卡片 */
+        var __searchTimer = null;
+        filterSearch.addEventListener('input', function () {
+            clearTimeout(__searchTimer);
+            __searchTimer = setTimeout(onFilterChange, 220);
+        });
 
         clearBtn.addEventListener('click', function() {
             filterSpecial.value = 'all';
@@ -2168,87 +2186,11 @@
             });
         }, 100);
     </script>
+<script src="../shared/confirm.js"></script>
 <script src="../self-test.js"></script>
 <script src="../ai-assistant.js"></script>
 
 
-<script>
-/* ===== 存储安全：图片压缩 + 笔记自动保存 + 离开提醒 ===== */
-(function () {
-    var MAXW = 1200, QUALITY = 0.72, KEEP_UNDER = 220 * 1024;
-    var dirty = false, timer = null;
-
-    /* 压缩笔记里的图片：原图 base64 极易撑爆 localStorage（约 5MB 上限） */
-    window.__shrinkNoteImg = function (img, dataUrl) {
-        if (!img || !dataUrl || dataUrl.indexOf('data:image/') !== 0) return;
-        if (dataUrl.length < KEEP_UNDER) return;
-        var im = new Image();
-        im.onload = function () {
-            try {
-                var w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
-                var scale = Math.min(1, MAXW / (w || 1));
-                var c = document.createElement('canvas');
-                c.width = Math.max(1, Math.round(w * scale));
-                c.height = Math.max(1, Math.round(h * scale));
-                var ctx = c.getContext('2d');
-                ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
-                ctx.drawImage(im, 0, 0, c.width, c.height);
-                var out = c.toDataURL('image/jpeg', QUALITY);
-                if (out && out.length < dataUrl.length) {
-                    img.src = out;
-                    img.dataset.shrunk = '1';
-                    schedule(img);
-                }
-            } catch (e) {}
-        };
-        im.src = dataUrl;
-    };
-
-    function saveFrom(el) {
-        var ed = el && el.closest ? el.closest('.note-editor') : null;
-        if (!ed) return;
-        try {
-            var id = ed.dataset.id;
-            var content = (ed.innerHTML || '').trim();
-            if (content === '<br>' || content === '') content = '';
-            if (content) { notes[id] = content; } else { delete notes[id]; }
-            saveNotes();
-        } catch (e) {
-            var btn = document.querySelector('.note-save[data-id="' + (ed.dataset.id || '') + '"]');
-            if (btn) btn.click();
-        }
-    }
-
-    function schedule(el) {
-        dirty = true;
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-            try { saveFrom(el); dirty = false; } catch (e) {}
-        }, 900);
-    }
-
-    document.addEventListener('input', function (e) {
-        var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
-        if (ed) schedule(ed);
-    }, true);
-
-    document.addEventListener('paste', function (e) {
-        var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
-        if (ed) setTimeout(function () { schedule(ed); }, 150);
-    }, true);
-
-    /* 手动点过保存就认为已保存，不再拦离开 */
-    document.addEventListener('click', function (e) {
-        if (e.target && e.target.closest && e.target.closest('.note-save')) dirty = false;
-    }, true);
-
-    window.addEventListener('beforeunload', function (e) {
-        if (!dirty) return;
-        e.preventDefault();
-        e.returnValue = '';
-        return '';
-    });
-})();
-</script>
+<script src="../shared/storage-guard.js"></script>
 </body>
 </html>

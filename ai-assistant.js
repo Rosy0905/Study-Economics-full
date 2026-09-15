@@ -3,19 +3,40 @@
   if (window.__AI_ASSISTANT_LOADED__) return;
   window.__AI_ASSISTANT_LOADED__ = true;
 
-  /* ---------- 预加载 KaTeX ---------- */
+  /* ---------- KaTeX（已本地内置到 vendor/katex，不联网也能渲染公式） ---------- */
   var katexReady = false;
   (function loadKatex() {
     if (window.katex) { katexReady = true; return; }
+    /* 本地路径必须按「本脚本自身所在位置」来算：主页在根目录、子页在子目录，层级不同 */
+    var base = (function () {
+      var cs = document.currentScript;
+      if (cs && cs.src) return cs.src.replace(/[^/]*$/, '');
+      var all = document.getElementsByTagName('script');
+      for (var i = all.length - 1; i >= 0; i--) {
+        if (all[i].src && all[i].src.indexOf('ai-assistant.js') >= 0) {
+          return all[i].src.replace(/[^/]*$/, '');
+        }
+      }
+      return '';
+    })();
+    var CDN = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/';
     var link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css';
+    link.href = base + 'vendor/katex/katex.min.css';
+    link.onerror = function () { link.href = CDN + 'katex.min.css'; };
     document.head.appendChild(link);
     var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js';
+    s.src = base + 'vendor/katex/katex.min.js';
     s.onload = function () {
       katexReady = true;
       if (window.__AI_RERENDER__) window.__AI_RERENDER__();
+    };
+    /* 万一 vendor/ 没上传成功，兜底走 CDN，避免公式功能整个失效 */
+    s.onerror = function () {
+      var c = document.createElement('script');
+      c.src = CDN + 'katex.min.js';
+      c.onload = s.onload;
+      document.head.appendChild(c);
     };
     document.head.appendChild(s);
   })();
@@ -316,45 +337,6 @@ body.shared-ai-view .ai-close{display:none;}
 }
 .ai-lightbox.show{opacity:1;}
 .ai-lightbox img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.4);background:#fff;}
-
-/* ===== 自定义确认框（替代 window.confirm，规避微信内核 bug） ===== */
-.ai-confirm-overlay{
-  position:fixed;inset:0;z-index:4000;background:rgba(16,40,28,.42);
-  display:flex;align-items:center;justify-content:center;padding:24px;
-  opacity:0;transition:opacity .18s;
-  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
-}
-.ai-confirm-overlay.show{opacity:1;}
-.ai-confirm-box{
-  width:min(320px,100%);background:#fff;border-radius:16px;
-  box-shadow:0 20px 60px rgba(20,50,30,.28);
-  padding:20px 20px 16px;transform:translateY(8px) scale(.96);
-  transition:transform .22s cubic-bezier(.34,1.56,.64,1);
-}
-.ai-confirm-overlay.show .ai-confirm-box{transform:translateY(0) scale(1);}
-.ai-confirm-title{font-size:15px;font-weight:700;color:#1e4a2a;margin-bottom:8px;}
-.ai-confirm-msg{font-size:13.5px;color:#4a6a58;line-height:1.65;
-  white-space:pre-wrap;word-break:break-word;margin-bottom:16px;
-  max-height:40vh;overflow-y:auto;}
-.ai-confirm-actions{display:flex;gap:10px;justify-content:flex-end;}
-.ai-confirm-btn{
-  flex:0 0 auto;min-width:76px;padding:9px 16px;border-radius:10px;
-  font-size:13.5px;font-weight:600;cursor:pointer;border:none;font-family:inherit;
-  transition:.15s;
-}
-.ai-confirm-btn.cancel{background:#f0f5f2;color:#5a7a68;}
-@media (hover: hover) and (pointer: fine) {
-  .ai-confirm-btn.cancel:hover{background:#e4eee8;}
-}
-.ai-confirm-btn.cancel:active{background:#e4eee8;}
-.ai-confirm-btn.ok{background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;
-  box-shadow:0 3px 10px rgba(63,168,122,.26);}
-.ai-confirm-btn.ok.danger{background:linear-gradient(135deg,#f08a72,#e05a4a);
-  box-shadow:0 3px 10px rgba(224,90,74,.26);}
-@media (hover: hover) and (pointer: fine) {
-  .ai-confirm-btn.ok:hover{filter:brightness(1.05);}
-}
-.ai-confirm-btn.ok:active{filter:brightness(1.05);}
 
 @media (max-width:640px){
   .ai-fab{right:16px;bottom:16px;width:52px;height:52px;border-width:2px;}
@@ -1020,46 +1002,6 @@ body.shared-ai-view .ai-close{display:none;}
   });
 
   /* ===================== 自定义确认框 ===================== */
-  function showConfirm(opts) {
-    opts = opts || {};
-    return new Promise(function (resolve) {
-      var overlay = document.createElement('div');
-      overlay.className = 'ai-confirm-overlay';
-overlay.innerHTML =
-  '<div class="ai-confirm-box">' +
-    '<div class="ai-confirm-title">' + escapeHtml(opts.title || '确认') + '</div>' +
-    '<div class="ai-confirm-msg">' + escapeHtml(opts.message || '') + '</div>' +
-    '<div class="ai-confirm-actions">' +
-      '<button class="ai-confirm-btn ok' + (opts.danger ? ' danger' : '') + '">' + escapeHtml(opts.okText || '确定') + '</button>' +
-      '<button class="ai-confirm-btn cancel">' + escapeHtml(opts.cancelText || '取消') + '</button>' +
-    '</div>' +
-  '</div>';
-      document.body.appendChild(overlay);
-      requestAnimationFrame(function () { overlay.classList.add('show'); });
-
-      var settled = false;
-      function close(result) {
-        if (settled) return; settled = true;
-        overlay.classList.remove('show');
-        setTimeout(function () { overlay.remove(); }, 200);
-        resolve(result);
-      }
-      overlay.querySelector('.ai-confirm-btn.cancel').addEventListener('click', function (e) {
-        e.stopPropagation(); close(false);
-      });
-      overlay.querySelector('.ai-confirm-btn.ok').addEventListener('click', function (e) {
-        e.stopPropagation(); close(true);
-      });
-      overlay.addEventListener('click', function (e) {
-        if (e.target === overlay) close(false);
-      });
-      var esc = function (e) {
-        if (e.key === 'Escape') { document.removeEventListener('keydown', esc); close(false); }
-      };
-      document.addEventListener('keydown', esc);
-    });
-  }
-  window.showConfirm = showConfirm; // 供各子页复用统一的自定义确认框
 
   /* ===================== 读取页面上下文 ===================== */
 

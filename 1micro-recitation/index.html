@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+<link rel="icon" href="../icons/icon.svg">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#3FA87A">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>微观背诵 · 记忆卡</title>
@@ -48,13 +51,17 @@
             font-size: 13px; cursor: pointer; color: #1e4a2a; font-weight: 500;
             transition: background 0.2s;
         }
-        .filter-bar .btn-clear-filter:hover { background: #b8d4b8; }
+        @media (hover: hover) and (pointer: fine) {
+            .filter-bar .btn-clear-filter:hover { background: #b8d4b8; }
+        }
         .filter-bar .btn-random {
             background: #d4c49a; border: none; padding: 6px 22px; border-radius: 30px;
             font-size: 14px; cursor: pointer; color: #3f3a1a; font-weight: 600;
             transition: background 0.2s, transform 0.1s;
         }
-        .filter-bar .btn-random:hover { background: #c9b888; transform: scale(1.02); }
+        @media (hover: hover) and (pointer: fine) {
+            .filter-bar .btn-random:hover { background: #c9b888; transform: scale(1.02); }
+        }
         .filter-bar .btn-random:active { transform: scale(0.96); }
         .single-mode-bar {
             max-width: 1200px; margin: 0 auto 16px auto;
@@ -70,7 +77,9 @@
             padding: 2px 10px; border-radius: 8px; color: #7a5a2a;
             transition: background 0.15s, transform 0.1s; line-height: 1;
         }
-        .single-mode-bar .mode-left .btn-nav:hover { background: #e8ddd0; transform: scale(1.05); }
+        @media (hover: hover) and (pointer: fine) {
+            .single-mode-bar .mode-left .btn-nav:hover { background: #e8ddd0; transform: scale(1.05); }
+        }
         .single-mode-bar .mode-left .btn-nav:active { transform: scale(0.92); }
         .single-mode-bar .mode-left .btn-nav.disabled { opacity: 0.35; pointer-events: none; }
         .single-mode-bar .card-id-badge {
@@ -83,7 +92,9 @@
             padding: 2px 10px; border-radius: 8px; color: #8a5a4a;
             transition: background 0.15s, transform 0.1s; line-height: 1;
         }
-        .single-mode-bar .btn-exit-single:hover { background: #e8d5d0; transform: scale(1.05); }
+        @media (hover: hover) and (pointer: fine) {
+            .single-mode-bar .btn-exit-single:hover { background: #e8d5d0; transform: scale(1.05); }
+        }
         .single-mode-bar .btn-exit-single:active { transform: scale(0.92); }
         .card-grid {
             max-width: 1200px; margin: 0 auto;
@@ -101,7 +112,9 @@
             transition: box-shadow 0.25s, transform 0.15s, border-color 0.3s;
             overflow: hidden; position: relative;
         }
-        .card-item:hover { box-shadow: 0 8px 24px rgba(50, 100, 50, 0.13); }
+        @media (hover: hover) and (pointer: fine) {
+            .card-item:hover { box-shadow: 0 8px 24px rgba(50, 100, 50, 0.13); }
+        }
         .card-item.favorited { border-left-color: #d4a24e; background: #fcf9f0; }
         .card-item.highlight {
             border-left-color: #e67e22;
@@ -129,7 +142,9 @@
             padding: 4px 6px; border-radius: 10px;
             transition: background 0.15s, transform 0.1s; line-height: 1; color: #3f6a3f;
         }
-        .card-actions button:hover { background: #e6f0e6; transform: scale(1.05); }
+        @media (hover: hover) and (pointer: fine) {
+            .card-actions button:hover { background: #e6f0e6; transform: scale(1.05); }
+        }
         .card-actions .btn-fav { color: #b8a06a; }
         .card-actions .btn-fav.active { color: #d4a24e; }
         .card-actions .btn-note { color: #4f7a4f; }
@@ -230,7 +245,9 @@
             background: #dcebd9; border: none; padding: 2px 14px; border-radius: 30px;
             font-size: 12px; cursor: pointer; color: #1e4a2a; transition: background 0.2s;
         }
-        .card-note-area .img-resize-control .btn-reset-size:hover { background: #c2ddc2; }
+        @media (hover: hover) and (pointer: fine) {
+            .card-note-area .img-resize-control .btn-reset-size:hover { background: #c2ddc2; }
+        }
         .card-note-area .note-actions {
             display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: center;
         }
@@ -239,14 +256,22 @@
             font-size: 13px; cursor: pointer; color: #1e4a2a; font-weight: 500;
             transition: background 0.2s, transform 0.1s;
         }
-        .card-note-area .note-actions button:hover { background: #c2ddc2; }
+        @media (hover: hover) and (pointer: fine) {
+            .card-note-area .note-actions button:hover { background: #c2ddc2; }
+        }
         .card-note-area .note-actions button:active { transform: scale(0.96); }
         .card-note-area .note-actions .btn-insert-img { background: #d4d9c4; color: #2f4a2f; }
-        .card-note-area .note-actions .btn-insert-img:hover { background: #c4cdb0; }
+        @media (hover: hover) and (pointer: fine) {
+            .card-note-area .note-actions .btn-insert-img:hover { background: #c4cdb0; }
+        }
         .card-note-area .note-actions .note-save { background: #a8c8a8; color: #1a3a1a; }
-        .card-note-area .note-actions .note-save:hover { background: #94b894; }
+        @media (hover: hover) and (pointer: fine) {
+            .card-note-area .note-actions .note-save:hover { background: #94b894; }
+        }
         .card-note-area .note-actions .note-clear { background: #e6d6d6; color: #6a3a3a; }
-        .card-note-area .note-actions .note-clear:hover { background: #dcc4c4; }
+        @media (hover: hover) and (pointer: fine) {
+            .card-note-area .note-actions .note-clear:hover { background: #dcc4c4; }
+        }
         .card-note-area .note-actions .note-size-hint {
             font-size: 12px; color: #6f8f6f; margin-left: auto; opacity: 0.7;
         }
@@ -291,7 +316,9 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #dce8dc; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #8fbe8f; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #6f9e6f; }
+        @media (hover: hover) and (pointer: fine) {
+            ::-webkit-scrollbar-thumb:hover { background: #6f9e6f; }
+        }
 /* ================= 返回主页按钮 ================= */
 .app-header .header-left {
     display: flex;
@@ -316,18 +343,22 @@
     box-shadow: 0 1px 3px rgba(60, 110, 60, 0.10);
     transition: background .2s, transform .2s, box-shadow .2s;
 }
-.back-home:hover {
-    background: #a8d0a8;
-    transform: translateX(-2px);
-    box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+@media (hover: hover) and (pointer: fine) {
+    .back-home:hover {
+        background: #a8d0a8;
+        transform: translateX(-2px);
+        box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+    }
 }
 .back-home .arrow {
     font-size: 15px;
     line-height: 1;
     transition: transform .2s;
 }
-.back-home:hover .arrow {
-    transform: translateX(-3px);
+@media (hover: hover) and (pointer: fine) {
+    .back-home:hover .arrow {
+        transform: translateX(-3px);
+    }
 }
 
 /* 移动端微调 */
@@ -336,6 +367,11 @@
     .back-home { padding: 6px 13px 6px 10px; font-size: 12.5px; }
 }
     
+/* 触摸设备：按下反馈（悬停效果已在支持鼠标的设备上保留） */
+.card-actions button:active { background: #d8ead8; transform: scale(0.94); }
+.filter-bar .btn-clear-filter:active { background: #b8d4b8; transform: scale(0.96); }
+.back-home:active { background: #a8d0a8; transform: translateX(-1px); }
+.card-note-area .img-resize-control .btn-reset-size:active { background: #b2d2b2; transform: scale(0.96); }
 </style>
 </head>
 <body>
@@ -355,30 +391,7 @@
 
     <div class="filter-bar" id="filterBar">
         <label for="filterSpecial">章节</label>
-         <select id="filterSpecial">
-            <option value="all">全部</option>
-            <option value="一、消费者行为理论|all" style="font-weight:600;">一、消费者行为理论</option>
-            <option value="一、消费者行为理论|概念">　　重要概念</option>
-            <option value="一、消费者行为理论|简答">　　简答/论述题</option>
-            <option value="二、生产者行为理论|all" style="font-weight:600;">二、生产者行为理论</option>
-            <option value="二、生产者行为理论|概念">　　重要概念</option>
-            <option value="二、生产者行为理论|简答">　　简答/论述题</option>
-            <option value="三、市场理论|all" style="font-weight:600;">三、市场理论</option>
-            <option value="三、市场理论|概念">　　重要概念</option>
-            <option value="三、市场理论|简答">　　简答/论述题</option>
-            <option value="四、博弈论|all" style="font-weight:600;">四、博弈论</option>
-            <option value="四、博弈论|概念">　　重要概念</option>
-            <option value="四、博弈论|简答">　　简答/论述题</option>
-            <option value="五、要素理论|all" style="font-weight:600;">五、要素理论</option>
-            <option value="五、要素理论|概念">　　重要概念</option>
-            <option value="五、要素理论|简答">　　简答/论述题</option>
-            <option value="六、一般均衡与福利|all" style="font-weight:600;">六、一般均衡与福利</option>
-            <option value="六、一般均衡与福利|概念">　　重要概念</option>
-            <option value="六、一般均衡与福利|简答">　　简答/论述题</option>
-            <option value="七、市场失灵|all" style="font-weight:600;">七、市场失灵</option>
-            <option value="七、市场失灵|概念">　　重要概念</option>
-            <option value="七、市场失灵|简答">　　简答/论述题</option>
-        </select>
+         <select id="filterSpecial"></select>
         <label for="filterFav">⭐ 收藏</label>
         <select id="filterFav">
             <option value="all">全部</option>
@@ -410,7 +423,8 @@
 
     <div class="toast" id="toast"></div>
 
-    <script>
+    <script src="../shared/escape.js"></script>
+<script>
         // ============================================================
         // 数据（微观背诵手册：7章，含重要概念与简答/论述题）
         // ============================================================
@@ -566,7 +580,7 @@ dTR/dP = d[P·Q(P)]/dP = Q(P) + P·dQ(P)/dP = Q[1 + (dQ(P)/dP)·(P/Q(P))] = Q(1�
 dTR/dQ = d[P(Q)·Q]/dQ = P(Q) + Q·dP(Q)/dQ = P[1 + (dP(Q)/dQ)·(Q/P(Q))] = P(1−1/|E_d|)。
 利用上式可以得到如下结论：
 ① 当 |e_d|=∞（完全竞争），MR=P，此时厂商的边际收益曲线与面临的需求曲线重合；
-② 当 |e_d|<∞（非完全竞争），MR&lt;P，此时厂商的边际收益曲线位于面临的需求曲线下方；
+② 当 |e_d|<∞（非完全竞争），MR<P，此时厂商的边际收益曲线位于面临的需求曲线下方；
 ③ 当 0<|e_d|<1，MR<0，由于厂商利润最大化时 MR=MC，并且 MC≥0，所以厂商利润最大化的点不可能位于需求缺乏弹性的区间。`,
                 hasImage: false },
 
@@ -583,7 +597,7 @@ dTR/dQ = d[P(Q)·Q]/dQ = P(Q) + Q·dP(Q)/dQ = P[1 + (dP(Q)/dQ)·(Q/P(Q))] = P(1�
             { id: 'c1c21', special: '一、消费者行为理论', type: '重要概念', qid: '概念21',
                 question: '需求收入弹性',
                 answer: `（1）需求收入弹性表示在一定时期内消费者对某种商品的需求量的变动对于消费者收入量变动的反应程度。或者说，表示在一定时期内当消费者的收入变化百分之一时所引起的商品需求量变化的百分比。
-（2）需求收入弹性与商品分类：e_M>1 为奢侈品；0&lt;e_M&lt;1 为必需品；e_M&lt;0 为低档品。`,
+（2）需求收入弹性与商品分类：e_M>1 为奢侈品；0<e_M<1 为必需品；e_M<0 为低档品。`,
                 hasImage: false },
 
             /* --- 简答/论述题 --- */
@@ -845,7 +859,7 @@ w₁ˢx₁ˢ + w₂ˢx₂ˢ ≤ w₁ˢx₁ᵗ + w₂ˢx₂ᵗ
 最终，追求利润最大化的厂商会在第Ⅱ阶段进行生产。
 【提示2】MP 与 AP 的关系：
 dAP_L/dL = d(Q/L)/dL = (L·dQ/dL − Q)/L² = (1/L)(MP_L − AP_L)
-MP_L&gt;AP_L 时，AP_L 递增；MP_L&lt;AP_L 时，AP_L 递减；MP_L=AP_L 时，AP_L 达到极值点。
+MP_L>AP_L 时，AP_L 递增；MP_L<AP_L 时，AP_L 递减；MP_L=AP_L 时，AP_L 达到极值点。
 由于边际报酬递减规律，MP_L 为先递增后递减的倒U形曲线，所以 AP_L 也为先递增后递减的倒U形曲线，同时 MP_L 相交于 AP_L 曲线的最高点。`,
                 hasImage: true },
 
@@ -856,7 +870,7 @@ MP_L&gt;AP_L 时，AP_L 递增；MP_L&lt;AP_L 时，AP_L 递减；MP_L=AP_L 时�
 ① 当 MC 曲线低于 AC 曲线时，AC 曲线处于下降阶段；当 MC 曲线高于 AC 曲线时，AC 曲线处于上升阶段，即 MC 曲线与 AC 曲线相交于 AC 曲线的最低点。
 ② 类似的，当 MC 曲线低于 AVC 曲线时，AVC 曲线处于下降阶段；当 MC 曲线高于 AVC 曲线时，AVC 曲线处于上升阶段，即 MC 曲线与 AVC 曲线相交于 AVC 曲线的最低点。
 【提示1】MC 与 AC、AVC 关系的数学推导（用于证明 AC、AVC 曲线也为 U 形，或证明 MC 相交于 AC、AVC 最低点）：
-首先，由于 dAC/dQ = d(TC/Q)/dQ = (dTC/dQ·Q − TC)/Q² = (1/Q)(dTC/dQ − TC/Q) = (1/Q)(MC − AC)，所以，当 MC&lt;AC 时，dAC/dQ&lt;0，AC 曲线递减；当 MC&gt;AC 时，dAC/dQ&gt;0，AC 曲线递增；当 MC=AC 时，dAC/dQ=0，此时 AC 为极值点。
+首先，由于 dAC/dQ = d(TC/Q)/dQ = (dTC/dQ·Q − TC)/Q² = (1/Q)(dTC/dQ − TC/Q) = (1/Q)(MC − AC)，所以，当 MC<AC 时，dAC/dQ<0，AC 曲线递减；当 MC>AC 时，dAC/dQ>0，AC 曲线递增；当 MC=AC 时，dAC/dQ=0，此时 AC 为极值点。
 其次，由于在边际报酬递减规律的作用下 MC 曲线有先降后升的 U 形特征，所以 AC 曲线也为 U 形曲线，并且 MC 曲线交于 AC 曲线的最低点。
 MC 与 AVC 关系的数理推导同理。
 【提示2】在证明 MC 与 AC 和 AVC 关系，或证明 AC、AVC 曲线为 U 形曲线时，一定要先利用关系式 MC=W/MP 证明出 MC 曲线为 U 形曲线，否则单用关系式 dAC/dQ=(1/Q)(MC−AC) 得不到 AC 曲线也为 U 形，且 MC 曲线过 AC 曲线最低点的结论。`,
@@ -1093,7 +1107,7 @@ LAC 曲线与各条 SAC 曲线的切点，并不都在各 SAC 线的最低点。
                 question: '什么是零利润定理？解释完全竞争厂商长期经济利润为零的原因，并说明此时厂商是否会选择继续生产？为什么？',
                 answer: `（1）零利润定理是用于描述竞争市场企业长期利润变化趋势的一个定理，其具体内容是：在完全竞争市场上，由于企业可以完全自由进入和退出，因此，长期均衡时，不可能有企业获得超额利润，也不可能有企业亏损，即长期均衡时，每个企业都只能获得零利润。
 （2）完全竞争厂商长期均衡时经济利润为零的原因（完全竞争厂商实现长期均衡的过程）：
-在长期内，完全竞争市场企业可以自由进入或退出。如果完全竞争厂商能够获得正的长期经济利润（P>LAC），将有厂商进入市场，此时市场供给增加，价格水平下降，直到厂商经济利润为零（P=LAC）；如果长期经济利润为负（P&lt;LAC），则会有厂商退出市场，市场供给减少，价格水平上升，直到厂商经济利润为零。
+在长期内，完全竞争市场企业可以自由进入或退出。如果完全竞争厂商能够获得正的长期经济利润（P>LAC），将有厂商进入市场，此时市场供给增加，价格水平下降，直到厂商经济利润为零（P=LAC）；如果长期经济利润为负（P<LAC），则会有厂商退出市场，市场供给减少，价格水平上升，直到厂商经济利润为零。
 （3）完全竞争长期均衡时厂商经济利润为零说明厂商通过投资获得了正常回报。正常回报是资本使用者成本的一部分，是指厂商购买资本而没有投资于其他用途的机会成本。因此，长期获得零经济利润的厂商将其资金用于购买资本和投到其他用途是一样好的，资本获得了竞争性回报。此时厂商已经表现得足够好，应该继续经营。
 【提示】完全竞争行业长期经济利润为零。但厂商依然选择进入或退出该行业的原因：
 （1）实现长期均衡需要很长时间，在达到长期均衡之前，厂商可能获得正的经济利润，并且先进入某一有利可图行业的厂商可能比后进入的厂商赚取更多利润，而先退出某一无利润可赚的行业的厂商可以节省很多资金。
@@ -1157,7 +1171,7 @@ LAC 曲线与各条 SAC 曲线的切点，并不都在各 SAC 线的最低点。
 ② 平均成本定价法
 平均成本定价法是使管制价格等于平均成本。根据平均成本定价法即 P=AC，管制价格将确定为 P₂，相应的产量为 Q₂。此时，由于 P₂=AC，厂商不再亏损，厂商会继续经营，但利润为零。
 ③ 双重定价法
-双重定价法类似于价格歧视的做法。具体地说，允许厂商对一部分购买欲望较强的消费者收取较高的价格，且 P>AC，从而厂商获得利润。同时，厂商对一部分购买欲望较弱的消费者仍按边际成本定价法收取较低的价格，由于 P&lt;AC，从而厂商是亏损的。此外，双重定价法还要求制定的价格计划应该使得厂商由于收取较高价格所获得的利润能补偿由于收取较低价格所遭受的亏损。这样，从整体上看厂商利润为零，厂商还是愿意继续经营的。
+双重定价法类似于价格歧视的做法。具体地说，允许厂商对一部分购买欲望较强的消费者收取较高的价格，且 P>AC，从而厂商获得利润。同时，厂商对一部分购买欲望较弱的消费者仍按边际成本定价法收取较低的价格，由于 P<AC，从而厂商是亏损的。此外，双重定价法还要求制定的价格计划应该使得厂商由于收取较高价格所获得的利润能补偿由于收取较低价格所遭受的亏损。这样，从整体上看厂商利润为零，厂商还是愿意继续经营的。
 【提示】自然垄断条件下，政府对自然垄断的价格管制往往采用平均成本定价而非边际成本定价，因为此时政府不需要补贴垄断厂商，厂商也可以获得正常利润。
 解决自然垄断的另一方法是由政府经营，此时理想的解决方案是政府在价格等于边际成本处生产，同时提供一次性总付补贴以维持经营。此时存在的问题：第一，政府确定自己的成本和确定受管制自然垄断企业的成本一样困难；第二，经营垄断工厂的政府可能比受管制的自然垄断厂商更不愿意对公众负责。`,
                 hasImage: true },
@@ -1764,6 +1778,21 @@ c. 第三，势力的不对称性。即使污染者与受害者有可能达成�
         let historyIndex = -1;
 
         const grid = document.getElementById('cardGrid');
+
+        /* 事件委托：监听器只绑一次，卡片重绘后依然有效（原来是每次 render 重绑 2800+ 个） */
+        var __delegated = Object.create(null);
+        function delegateOnce(selector, type, handler) {
+            var k = type + '::' + selector;
+            if (__delegated[k]) return;
+            __delegated[k] = 1;
+            grid.addEventListener(type, function (e) {
+                var t = e.target;
+                if (!t || !t.closest) return;
+                var el = t.closest(selector);
+                if (!el || !grid.contains(el)) return;
+                return handler.call(el, e);
+            });
+        }
         const totalSpan = document.getElementById('totalCards');
         const favSpan = document.getElementById('favCount');
         const filterSpecial = document.getElementById('filterSpecial');
@@ -1780,6 +1809,29 @@ c. 第三，势力的不对称性。即使污染者与受害者有可能达成�
         const filterBar = document.getElementById('filterBar');
 
         let toastTimer = null;
+
+        /* ===== 筛选下拉：选项从 cardData 自动生成 =====
+           以后加章节、改章节名，只要数据里有，下拉框就会自动出现，不用再手改 HTML。
+           子选项（重要概念 / 简答论述）也按该章节数据里实际存在的题型来生成。 */
+        var SUB_TYPES = [
+            { key: '概念', type: '重要概念',    text: '　　重要概念' },
+            { key: '简答', type: '简答/论述题', text: '　　简答/论述题' }
+        ];
+        function buildSpecialOptions() {
+            var sel = document.getElementById('filterSpecial');
+            if (!sel) return;
+            var order = [];
+            cardData.forEach(function (d) { if (order.indexOf(d.special) === -1) order.push(d.special); });
+            var html = '<option value="all">全部</option>';
+            order.forEach(function (ch) {
+                html += '<option value="' + safeText(ch) + '|all" style="font-weight:600;">' + safeText(ch) + '</option>';
+                SUB_TYPES.forEach(function (t) {
+                    var has = cardData.some(function (d) { return d.special === ch && d.type === t.type; });
+                    if (has) html += '<option value="' + safeText(ch) + '|' + safeText(t.key) + '">' + t.text + '</option>';
+                });
+            });
+            sel.innerHTML = html;
+        }
 
         function showToast(msg) {
             clearTimeout(toastTimer);
@@ -1808,13 +1860,13 @@ c. 第三，势力的不对称性。即使污染者与受害者有可能达成�
             } catch (err) { var _f=(err&&(err.name==='QuotaExceededError'||err.code===22||err.code===1014)); var _m=_f?'⚠️ 存储空间不足，这次没能保存！建议删掉笔记里的大图，或先「导出」备份再清理。':'⚠️ 保存失败'; try{ if(typeof showToast==='function'){showToast(_m);} else {alert(_m);} }catch(_x){alert(_m);} }
         }
 
-        function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+        /* 转义函数统一由 shared/escape.js 提供（safeText），此处不再单独定义 */
 function renderAnswerParagraphs(text) {
             if (!text) return '';
             const paragraphs = text.split('\n');
             const filtered = paragraphs.filter(p => p.trim() !== '');
             if (filtered.length === 0) return '';
-            return filtered.map(p => `<p>${esc(p.trim())}</p>`).join('');
+            return filtered.map(p => `<p>${safeText(p.trim())}</p>`).join('');
         }
 
         function getCardData(id) {
@@ -1982,7 +2034,7 @@ function renderAnswerParagraphs(text) {
             if (paragraphs.length === 0) {
                 editA.innerHTML = '<p><br></p>';
             } else {
-                editA.innerHTML = paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+                editA.innerHTML = paragraphs.map(p => `<p>${safeText(p.trim())}</p>`).join('');
             }
             editA.style.cssText =
                 'background:transparent;border-left:none;padding:4px 6px;min-height:40px;outline:none;border:2px dashed #6a9e9e;border-radius:8px;';
@@ -2083,7 +2135,7 @@ function renderAnswerParagraphs(text) {
 
             delete editBackups[id];
             exitEditMode(id, false);
-            showToast('↩️ 已取消编辑');
+            showToast('🔙 已取消编辑');
         }
 
         function exitEditMode(id, saved) {
@@ -2220,8 +2272,8 @@ function renderAnswerParagraphs(text) {
                     <div class="card-item ${isFav ? 'favorited' : ''}" data-id="${d.id}">
                         <div class="card-header">
                             <div class="label">
-                                <span class="tag">${d.special}</span>
-                                <span class="qid">${d.qid}</span>
+                                <span class="tag">${safeText(d.special)}</span>
+                                <span class="qid">${safeText(d.qid)}</span>
                                 ${d.hasImage ? '<span class="has-img">📐 有图示</span>' : ''}
                             </div>
                             <div class="card-actions" data-id="${d.id}">
@@ -2231,7 +2283,7 @@ function renderAnswerParagraphs(text) {
                             </div>
                         </div>
                         <div class="card-question" data-id="${d.id}">
-                            <span class="q-text">${esc(qText)}</span>
+                            <span class="q-text">${safeText(qText)}</span>
                             <span class="toggle-hint">(点击展开答案)</span>
                         </div>
                         <div class="card-answer" data-id="${d.id}">
@@ -2259,8 +2311,7 @@ function renderAnswerParagraphs(text) {
             grid.innerHTML = html;
 
             // 事件绑定
-            document.querySelectorAll('.card-question').forEach(el => {
-                el.addEventListener('click', function(e) {
+                        delegateOnce('.card-question', 'click', function (e) {
                     if (this.classList.contains('editable')) return;
                     const id = this.dataset.id;
                     const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
@@ -2287,10 +2338,8 @@ function renderAnswerParagraphs(text) {
                         }
                     }
                 });
-            });
 
-                        document.querySelectorAll('.btn-fav').forEach(btn => {
-                btn.addEventListener('click', function(e){
+                                                delegateOnce('.btn-fav', 'click', function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const idx = favorites.indexOf(id);
@@ -2301,10 +2350,8 @@ function renderAnswerParagraphs(text) {
                     if(card) card.classList.toggle('favorited', favorites.includes(id));
                     favSpan.textContent = favorites.length;
                 });
-            });
 
-            document.querySelectorAll('.btn-note').forEach(btn => {
-                btn.addEventListener('click', function(e){
+                        delegateOnce('.btn-note', 'click', function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
@@ -2319,10 +2366,8 @@ function renderAnswerParagraphs(text) {
                         if(editor) setTimeout(()=>editor.focus(),100);
                     }
                 });
-            });
 
-            document.querySelectorAll('.btn-insert-img').forEach(btn => {
-                btn.addEventListener('click', function(e){
+                        delegateOnce('.btn-insert-img', 'click', function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
@@ -2364,10 +2409,8 @@ function renderAnswerParagraphs(text) {
                     };
                     fileInput.click();
                 });
-            });
 
-            document.querySelectorAll('.note-save').forEach(btn => {
-                btn.addEventListener('click', function(e){
+                        delegateOnce('.note-save', 'click', function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
@@ -2383,14 +2426,12 @@ function renderAnswerParagraphs(text) {
                         const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
                         if(noteArea) noteArea.classList.add('open');
                     }
-                    const orig = btn.textContent;
-                    btn.textContent = '✅ 已保存';
-                    setTimeout(()=>{btn.textContent = orig;},1200);
+                    const orig = this.textContent;
+                    this.textContent = '✅ 已保存';
+                    setTimeout(()=>{this.textContent = orig;},1200);
                 });
-            });
 
-            document.querySelectorAll('.note-clear').forEach(btn => {
-                btn.addEventListener('click', async function(e){
+                        delegateOnce('.note-clear', 'click', async function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     if(!(await window.showConfirm({ title: '清空笔记', message: '确定要清空这条笔记吗？', okText: '清空', danger: true }))) return;
@@ -2409,10 +2450,9 @@ function renderAnswerParagraphs(text) {
                         showToast('🗑️ 笔记已清空');
                     }
                 });
-            });
 
-            document.querySelectorAll('.note-editor').forEach(editor => {
-                editor.addEventListener('paste', function(e) {
+                        delegateOnce('.note-editor', 'paste', function (e) {
+                var editor = this;
                     const items = e.clipboardData && e.clipboardData.items;
                     if (!items) return;
                     for (let item of items) {
@@ -2451,39 +2491,37 @@ function renderAnswerParagraphs(text) {
                         }
                     }
                 });
-            });
 
-            document.querySelectorAll('.note-editor').forEach(editor => {
+                        grid.querySelectorAll('.note-editor').forEach(editor => {
+
                 const id = editor.dataset.id;
                 const content = notes[id] || '';
                 if (!content || content.trim() === '') {
                     editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
                 }
-                editor.addEventListener('focus', function() {
+                bindImgClick(editor);
+            });
+            delegateOnce('.note-editor', 'focusin', function () {
                     const placeholder = this.querySelector('.note-placeholder');
                     if (placeholder) {
                         this.innerHTML = '';
                     }
-                });
-                editor.addEventListener('blur', function() {
+                            });
+            delegateOnce('.note-editor', 'focusout', function () {
                     if (this.innerHTML.trim() === '' || this.innerHTML === '<br>') {
                         this.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
                     }
-                });
-                editor.addEventListener('click', function() {
+                            });
+            delegateOnce('.note-editor', 'click', function () {
                     if (this.getAttribute('contenteditable') === 'false') {
                         this.setAttribute('contenteditable', 'true');
                         this.focus();
                     }
-                });
-            });
+                            });
 
-            document.querySelectorAll('.note-editor').forEach(editor => {
-                bindImgClick(editor);
-            });
+            
 
-            document.querySelectorAll('.btn-reset-size').forEach(btn => {
-                btn.addEventListener('click', function(e) {
+                        delegateOnce('.btn-reset-size', 'click', function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
@@ -2503,10 +2541,8 @@ function renderAnswerParagraphs(text) {
                     }
                     showToast('📐 图片大小已重置');
                 });
-            });
 
-            document.querySelectorAll('.img-resize-control input[type="range"]').forEach(slider => {
-                slider.addEventListener('input', function() {
+                        delegateOnce('.img-resize-control input[type="range"]', 'input', function (e) {
                     const id = this.closest('.img-resize-control').dataset.id;
                     const val = parseInt(this.value);
                     const valSpan = this.closest('.img-resize-control').querySelector('.size-val');
@@ -2521,16 +2557,13 @@ function renderAnswerParagraphs(text) {
                         }
                     });
                 });
-            });
 
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.onclick = function(e) {
+                        delegateOnce('.btn-edit', 'click', function (e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     if (this.classList.contains('is-editing')) return;
                     enterEditMode(id);
-                };
-            });
+                });
 
 
             if (isSingleMode) {
@@ -2605,7 +2638,12 @@ function renderAnswerParagraphs(text) {
 
         filterSpecial.addEventListener('change', onFilterChange);
         filterFav.addEventListener('change', onFilterChange);
-        filterSearch.addEventListener('input', onFilterChange);
+                /* 搜索防抖：避免每敲一个字就全量重绘所有卡片 */
+        var __searchTimer = null;
+        filterSearch.addEventListener('input', function () {
+            clearTimeout(__searchTimer);
+            __searchTimer = setTimeout(onFilterChange, 220);
+        });
 
         clearBtn.addEventListener('click', function() {
             filterSpecial.value = 'all';
@@ -2651,7 +2689,9 @@ function renderAnswerParagraphs(text) {
             }
         });
 
-        render();
+buildSpecialOptions();
+
+                render();
 
         setTimeout(() => {
             document.querySelectorAll('.note-editor').forEach(editor => {
@@ -2664,87 +2704,11 @@ function renderAnswerParagraphs(text) {
             });
         }, 100);
     </script>
+<script src="../shared/confirm.js"></script>
 <script src="../self-test.js"></script>
 <script src="../ai-assistant.js"></script>
 
 
-<script>
-/* ===== 存储安全：图片压缩 + 笔记自动保存 + 离开提醒 ===== */
-(function () {
-    var MAXW = 1200, QUALITY = 0.72, KEEP_UNDER = 220 * 1024;
-    var dirty = false, timer = null;
-
-    /* 压缩笔记里的图片：原图 base64 极易撑爆 localStorage（约 5MB 上限） */
-    window.__shrinkNoteImg = function (img, dataUrl) {
-        if (!img || !dataUrl || dataUrl.indexOf('data:image/') !== 0) return;
-        if (dataUrl.length < KEEP_UNDER) return;
-        var im = new Image();
-        im.onload = function () {
-            try {
-                var w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
-                var scale = Math.min(1, MAXW / (w || 1));
-                var c = document.createElement('canvas');
-                c.width = Math.max(1, Math.round(w * scale));
-                c.height = Math.max(1, Math.round(h * scale));
-                var ctx = c.getContext('2d');
-                ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
-                ctx.drawImage(im, 0, 0, c.width, c.height);
-                var out = c.toDataURL('image/jpeg', QUALITY);
-                if (out && out.length < dataUrl.length) {
-                    img.src = out;
-                    img.dataset.shrunk = '1';
-                    schedule(img);
-                }
-            } catch (e) {}
-        };
-        im.src = dataUrl;
-    };
-
-    function saveFrom(el) {
-        var ed = el && el.closest ? el.closest('.note-editor') : null;
-        if (!ed) return;
-        try {
-            var id = ed.dataset.id;
-            var content = (ed.innerHTML || '').trim();
-            if (content === '<br>' || content === '') content = '';
-            if (content) { notes[id] = content; } else { delete notes[id]; }
-            saveNotes();
-        } catch (e) {
-            var btn = document.querySelector('.note-save[data-id="' + (ed.dataset.id || '') + '"]');
-            if (btn) btn.click();
-        }
-    }
-
-    function schedule(el) {
-        dirty = true;
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-            try { saveFrom(el); dirty = false; } catch (e) {}
-        }, 900);
-    }
-
-    document.addEventListener('input', function (e) {
-        var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
-        if (ed) schedule(ed);
-    }, true);
-
-    document.addEventListener('paste', function (e) {
-        var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
-        if (ed) setTimeout(function () { schedule(ed); }, 150);
-    }, true);
-
-    /* 手动点过保存就认为已保存，不再拦离开 */
-    document.addEventListener('click', function (e) {
-        if (e.target && e.target.closest && e.target.closest('.note-save')) dirty = false;
-    }, true);
-
-    window.addEventListener('beforeunload', function (e) {
-        if (!dirty) return;
-        e.preventDefault();
-        e.returnValue = '';
-        return '';
-    });
-})();
-</script>
+<script src="../shared/storage-guard.js"></script>
 </body>
 </html>

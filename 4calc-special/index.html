@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+<link rel="icon" href="../icons/icon.svg">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#3FA87A">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>计算专项 · 记忆卡</title>
@@ -21,27 +24,37 @@ body{font-family:'Segoe UI','PingFang SC',Roboto,'Helvetica Neue',sans-serif;bac
 .filter-bar select optgroup{font-style:normal;font-weight:700;color:#1f5a2f;}
 .filter-bar select:disabled{opacity:0.5;cursor:not-allowed;}
 .filter-bar .btn-clear-filter{background:#cfe2cf;border:none;padding:6px 18px;border-radius:30px;font-size:13px;cursor:pointer;color:#1e4a2a;font-weight:500;transition:background 0.2s;}
-.filter-bar .btn-clear-filter:hover{background:#b8d4b8;}
+@media (hover: hover) and (pointer: fine) {
+    .filter-bar .btn-clear-filter:hover{background:#b8d4b8;}
+}
 .filter-bar .btn-random{background:#d4c49a;border:none;padding:6px 22px;border-radius:30px;font-size:14px;cursor:pointer;color:#3f3a1a;font-weight:600;transition:background 0.2s,transform 0.1s;}
-.filter-bar .btn-random:hover{background:#c9b888;transform:scale(1.02);}
+@media (hover: hover) and (pointer: fine) {
+    .filter-bar .btn-random:hover{background:#c9b888;transform:scale(1.02);}
+}
 .filter-bar .btn-random:active{transform:scale(0.96);}
 .single-mode-bar{max-width:1200px;margin:0 auto 16px auto;background:#f5efe0;border:2px solid #d4a24e;border-radius:14px;padding:8px 20px;display:none;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;animation:fadeSlide 0.3s ease;}
 .single-mode-bar.show{display:flex;}
 .single-mode-bar .mode-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .single-mode-bar .mode-left .btn-nav{background:transparent;border:none;font-size:22px;cursor:pointer;padding:2px 10px;border-radius:8px;color:#7a5a2a;transition:background 0.15s,transform 0.1s;line-height:1;}
-.single-mode-bar .mode-left .btn-nav:hover{background:#e8ddd0;transform:scale(1.05);}
+@media (hover: hover) and (pointer: fine) {
+    .single-mode-bar .mode-left .btn-nav:hover{background:#e8ddd0;transform:scale(1.05);}
+}
 .single-mode-bar .mode-left .btn-nav:active{transform:scale(0.92);}
 .single-mode-bar .mode-left .btn-nav.disabled{opacity:0.35;pointer-events:none;}
 .single-mode-bar .card-id-badge{font-size:15px;font-weight:600;color:#5a4a2a;background:#e8ddd0;padding:4px 18px;border-radius:30px;white-space:nowrap;}
 .single-mode-bar .mode-hint{font-size:13px;color:#8a7a5a;margin-left:4px;}
 .single-mode-bar .btn-exit-single{background:transparent;border:none;font-size:20px;cursor:pointer;padding:2px 10px;border-radius:8px;color:#8a5a4a;transition:background 0.15s,transform 0.1s;line-height:1;}
-.single-mode-bar .btn-exit-single:hover{background:#e8d5d0;transform:scale(1.05);}
+@media (hover: hover) and (pointer: fine) {
+    .single-mode-bar .btn-exit-single:hover{background:#e8d5d0;transform:scale(1.05);}
+}
 .single-mode-bar .btn-exit-single:active{transform:scale(0.92);}
 .card-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:18px;}
 .card-grid.single-mode{max-width:820px;}
 .card-grid.single-mode .card-item{box-shadow:0 8px 32px rgba(60,100,60,0.18);border-left-width:8px;}
 .card-item{background:#ffffff;border-radius:18px;box-shadow:0 4px 14px rgba(60,100,60,0.08);border-left:6px solid #8fbe8f;transition:box-shadow 0.25s,transform 0.15s,border-color 0.3s;overflow:hidden;position:relative;}
-.card-item:hover{box-shadow:0 8px 24px rgba(50,100,50,0.13);}
+@media (hover: hover) and (pointer: fine) {
+    .card-item:hover{box-shadow:0 8px 24px rgba(50,100,50,0.13);}
+}
 .card-item.favorited{border-left-color:#d4a24e;background:#fcf9f0;}
 .card-header{padding:16px 22px 8px 22px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
 .card-header .label{display:flex;align-items:center;flex-wrap:wrap;gap:8px;}
@@ -50,7 +63,9 @@ body{font-family:'Segoe UI','PingFang SC',Roboto,'Helvetica Neue',sans-serif;bac
 .card-header .label .qid{font-weight:600;font-size:15px;color:#1f5a2f;}
 .card-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;}
 .card-actions button{background:transparent;border:none;font-size:20px;cursor:pointer;padding:4px 6px;border-radius:10px;transition:background 0.15s,transform 0.1s;line-height:1;color:#3f6a3f;}
-.card-actions button:hover{background:#e6f0e6;transform:scale(1.05);}
+@media (hover: hover) and (pointer: fine) {
+    .card-actions button:hover{background:#e6f0e6;transform:scale(1.05);}
+}
 .card-actions .btn-fav{color:#b8a06a;}
 .card-actions .btn-fav.active{color:#d4a24e;}
 .card-actions .btn-note{color:#4f7a4f;}
@@ -123,18 +138,22 @@ body{font-family:'Segoe UI','PingFang SC',Roboto,'Helvetica Neue',sans-serif;bac
     box-shadow: 0 1px 3px rgba(60, 110, 60, 0.10);
     transition: background .2s, transform .2s, box-shadow .2s;
 }
-.back-home:hover {
-    background: #a8d0a8;
-    transform: translateX(-2px);
-    box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+@media (hover: hover) and (pointer: fine) {
+    .back-home:hover {
+        background: #a8d0a8;
+        transform: translateX(-2px);
+        box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20);
+    }
 }
 .back-home .arrow {
     font-size: 15px;
     line-height: 1;
     transition: transform .2s;
 }
-.back-home:hover .arrow {
-    transform: translateX(-3px);
+@media (hover: hover) and (pointer: fine) {
+    .back-home:hover .arrow {
+        transform: translateX(-3px);
+    }
 }
 
 /* 移动端微调 */
@@ -143,6 +162,10 @@ body{font-family:'Segoe UI','PingFang SC',Roboto,'Helvetica Neue',sans-serif;bac
     .back-home { padding: 6px 13px 6px 10px; font-size: 12.5px; }
 }
 
+/* 触摸设备：按下反馈（悬停效果已在支持鼠标的设备上保留） */
+.card-actions button:active { background: #d8ead8; transform: scale(0.94); }
+.filter-bar .btn-clear-filter:active { background: #b8d4b8; transform: scale(0.96); }
+.back-home:active { background: #a8d0a8; transform: translateX(-1px); }
 </style>
 </head>
 <body>
@@ -196,6 +219,7 @@ body{font-family:'Segoe UI','PingFang SC',Roboto,'Helvetica Neue',sans-serif;bac
 
 <div class="toast" id="toast"></div>
 
+<script src="../shared/escape.js"></script>
 <script>
 /* ============= 数据 ============= */
 const cardData = [
@@ -512,6 +536,21 @@ let history = [];
 let historyIndex = -1;
 
 const grid = document.getElementById('cardGrid');
+
+/* 事件委托：监听器只绑一次，卡片重绘后依然有效（原来是每次 render 重绑 2800+ 个） */
+var __delegated = Object.create(null);
+function delegateOnce(selector, type, handler) {
+    var k = type + '::' + selector;
+    if (__delegated[k]) return;
+    __delegated[k] = 1;
+    grid.addEventListener(type, function (e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+        var el = t.closest(selector);
+        if (!el || !grid.contains(el)) return;
+        return handler.call(el, e);
+    });
+}
 const totalSpan = document.getElementById('totalCards');
 const favSpan = document.getElementById('favCount');
 const filterMajor = document.getElementById('filterMajor');
@@ -536,15 +575,7 @@ function saveNotes(){try {localStorage.setItem('calc_special_notes',JSON.stringi
 function saveEdits(){try {localStorage.setItem('calc_special_edits',JSON.stringify(edits));} catch (err) { var _f=(err&&(err.name==='QuotaExceededError'||err.code===22||err.code===1014)); var _m=_f?'⚠️ 存储空间不足，这次没能保存！建议删掉笔记里的大图，或先「导出」备份再清理。':'⚠️ 保存失败'; try{ if(typeof showToast==='function'){showToast(_m);} else {alert(_m);} }catch(_x){alert(_m);} }}
 
 /* HTML 转义 */
-function escapeHtml(text){
-  if(!text) return '';
-  return String(text)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#39;');
-}
+/* safeText() 已统一到 shared/escape.js */
 /* 小问自动换行 */
 function addSubBreaks(escaped){
   if(!escaped) return '';
@@ -559,13 +590,13 @@ function renderAnswerParagraphs(text){
   const filtered = paragraphs.filter(p => p.trim() !== '');
   if(filtered.length === 0) return '';
   return filtered.map(p => {
-    const esc = escapeHtml(p.trim());
+    const esc = safeText(p.trim());
     return `<p>${addSubBreaks(esc)}</p>`;
   }).join('');
 }
 function renderQuestionText(text){
   if(!text) return '';
-  return addSubBreaks(escapeHtml(text));
+  return addSubBreaks(safeText(text));
 }
 function getCardData(id){
   const original = currentData.find(d => d.id === id);
@@ -578,9 +609,9 @@ function getCardData(id){
 function buildMajorOptions(){
   let html = '<option value="all">全部专项</option>';
   filterTree.forEach(g => {
-    html += `<optgroup label="${g.group}">`;
+    html += `<optgroup label="${safeText(g.group)}">`;
     g.items.forEach(item => {
-      html += `<option value="${item.major}">${item.major}</option>`;
+      html += `<option value="${safeText(item.major)}">${safeText(item.major)}</option>`;
     });
     html += '</optgroup>';
   });
@@ -602,7 +633,7 @@ function buildSubOptions(major){
   }
   filterSub.disabled = false;
   let html = '<option value="all">全部细分</option>';
-  item.subs.forEach(sub => { html += `<option value="${sub}">${sub}</option>`; });
+  item.subs.forEach(sub => { html += `<option value="${safeText(sub)}">${safeText(sub)}</option>`; });
   filterSub.innerHTML = html;
 }
 
@@ -706,7 +737,7 @@ function enterEditMode(id){
   editA.contentEditable = true;
   const paragraphs = currentA.split('\n').filter(p => p.trim() !== '');
   if(paragraphs.length === 0) editA.innerHTML = '<p><br></p>';
-  else editA.innerHTML = paragraphs.map(p => `<p>${escapeHtml(p.trim())}</p>`).join('');
+  else editA.innerHTML = paragraphs.map(p => `<p>${safeText(p.trim())}</p>`).join('');
   editA.style.cssText = 'background:transparent;border-left:none;padding:4px 6px;min-height:40px;outline:none;border:2px dashed #6a9e9e;border-radius:8px;';
   answerInner.replaceWith(editA);
   editBtn.classList.add('is-editing');
@@ -762,7 +793,7 @@ function cancelEdit(id){
   }
   delete editBackups[id];
   exitEditMode(id, false);
-  showToast('↩️ 已取消编辑');
+  showToast('🔙 已取消编辑');
 }
 function exitEditMode(id, saved){
   const editBtn = document.querySelector(`.btn-edit[data-id="${id}"]`);
@@ -858,9 +889,9 @@ function render(singleId = null){
       <div class="card-item ${isFav ? 'favorited' : ''}" data-id="${d.id}">
         <div class="card-header">
           <div class="label">
-            <span class="tag">${escapeHtml(d.major)}</span>
-            ${d.sub ? `<span class="tag sub-tag">${escapeHtml(d.sub)}</span>` : ''}
-            <span class="qid">${d.qid}</span>
+            <span class="tag">${safeText(d.major)}</span>
+            ${d.sub ? `<span class="tag sub-tag">${safeText(d.sub)}</span>` : ''}
+            <span class="qid">${safeText(d.qid)}</span>
           </div>
           <div class="card-actions" data-id="${d.id}">
             <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${d.id}" title="收藏">${isFav ? '⭐' : '☆'}</button>
@@ -895,8 +926,7 @@ function render(singleId = null){
   });
   grid.innerHTML = html;
 
-  document.querySelectorAll('.card-question').forEach(el => {
-    el.addEventListener('click', function(e){
+    delegateOnce('.card-question', 'click', function (e) {
       if(this.classList.contains('editable')) return;
       const id = this.dataset.id;
       const answerDiv = document.querySelector(`.card-answer[data-id="${id}"]`);
@@ -916,10 +946,8 @@ function render(singleId = null){
         }
       }
     });
-  });
 
-  document.querySelectorAll('.btn-fav').forEach(btn => {
-    btn.addEventListener('click', function(e){
+    delegateOnce('.btn-fav', 'click', function (e) {
       e.stopPropagation();
       const id = this.dataset.id;
       const idx = favorites.indexOf(id);
@@ -930,10 +958,8 @@ function render(singleId = null){
       if(card) card.classList.toggle('favorited', favorites.includes(id));
       favSpan.textContent = favorites.length;
     });
-  });
 
-  document.querySelectorAll('.btn-note').forEach(btn => {
-    btn.addEventListener('click', function(e){
+    delegateOnce('.btn-note', 'click', function (e) {
       e.stopPropagation();
       const id = this.dataset.id;
       const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
@@ -948,10 +974,8 @@ function render(singleId = null){
         if(editor) setTimeout(()=>editor.focus(),100);
       }
     });
-  });
 
-  document.querySelectorAll('.btn-insert-img').forEach(btn => {
-    btn.addEventListener('click', function(e){
+    delegateOnce('.btn-insert-img', 'click', function (e) {
       e.stopPropagation();
       const id = this.dataset.id;
       const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
@@ -993,10 +1017,8 @@ function render(singleId = null){
       };
       fileInput.click();
     });
-  });
 
-  document.querySelectorAll('.note-save').forEach(btn => {
-    btn.addEventListener('click', function(e){
+    delegateOnce('.note-save', 'click', function (e) {
       e.stopPropagation();
       const id = this.dataset.id;
       const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
@@ -1012,14 +1034,12 @@ function render(singleId = null){
         const noteArea = document.querySelector(`.card-note-area[data-id="${id}"]`);
         if(noteArea) noteArea.classList.add('open');
       }
-      const orig = btn.textContent;
-      btn.textContent = '✅ 已保存';
-      setTimeout(()=>{btn.textContent = orig;},1200);
+      const orig = this.textContent;
+      this.textContent = '✅ 已保存';
+      setTimeout(()=>{this.textContent = orig;},1200);
     });
-  });
 
-  document.querySelectorAll('.note-clear').forEach(btn => {
-    btn.addEventListener('click', async function(e){
+    delegateOnce('.note-clear', 'click', async function (e) {
       e.stopPropagation();
       const id = this.dataset.id;
       if(!(await window.showConfirm({ title: '清空笔记', message: '确定要清空这条笔记吗？', okText: '清空', danger: true }))) return;
@@ -1038,10 +1058,9 @@ function render(singleId = null){
         showToast('🗑️ 笔记已清空');
       }
     });
-  });
 
-  document.querySelectorAll('.note-editor').forEach(editor => {
-    editor.addEventListener('paste', function(e){
+    delegateOnce('.note-editor', 'paste', function (e) {
+      var editor = this;
       const items = e.clipboardData && e.clipboardData.items;
       if(!items) return;
       for(let item of items){
@@ -1076,32 +1095,32 @@ function render(singleId = null){
           break;
         }
       }
-    });
-  });
+      });
 
-  document.querySelectorAll('.note-editor').forEach(editor => {
+    grid.querySelectorAll('.note-editor').forEach(editor => {
+
     const id = editor.dataset.id;
     const content = notes[id] || '';
     if(!content || content.trim() === '') editor.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
-    editor.addEventListener('focus', function(){
+      bindImgClick(editor);
+  });
+  delegateOnce('.note-editor', 'focusin', function () {
       const placeholder = this.querySelector('.note-placeholder');
       if(placeholder) this.innerHTML = '';
-    });
-    editor.addEventListener('blur', function(){
+      });
+  delegateOnce('.note-editor', 'focusout', function () {
       if(this.innerHTML.trim() === '' || this.innerHTML === '<br>') this.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
-    });
-    editor.addEventListener('click', function(){
+      });
+  delegateOnce('.note-editor', 'click', function () {
       if(this.getAttribute('contenteditable') === 'false'){
         this.setAttribute('contenteditable', 'true');
         this.focus();
       }
-    });
-  });
+      });
 
-  document.querySelectorAll('.note-editor').forEach(editor => bindImgClick(editor));
+  grid.querySelectorAll('.note-editor').forEach(editor => bindImgClick(editor));
 
-  document.querySelectorAll('.btn-reset-size').forEach(btn => {
-    btn.addEventListener('click', function(e){
+    delegateOnce('.btn-reset-size', 'click', function (e) {
       e.stopPropagation();
       const id = this.dataset.id;
       const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
@@ -1117,10 +1136,8 @@ function render(singleId = null){
       }
       showToast('📐 图片大小已重置');
     });
-  });
 
-  document.querySelectorAll('.img-resize-control input[type="range"]').forEach(slider => {
-    slider.addEventListener('input', function(){
+    delegateOnce('.img-resize-control input[type="range"]', 'input', function (e) {
       const id = this.closest('.img-resize-control').dataset.id;
       const val = parseInt(this.value);
       const valSpan = this.closest('.img-resize-control').querySelector('.size-val');
@@ -1134,16 +1151,13 @@ function render(singleId = null){
         }
       });
     });
-  });
 
-  document.querySelectorAll('.btn-edit').forEach(btn => {
-    btn.onclick = function(e){
+    delegateOnce('.btn-edit', 'click', function (e) {
       e.stopPropagation();
       const id = this.dataset.id;
       if(this.classList.contains('is-editing')) return;
       enterEditMode(id);
-    };
-  });
+    });
 
   if(isSingleMode) window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1204,7 +1218,12 @@ filterMajor.addEventListener('change', function(){
 });
 filterSub.addEventListener('change', onFilterChange);
 filterFav.addEventListener('change', onFilterChange);
-filterSearch.addEventListener('input', onFilterChange);
+/* 搜索防抖：避免每敲一个字就全量重绘所有卡片 */
+var __searchTimer = null;
+filterSearch.addEventListener('input', function () {
+    clearTimeout(__searchTimer);
+    __searchTimer = setTimeout(onFilterChange, 220);
+});
 clearBtn.addEventListener('click', function(){
   filterMajor.value = 'all';
   buildSubOptions('all');
@@ -1250,87 +1269,11 @@ setTimeout(() => {
   });
 }, 100);
 </script>
+<script src="../shared/confirm.js"></script>
 <script src="../self-test.js"></script>
 <script src="../ai-assistant.js"></script>
 
 
-<script>
-/* ===== 存储安全：图片压缩 + 笔记自动保存 + 离开提醒 ===== */
-(function () {
-    var MAXW = 1200, QUALITY = 0.72, KEEP_UNDER = 220 * 1024;
-    var dirty = false, timer = null;
-
-    /* 压缩笔记里的图片：原图 base64 极易撑爆 localStorage（约 5MB 上限） */
-    window.__shrinkNoteImg = function (img, dataUrl) {
-        if (!img || !dataUrl || dataUrl.indexOf('data:image/') !== 0) return;
-        if (dataUrl.length < KEEP_UNDER) return;
-        var im = new Image();
-        im.onload = function () {
-            try {
-                var w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
-                var scale = Math.min(1, MAXW / (w || 1));
-                var c = document.createElement('canvas');
-                c.width = Math.max(1, Math.round(w * scale));
-                c.height = Math.max(1, Math.round(h * scale));
-                var ctx = c.getContext('2d');
-                ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
-                ctx.drawImage(im, 0, 0, c.width, c.height);
-                var out = c.toDataURL('image/jpeg', QUALITY);
-                if (out && out.length < dataUrl.length) {
-                    img.src = out;
-                    img.dataset.shrunk = '1';
-                    schedule(img);
-                }
-            } catch (e) {}
-        };
-        im.src = dataUrl;
-    };
-
-    function saveFrom(el) {
-        var ed = el && el.closest ? el.closest('.note-editor') : null;
-        if (!ed) return;
-        try {
-            var id = ed.dataset.id;
-            var content = (ed.innerHTML || '').trim();
-            if (content === '<br>' || content === '') content = '';
-            if (content) { notes[id] = content; } else { delete notes[id]; }
-            saveNotes();
-        } catch (e) {
-            var btn = document.querySelector('.note-save[data-id="' + (ed.dataset.id || '') + '"]');
-            if (btn) btn.click();
-        }
-    }
-
-    function schedule(el) {
-        dirty = true;
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-            try { saveFrom(el); dirty = false; } catch (e) {}
-        }, 900);
-    }
-
-    document.addEventListener('input', function (e) {
-        var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
-        if (ed) schedule(ed);
-    }, true);
-
-    document.addEventListener('paste', function (e) {
-        var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
-        if (ed) setTimeout(function () { schedule(ed); }, 150);
-    }, true);
-
-    /* 手动点过保存就认为已保存，不再拦离开 */
-    document.addEventListener('click', function (e) {
-        if (e.target && e.target.closest && e.target.closest('.note-save')) dirty = false;
-    }, true);
-
-    window.addEventListener('beforeunload', function (e) {
-        if (!dirty) return;
-        e.preventDefault();
-        e.returnValue = '';
-        return '';
-    });
-})();
-</script>
+<script src="../shared/storage-guard.js"></script>
 </body>
 </html>

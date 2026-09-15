@@ -4,7 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>南开经济学 · 知识库</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+<link rel="icon" href="icons/icon.svg">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#3FA87A">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -91,12 +94,16 @@ header p {
   background: linear-gradient(180deg, var(--c), var(--c2));
   transition: width .2s ease;
 }
-.mod:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(70, 115, 90, .14);
-  border-color: var(--soft);
+@media (hover: hover) and (pointer: fine) {
+    .mod:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(70, 115, 90, .14);
+      border-color: var(--soft);
+    }
 }
-.mod:hover::before { width: 8px; }
+@media (hover: hover) and (pointer: fine) {
+    .mod:hover::before { width: 8px; }
+}
 .mod:active { transform: translateY(-1px); }
 
 .mod .ic {
@@ -109,7 +116,9 @@ header p {
   margin-bottom: 12px;
   transition: transform .2s ease;
 }
-.mod:hover .ic { transform: scale(1.06); }
+@media (hover: hover) and (pointer: fine) {
+    .mod:hover .ic { transform: scale(1.06); }
+}
 
 .mod .t {
   font-size: 16px;
@@ -159,7 +168,9 @@ header p {
   opacity: .5;
   transition: opacity .2s ease, transform .2s ease;
 }
-.mod:hover .go { opacity: 1; transform: translateX(3px); }
+@media (hover: hover) and (pointer: fine) {
+    .mod:hover .go { opacity: 1; transform: translateX(3px); }
+}
 
 /* ================= 学习进度条 + 朗读 + 清除 + 同步 ================= */
 .note-bar {
@@ -249,11 +260,13 @@ header p {
   pointer-events: none;
 }
 
-.tts-btn:hover {
-  transform: scale(1.08);
-  border-color: #8fd4b0;
-  background: #f3fbf7;
-  box-shadow: 0 2px 8px rgba(63, 174, 140, .18);
+@media (hover: hover) and (pointer: fine) {
+    .tts-btn:hover {
+      transform: scale(1.08);
+      border-color: #8fd4b0;
+      background: #f3fbf7;
+      box-shadow: 0 2px 8px rgba(63, 174, 140, .18);
+    }
 }
 .tts-btn:active { transform: scale(.95); }
 
@@ -301,7 +314,9 @@ header p {
   cursor: pointer;
   transition: transform .15s ease;
 }
-.tts-range::-webkit-slider-thumb:hover { transform: scale(1.15); }
+@media (hover: hover) and (pointer: fine) {
+    .tts-range::-webkit-slider-thumb:hover { transform: scale(1.15); }
+}
 .tts-range::-moz-range-thumb {
   width: 12px; height: 12px;
   border-radius: 50%;
@@ -729,7 +744,9 @@ header p {
   background: #eef6f1;
   color: #587a68;
 }
-.cbtn-cancel:hover { background: #e4f0e9; }
+@media (hover: hover) and (pointer: fine) {
+    .cbtn-cancel:hover { background: #e4f0e9; }
+}
 
 /* 默认“确认”按钮：橘红警示色（用于清除数据） */
 .cbtn-ok {
@@ -737,7 +754,9 @@ header p {
   color: #fff;
   box-shadow: 0 4px 12px rgba(229, 124, 98, .28);
 }
-.cbtn-ok:hover { filter: brightness(1.05); }
+@media (hover: hover) and (pointer: fine) {
+    .cbtn-ok:hover { filter: brightness(1.05); }
+}
 
 /* ★ 导出按钮：绿色系，与页面主调统一 */
 .cbtn-export {
@@ -745,7 +764,9 @@ header p {
   color: #fff;
   box-shadow: 0 4px 12px rgba(63, 168, 122, .28);
 }
-.cbtn-export:hover { filter: brightness(1.05); }
+@media (hover: hover) and (pointer: fine) {
+    .cbtn-export:hover { filter: brightness(1.05); }
+}
 
 /* ================= 导出选择弹层 ================= */
 .confirm-box.export-box {
@@ -773,14 +794,18 @@ header p {
   transition: border-color .18s ease, background .18s ease, opacity .18s ease;
 }
 .exp-opt + .exp-opt { margin-top: 8px; }
-.exp-opt:hover { border-color: #b9e2cd; background: #f4fbf7; }
+@media (hover: hover) and (pointer: fine) {
+    .exp-opt:hover { border-color: #b9e2cd; background: #f4fbf7; }
+}
 
 .exp-opt.disabled {
   cursor: not-allowed;
   opacity: .45;
   background: #f7faf8;
 }
-.exp-opt.disabled:hover { border-color: #e2f0e8; background: #f7faf8; }
+@media (hover: hover) and (pointer: fine) {
+    .exp-opt.disabled:hover { border-color: #e2f0e8; background: #f7faf8; }
+}
 
 .exp-opt input {
   position: absolute;
@@ -960,6 +985,13 @@ footer {
 ::-webkit-scrollbar { width: 7px; }
 ::-webkit-scrollbar-track { background: #e0eee5; border-radius: 10px; }
 ::-webkit-scrollbar-thumb { background: #9ccfb4; border-radius: 10px; }
+/* 触摸设备：按下反馈（悬停效果已在支持鼠标的设备上保留） */
+.mod:active { transform: translateY(-1px); }
+.tts-btn:active { transform: scale(0.97); }
+.cbtn-cancel:active { filter: brightness(0.97); transform: scale(0.97); }
+.cbtn-ok:active { filter: brightness(0.97); transform: scale(0.97); }
+.cbtn-export:active { filter: brightness(0.97); transform: scale(0.97); }
+.exp-opt:active { background: #eef7f2; border-color: #b9e2cd; }
 </style>
 </head>
 <body>
@@ -1084,6 +1116,7 @@ footer {
 
 <div class="toast" id="toast">已清除选中数据</div>
 
+<script src="shared/confirm.js"></script>
 <script>
 /* ==========================================================
    ① 八个模块配置（含 storagePrefix，与各版块实际 key 对应）
@@ -2064,7 +2097,7 @@ function renderHome() {
 
     const reader = new FileReader();
 
-    reader.onload = function (ev) {
+    reader.onload = async function (ev) {
       let obj = null;
       try {
         obj = JSON.parse(ev.target.result);
@@ -2092,12 +2125,17 @@ function renderHome() {
       }
 
       const hasAI = keys.some(k => k.indexOf(AI_CFG_PREFIX) === 0);
-      const ok = window.confirm(
-        '即将导入 ' + keys.length + ' 条数据。\n\n'
-        + (hasAI ? '📦 包含 AI 助手配置（提示词 / 面板尺寸等），但不含 API Key。\n导入后本机已有的 API Key 会保留。\n\n' : '')
-        + '同名的记录会被覆盖，本机独有而文件里没有的记录会保留。\n\n'
-        + '确定继续吗？'
-      );
+      /* 统一走 shared/confirm.js 的弹层，避免微信内核下 window.confirm 失效 */
+      const ask = window.showConfirm
+        || function (o) { return Promise.resolve(window.confirm(o.message)); };
+      const ok = await ask({
+        title: '导入数据',
+        message: '即将导入 ' + keys.length + ' 条数据。\n\n'
+          + (hasAI ? '📦 包含 AI 助手配置（提示词 / 面板尺寸等），但不含 API Key。\n导入后本机已有的 API Key 会保留。\n\n' : '')
+          + '同名的记录会被覆盖，本机独有而文件里没有的记录会保留。\n\n'
+          + '确定继续吗？',
+        okText: '导入'
+      });
       if (!ok) return;
 
       let done = 0;
