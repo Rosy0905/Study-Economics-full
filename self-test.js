@@ -255,7 +255,7 @@
     window.addEventListener('resize', syncWidth);
 
     function applyAll() {
-        // 自测关闭，且页面上没有任何自测痕迹 → 直接跳过，避免每次渲染都遍历所有卡片
+        // 【优化1】自测模式关闭，且页面上没有任何自测痕迹时，直接跳过，避免每次渲染都遍历所有卡片
         if (!ON && !grid.querySelector('.st-rate, .st-mask, .st-ok, .st-meh, .st-no, .st-hide')) {
             updateStats(allCards());
             return;
@@ -341,11 +341,13 @@
     var moTimer = null;
     if (window.MutationObserver) {
         new MutationObserver(function () {
-            if (!ON) return;                 // 关闭时完全不处理
+            // 【优化2】自测关闭时完全不处理，避免 grid.innerHTML 触发大量 DOM 操作
+            if (!ON) return;
             clearTimeout(moTimer);
             moTimer = setTimeout(function () { applyAll(); }, 60);
         }).observe(grid, { childList: true });
     }
 
-    applyAll();
+    // 初始化：只有在自测模式开启时才跑一次全量套用（默认关闭，零开销）
+    if (ON) applyAll();
 })();
