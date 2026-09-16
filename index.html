@@ -7,7 +7,7 @@
 <link rel="icon" href="icons/icon.svg">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#3FA87A">
+<meta name="theme-color" content="#6A2C91">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -465,11 +465,11 @@ header p {
   font-family: inherit;
   box-shadow: 0 0 0 3px rgba(245, 214, 122, .20),
               0 2px 8px rgba(212, 162, 78, .16);
+  /* 「清除」↔「✓」切换时不要补间动画：之前字号/颜色是渐变的，
+     看起来像「清除」两个字先变色、再放大缩小，很晃眼。同步按钮没有这个效果，这里也去掉。 */
   transition: transform .2s ease,
               box-shadow .25s ease,
-              color .25s ease,
-              border-color .25s ease,
-              font-size .2s ease;
+              border-color .25s ease;
 }
 @media (hover: hover) and (pointer: fine) {
 .clear-btn:hover {
@@ -1292,11 +1292,19 @@ function renderHome() {
     return;
   }
 
-  let state = 'idle';
+  /* 朗读改成"分段"方式：把文本切成一句一段，逐段读。
+     原因：手机浏览器（安卓上的 Edge / Chrome）对 pause() / resume() 支持不可靠，
+     典型现象就是"暂停之后再点播放没有任何反应"。分段之后，即使 resume() 失效，
+     也能从【当前这一句】重新读起，听感上就是接着往下读。
+     顺带还能避开安卓上"长句读到 15 秒左右自动断掉"的老问题。 */
+  let state = 'idle';       // idle | speaking | paused
   let voices = [];
   let token = 0;
   let rateTimer = null;
+  let resumeTimer = null;
   let currentRate = 1;
+  let chunks = [];          // 切分后的句子数组
+  let cursor = 0;           // 当前读到第几段
 
   try {
     const saved = parseFloat(localStorage.getItem(RATE_KEY));
@@ -1343,45 +1351,101 @@ function renderHome() {
 
   function stop() {
     token++;
+    clearTimeout(rateTimer);
+    clearTimeout(resumeTimer);
     try { synth.cancel(); } catch (e) {}
+    cursor = 0;
     if (state !== 'idle') setState('idle');
   }
   window.stopTTS = stop;
 
-  function speak() {
-    const text = (input.value || '').trim();
-    if (!text) {
-      showToast('先写点学习进度，再朗读哦');
-      return;
+  /* 把整段文字切成"一句一段"；超长句再按逗号细切，避免单段太长 */
+  function splitChunks(text) {
+    const clean = String(text).replace(/\r?\n+/g, '。').replace(/\s+/g, ' ').trim();
+    if (!clean) return [];
+    const sentences = clean.match(/[^。！？!?；;]+[。！？!?；;]?/g) || [clean];
+    const out = [];
+    for (let s of sentences) {
+      s = s.trim();
+      if (!s) continue;
+      while (s.length > 110) {
+        let cut = -1;
+        for (const mark of ['，', ',', '、', ' ']) {
+          const i = s.lastIndexOf(mark, 110);
+          if (i > 40) { cut = i + 1; break; }
+        }
+        if (cut < 0) cut = 110;
+        out.push(s.slice(0, cut));
+        s = s.slice(cut);
+      }
+      if (s) out.push(s);
     }
+    return out;
+  }
 
-    const my = ++token;
-    try { synth.cancel(); } catch (e) {}
-
+  function makeUtterance(text) {
     const u = new SpeechSynthesisUtterance(text);
     const v = pickVoice();
     if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = 'zh-CN'; }
     u.rate = currentRate;
     u.pitch = 1;
     u.volume = 1;
+    return u;
+  }
 
-    u.onend = () => { if (my === token) setState('idle'); };
-    u.onerror = () => { if (my === token) setState('idle'); };
-
-    synth.speak(u);
-    setState('speaking');
+  /* 从第 i 段开始读 */
+  function speakFrom(i) {
+    clearTimeout(resumeTimer);
+    const my = ++token;
+    try { synth.cancel(); } catch (e) {}
+    if (!chunks.length) { setState('idle'); return; }
+    /* 有些手机浏览器在 cancel() 之后立刻 speak() 会不出声，隔一小会儿再开口 */
+    resumeTimer = setTimeout(() => {
+      if (my !== token || !chunks.length) return;
+      cursor = Math.max(0, Math.min(i, chunks.length - 1));
+      const u = makeUtterance(chunks[cursor]);
+      u.onend = () => {
+        if (my !== token) return;
+        if (cursor + 1 < chunks.length) { cursor++; speakFrom(cursor); }
+        else { cursor = 0; setState('idle'); }
+      };
+      u.onerror = () => {
+        if (my !== token) return;
+        cursor = 0;
+        setState('idle');
+      };
+      try { synth.speak(u); } catch (e) {}
+      setState('speaking');
+    }, 100);
   }
 
   btn.addEventListener('click', e => {
     e.stopPropagation();
     if (state === 'idle') {
-      speak();
+      const text = (input.value || '').trim();
+      if (!text) { showToast('先写点学习进度，再朗读哦'); return; }
+      chunks = splitChunks(text);
+      if (!chunks.length) { showToast('先写点学习进度，再朗读哦'); return; }
+      speakFrom(0);
     } else if (state === 'speaking') {
+      /* 暂停：优先用浏览器自带的 pause()，它能停在句子中间 */
       try { synth.pause(); } catch (err) {}
+      clearTimeout(resumeTimer);
+      token++;
       setState('paused');
     } else {
-      try { synth.resume(); } catch (err) {}
+      /* 继续：先试浏览器自带的 resume()；300 毫秒后检查一下，
+         如果它其实没生效（手机端常见），就从当前这一句重新读 */
+      let ok = false;
+      try { synth.resume(); ok = true; } catch (err) {}
       setState('speaking');
+      if (!ok) { speakFrom(cursor); return; }
+      resumeTimer = setTimeout(() => {
+        if (state !== 'speaking') return;
+        let stillPaused = false, alive = true;
+        try { stillPaused = synth.paused === true; alive = synth.speaking === true; } catch (err) {}
+        if (stillPaused || !alive) speakFrom(cursor);
+      }, 300);
     }
   });
 
@@ -1396,7 +1460,7 @@ function renderHome() {
     if (state !== 'speaking') return;
 
     rateTimer = setTimeout(() => {
-      if (state === 'speaking') speak();
+      if (state === 'speaking') speakFrom(cursor);
     }, 480);
   });
 

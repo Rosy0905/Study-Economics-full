@@ -4,7 +4,7 @@
 <link rel="icon" href="../icons/icon.svg">
 <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
 <link rel="manifest" href="../manifest.webmanifest">
-<meta name="theme-color" content="#3FA87A">
+<meta name="theme-color" content="#6A2C91">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>宏观背诵 · 记忆卡</title>
@@ -42,8 +42,13 @@
             padding: 6px 14px; border-radius: 30px; border: 1px solid #b3d9b3;
             background: #fafffa; font-size: 14px; color: #1e3a2a; outline: none;
         }
-        .filter-bar select:focus, .filter-bar input:focus {
+        .filter-bar input:focus {
             border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.2);
+        }
+        @media (hover: hover) and (pointer: fine) {
+            .filter-bar select:focus {
+            border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.2);
+        }
         }
         .filter-bar select optgroup { font-style: normal; font-weight: 600; }
         .filter-bar .btn-clear-filter {
@@ -115,7 +120,37 @@
         @media (hover: hover) and (pointer: fine) {
             .card-item:hover { box-shadow: 0 8px 24px rgba(50, 100, 50, 0.13); }
         }
-        .card-item.favorited { border-left-color: #d4a24e; background: #fcf9f0; }
+        .card-item.favorited { border-left-color: #d4a24e; background: #fdfbf6; }
+        .card-item.favorited .toggle-hint { color: #bd9333; opacity: 0.9; }
+        .card-item.favorited .card-header .label .qid { color: #8a6a1a; }
+        .card-item.favorited .card-question { color: #2b2b2b; }
+        .card-item.favorited .card-answer .answer-inner strong { color: #1a1a1a; }
+        .card-item.favorited .card-answer .answer-inner p.formula { color: #2b2b2b; background: #f6eddd; }
+        .card-item.favorited .card-answer .answer-inner .img-placeholder { background: #efe4c8; color: #5a4a1a; }
+        .card-item.favorited .card-header .label .tag { background: #f2e8ce; color: #5a4a1a; }
+        .card-item.favorited .card-answer .answer-inner { background: #faf6ea; color: #2b2b2b; }
+        .card-item.favorited .card-question.editable { background: #fdfaf1; border-color: #e8d9b0; }
+        .card-item.favorited .card-answer.editable { background: #fdfaf1; border-color: #e8d9b0; }
+        .card-item.favorited .card-note-area .note-editor { background: #fdfaf1; border-color: #e8d9b0; }
+        .card-item.favorited .card-note-area .note-editor:focus { border-color: #d4a24e; box-shadow: 0 0 0 3px rgba(212, 162, 78, 0.16); }
+        .card-item.favorited .card-note-area .note-editor img.selected { border-color: #d4a24e; box-shadow: 0 0 0 3px rgba(212, 162, 78, 0.25), 0 4px 16px rgba(0, 0, 0, 0.12); }
+        .card-item.favorited .card-note-area .note-editor .note-placeholder { color: #b8a478; }
+        .card-item.favorited .card-note-area .img-resize-control { background: #f8f1de; border-color: #e8d9b0; color: #6a5620; }
+        .card-item.favorited .card-note-area .img-resize-control input[type="range"] { accent-color: #d4a24e; }
+        .card-item.favorited .card-note-area .img-resize-control .btn-reset-size { background: #f0e6cc; color: #5a4a1a; }
+        .card-item.favorited .card-note-area .note-actions button { background: #f1e7cd; color: #5a4a1a; }
+        .card-item.favorited .card-note-area .note-actions .btn-insert-img { background: #ece1c4; color: #5a4a1a; }
+        .card-item.favorited .card-note-area .note-actions .note-save { background: #e6d5a2; color: #4a3a0a; }
+        .card-item.favorited .card-note-area .note-actions .note-clear { background: #ecded6; color: #6a4a3a; }
+        .card-item.favorited .card-note-area .note-actions .note-size-hint { color: #a8926a; }
+        @media (hover: hover) and (pointer: fine) {
+            .card-item.favorited .card-actions button:hover { background: #f5ecd8; }
+            .card-item.favorited .card-note-area .note-actions button:hover { background: #e8dbb8; }
+            .card-item.favorited .card-note-area .note-actions .btn-insert-img:hover { background: #e2d5b0; }
+            .card-item.favorited .card-note-area .note-actions .note-save:hover { background: #dcc78e; }
+            .card-item.favorited .card-note-area .note-actions .note-clear:hover { background: #e2d0c6; }
+            .card-item.favorited .card-note-area .img-resize-control .btn-reset-size:hover { background: #e8dbb8; }
+        }
         .card-item.highlight {
             border-left-color: #e67e22;
             box-shadow: 0 0 0 3px #e67e22, 0 8px 28px rgba(230, 126, 34, 0.25);

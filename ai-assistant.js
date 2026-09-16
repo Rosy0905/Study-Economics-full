@@ -189,20 +189,32 @@ body.shared-ai-view .ai-panel{
 body.shared-ai-view .ai-close{display:none;}
 
 /* ===== 对话进度条 ===== */
-.ai-progress{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;z-index:10;pointer-events:auto;}
-.ai-progress-list{display:flex;flex-direction:column;align-items:center;gap:6px;max-height:78vh;overflow-y:auto;padding:2px 0;scrollbar-width:thin;}
-.ai-progress-list::-webkit-scrollbar{width:4px;}
-.ai-progress-list::-webkit-scrollbar-thumb{background:#cfe8db;border-radius:10px;}
-.ai-tick{position:relative;z-index:5;width:16px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+/* 垂直居中基准改为「整个 AI 窗口」（含顶部标题栏、底部输入框）：
+   进度条挂在 .ai-body 里，而 .ai-body 比整个窗口少了标题栏那一截，
+   直接 top:50% 会偏下「标题栏高度的一半」，所以补一个 --aiHeadHalf 减回去。
+   --aiHeadHalf / --aiCardMax 都由 syncNavMetrics() 量出来后写上去。 */
+.ai-progress{position:absolute;right:12px;top:calc(50% - var(--aiHeadHalf,30px));transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;z-index:10;pointer-events:auto;}
+/* 横条间距 0：每根占 24px，正好等于卡片里每一行的 24px。
+   再加上「上限高度相同 + 滚动位置同步」，横条就能与对应的提问一一对齐。 */
+/* 这里刻意把横条列的滚动条藏起来：卡片弹出时它压在卡片上面（z-index 10），
+   如果它也显示一根细竖线，卡片自己的滚动条就在旁边并与之外的它同时出现、同时滑动，
+   看起来像「两根并排的竖线」。所以横条列只滚动、不画条；用户在卡片里滚这一根就够了。 */
+.ai-progress-list{display:flex;flex-direction:column;align-items:center;gap:0;max-height:calc(var(--aiCardMax,340px) - 12px);overflow-y:auto;padding:0;scrollbar-width:none;-ms-overflow-style:none;}
+.ai-progress-list::-webkit-scrollbar{width:0;height:0;display:none;}
+/* flex:none 很关键 —— 否则横条超过高度上限时会被 flex 压扁（24px 变 20px），
+   行距就和卡片里的 24px 对不上了。 */
+.ai-tick{position:relative;z-index:5;flex:0 0 auto;width:16px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .ai-tick::after{content:'';display:block;width:12px;height:2.5px;border-radius:2px;background:#cfe4d8;transition:width .18s, background .18s;}
 @media (hover: hover) and (pointer: fine) {
   .ai-tick:hover::after{width:18px;background:#5ec99a;}
 }
 .ai-tick.active::after{width:18px;background:#3fa87a;}
 
-.ai-progress-panel{position:absolute;right:-8px;top:0;transform:translateX(8px);width:270px;max-height:100%;background:#ffffff;border-radius:14px;box-shadow:0 12px 40px rgba(30,70,45,.16), 0 0 0 1px rgba(180,220,200,.35);opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;z-index:1;overflow:hidden;}
-.ai-progress-panel.show{opacity:1;pointer-events:auto;transform:translateX(0);}
-.ai-progress-panel-inner{max-height:340px;overflow-y:auto;padding:6px 0;}
+/* 弹出卡片：高度上限 = AI 窗口高度的一半（约 14 条的高度），超出就在卡片里滚。
+   卡片和横条列用同一个上限、同一套内边距，两者高度完全相同，所以行与横条能一一对齐。 */
+.ai-progress-panel{position:absolute;right:-8px;top:50%;transform:translate(8px,-50%);width:270px;max-height:var(--aiCardMax,340px);background:#ffffff;border-radius:14px;box-shadow:0 12px 40px rgba(30,70,45,.16), 0 0 0 1px rgba(180,220,200,.35);opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;z-index:1;overflow:hidden;padding:6px 0;}
+.ai-progress-panel.show{opacity:1;pointer-events:auto;transform:translate(0,-50%);}
+.ai-progress-panel-inner{max-height:calc(var(--aiCardMax,340px) - 12px);overflow-y:auto;padding:0;}
 .ai-progress-panel-inner::-webkit-scrollbar{width:5px;}
 .ai-progress-panel-inner::-webkit-scrollbar-thumb{background:#cfe8db;border-radius:10px;}
 .ai-progress-item{height:24px;padding:0 34px 0 14px;font-size:12.5px;line-height:24px;color:#3a5a48;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:2px solid transparent;transition:background .12s, color .12s, border-color .12s;}
@@ -354,7 +366,13 @@ body.shared-ai-view .ai-close{display:none;}
   .ai-msgs{padding:16px 34px 6px 16px;}
   .ai-msg-actions{opacity:.7;pointer-events:auto;}
   .ai-act-btn{width:26px;height:26px;}
-  .ai-progress{right:6px;padding:4px 0;}
+  /* 手机端一律保持原样：垂直位置、横条间距、可滚高度都不动 */
+  .ai-progress{right:6px;padding:4px 0;top:50%;}
+  /* 手机端没有那张弹出卡片，横条列是唯一的入口，得让它自己的滚动条露出来 */
+  .ai-progress-list{gap:6px;max-height:78vh;overflow-y:auto;scrollbar-width:thin;-ms-overflow-style:auto;}
+  .ai-progress-list::-webkit-scrollbar{width:4px;display:block;}
+  .ai-progress-list::-webkit-scrollbar-thumb{background:#cfe8db;border-radius:10px;}
+  .ai-progress-list::-webkit-scrollbar-track{background:transparent;}
   .ai-tick{width:14px;height:22px;}
   .ai-tick::after{width:10px;height:2px;}
   .ai-tick.active::after{width:14px;}
@@ -740,11 +758,12 @@ body.shared-ai-view .ai-close{display:none;}
   window.addEventListener('resize', function () {
     if (isMobile()) {
       panel.style.width = ''; panel.style.height = '';
-      return;
+    } else {
+      var rect = panel.getBoundingClientRect();
+      if (rect.width > window.innerWidth - 20) panel.style.width = (window.innerWidth - 20) + 'px';
+      if (rect.height > window.innerHeight - 20) panel.style.height = (window.innerHeight - 20) + 'px';
     }
-    var rect = panel.getBoundingClientRect();
-    if (rect.width > window.innerWidth - 20) panel.style.width = (window.innerWidth - 20) + 'px';
-    if (rect.height > window.innerHeight - 20) panel.style.height = (window.innerHeight - 20) + 'px';
+    syncNavMetrics();      /* 窗口尺寸变了，卡片高度上限与居中基准跟着重算 */
   });
 
   /* ---------- 配置界面 ---------- */
@@ -1754,8 +1773,34 @@ body.shared-ai-view .ai-close{display:none;}
   /* ===================== 对话进度条 ===================== */
   var navUserMsgs = [];
   var navTicks = [];
+  var navActive = -1;
+
+  /* 量出两个尺寸写进 CSS 变量（面板每次开/缩放、浏览器窗口变化都会重新量）：
+       --aiHeadHalf  标题栏高度的一半 → 让进度条相对「整个 AI 窗口」垂直居中
+       --aiCardMax   窗口高度的一半   → 卡片与横条列的高度上限，超出在里面滚动 */
+  function syncNavMetrics() {
+    if (!panel) return;
+    /* 用 offsetHeight 而不是 getBoundingClientRect().height：
+       面板展开时带着 scale(.96) 的动画，矩形高度会被缩放值污染，量出来偏小。 */
+    var h = panel.offsetHeight;
+    if (h) panel.style.setProperty('--aiCardMax', Math.round(h / 2) + 'px');
+    var head = panel.querySelector('.ai-head');
+    if (head) panel.style.setProperty('--aiHeadHalf', Math.round(head.offsetHeight / 2) + 'px');
+  }
+
+  /* 把横条列滚到「当前这一条」可见的位置（与消息滚到哪儿保持一致） */
+  function navKeepActiveInView(idx) {
+    var list = document.getElementById('aiProgressList');
+    var tick = navTicks[idx];
+    if (!list || !tick) return;
+    var lr = list.getBoundingClientRect(), tr = tick.getBoundingClientRect();
+    var top = tr.top - lr.top, bottom = tr.bottom - lr.top;
+    if (top < 0) list.scrollTop += top;
+    else if (bottom > lr.height) list.scrollTop += bottom - lr.height;
+  }
 
   function buildNav() {
+    syncNavMetrics();
     var progress = document.getElementById('aiProgress');
     var list = document.getElementById('aiProgressList');
     var panelInner = document.getElementById('aiProgressPanelInner');
@@ -1812,6 +1857,10 @@ body.shared-ai-view .ai-close{display:none;}
     navTicks.forEach(function (t, i) {
       t.classList.toggle('active', i === activeIdx);
     });
+    if (activeIdx !== navActive) {          /* 当前条目变了才动，免得和用户手动滚动打架 */
+      navActive = activeIdx;
+      navKeepActiveInView(activeIdx);
+    }
     var panelInner = document.getElementById('aiProgressPanelInner');
     if (panelInner) {
       panelInner.querySelectorAll('.ai-progress-item').forEach(function (it, i) {
@@ -1838,6 +1887,8 @@ body.shared-ai-view .ai-close{display:none;}
     navTicks.forEach(function (t, k) {
       t.classList.toggle('active', k === i);
     });
+    navActive = i;
+    navKeepActiveInView(i);
     var panelInner = document.getElementById('aiProgressPanelInner');
     if (panelInner) {
       panelInner.querySelectorAll('.ai-progress-item').forEach(function (it, k) {
@@ -1857,6 +1908,25 @@ body.shared-ai-view .ai-close{display:none;}
     progress.addEventListener('mouseleave', function () {
       panelEl.classList.remove('show');
     });
+
+    /* 横条列 ↔ 卡片 两向同步滚动。
+       这是「小横条与提问一一对齐」的关键：两边上限高度相同、滚动位置相同，
+       所以卡片里第 i 行永远正对着第 i 根横条。 */
+    var syncList = document.getElementById('aiProgressList');
+    var syncInner = document.getElementById('aiProgressPanelInner');
+    if (syncList && syncInner) {
+      var syncing = false;
+      var link = function (from, to) {
+        from.addEventListener('scroll', function () {
+          if (syncing) return;
+          syncing = true;
+          to.scrollTop = from.scrollTop;
+          requestAnimationFrame(function () { syncing = false; });
+        });
+      };
+      link(syncInner, syncList);
+      link(syncList, syncInner);
+    }
 
     var navTimer = null;
     msgsEl.addEventListener('scroll', function () {
