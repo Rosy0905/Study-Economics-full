@@ -255,6 +255,11 @@
     window.addEventListener('resize', syncWidth);
 
     function applyAll() {
+        // 自测关闭，且页面上没有任何自测痕迹 → 直接跳过，避免每次渲染都遍历所有卡片
+        if (!ON && !grid.querySelector('.st-rate, .st-mask, .st-ok, .st-meh, .st-no, .st-hide')) {
+            updateStats(allCards());
+            return;
+        }
         var cards = allCards();
         syncWidth();
         cards.forEach(function (c) {
@@ -336,6 +341,7 @@
     var moTimer = null;
     if (window.MutationObserver) {
         new MutationObserver(function () {
+            if (!ON) return;                 // 关闭时完全不处理
             clearTimeout(moTimer);
             moTimer = setTimeout(function () { applyAll(); }, 60);
         }).observe(grid, { childList: true });
