@@ -147,7 +147,7 @@
 }
 .ai-msg.user .ai-act-copy.copied{background:rgba(255,255,255,.5);color:#fff;}
 
-/* ---- 选择性分享（仿 DeepSeek：勾选片段再生成链接） ---- */
+/* ---- 选择性分享（仿 DeepSeek：勾选片段再「生成分享」：链接/图片） ---- */
 .ai-msgs.selecting .ai-msg{cursor:pointer;}
 .ai-select-box{position:absolute;top:7px;left:7px;width:20px;height:20px;border-radius:6px;border:2px solid rgba(69,185,140,.75);background:rgba(255,255,255,.9);display:none;align-items:center;justify-content:center;z-index:4;transition:background .12s,border-color .12s;}
 .ai-select-box svg{width:13px;height:13px;stroke:#fff;opacity:0;transition:opacity .12s;}
@@ -175,6 +175,50 @@
   .ai-share-cancel:hover{background:#eef4f1;box-shadow:0 2px 8px rgba(40,90,70,.14);}
 }
 .ai-share-cancel:active{background:#e6efe9;box-shadow:0 1px 4px rgba(40,90,70,.18);}
+
+/* ---- 「生成分享」选择弹层（26/09/17：生成链接 / 生成图片保存 双选项） ---- */
+.ai-share-choice-ov{position:fixed;inset:0;z-index:4500;background:rgba(16,40,28,.42);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;transition:opacity .18s;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
+.ai-share-choice-ov.show{opacity:1;}
+.ai-share-choice-box{width:min(340px,100%);background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(20,50,30,.28);padding:20px 20px 16px;transform:translateY(8px) scale(.96);transition:transform .22s cubic-bezier(.34,1.56,.64,1);}
+.ai-share-choice-ov.show .ai-share-choice-box{transform:translateY(0) scale(1);}
+.ai-share-choice-title{font-size:15px;font-weight:700;color:#1e4a2a;margin-bottom:4px;}
+.ai-share-choice-sub{font-size:12.5px;color:#6b8579;margin-bottom:14px;}
+.ai-share-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-radius:12px;border:1px solid #e0eee6;background:#f7fcfa;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s;margin-bottom:10px;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-share-opt:hover{background:#eef8f2;border-color:#bfe3d0;}
+}
+.ai-share-opt:active{background:#e6f4ec;}
+.ai-share-opt:disabled{opacity:.55;cursor:not-allowed;}
+.ai-share-opt .opt-txt{flex:1;min-width:0;}
+.ai-share-opt .opt-tt{display:block;font-size:14px;font-weight:700;color:#1e4a2a;line-height:1.3;}
+.ai-share-opt .opt-dd{display:block;font-size:12px;color:#6b8579;margin-top:3px;line-height:1.45;}
+.ai-share-choice-cancel{width:100%;border:none;border-radius:12px;padding:10px 0;font-size:13.5px;font-weight:600;color:#5a7a68;background:#f0f5f2;cursor:pointer;font-family:inherit;transition:background .15s;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-share-choice-cancel:hover{background:#e4eee8;}
+}
+.ai-share-choice-cancel:active{background:#e4eee8;}
+
+/* ---- 分享图片预览层（生成图片保存：预览 + 保存/关闭，支持长按图片另存） ---- */
+.ai-share-img-ov{position:fixed;inset:0;z-index:4600;background:rgba(12,32,22,.8);display:flex;flex-direction:column;justify-content:center;padding:18px;opacity:0;transition:opacity .2s;}
+.ai-share-img-ov.show{opacity:1;}
+.ai-share-img-scroll{flex:1 1 auto;min-height:0;width:100%;display:flex;overflow:auto;}
+.ai-share-img-scroll img{margin:auto;max-width:100%;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.42);background:#f4f8f6;}
+.ai-share-img-tip{flex:0 0 auto;color:#d9efe4;font-size:12.5px;margin:14px 0 12px;text-align:center;line-height:1.6;padding:0 8px;}
+.ai-share-img-btns{flex:0 0 auto;display:flex;gap:12px;justify-content:center;padding-bottom:env(safe-area-inset-bottom, 0px);}
+.ai-share-img-btns button{border:none;border-radius:24px;padding:11px 26px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:filter .15s,background .15s;}
+.ai-share-img-save{background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;box-shadow:0 6px 18px rgba(63,168,122,.4);}
+@media (hover: hover) and (pointer: fine) {
+  .ai-share-img-save:hover{filter:brightness(1.05);}
+}
+.ai-share-img-save:active{filter:brightness(1.05);}
+.ai-share-img-save:disabled{opacity:.6;cursor:not-allowed;}
+.ai-share-img-close{background:rgba(255,255,255,.16);color:#fff;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-share-img-close:hover{background:rgba(255,255,255,.26);}
+}
+.ai-share-img-close:active{background:rgba(255,255,255,.26);}
+/* 分享图片渲染容器（离屏，供 html2canvas 截图；正文样式复用已注入的 .ai-msg 全局规则） */
+.ai-share-img-wrap{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;}
 .ai-cfg-key{-webkit-text-security:disc;text-security:disc;}
 .ai-shared-banner{margin:0 auto 12px;max-width:94%;text-align:center;font-size:12px;color:#5e8a72;background:#eef8f2;border:1px solid #e0f0e7;border-radius:12px;padding:8px 12px;align-self:center;}
 
@@ -402,7 +446,7 @@ body.shared-ai-view .ai-close{display:none;}
     +     '<div class="ai-head-r">'
     +       '<button id="aiClear" title="清空对话"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>'
     +       '<button id="aiSetting" title="设置"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>'
-    +       '<button id="aiShare" title="复制分享链接"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>'
+    +       '<button id="aiShare" title="分享对话"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>'
     +       '<button id="aiClose" title="关闭"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>'
     +     '</div>'
     +   '</div>'
@@ -441,7 +485,7 @@ body.shared-ai-view .ai-close{display:none;}
     +   '<div class="ai-share-bar" id="aiShareBar">'
     +     '<span class="ai-share-count" id="aiShareCount">已选 0 条</span>'
     +     '<button type="button" class="ai-share-all" id="aiShareAll">全选</button>'
-    +     '<button type="button" class="ai-share-gen" id="aiShareGen" disabled>生成链接</button>'
+    +     '<button type="button" class="ai-share-gen" id="aiShareGen" disabled>生成分享</button>'
     +     '<button type="button" class="ai-share-cancel" id="aiShareCancel">取消</button>'
     +   '</div>'
     + '</div>';
@@ -549,7 +593,10 @@ body.shared-ai-view .ai-close{display:none;}
   (function loadSharedConv() {
     var m = /(?:^|[#&])conv=([^&]+)/.exec(location.hash || '');
     if (m) {
-      var dec = decodeConv(decodeURIComponent(m[1]));
+      var dec = null;
+      /* 链接可能被转发截断导致百分号转义残缺（decodeURIComponent 会抛 URIError），
+         此处整体兜底，避免异常中断整个脚本初始化，统一走「链接不完整」提示 */
+      try { dec = decodeConv(decodeURIComponent(m[1])); } catch (e) { dec = null; }
       if (dec && dec.length) { history = dec; isSharedView = true; }
       else { sharedLinkBroken = true; }
     }
@@ -817,21 +864,83 @@ body.shared-ai-view .ai-close{display:none;}
   function hasValidCfg() { return cfg.key && cfg.base && cfg.model; }
 
   /* ===================== 对话分享（可分享链接） ===================== */
+  /* 分享编码 v2（26/09/17）：让链接明显变短、转发更不容易被截断——
+     ① 紧凑格式：只留「角色标记 + 正文」，去掉 JSON 括号 / 引号开销；
+     ② UTF-16 双字节打包 + base64url：中文从每字 3 字节降到 2 字节，
+        输出不含 + / = 等需要 URL 转义的字符，链接里零额外膨胀；
+     ③ 结尾带终止符（0x02）：转发被截断时能识别，打开时给出提示。
+     旧版（v1）链接依然可以正常打开，互不影响。 */
+  function packConv(str) {
+    var n = str.length;
+    var bytes = new Uint8Array(n * 2);
+    for (var i = 0; i < n; i++) {
+      var code = str.charCodeAt(i);
+      bytes[i * 2] = code >> 8;
+      bytes[i * 2 + 1] = code & 0xFF;
+    }
+    var bin = '';
+    for (var j = 0; j < bytes.length; j += 0x4000) {
+      bin += String.fromCharCode.apply(null, bytes.subarray(j, j + 0x4000));
+    }
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function unpackConv(s) {
+    var t = String(s).replace(/-/g, '+').replace(/_/g, '/');
+    while (t.length % 4) t += '=';
+    var bin = atob(t);
+    var out = '';
+    for (var i = 0; i + 1 < bin.length; i += 2) {
+      out += String.fromCharCode((bin.charCodeAt(i) << 8) | bin.charCodeAt(i + 1));
+    }
+    return out;
+  }
+  /* 清掉会和分隔符（0x01）/ 终止符（0x02）冲突的控制字符，其余原样保留 */
+  function stripCtrl(text) {
+    var out = '';
+    for (var i = 0; i < text.length; i++) {
+      var cc = text.charCodeAt(i);
+      out += (cc === 9 || cc === 10 || cc === 13 || cc >= 32) ? text.charAt(i) : ' ';
+    }
+    return out;
+  }
   function encodeConv(h) {
     try {
-      var slim = (h || []).map(function (m) {
-        var c = (m.content || '').replace(/<img[^>]*>/gi, '');
-        return { role: m.role, content: c };
+      var parts = [];
+      (h || []).forEach(function (m) {
+        if (!m) return;
+        var c = stripCtrl((m.content || '').replace(/<img[^>]*>/gi, ''));
+        parts.push((m.role === 'user' ? 'u' : 'a') + c);
       });
-      return btoa(unescape(encodeURIComponent(JSON.stringify(slim))));
-    } catch (e) { return ''; }
+      if (!parts.length) return '';
+      return packConv(String.fromCharCode(2) + '2'
+        + parts.join(String.fromCharCode(1)) + String.fromCharCode(2));
+    } catch (e) { console.error('[share] encode error:', e); return ''; }
   }
   function decodeConv(s) {
+    if (!s) return [];
+    /* v2：紧凑格式 + UTF-16 打包（认不出来再回退旧格式） */
+    try {
+      var u = unpackConv(s);
+      if (u.length > 2 && u.charCodeAt(0) === 2 && u.charAt(1) === '2'
+          && u.charCodeAt(u.length - 1) === 2) {
+        var segs = u.slice(2, u.length - 1).split(String.fromCharCode(1));
+        var arr2 = [];
+        for (var i = 0; i < segs.length; i++) {
+          if (!segs[i]) continue;
+          arr2.push({
+            role: segs[i].charAt(0) === 'u' ? 'user' : 'assistant',
+            content: segs[i].slice(1)
+          });
+        }
+        if (arr2.length) return arr2;
+      }
+    } catch (e) { /* 不是 v2，继续按旧格式尝试 */ }
+    /* v1（旧链接）：JSON + UTF-8 + base64 */
     try {
       var json = decodeURIComponent(escape(atob(s)));
       var arr = JSON.parse(json);
       return Array.isArray(arr) ? arr : [];
-    } catch (e) { return []; }
+    } catch (e) { console.error('[share] decode error:', e); return []; }
   }
 
   function setSharedReadOnly(on) {
@@ -921,7 +1030,7 @@ body.shared-ai-view .ai-close{display:none;}
     enterSelectMode();
   });
 
-  /* 进入"勾选分享"模式：每条消息可点选，仅把选中的部分生成链接 */
+  /* 进入"勾选分享"模式：每条消息可点选，仅把选中的部分生成分享（链接/图片） */
   /* 消息点击统一用事件委托：只在勾选模式下生效，
      避免逐条绑定点击监听后退出模式仍残留导致正常状态下点消息出现高亮 */
   msgsEl.addEventListener('click', function (e) {
@@ -937,14 +1046,17 @@ body.shared-ai-view .ai-close{display:none;}
 
   function enterSelectMode() {
     if (!history.length) { showToast('暂无可分享的对话'); return; }
-    if (selecting) return;
-    selecting = true; selectedSet = {};
+    /* 26/09/18：幂等化——已在勾选模式时不再静默返回，而是校准界面
+       （补齐选择框、恢复选择条、刷新计数），避免面板关闭重开后模式残留、
+       再点「分享」无反应或计数与界面不一致导致的首次空选提示 */
+    var firstEnter = !selecting;
+    if (firstEnter) { selecting = true; selectedSet = {}; }
     msgsEl.classList.add('selecting');
     var iw = panel.querySelector('.ai-input-wrap');
     if (iw) iw.style.display = 'none';
-    var nodes = msgsEl.querySelectorAll('.ai-msg');
-    nodes.forEach(function (div) {
+    msgsEl.querySelectorAll('.ai-msg').forEach(function (div) {
       if (div.classList.contains('sys') || div.classList.contains('err')) return;
+      if (div.querySelector('.ai-select-box')) return;   /* 已有选择框则不重复添加 */
       var box = document.createElement('div');
       box.className = 'ai-select-box';
       box.innerHTML = CHECK_ICON;
@@ -952,7 +1064,7 @@ body.shared-ai-view .ai-close{display:none;}
     });
     updateShareCount();
     var bar = $('aiShareBar'); if (bar) bar.classList.add('show');
-    showToast('点选要分享的对话，再点"生成链接"');
+    if (firstEnter) showToast('点选要分享的对话，再点"生成分享"');
   }
 
   function exitSelectMode() {
@@ -991,9 +1103,264 @@ body.shared-ai-view .ai-close{display:none;}
     });
   }
 
+  /* ---------- 「生成分享」双选项（26/09/17）：生成链接 / 生成图片保存 ---------- */
+  var shareImgBusy = false;      /* 图片生成中标志，防止重复触发 */
+  var shareImgDataUrl = '';      /* 最近一次生成的分享图片（仅内存，不入库） */
+
+  function openShareChoice() {
+    if (shareImgBusy) { showToast('正在生成分享图片，请稍候…'); return; }
+    var picked = [];
+    history.forEach(function (m, i) { if (selectedSet[i]) picked.push(m); });
+    if (!picked.length) { showToast('请先勾选要分享的消息'); return; }
+    var overlay = document.createElement('div');
+    overlay.className = 'ai-share-choice-ov';
+    overlay.innerHTML =
+      '<div class="ai-share-choice-box">' +
+        '<div class="ai-share-choice-title">生成分享</div>' +
+        '<div class="ai-share-choice-sub">已选 ' + picked.length + ' 条对话，请选择分享方式：</div>' +
+        '<button type="button" class="ai-share-opt" data-mode="link">' +
+          '<span class="opt-txt"><span class="opt-tt">🔗生成链接</span><span class="opt-dd">复制一条分享链接，对方打开即可查看所选对话（内容较长时链接也会较长）</span></span>' +
+        '</button>' +
+        '<button type="button" class="ai-share-opt" data-mode="img">' +
+          '<span class="opt-txt"><span class="opt-tt">🖼️生成图片保存</span><span class="opt-dd">把所选对话渲染成一张图片，保存到相册或下载（适合内容较多时）</span></span>' +
+        '</button>' +
+        '<button type="button" class="ai-share-choice-cancel">取消</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    requestAnimationFrame(function () { overlay.classList.add('show'); });
+
+    function closeChoice() {
+      overlay.classList.remove('show');
+      setTimeout(function () { overlay.remove(); }, 220);
+    }
+    overlay.addEventListener('click', function (e) {
+      var opt = e.target && e.target.closest ? e.target.closest('.ai-share-opt') : null;
+      if (opt && !opt.disabled) {
+        closeChoice();
+        if (opt.dataset.mode === 'link') genShareLink();
+        else generateShareImage();
+        return;
+      }
+      if (e.target === overlay || (e.target.closest && e.target.closest('.ai-share-choice-cancel'))) {
+        closeChoice();
+      }
+    });
+  }
+
+  /* ---------- 分享图片：html2canvas 懒加载（bootcdn/staticfile 双源兜底） ---------- */
+
+  function loadShareHtml2Canvas() {
+    if (window.html2canvas) return Promise.resolve(window.html2canvas);
+    var urls = [
+      'https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+      'https://cdn.staticfile.org/html2canvas/1.4.1/html2canvas.min.js'
+    ];
+    function tryLoad(i) {
+      return new Promise(function (resolve, reject) {
+        if (i >= urls.length) { reject(new Error('组件加载失败，请检查网络')); return; }
+        var s = document.createElement('script');
+        var done = false;
+        s.src = urls[i];
+        s.onload = function () {
+          if (done) return; done = true;
+          if (window.html2canvas) resolve(window.html2canvas);
+          else tryLoad(i + 1).then(resolve, reject);
+        };
+        s.onerror = function () {
+          if (done) return; done = true;
+          tryLoad(i + 1).then(resolve, reject);
+        };
+        setTimeout(function () {
+          if (done || window.html2canvas) return;
+          done = true;
+          try { s.remove(); } catch (e) {}
+          tryLoad(i + 1).then(resolve, reject);
+        }, 12000);
+        document.head.appendChild(s);
+      });
+    }
+    return tryLoad(0);
+  }
+
+  function generateShareImage() {
+    if (shareImgBusy) return;
+    var picked = [];
+    history.forEach(function (m, i) { if (selectedSet[i]) picked.push({ m: m, i: i }); });
+    if (!picked.length) { showToast('请先勾选要分享的消息'); return; }
+    shareImgBusy = true;
+    showToast('正在生成分享图片，请稍候…');
+    loadShareHtml2Canvas().then(function (h2c) {
+      return buildShareImage(h2c, picked);
+    }).then(function (dataUrl) {
+      shareImgBusy = false;
+      shareImgDataUrl = dataUrl;
+      exitSelectMode();
+      showShareImgPreview();
+    }).catch(function (err) {
+      shareImgBusy = false;
+      console.error('[ai-share] 生成图片失败:', err);
+      showToast('图片生成失败：' + ((err && err.message) || '请检查网络后重试'));
+    });
+  }
+
+  /* ---------- 分享图片渲染：克隆已渲染消息节点，离屏拼接后 html2canvas 截屏 ---------- */
+  function buildShareImage(h2c, picked) {
+    return new Promise(function (resolve, reject) {
+      var wrap = document.createElement('div');
+      wrap.className = 'ai-share-img-wrap';
+      wrap.style.cssText = 'position:absolute;left:-100000px;top:0;width:720px;background:#f4f8f6;z-index:-1;';
+
+      /* 顶部标题栏（26/09/18：去掉来源与时间信息、压缩高度、绿色调浅） */
+      var head = document.createElement('div');
+      head.style.cssText = 'padding:14px 24px;background:linear-gradient(135deg,#7eddb3,#52c191);color:#fff;';
+      head.innerHTML =
+        '<div style="font-size:20px;font-weight:700;letter-spacing:.5px;">🤖 AI 答疑助手 · 分享片段</div>';
+      wrap.appendChild(head);
+
+      /* 消息区：克隆页面上已渲染好的消息节点（视觉与对话窗口一致，含公式/表格/图片） */
+      var body = document.createElement('div');
+      body.style.cssText = 'display:flex;flex-direction:column;gap:12px;padding:20px 24px;';
+      picked.forEach(function (p) {
+        var src = null;
+        try { src = msgsEl.querySelector('.ai-msg[data-idx="' + p.i + '"]'); } catch (e) {}
+        var node;
+        if (src) {
+          node = src.cloneNode(true);
+          node.querySelectorAll('.ai-msg-actions, .ai-select-box, .ai-cursor').forEach(function (n) { n.remove(); });
+          node.classList.remove('selected');
+          node.style.animation = 'none';
+        } else {
+          /* 兜底：DOM 中找不到时用纯文本重建 */
+          node = document.createElement('div');
+          node.className = 'ai-msg ' + (p.m.role === 'user' ? 'user' : 'ai');
+          if (p.m.role === 'user') node.textContent = p.m.content || '';
+          else node.innerHTML = renderMD(p.m.content || '');
+        }
+        body.appendChild(node);
+      });
+      wrap.appendChild(body);
+
+      /* 底部说明 */
+      var foot = document.createElement('div');
+      foot.style.cssText = 'padding:14px 26px 18px;border-top:1px solid #e2efe8;color:#8aa99a;font-size:11.5px;text-align:center;';
+      foot.textContent = '由 AI 答疑助手生成 · 仅供学习交流';
+      wrap.appendChild(foot);
+      document.body.appendChild(wrap);
+
+      /* 等字体与图片就绪后截屏，避免缺字/缺图；超高内容自动降采样或拦截 */
+      var cleanup = function () { try { wrap.remove(); } catch (e) {} };
+      var waitImgs = [];
+      wrap.querySelectorAll('img').forEach(function (img) {
+        if (img.complete) return;
+        waitImgs.push(new Promise(function (res) {
+          img.addEventListener('load', res, { once: true });
+          img.addEventListener('error', res, { once: true });
+        }));
+      });
+      var fontsReady = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+      Promise.all([fontsReady, Promise.all(waitImgs)]).then(function () {
+        return new Promise(function (res) { setTimeout(res, 60); });
+      }).then(function () {
+        var h = wrap.offsetHeight || 0;
+        if (!h) { cleanup(); reject(new Error('渲染失败')); return; }
+        if (h > 14000) { cleanup(); reject(new Error('内容过长，建议减少勾选后重试')); return; }
+        var scale = 2;   /* 视网膜清晰度 */
+        if (h * scale > 13000) scale = Math.max(1, 13000 / h);
+        h2c(wrap, { backgroundColor: '#f4f8f6', scale: scale, useCORS: true, logging: false, width: 720, height: h })
+          .then(function (canvas) {
+            var dataUrl = '';
+            try { dataUrl = canvas.toDataURL('image/png'); } catch (e) { console.error('[ai-share] toDataURL 失败:', e); }
+            cleanup();
+            if (dataUrl) resolve(dataUrl); else reject(new Error('导出图片失败'));
+          })
+          .catch(function (err) { cleanup(); reject(err); });
+      }).catch(function (err) { cleanup(); reject(err); });
+    });
+  }
+
+  /* ---------- 分享图片预览层：预览 + 保存到相册/下载 + 关闭 ---------- */
+  function showShareImgPreview() {
+    if (!shareImgDataUrl) return;
+    var ov = document.createElement('div');
+    ov.className = 'ai-share-img-ov';
+    ov.innerHTML =
+      '<div class="ai-share-img-scroll"><img alt="分享图片" /></div>' +
+      '<div class="ai-share-img-tip">✅ 图片已生成 · 长按图片可直接保存；点「保存图片」可保存到相册或下载</div>' +
+      '<div class="ai-share-img-btns">' +
+        '<button type="button" class="ai-share-img-save">保存图片</button>' +
+        '<button type="button" class="ai-share-img-close">关闭</button>' +
+      '</div>';
+    var img = ov.querySelector('img');
+    if (img) img.src = shareImgDataUrl;
+    document.body.appendChild(ov);
+    requestAnimationFrame(function () { ov.classList.add('show'); });
+
+    function closePreview() {
+      ov.classList.remove('show');
+      setTimeout(function () { try { ov.remove(); } catch (e) {} }, 230);
+    }
+    var saveBtn = ov.querySelector('.ai-share-img-save');
+    /* 26/09/18：保存成功（或浏览器下载启动）后自动关闭预览面板，无需再点「关闭」 */
+    if (saveBtn) saveBtn.addEventListener('click', function () { saveShareImgToAlbum(saveBtn, closePreview); });
+    var closeBtn = ov.querySelector('.ai-share-img-close');
+    if (closeBtn) closeBtn.addEventListener('click', closePreview);
+    ov.addEventListener('click', function (e) { if (e.target === ov) closePreview(); });
+  }
+
+  /* 保存：优先无思环境相册 API；普通浏览器回退为下载。
+     参数 done：保存成功后回调（26/09/18：用于保存完自动关闭预览面板，无需再点「关闭」） */
+  function saveShareImgToAlbum(btn, done) {
+    if (!shareImgDataUrl) { showToast('图片还没生成好，请稍候'); return; }
+    if (window.wusiSaveImage) {
+      if (btn) btn.disabled = true;
+      showToast('正在保存到相册…');
+      try {
+        wusiSaveImage(shareImgDataUrl).then(function (result) {
+          if (btn) btn.disabled = false;
+          if (result && result.status === 'success') {
+            showToast('图片已保存到相册 ✅');
+            if (typeof done === 'function') done();
+          } else {
+            showToast('保存失败：' + ((result && result.message) || '未知错误'));
+          }
+        }).catch(function (err) {
+          if (btn) btn.disabled = false;
+          console.error('[ai-share] 保存相册失败:', err);
+          downloadShareImg(done);
+        });
+      } catch (err) {
+        if (btn) btn.disabled = false;
+        console.error('[ai-share] 保存相册异常:', err);
+        downloadShareImg(done);
+      }
+    } else {
+      downloadShareImg(done);
+    }
+  }
+
+  /* 参数 done：下载启动成功后回调（用于保存完自动关闭预览面板） */
+  function downloadShareImg(done) {
+    try {
+      var d = new Date();
+      function p(n) { return (n < 10 ? '0' : '') + n; }
+      var name = 'AI分享_' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds()) + '.png';
+      var a = document.createElement('a');
+      a.href = shareImgDataUrl;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { try { a.remove(); } catch (e) {} }, 120);
+      showToast('图片已开始下载；若未自动保存，可在预览中长按图片另存');
+      if (typeof done === 'function') done();
+    } catch (err) {
+      console.error('[ai-share] 下载失败:', err);
+      showToast('当前环境不支持自动下载，请长按预览图片保存');
+    }
+  }
+
   var shareBar = $('aiShareBar');
   if (shareBar) {
-    $('aiShareGen').addEventListener('click', genShareLink);
+    $('aiShareGen').addEventListener('click', openShareChoice);
     $('aiShareCancel').addEventListener('click', exitSelectMode);
     $('aiShareAll').addEventListener('click', function () {
       var allSel = Object.keys(selectedSet).length === countSelectable() && countSelectable() > 0;
@@ -1979,6 +2346,16 @@ body.shared-ai-view .ai-close{display:none;}
       }
 
       attachMsgActions(div, copyText, m.role === 'user' ? 'user' : 'ai', i);
+      /* 26/09/18：勾选分享模式下重绘消息时，还原选择框与已选高亮。
+         避免全量重渲染（如流式回答结束后刷新）把用户的勾选状态从界面上清掉，
+         出现「明明勾过、点生成分享却提示未选」的情况 */
+      if (selecting && !isSharedView) {
+        if (selectedSet[i]) div.classList.add('selected');
+        var sbox = document.createElement('div');
+        sbox.className = 'ai-select-box';
+        sbox.innerHTML = CHECK_ICON;
+        div.appendChild(sbox);
+      }
       msgsEl.appendChild(div);
     });
     if (isSharedView) { try { msgsEl.scrollTop = 0; } catch (e) {} } else { scrollToBottom(); }
@@ -1989,7 +2366,7 @@ body.shared-ai-view .ai-close{display:none;}
     var t = document.getElementById('aiToast');
     if (!t) {
       t = document.createElement('div'); t.id = 'aiToast';
-      t.style.cssText = 'position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(12px);background:#45b98c;color:#fff;font-size:13px;font-weight:600;padding:10px 22px;border-radius:30px;z-index:2000;box-shadow:0 10px 26px rgba(69,185,140,.34);opacity:0;pointer-events:none;transition:.25s;white-space:nowrap;';
+      t.style.cssText = 'position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(12px);background:#45b98c;color:#fff;font-size:13px;font-weight:600;padding:10px 22px;border-radius:30px;z-index:5000;box-shadow:0 10px 26px rgba(69,185,140,.34);opacity:0;pointer-events:none;transition:.25s;white-space:nowrap;';
       document.body.appendChild(t);
     }
     t.textContent = msg;

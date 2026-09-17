@@ -45,10 +45,9 @@
         .filter-bar input:focus {
             border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.2);
         }
-        @media (hover: hover) and (pointer: fine) {
-            .filter-bar select:focus {
+        /* 26/09/18：筛选下拉框点击时显示光圈，选中某一项后由脚本自动收起；搜索框光圈保留 */
+        .filter-bar select:focus {
             border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.2);
-        }
         }
         .filter-bar select optgroup { font-style: normal; font-weight: 600; }
         .filter-bar .btn-clear-filter {
@@ -2485,8 +2484,13 @@ function renderAnswerParagraphs(text) {
                     } else {
                         noteArea.classList.add('open');
                         this.classList.add('active');
+                        /* 26/09/17 修复：点📝仅打开查看，不再自动聚焦编辑器，
+                           避免「编辑过笔记的卡片再点📝时自动跳进编辑态」（重点看文本框才编辑） */
                         const editor = noteArea.querySelector('.note-editor');
-                        if(editor) setTimeout(()=>editor.focus(),100);
+                        if(editor){
+                            editor.setAttribute('contenteditable', 'false');
+                            editor.blur();
+                        }
                     }
                 });
 
@@ -2539,10 +2543,20 @@ function renderAnswerParagraphs(text) {
                     const editor = document.querySelector(`.note-editor[data-id="${id}"]`);
                     if(!editor) return;
                     let content = editor.innerHTML.trim();
+                    /* 26/09/17 修复：空笔记点保存时 blur 可能注入占位提示，先剔除占位再判空 */
+                    if(content.indexOf('note-placeholder') > -1){
+                        const tmpDiv = document.createElement('div');
+                        tmpDiv.innerHTML = content;
+                        tmpDiv.querySelectorAll('.note-placeholder').forEach(n => n.remove());
+                        content = tmpDiv.innerHTML.trim();
+                    }
                     if(content === '<br>' || content === '') content = '';
                     if(content) notes[id] = content;
                     else delete notes[id];
                     saveNotes();
+                    /* 26/09/17 修复：保存后回到查看态，避免可编辑状态残留导致下次点📝自动进入编辑 */
+                    editor.setAttribute('contenteditable', 'false');
+                    editor.blur();
                     const noteBtn = document.querySelector(`.btn-note[data-id="${id}"]`);
                     if(noteBtn) noteBtn.classList.toggle('active', !!content);
                     if(content){
@@ -2634,6 +2648,8 @@ function renderAnswerParagraphs(text) {
                     if (this.innerHTML.trim() === '' || this.innerHTML === '<br>') {
                         this.innerHTML = '<span class="note-placeholder">✏️ 点击写下笔记，支持粘贴/插入图片…</span>';
                     }
+                    /* 26/09/17：移出编辑框即回到查看态（保持「点开只看、点文本框才编辑」） */
+                    this.setAttribute('contenteditable', 'false');
                             });
             delegateOnce('.note-editor', 'click', function () {
                     if (this.getAttribute('contenteditable') === 'false') {
@@ -2761,6 +2777,10 @@ function renderAnswerParagraphs(text) {
 
         filterSpecial.addEventListener('change', onFilterChange);
         filterFav.addEventListener('change', onFilterChange);
+        /* 26/09/18：筛选下拉框点击时显示光圈（CSS :focus），选中某一项后自动收起光圈 */
+        document.querySelectorAll('.filter-bar select').forEach(function (sel) {
+            sel.addEventListener('change', function () { this.blur(); });
+        });
                 /* 搜索防抖：避免每敲一个字就全量重绘所有卡片 */
         var __searchTimer = null;
         filterSearch.addEventListener('input', function () {
