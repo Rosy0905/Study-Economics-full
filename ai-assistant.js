@@ -1122,7 +1122,7 @@ body.shared-ai-view .ai-close{display:none;}
           '<span class="opt-txt"><span class="opt-tt">🔗生成链接</span><span class="opt-dd">复制一条分享链接，对方打开即可查看所选对话（内容较长时链接也会较长）</span></span>' +
         '</button>' +
         '<button type="button" class="ai-share-opt" data-mode="img">' +
-          '<span class="opt-txt"><span class="opt-tt">🖼️生成图片保存</span><span class="opt-dd">把所选对话渲染成一张图片，保存到相册或下载（适合内容较多时）</span></span>' +
+          '<span class="opt-txt"><span class="opt-tt">🖼️生成图片</span><span class="opt-dd">把所选对话渲染成一张图片，保存到相册或下载（适合内容较多时）</span></span>' +
         '</button>' +
         '<button type="button" class="ai-share-choice-cancel">取消</button>' +
       '</div>';
