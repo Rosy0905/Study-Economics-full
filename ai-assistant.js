@@ -1210,9 +1210,9 @@ body.shared-ai-view .ai-close{display:none;}
       wrap.className = 'ai-share-img-wrap';
       wrap.style.cssText = 'position:absolute;left:-100000px;top:0;width:720px;background:#ffffff;z-index:-1;';
 
-      /* 顶部标题栏（26/09/18：深绿纯色 #58c495 + 白字，去掉渐变避免缩略图明暗不均） */
+      /* 顶部标题栏（26/09/18：深绿纯色 #5ec99a + 白字，去掉渐变避免缩略图明暗不均） */
       var head = document.createElement('div');
-      head.style.cssText = 'padding:16px 24px;background:#58c495;color:#fff;';
+      head.style.cssText = 'padding:16px 24px;background:#5ec99a;color:#fff;';
       head.innerHTML =
         '<div style="font-size:18px;font-weight:700;letter-spacing:.5px;">🤖 AI 答疑助手 · 分享片段</div>';
       wrap.appendChild(head);
