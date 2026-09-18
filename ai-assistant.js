@@ -1210,11 +1210,11 @@ body.shared-ai-view .ai-close{display:none;}
       wrap.className = 'ai-share-img-wrap';
       wrap.style.cssText = 'position:absolute;left:-100000px;top:0;width:720px;background:#ffffff;z-index:-1;';
 
-      /* 顶部标题栏（26/09/18：去掉来源与时间信息、压缩高度、绿色调浅） */
+      /* 顶部标题栏（26/09/18：改为分享链接顶部同款淡绿，文字改深绿） */
       var head = document.createElement('div');
-      head.style.cssText = 'padding:14px 24px;background:linear-gradient(135deg,#7eddb3,#52c191);color:#fff;';
+      head.style.cssText = 'padding:14px 24px;background:linear-gradient(135deg,#eaf8f2,#dff2e8);border-bottom:1px solid #e0efe6;color:#1e4a2a;';
       head.innerHTML =
-        '<div style="font-size:20px;font-weight:700;letter-spacing:.5px;">🤖 AI 答疑助手 · 分享片段</div>';
+        '<div style="font-size:18px;font-weight:700;letter-spacing:.5px;">🤖 AI 答疑助手 · 分享片段</div>';
       wrap.appendChild(head);
 
       /* 消息区：克隆页面上已渲染好的消息节点（视觉与对话窗口一致，含公式/表格/图片） */
