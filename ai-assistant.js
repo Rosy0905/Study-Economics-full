@@ -1208,7 +1208,7 @@ body.shared-ai-view .ai-close{display:none;}
     return new Promise(function (resolve, reject) {
       var wrap = document.createElement('div');
       wrap.className = 'ai-share-img-wrap';
-      wrap.style.cssText = 'position:absolute;left:-100000px;top:0;width:720px;background:#f4f8f6;z-index:-1;';
+      wrap.style.cssText = 'position:absolute;left:-100000px;top:0;width:720px;background:#ffffff;z-index:-1;';
 
       /* 顶部标题栏（26/09/18：去掉来源与时间信息、压缩高度、绿色调浅） */
       var head = document.createElement('div');
@@ -1266,7 +1266,7 @@ body.shared-ai-view .ai-close{display:none;}
         if (h > 14000) { cleanup(); reject(new Error('内容过长，建议减少勾选后重试')); return; }
         var scale = 2;   /* 视网膜清晰度 */
         if (h * scale > 13000) scale = Math.max(1, 13000 / h);
-        h2c(wrap, { backgroundColor: '#f4f8f6', scale: scale, useCORS: true, logging: false, width: 720, height: h })
+        h2c(wrap, { backgroundColor: '#ffffff', scale: scale, useCORS: true, logging: false, width: 720, height: h })
           .then(function (canvas) {
             var dataUrl = '';
             try { dataUrl = canvas.toDataURL('image/png'); } catch (e) { console.error('[ai-share] toDataURL 失败:', e); }
