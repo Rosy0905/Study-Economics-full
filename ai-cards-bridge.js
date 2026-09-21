@@ -232,8 +232,8 @@
                   '</div>' +
                   '<div class="mycards-confirm-sub">题目（可直接编辑）</div>' +
                   '<div class="mycards-confirm-q" contenteditable="true" spellcheck="false"></div>' +
-                  '<div class="mycards-confirm-sub">答案（可直接编辑）</div>' +
-                  '<div class="mycards-confirm-a" contenteditable="true" spellcheck="false"></div>' +
+                  '<div class="mycards-confirm-sub">答案预览</div>' +
+                  '<div class="mycards-confirm-a"></div>' +
                   '<div class="mycards-confirm-btns">' +
                     '<button type="button" class="mycards-btn mycards-btn-cancel">取消</button>' +
                     '<button type="button" class="mycards-btn mycards-btn-ok">存入</button>' +
@@ -267,7 +267,7 @@
                 finish({
                     ok: true,
                     question: qBox.textContent || qText,
-                    answerHtml: aBox.innerHTML,
+                    answerHtml: answerHtml,
                     subject: subjSel.value,
                     chapter: chapSel.value
                 });
@@ -364,12 +364,12 @@
             'padding:7px 26px 7px 12px;font-size:13px;color:#1c3322;font-family:inherit;cursor:pointer;outline:none;}' +
             '.mycards-select:focus{border-color:#8bcbb0;background-color:#f3faf6;}' +
             '.mycards-confirm-sub{font-size:12px;color:#8aa;margin-top:10px;margin-bottom:4px;}' +
-            '.mycards-confirm-q{font-size:13.5px;color:#1c3322;font-weight:700;line-height:1.6;word-break:break-word;' +
-            'background:#f3faf6;border-radius:9px;padding:8px 10px;outline:none;min-height:26px;}' +
+            '.mycards-confirm-q{font-size:13.5px;color:#1c3322;font-weight:700;line-height:1.6;' +
+            'background:#f3faf6;border-radius:9px;padding:8px 10px;outline:none;min-height:26px;' +
+            'white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;max-height:22vh;overflow-y:auto;}' +
             '.mycards-confirm-q:focus{box-shadow:0 0 0 2px #c8ead8;}' +
-            '.mycards-confirm-a{max-height:46vh;overflow-y:auto;font-size:13px;color:#3a5a48;line-height:1.7;' +
-            'background:#f8fbf9;border:1px solid #e2efe8;border-radius:9px;padding:9px 11px;word-break:break-word;outline:none;}' +
-            '.mycards-confirm-a:focus{box-shadow:0 0 0 2px #c8ead8;}' +
+            '.mycards-confirm-a{max-height:50vh;overflow-y:auto;font-size:13px;color:#3a5a48;line-height:1.7;' +
+            'background:#f8fbf9;border:1px solid #e2efe8;border-radius:9px;padding:9px 11px;word-break:break-word;}' +
             '.mycards-confirm-a table{border-collapse:collapse;width:100%;}' +
             '.mycards-confirm-a th,.mycards-confirm-a td{border:1px solid #d5e8de;padding:3px 6px;font-size:12px;}' +
             '.mycards-confirm-a p{margin:0 0 .4em;}' +
