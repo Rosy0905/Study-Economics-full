@@ -16,7 +16,7 @@
      ============================================================ -->
 <script>
 (function () {
-    var BASES = ['../vendor/katex/', 'vendor/katex/', '../../vendor/katex/'];
+    var BASES = ['vendor/katex/', '../vendor/katex/', '../../vendor/katex/'];
     var i = 0;
     function tryNext() {
         if (i >= BASES.length) return;
@@ -346,7 +346,7 @@
     .card-answer .answer-inner ol { padding-left: 1.6em; margin: .4em 0; }
     .card-answer .answer-inner blockquote {
         border-left: 4px solid #b3ddc3; padding-left: 12px; margin: .5em 0;
-        color: #3f6a4f;
+        color: #555;
     }
     .card-answer .answer-inner table {
         border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 14px;
@@ -370,7 +370,7 @@
     .card-answer .answer-inner h3, .rich-editor h3,
     .card-answer .answer-inner h4, .rich-editor h4,
     .card-answer .answer-inner h5, .rich-editor h5 {
-        color: #1e5a3a; font-weight: 700; line-height: 1.45;
+        color: #1a3322; font-weight: 700; line-height: 1.45;
         margin: 0.75em 0 0.3em 0;
     }
     .card-answer .answer-inner h1:first-child, .rich-editor h1:first-child,
@@ -390,10 +390,10 @@
     .card-answer .answer-inner code, .rich-editor code {
         background: #e8f3e8; padding: 1px 6px; border-radius: 5px;
         font-family: ui-monospace, Menlo, Consolas, monospace;
-        font-size: 13px; color: #2a6a4a;
+        font-size: 13px; color: #1a3322;
     }
     .card-answer .answer-inner pre code, .rich-editor pre code {
-        background: transparent; padding: 0; color: #1f4a34; font-size: 13px;
+        background: transparent; padding: 0; color: #1a3322; font-size: 13px;
     }
     .card-answer .answer-inner hr, .rich-editor hr {
         border: none; border-top: 1px solid #d3e6d3; margin: 12px 0;
