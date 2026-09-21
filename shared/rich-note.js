@@ -1376,16 +1376,125 @@
                 rememberRange(editor);
             });
         });
+        /* ---------- 粘贴 markdown → 富文本（26/09/21 第 43 轮） ----------
+           AI 助手的「复制」按钮给的是原始 markdown（**加粗** / ### 标题 / - 列表 / |表格|），
+           而笔记编辑器只认 LaTeX（$...$），不做 markdown 解析 —— 直接粘就只剩字面星号。
+           规则与 ai-cards-bridge.js 的 mdToHtml 完全一致，这里自带一份，不依赖 bridge 是否加载：
+           $...$ / $$...$$ 全程优先保护（否则 * 会被当成斜体，把公式结构拆坏）。 */
+        function escMd(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+        function inlineMd(s) {
+            var t = escMd(s);
+            var maths = [];
+            t = t.replace(/\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g, function (m) {
+                maths.push(m);
+                return '\u0000M' + (maths.length - 1) + '\u0000';
+            });
+            t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+            t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            t = t.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+            t = t.replace(/~~([^~]+)~~/g, '<s>$1</s>');
+            t = t.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+            t = t.replace(/\u0000M(\d+)\u0000/g, function (_, i) { return maths[+i]; });
+            return t;
+        }
+        function mdIsTableRow(s) { return /^\s*\|.*\|\s*$/.test(s); }
+        function mdIsTableSep(s) { return /^\s*\|?[\s:\-|]+\|[\s:\-|]*$/.test(s) && /-/.test(s); }
+        function mdSplitRow(s) {
+            return s.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(function (x) { return x.trim(); });
+        }
+        function mdToHtml(md) {
+            var src = String(md || '').replace(/\r\n?/g, '\n');
+            var fences = [];
+            src = src.replace(/```[^\n]*\n([\s\S]*?)```/g, function (m, code) {
+                fences.push('<pre><code>' + escMd(code.replace(/\n+$/, '')) + '</code></pre>');
+                return '\n\u0000F' + (fences.length - 1) + '\u0000\n';
+            });
+            var lines = src.split('\n'), out = [], i = 0;
+            while (i < lines.length) {
+                var line = lines[i];
+                if (!line.trim()) { i++; continue; }
+                var fm = line.trim().match(/^\u0000F(\d+)\u0000$/);
+                if (fm) { out.push(fences[+fm[1]] || ''); i++; continue; }
+
+                if (mdIsTableRow(line) && i + 1 < lines.length && mdIsTableSep(lines[i + 1])) {
+                    var head = mdSplitRow(line); i += 2; var rows = [];
+                    while (i < lines.length && mdIsTableRow(lines[i])) { rows.push(mdSplitRow(lines[i])); i++; }
+                    out.push('<table><thead><tr>' +
+                        head.map(function (h) { return '<th>' + inlineMd(h) + '</th>'; }).join('') +
+                        '</tr></thead><tbody>' +
+                        rows.map(function (r) {
+                            return '<tr>' + head.map(function (_, ci) { return '<td>' + inlineMd(r[ci] || '') + '</td>'; }).join('') + '</tr>';
+                        }).join('') + '</tbody></table>');
+                    continue;
+                }
+                var h = line.match(/^(#{1,6})\s+(.*)$/);
+                if (h) { var lv = Math.min(6, h[1].length); out.push('<h' + lv + '>' + inlineMd(h[2]) + '</h' + lv + '>'); i++; continue; }
+                if (/^\s*([-*_])\s*\1\s*\1[\s\-*_]*$/.test(line)) { out.push('<hr>'); i++; continue; }
+                if (/^\s*>\s?/.test(line)) {
+                    var q = [];
+                    while (i < lines.length && /^\s*>\s?/.test(lines[i])) { q.push(lines[i].replace(/^\s*>\s?/, '')); i++; }
+                    out.push('<blockquote>' + q.map(inlineMd).join('<br>') + '</blockquote>');
+                    continue;
+                }
+                if (/^\s*([-*+]|\d+[.)])\s+/.test(line)) {
+                    var ordered = /^\s*\d+[.)]\s+/.test(line), items = [];
+                    while (i < lines.length && /^\s*([-*+]|\d+[.)])\s+/.test(lines[i])) {
+                        items.push(lines[i].replace(/^\s*([-*+]|\d+[.)])\s+/, '')); i++;
+                    }
+                    out.push('<' + (ordered ? 'ol' : 'ul') + '>' +
+                        items.map(function (t) { return '<li>' + inlineMd(t) + '</li>'; }).join('') +
+                        '</' + (ordered ? 'ol' : 'ul') + '>');
+                    continue;
+                }
+                var para = [];
+                while (i < lines.length && lines[i].trim() &&
+                       !/^\s*>\s?/.test(lines[i]) &&
+                       !/^\s*([-*+]|\d+[.)])\s+/.test(lines[i]) &&
+                       !/^#{1,6}\s+/.test(lines[i]) &&
+                       !(mdIsTableRow(lines[i]) && i + 1 < lines.length && mdIsTableSep(lines[i + 1])) &&
+                       !/^\u0000F\d+\u0000$/.test(lines[i].trim())) {
+                    para.push(lines[i]); i++;
+                }
+                if (!para.length) { i++; continue; }
+                out.push('<p>' + para.map(inlineMd).join('\n') + '</p>');
+            }
+            return out.join('');
+        }
+        /* 只接管「纯文本 + 确实像 markdown」的粘贴：AI 复制按钮给的就是这种。
+           剪贴板自带 HTML 的（比如手选 AI 气泡里已经渲染好的内容）交给浏览器原样粘，不碰。 */
+        function looksLikeMd(s) {
+            return /(^|\n)\s{0,3}#{1,6}\s+/.test(s) ||
+                /\*\*[^*\n]+\*\*/.test(s) ||
+                /(^|\n)\s*([-*+]|\d+[.)])\s+/.test(s) ||
+                /(^|\n)\s*\|.+\|\s*$/.test(s) ||
+                /^\s*>\s?/m.test(s);
+        }
+
         editor.addEventListener('paste', function (e) {
-            var items = e.clipboardData && e.clipboardData.items;
-            if (!items) return;
-            for (var i = 0; i < items.length; i++) {
+            var cd = e.clipboardData;
+            if (!cd) return;
+            var items = cd.items, hasImg = false;
+            for (var i = 0; items && i < items.length; i++) {
                 if (items[i].type && items[i].type.indexOf('image/') === 0) {
+                    hasImg = true;
                     e.preventDefault();
                     readAndInsertImage(area, editor, items[i].getAsFile());
                     break;
                 }
             }
+            if (hasImg) return;
+            var html = '';
+            try { html = cd.getData('text/html') || ''; } catch (err) { html = ''; }
+            if (html) return;                       /* 自带富文本 → 原样粘 */
+            var txt = '';
+            try { txt = cd.getData('text/plain') || ''; } catch (err2) { txt = ''; }
+            if (!txt || !looksLikeMd(txt)) return;  /* 普通文字 → 原样粘 */
+            e.preventDefault();
+            insertHtmlAtCursor(editor, mdToHtml(txt));
+            lastEdAct = Date.now();
+            rememberRange(editor);
         });
 
         /* 点图片：编辑态 → 选中调尺寸；非编辑态 → 浮层预览 */
@@ -1507,6 +1616,16 @@
     window.__richNote = {
         attach: attach,
         renderMathIn: renderMathIn,
-        openViewer: openViewer
+        openViewer: openViewer,
+        /* 26/09/21 第 43 轮：给「自动保存」用。把一段 HTML 里的已渲染公式还原成 $...$ 源码，
+           但在离屏副本上做，不动页面上的编辑器（动了还要再渲染回来，容易闪）。 */
+        deflateMathHtml: function (html) {
+            try {
+                var div = document.createElement('div');
+                div.innerHTML = String(html || '');
+                deflateMath(div);
+                return div.innerHTML;
+            } catch (e) { return String(html || ''); }
+        }
     };
 })();

@@ -43,7 +43,12 @@
         if (!ed) return;
         try {
             var id = ed.dataset.id;
-            var content = (ed.innerHTML || '').trim();
+            /* 26/09/21 第 43 轮：自动保存发生在公式渲染之后，直接存 ed.innerHTML 会把渲染后的
+               KaTeX HTML（体积 25 倍、源码丢失）写回 localStorage，把「保存」按钮刚存好的源码覆盖掉。
+               这里统一先把公式还原成 $...$ 源码（在离屏副本上做，页面上的公式不动）。 */
+            var raw = (ed.innerHTML || '').trim();
+            var content = (window.__richNote && window.__richNote.deflateMathHtml)
+                ? window.__richNote.deflateMathHtml(raw).trim() : raw;
             if (content === '<br>' || content === '') content = '';
             if (content) { notes[id] = content; } else { delete notes[id]; }
             saveNotes();
