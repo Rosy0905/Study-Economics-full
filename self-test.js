@@ -295,6 +295,23 @@
     }
 
     /* ---------- 开关 ---------- */
+    /* 让界面上的开关与代码里的 ON 永远保持一致。
+       为什么要多这一步：浏览器会在「页面重新被唤起」（放一阵子回来、从后台切回、
+       前进/后退）时把表单控件的样子按上次的样子恢复 —— 开关看着是开着的，
+       但脚本里的 ON 还是 false（change 事件没触发），于是出现「按钮开着、
+       页面却是原模式」。所以每次这类恢复都强制对齐一次。 */
+    function syncToggleUI() {
+        if (toggle.checked !== ON) toggle.checked = ON;
+        document.body.classList.toggle('st-on', ON);
+        window.__selfTestOn = ON;
+        window.__stFocusId = null;
+    }
+    syncToggleUI();
+    window.addEventListener('pageshow', function () { syncToggleUI(); applyAll(); });
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) syncToggleUI();
+    });
+
     toggle.addEventListener('change', function () {
         ON = toggle.checked;
         window.__selfTestOn = ON;                 // AI 据此不读答案

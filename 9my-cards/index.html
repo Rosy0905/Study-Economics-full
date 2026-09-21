@@ -1,0 +1,3795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="../icons/icon.svg">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<meta name="theme-color" content="#6A2C91">
+<title>我的卡片 · 记忆卡</title>
+
+<!-- ============================================================
+     KaTeX：优先用本地 vendor（离线可用），找不到就试上一级目录。
+     · 把这个文件放进项目子目录（如 9my-cards/index.html）时，
+       ../vendor/katex/ 会自动命中，不用改任何路径。
+     · 独立预览时用同目录的 vendor/katex/。
+     ============================================================ -->
+<script>
+(function () {
+    var BASES = ['../vendor/katex/', 'vendor/katex/', '../../vendor/katex/'];
+    var i = 0;
+    function tryNext() {
+        if (i >= BASES.length) return;
+        var base = BASES[i++];
+        var url = /\.js$/.test(base) ? base : base + 'katex.min.js';
+        var s = document.createElement('script');
+        s.src = url;
+        s.onload = function () {
+            if (!/\.js$/.test(base)) {
+                var l = document.createElement('link');
+                l.rel = 'stylesheet';
+                l.href = base + 'katex.min.css';
+                document.head.appendChild(l);
+            }
+            window.__katexReady = true;
+            if (typeof window.__renderMath === 'function') window.__renderMath();
+        };
+        s.onerror = tryNext;
+        document.head.appendChild(s);
+    }
+    tryNext();
+})();
+</script>
+
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body {
+        font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+        background: #f0f7f0;
+        color: #1e3a2a;
+        padding: 20px;
+    }
+
+    /* ================= 顶部 ================= */
+    .app-header {
+        max-width: 1200px; margin: 0 auto 20px auto;
+        background: #d9edd9; padding: 18px 28px; border-radius: 18px;
+        box-shadow: 0 4px 12px rgba(60, 110, 60, 0.12);
+        display: flex; justify-content: space-between; align-items: center;
+        flex-wrap: wrap; gap: 12px;
+    }
+    .app-header .header-left {
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .app-header h1 { font-size: 24px; font-weight: 600; color: #1e4a2a; letter-spacing: 0.5px; }
+    .back-home {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 7px 15px 7px 11px; border-radius: 30px;
+        background: #c4e0c4; color: #1e4a2a; font-size: 13.5px; font-weight: 600;
+        text-decoration: none; white-space: nowrap; flex-shrink: 0;
+        box-shadow: 0 1px 3px rgba(60, 110, 60, 0.10);
+        /* 26/09/20：hover 只变色，不再位移 */
+        transition: background .15s;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .back-home:hover { background: #a8d0a8; }
+    }
+    .back-home:active { background: #a8d0a8; }
+    .back-home .arrow { font-size: 15px; line-height: 1; }
+
+    .app-header .header-right {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .app-header .stats {
+        display: flex; gap: 20px; font-size: 14px;
+        background: #c4e0c4; padding: 6px 18px; border-radius: 40px;
+    }
+    .app-header .stats span { font-weight: 500; }
+    .app-header .stats .num { color: #1f6b3a; font-weight: 700; }
+    /* ===== 顶部两个圆球：清空 · 数据（导入 / 导出） =====
+       26/09/20 第 9 轮：
+       · 清空球原来是嫩芽黄绿，太柔、比右边那颗浅一档 —— 换成实一点的草绿，深浅跟右边齐平；
+         顺带把「hover 偏红」去掉（那个危险提示被嫌突兀），改成一色绿得更实。
+       · 数据球平时是青绿，hover 转蓝（照主页「同步」那颗）。
+       · 展开的导入 / 导出两球放大到 40px 并带文字，配色直接照主页那两颗（导入 = 粉，导出 = 紫）。 */
+    .orb-wrap { position: relative; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .orb-wrap.open { z-index: 60; }
+
+    .orb-btn {
+        position: relative; z-index: 22;
+        width: 28px; height: 28px; padding: 0; border-radius: 50%;
+        background: #fff; cursor: pointer; font-family: inherit;
+        display: inline-flex; align-items: center; justify-content: center;
+        transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    .orb-btn .orb-dot {
+        width: 9px; height: 9px; border-radius: 50%; display: block;
+        transition: background .15s ease;
+    }
+    /* 清空：草绿（暖绿）外圈 + 同色点；深浅和右边的青绿球齐平。
+       26/09/20 第 10 轮：hover 改成「泛黄」（和右边数据球 hover 泛蓝对仗），
+       黄色取主页那颗暂停键的暖黄（#e5c882 边 / #fdf7e6 底 / #b8891f 点），不再加深绿。 */
+    .orb-btn.orb-clear {
+        border: 2px solid #7cb04b;
+        box-shadow: 0 0 0 3px rgba(124, 176, 75, .20);
+    }
+    .orb-btn.orb-clear .orb-dot { background: #4f7f2a; }
+    @media (hover: hover) and (pointer: fine) {
+        .orb-btn.orb-clear:hover {
+            border-color: #e0bd72; background: #fdf7e6;
+            box-shadow: 0 0 0 4px rgba(229, 200, 130, .32);
+        }
+        .orb-btn.orb-clear:hover .orb-dot { background: #b8891f; }
+    }
+    .orb-btn.orb-clear:active { background: #f7edd6; }
+    /* 数据：湖水青绿（冷绿）外圈 + 同色点；hover 转蓝，照主页「同步」那颗 */
+    .orb-btn.orb-data {
+        border: 2px solid #6cbcae;
+        box-shadow: 0 0 0 3px rgba(108, 188, 174, .20);
+    }
+    .orb-btn.orb-data .orb-dot { background: #2f8b7d; }
+    @media (hover: hover) and (pointer: fine) {
+        .orb-btn.orb-data:hover {
+            border-color: #8bbde0; background: #eaf4fc;
+            box-shadow: 0 0 0 4px rgba(168, 207, 232, .30);
+        }
+        .orb-btn.orb-data:hover .orb-dot { background: #2e6a99; }
+    }
+    .orb-btn.orb-data:active { background: #e2eefa; }
+    .orb-wrap.open .orb-btn.orb-data { background: #eaf4fc; border-color: #8bbde0; }
+    .orb-wrap.open .orb-btn.orb-data .orb-dot { background: #2e6a99; }
+
+    /* 展开的子弹：导入在「下」，导出在「右」；放大到 40px 并加文字，配色照主页那两颗 */
+    .orb-fan { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
+    .orb-mini {
+        position: absolute; left: 50%; top: 50%;
+        width: 34px; height: 34px; margin-left: -17px; margin-top: -17px;
+        border-radius: 50%; border: 1.7px solid var(--oc);
+        background: linear-gradient(180deg, #ffffff 0%, #ffffff 42%, var(--osoft) 100%);
+        box-shadow: 0 2px 8px rgba(90, 140, 115, .14);
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+        cursor: pointer; font-family: inherit; padding: 0;
+        opacity: 0; pointer-events: none; transform: translateY(-8px) scale(.35);
+        transition: transform .2s ease, opacity .16s ease, box-shadow .15s ease;
+    }
+    .orb-mini .orb-ic { font-size: 12px; line-height: 1; display: block; }
+    .orb-mini .orb-tx {
+        font-size: 7.5px; font-weight: 700; letter-spacing: .2px; line-height: 1;
+        color: var(--ocd); display: block;
+    }
+    /* 导入 = 粉、导出 = 紫（和主页「同步」展开的两颗同款） */
+    .orb-mini.io-import { --oc: #e8a8c8; --ocd: #a85a7a; --osoft: #fceef4; }
+    .orb-mini.io-export { --oc: #b89ee0; --ocd: #6a4a9a; --osoft: #f0eaf8; }
+    .orb-wrap.open .orb-mini { opacity: 1; pointer-events: auto; }
+    .orb-wrap.open .orb-mini.io-import { transform: translateY(34px) scale(1); }
+    .orb-wrap.open .orb-mini.io-export { transform: translateX(34px) scale(1); transition-delay: .04s; }
+    @media (hover: hover) and (pointer: fine) {
+        .orb-wrap.open .orb-mini.io-import:hover { transform: translateY(34px) scale(1.1); box-shadow: 0 4px 14px rgba(90, 140, 115, .22); }
+        .orb-wrap.open .orb-mini.io-export:hover { transform: translateX(34px) scale(1.1); box-shadow: 0 4px 14px rgba(90, 140, 115, .22); }
+    }
+    /* 「数据」这颗要往右展开一个球，给它右边留出位置，否则那颗球会跑出绿色标题条 */
+    .orb-wrap.orb-io { margin-right: 22px; }
+
+    /* ================= 筛选栏 ================= */
+    .filter-bar {
+        max-width: 1200px; margin: 0 auto 20px auto;
+        display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+        background: #e6f3e6; padding: 12px 20px; border-radius: 14px;
+    }
+    .filter-bar label { font-size: 14px; font-weight: 500; color: #1f4a2a; }
+    .filter-bar select, .filter-bar input {
+        padding: 6px 14px; border-radius: 30px; border: 1px solid #b3d9b3;
+        background: #fafffa; font-size: 14px; color: #1e3a2a; outline: none;
+        font-family: inherit; transition: border .2s, box-shadow .2s;
+    }
+    .filter-bar input:focus, .filter-bar select:focus {
+        border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.2);
+    }
+    .filter-bar select optgroup { font-style: normal; font-weight: 600; }
+
+    .btn {
+        border: none; cursor: pointer; font-family: inherit;
+        font-weight: 600; transition: background .2s, transform .1s;
+        white-space: nowrap; border-radius: 30px;
+    }
+    .btn:active { transform: scale(0.96); }
+
+    .btn-primary {
+        background: #6fbf8f; color: #fff;
+        padding: 6px 22px; font-size: 14px;
+        box-shadow: 0 2px 8px rgba(80, 160, 110, .28);
+    }
+    @media (hover: hover) and (pointer: fine) { .btn-primary:hover { background: #5bae7d; } }
+
+    .btn-ghost {
+        background: #cfe2cf; color: #1e4a2a;
+        padding: 6px 18px; font-size: 13.5px;
+    }
+    @media (hover: hover) and (pointer: fine) { .btn-ghost:hover { background: #b8d4b8; } }
+
+    .btn-clear-filter {
+        background: #cfe2cf; color: #1e4a2a;
+        padding: 6px 18px; font-size: 13px;
+    }
+    @media (hover: hover) and (pointer: fine) { .btn-clear-filter:hover { background: #b8d4b8; } }
+    .btn-clear-filter:active { transform: scale(0.96); }
+
+    /* 「从 AI 对话导入」：换成绿色，但比主按钮淡一档，和旁边的浅绿按钮协调 */
+    .btn-ai-import {
+        background: #a9d9b8; color: #14522c;
+        padding: 6px 18px; font-size: 13.5px;
+        box-shadow: 0 1px 4px rgba(80, 160, 110, .16);
+    }
+    @media (hover: hover) and (pointer: fine) { .btn-ai-import:hover { background: #92cba4; } }
+    .btn-ai-import:active { background: #92cba4; }
+
+    /* 26/09/20：去掉「⚙️ 管理」入口——章节的排序/重命名/删除都搬进编辑卡片的章节选择器里 */
+
+    /* ================= 卡片列表 ================= */
+    .card-grid {
+        max-width: 1200px; margin: 0 auto;
+        display: grid; grid-template-columns: 1fr; gap: 18px;
+    }
+    /* 26/09/20 第 13 轮：底部一行用法说明（居中、淡绿小字，常见桌面宽度下只占一行） */
+    .usage-hint {
+        max-width: 1200px; margin: 26px auto 6px auto;
+        text-align: center; font-size: 13px; line-height: 1.5;
+        color: #5c7d5c; letter-spacing: 0.2px;
+    }
+    @media (max-width: 1080px) { .usage-hint { font-size: 12.5px; } }
+    @media (max-width: 560px) { .usage-hint { font-size: 11.5px; line-height: 1.7; margin-top: 20px; } }
+    .chapter-divider {
+        display: flex; align-items: center; gap: 10px;
+        padding: 2px 4px; margin-top: 2px;
+    }
+    /* 26/09/20 第 8 轮：分组标题用「湖水青绿」，跟卡片上那块主绿不是同一种绿，
+       两块绿摆在一起有层次，不会糊成一片。 */
+    .chapter-divider .cd-name {
+        font-size: 13px; font-weight: 700; color: #1d6a5d;
+        background: #cbe6df; padding: 3px 16px; border-radius: 30px;
+        white-space: nowrap;
+    }
+    .chapter-divider .cd-count {
+        font-size: 12px; color: #79a49c; white-space: nowrap;
+    }
+    .chapter-divider::after {
+        content: ''; flex: 1; height: 1px; background: #d3e7e2;
+    }
+    .card-item {
+        background: #ffffff; border-radius: 18px;
+        box-shadow: 0 4px 14px rgba(60, 100, 60, 0.08);
+        border-left: 6px solid #8fbe8f;
+        /* 26/09/20：去掉 border-color 过渡 —— 收藏换色不再有渐变过程 */
+        transition: box-shadow 0.2s;
+        overflow: hidden; position: relative;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .card-item:hover { box-shadow: 0 8px 24px rgba(50, 100, 50, 0.13); }
+    }
+    .card-item.favorited { border-left-color: #d4a24e; background: #fdfbf6; }
+
+    .card-header {
+        padding: 16px 22px 8px 22px;
+        display: flex; justify-content: space-between; align-items: flex-start;
+        gap: 12px; flex-wrap: wrap;
+    }
+    .card-header .label { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .card-header .label .tag {
+        background: #dcebd9; padding: 2px 14px; border-radius: 40px;
+        font-size: 12px; font-weight: 600; color: #1a4a2a; white-space: nowrap;
+    }
+    /* 26/09/20 第 8 轮：「微观 / 宏观 · 章节」标签统一回到本来的绿，
+       不再用蓝（微观）/ 棕（宏观）两套颜色。 */
+    .card-header .label .tag.subj { padding: 2px 12px; }
+    .card-header .label .qid { font-weight: 600; font-size: 15px; color: #1f5a2f; }
+    /* 26/09/20 第 10 轮：还原 —— 「有图示」回到原来的米棕色（和原项目 1micro-recitation 一致）。
+       第 8 轮改「微观/宏观」标签配色时，误把它一起改成嫩芽黄绿了，现在改回去。 */
+    .card-header .label .has-img {
+        background: #d9c8b0; color: #5a3f1a; padding: 0 12px; border-radius: 40px;
+        font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+    }
+    .card-item.favorited .card-header .label .tag { background: #f2e8ce; color: #5a4a1a; }
+    .card-item.favorited .card-header .label .qid { color: #8a6a1a; }
+    .card-item.favorited .toggle-hint { color: #bd9333; opacity: 0.9; }
+    .card-item.favorited .card-answer .answer-inner { background: #faf6ea; color: #2b2b2b; }
+
+    .card-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+    .card-actions button {
+        background: transparent; border: none; font-size: 20px; cursor: pointer;
+        padding: 4px 6px; border-radius: 10px;
+        transition: background 0.15s; line-height: 1; color: #3f6a3f;
+        font-family: inherit;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .card-actions button:hover { background: #e6f0e6; }
+    }
+    .card-actions button:active { background: #d8ead8; }
+    .card-actions .btn-fav { color: #b8a06a; }
+    .card-actions .btn-fav.active { color: #d4a24e; }
+    .card-actions .btn-edit { color: #4f6a8f; }
+    .card-actions .btn-del  { color: #8a4a4a; }
+
+    .card-question {
+        padding: 6px 22px 12px 22px; font-size: 15.5px; line-height: 1.7;
+        color: #1c3322; cursor: pointer; user-select: none; position: relative;
+    }
+    .card-question .q-text { display: inline; white-space: pre-wrap; }
+    .card-question .toggle-hint {
+        font-size: 13px; color: #5f8a5f; margin-left: 10px; font-weight: 400;
+        opacity: 0.7; white-space: nowrap;
+    }
+
+    .card-answer {
+        padding: 0 22px 6px 22px; display: none;
+    }
+    .card-answer.open { display: block; }
+    .card-answer .answer-inner {
+        background: #f3faf3; padding: 18px 22px; border-radius: 14px;
+        font-size: 14.8px; line-height: 1.75; color: #1a3322; word-break: break-word;
+    }
+    .card-answer .answer-inner p {
+        margin: 0 0 0.2em 0; padding: 0;
+        line-height: 1.75; white-space: pre-wrap; word-break: break-word;
+    }
+    .card-answer .answer-inner p:last-child { margin-bottom: 0; }
+    .card-answer .answer-inner img {
+        /* 第 9 轮：同编辑器 —— 只限宽不限高，宽高比永远不变；
+           另外加了放大镜光标，提示「可以点开看大图」。
+           26/09/20 第 14 轮：去掉 2px 透明边框 + 浅绿底色 —— 透明边框会把元素底色
+           透出来，收藏态（米色答案底）上看着就是一圈浅绿描边。用户要求干脆不要边框。 */
+        max-width: 100%; height: auto; border-radius: 10px; margin: 6px 0;
+        display: block; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border: none; cursor: zoom-in;
+    }
+    .card-answer .answer-inner ul,
+    .card-answer .answer-inner ol { padding-left: 1.6em; margin: .4em 0; }
+    .card-answer .answer-inner blockquote {
+        border-left: 4px solid #b3ddc3; padding-left: 12px; margin: .5em 0;
+        color: #3f6a4f;
+    }
+    .card-answer .answer-inner table {
+        border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 14px;
+    }
+    .card-answer .answer-inner th,
+    .card-answer .answer-inner td {
+        border: 1px solid #c2ddc2; padding: 7px 11px;
+        text-align: left; vertical-align: top;
+    }
+    .card-answer .answer-inner th { background: #e8f3e8; font-weight: 600; }
+    .card-item.favorited .card-answer .answer-inner th,
+    .card-item.favorited .card-answer .answer-inner td { border-color: #e8d9b0; }
+    .card-item.favorited .card-answer .answer-inner th { background: #f6eddd; }
+    .card-item.favorited .card-answer .answer-inner blockquote {
+        border-left-color: #e8d9b0; color: #5a4a1a;
+    }
+    .card-answer .answer-inner .katex-display { margin: 10px 0; overflow-x: auto; overflow-y: hidden; }
+    /* 从 AI 回答导入的内容可能带标题 / 代码块 / 分隔线 / 链接 */
+    .card-answer .answer-inner h1, .rich-editor h1,
+    .card-answer .answer-inner h2, .rich-editor h2,
+    .card-answer .answer-inner h3, .rich-editor h3,
+    .card-answer .answer-inner h4, .rich-editor h4,
+    .card-answer .answer-inner h5, .rich-editor h5 {
+        color: #1e5a3a; font-weight: 700; line-height: 1.45;
+        margin: 0.75em 0 0.3em 0;
+    }
+    .card-answer .answer-inner h1:first-child, .rich-editor h1:first-child,
+    .card-answer .answer-inner h2:first-child, .rich-editor h2:first-child,
+    .card-answer .answer-inner h3:first-child, .rich-editor h3:first-child { margin-top: 0; }
+    .card-answer .answer-inner h1, .rich-editor h1 { font-size: 17px; }
+    .card-answer .answer-inner h2, .rich-editor h2 { font-size: 16px; }
+    .card-answer .answer-inner h3, .rich-editor h3 { font-size: 15.2px; }
+    .card-answer .answer-inner h4, .rich-editor h4 { font-size: 14.6px; }
+    .card-answer .answer-inner h5, .rich-editor h5 { font-size: 14.2px; }
+    .card-answer .answer-inner pre, .rich-editor pre {
+        background: #eef6ef; border: 1px solid #dceade; border-radius: 10px;
+        padding: 10px 12px; margin: 0.5em 0; overflow-x: auto;
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 13px; line-height: 1.6; white-space: pre;
+    }
+    .card-answer .answer-inner code, .rich-editor code {
+        background: #e8f3e8; padding: 1px 6px; border-radius: 5px;
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 13px; color: #2a6a4a;
+    }
+    .card-answer .answer-inner pre code, .rich-editor pre code {
+        background: transparent; padding: 0; color: #1f4a34; font-size: 13px;
+    }
+    .card-answer .answer-inner hr, .rich-editor hr {
+        border: none; border-top: 1px solid #d3e6d3; margin: 12px 0;
+    }
+    .card-answer .answer-inner a, .rich-editor a { color: #2f7d55; }
+    /* 26/09/20 第 14 轮：加粗不再跟着正文的墨绿走（#1a3322 一加粗就显得发绿），
+       统一近黑。编辑器和答案区都管，收藏态另有更近黑的规则，不冲突。 */
+    .card-answer .answer-inner b, .card-answer .answer-inner strong,
+    .rich-editor b, .rich-editor strong { color: #000; }
+
+    .empty-state, .no-result {
+        text-align: center; padding: 50px 20px; color: #4f7a4f;
+        font-size: 17px; background: #e6f3e6; border-radius: 24px;
+    }
+    .empty-state .big { font-size: 40px; display: block; margin-bottom: 10px; }
+    .empty-state .sub { display: block; margin-top: 8px; font-size: 13px; color: #8aaa8a; }
+
+    /* ================= 弹层（已去掉出场动画） ================= */
+    .modal-overlay {
+        position: fixed; inset: 0; z-index: 1000;
+        background: rgba(16, 40, 28, .42);
+        display: none; align-items: center; justify-content: center; padding: 20px;
+        -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+        background: #fff; border-radius: 18px; width: min(760px, 100%);
+        max-height: 92vh; display: flex; flex-direction: column;
+        box-shadow: 0 24px 64px rgba(20, 50, 30, .28);
+    }
+    .modal-head {
+        padding: 18px 22px 12px 22px; display: flex;
+        justify-content: space-between; align-items: center;
+        border-bottom: 1px solid #eaf3ea;
+    }
+    .modal-head .title { font-size: 17px; font-weight: 700; color: #1e4a2a; }
+    .modal-head .close {
+        background: transparent; border: none; font-size: 20px; cursor: pointer;
+        color: #8a9a8a; padding: 2px 10px; border-radius: 8px;
+        transition: background .15s; font-family: inherit;
+    }
+    @media (hover: hover) and (pointer: fine) { .modal-head .close:hover { background: #f0f5f0; } }
+    .modal-body { padding: 16px 22px; overflow-y: auto; flex: 1; }
+    .modal-foot {
+        padding: 14px 22px 18px 22px; display: flex;
+        justify-content: flex-end; gap: 10px; align-items: center;
+        border-top: 1px solid #eaf3ea;
+    }
+
+    .field-label {
+        display: block; font-size: 13.5px; font-weight: 600;
+        color: #1f4a2a; margin: 0 0 7px 2px;
+    }
+    .field-label .hint { font-weight: 400; color: #8aaa8a; font-size: 12.5px; margin-left: 6px; }
+    .field-gap { height: 16px; }
+
+    .classify-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .classify-row select,
+    .classify-row input[type="text"] {
+        padding: 6px 14px; border-radius: 30px; border: 1px solid #b3d9b3;
+        background: #fafffa; font-size: 14px; color: #1e3a2a;
+        outline: none; font-family: inherit;
+        transition: border .2s, box-shadow .2s;
+    }
+    /* 26/09/20：选题框常驻淡绿底 —— 之前只有「聚焦时」才变绿，一选完焦点走掉绿色就消失，
+       看起来像闪了一下。现在绿是常态，聚焦只是加深一点点。 */
+    .classify-row select {
+        background: #eef8f0; border-color: #a6d0a8; cursor: pointer;
+    }
+    .classify-row select option { background: #fff; color: #1e3a2a; }
+    .classify-row select option:checked { background: #d8ecdc; color: #10401f; }
+    .classify-row select:focus,
+    .classify-row input[type="text"]:focus {
+        border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, .2);
+    }
+    .classify-row .subject-select { flex-shrink: 0; }
+    .classify-row .index-input { width: 104px; flex-shrink: 0; }
+
+    /* ---- 章节选择器：点开就是章节列表，可直接拖动排序 / 重命名 / 删除 ---- */
+    .chapter-field { position: relative; flex: 1; min-width: 200px; }
+    .chapter-trigger {
+        width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        padding: 6px 14px; border-radius: 30px; border: 1px solid #a6d0a8;
+        background: #eef8f0; font-size: 14px; color: #1e3a2a; font-family: inherit;
+        cursor: pointer; text-align: left; outline: none;
+        transition: border .12s, box-shadow .12s;
+    }
+    .chapter-trigger:focus { border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, .2); }
+    .chapter-trigger .ct-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chapter-trigger .ct-text.empty { color: #8aaa8a; }
+    .chapter-trigger .ct-caret { font-size: 10px; color: #7aa87a; flex-shrink: 0; }
+
+    .chapter-pop {
+        position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 30;
+        background: #fff; border: 1px solid #cfe3cf; border-radius: 14px;
+        box-shadow: 0 14px 34px rgba(40, 80, 50, .16); padding: 10px; display: none;
+    }
+    .chapter-pop.show { display: block; }
+    /* 第 7 轮：章节按分类隔离，浮层顶部标明「现在建的是哪个分类的章节」 */
+    .chapter-pop .ch-scope {
+        display: flex; align-items: center; gap: 6px; margin: 0 0 8px 2px;
+        font-size: 12px; color: #5b7a5b;
+    }
+    .chapter-pop .ch-scope b {
+        font-size: 12px; font-weight: 700; color: #1e5a3a;
+        background: #e2f0e4; padding: 2px 10px; border-radius: 30px;
+    }
+    .chapter-pop .ch-scope.macro b { color: #7a5426; background: #f4ead9; }
+    /* 上半：已有章节（可勾选 / 拖动排序）；下半：新建那一行 */
+    .chapter-pop-list { max-height: 228px; overflow-y: auto; margin-bottom: 8px; }
+    .chapter-pop-new { position: relative; }
+    .chapter-pop-new .btn-ch-new {
+        width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 8px 12px; border-radius: 10px; cursor: pointer; font-family: inherit;
+        border: 1.5px dashed #b6dcc2; background: #f6fbf7; color: #2f6a44;
+        font-size: 13px; font-weight: 600;
+        transition: background .15s, border-color .15s;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .chapter-pop-new .btn-ch-new:hover { background: #eef8f0; border-color: #8fc79f; }
+    }
+    .ch-new-input { display: flex; align-items: center; gap: 8px; }
+    .ch-new-input input {
+        flex: 1; min-width: 0; padding: 7px 14px; border-radius: 30px;
+        border: 1px solid #b3d9b3; background: #fafffa; font-size: 13.5px;
+        color: #1e3a2a; outline: none; font-family: inherit;
+        transition: border .12s, box-shadow .12s;
+    }
+    .ch-new-input input:focus { border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, .15); }
+    .ch-new-input input::placeholder { color: #9ab89a; }
+    .ch-new-input .btn-ch-add {
+        flex-shrink: 0; padding: 7px 16px; border-radius: 30px; border: none;
+        background: #6fbf8f; color: #fff; font-size: 13px; font-weight: 600;
+        cursor: pointer; font-family: inherit; box-shadow: 0 2px 6px rgba(80, 160, 110, .22);
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .ch-new-input .btn-ch-add:not(:disabled):hover { background: #5bae7d; }
+    }
+    .ch-new-input .btn-ch-add:disabled { background: #c8ddc8; cursor: default; box-shadow: none; }
+
+    .ch-item {
+        display: flex; align-items: center; gap: 8px;
+        padding: 6px 8px; border-radius: 10px; cursor: pointer;
+        border: 1.5px solid transparent; background: #fff;
+    }
+    /* 鼠标指到哪一行，哪一行浮起来一点 */
+    @media (hover: hover) and (pointer: fine) {
+        .ch-item:hover { background: #f7fcf8; box-shadow: 0 2px 9px rgba(80, 140, 100, .18); }
+    }
+    .ch-item.selected { background: #eef7f0; border-color: #b6dcc2; }
+    .ch-item .ch-box {
+        width: 17px; height: 17px; border-radius: 6px; flex-shrink: 0;
+        border: 1.6px solid #bcd9c0; background: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 11px; font-weight: 700; color: #fff; line-height: 1;
+    }
+    .ch-item.selected .ch-box { background: #6fbf8f; border-color: #6fbf8f; }
+    .ch-item.dragging { opacity: .4; }
+    .ch-item.drop-before { box-shadow: 0 -2px 0 #6fbf8f, 0 2px 9px rgba(80, 140, 100, .18); }
+    .ch-item.drop-after { box-shadow: 0 2px 0 #6fbf8f, 0 2px 9px rgba(80, 140, 100, .18); }
+    .ch-item .ch-grip {
+        color: #a8bda8; font-size: 13px; cursor: grab; flex-shrink: 0;
+        letter-spacing: -2px; user-select: none;
+    }
+    .ch-item .ch-grip.ghost { visibility: hidden; }
+    .ch-item .ch-item-name {
+        flex: 1; min-width: 0; font-size: 13.5px; color: #1f4a2a; word-break: break-word;
+    }
+    .ch-item .ch-item-name.empty-name { color: #8aaa8a; }
+    .ch-item .ch-item-count { font-size: 12px; color: #8aaa8a; flex-shrink: 0; }
+    .ch-item .ch-mini {
+        background: transparent; border: none; cursor: pointer; font-size: 13px;
+        padding: 2px 5px; border-radius: 8px; flex-shrink: 0; font-family: inherit;
+        color: #6f8f6f; transition: background .12s;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .ch-item .ch-mini:hover { background: #e8f3e8; }
+    }
+    .ch-item .ch-mini.ok { background: #dcebd9; color: #1e4a2a; font-weight: 600; }
+    .ch-item .ch-rename {
+        flex: 1; min-width: 0; padding: 5px 12px; border-radius: 20px;
+        border: 1px solid #6a9e6a; background: #fff; font-size: 13.5px;
+        outline: none; font-family: inherit; color: #1e3a2a;
+    }
+    .ch-empty { padding: 16px 8px; text-align: center; color: #8aaa8a; font-size: 12.5px; line-height: 1.8; }
+
+    .has-img-toggle {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 14px; border-radius: 30px;
+        background: #fafffa; border: 1px solid #b3d9b3;
+        font-size: 13px; color: #5a3f1a;
+        cursor: pointer; user-select: none; flex-shrink: 0; font-weight: 500;
+        transition: background .15s, border-color .15s, color .15s;
+    }
+    @media (hover: hover) and (pointer: fine) { .has-img-toggle:hover { background: #f5f0e0; } }
+    .has-img-toggle input { accent-color: #d9c8b0; cursor: pointer; }
+    .has-img-toggle.active { background: #d9c8b0; border-color: #d9c8b0; color: #3f2a1a; font-weight: 600; }
+
+    .question-input {
+        width: 100%; padding: 10px 16px; border-radius: 12px;
+        border: 1px solid #c2ddc2; background: #fafffa; color: #1e3a2a;
+        font-size: 14.5px; line-height: 1.7; font-family: inherit;
+        outline: none; resize: vertical; min-height: 76px;
+        transition: border .2s, box-shadow .2s;
+    }
+    .question-input:focus { border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, .15); }
+
+    .rich-editor {
+        background: #f8fcf8; border: 1px solid #c2ddc2; border-radius: 14px;
+        padding: 12px 16px; min-height: 160px; max-height: 42vh;
+        overflow-y: auto; font-size: 14px; line-height: 1.7; color: #1c3322;
+        outline: none; transition: border 0.2s, box-shadow 0.2s;
+        word-break: break-word; position: relative;
+    }
+    .rich-editor:focus { border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, 0.15); }
+    .rich-editor:empty::before {
+        content: attr(data-placeholder);
+        color: #8aaa8a; font-style: italic; pointer-events: none; white-space: pre-line;
+    }
+    .rich-editor img {
+        /* 第 9 轮：去掉 max-height 上限 —— 只要有高度上限，竖图就会被压扁、
+           宽高比看着就不对。现在只限宽，高度跟着比例自动走，任何尺寸都不变形。 */
+        max-width: 100%; height: auto; border-radius: 10px; margin: 6px 2px;
+        /* 第 8 轮：display 由 block 改成 inline-block —— 光标才能停在图片右边，
+           按退格就能直接把图片删掉（block 图片旁边落不下光标）。 */
+        display: inline-block; vertical-align: bottom;
+        /* 26/09/20 第 15 轮：图片彻底「平」—— 第 14 轮只去掉了浅绿底色，用户说还是难受，
+           那就连投影和那道 2px 透明边框一起去掉：图片就是一张干干净净的图。
+           选中圈改用 outline（outline 不占布局空间），所以默认不留边框也不会在选中时跳一下。 */
+        background: transparent; border: 0;
+        /* 选中圈用 box-shadow 画（不占布局空间，所以选中时画面不会跳），
+           默认把它设成「宽 0 的透明圈」，点上去 0.18s 渐显，不再「啪」地一下套上来。 */
+        box-shadow: 0 0 0 0 rgba(79, 138, 79, 0);
+        transition: box-shadow 0.18s ease;
+        cursor: pointer;
+    }
+    .rich-editor img.selected {
+        box-shadow: 0 0 0 3px rgba(79, 138, 79, 0.28);
+    }
+    .rich-editor table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 14px; }
+    .rich-editor th, .rich-editor td {
+        border: 1px solid #c2ddc2; padding: 6px 10px; min-width: 40px; vertical-align: top;
+    }
+    .rich-editor th { background: #e8f3e8; font-weight: 600; text-align: left; }
+    /* 26/09/20 第 15 轮：下划线粗细与子页同步 —— 浏览器默认那道线偏细（1px 左右），
+       统一加到 2px、并往下挪 2px。编辑器和答案展示区用同一套，两处观感一致。
+       26/09/20 第 18 轮：2px 还是偏粗，收回 1px；同时补 text-decoration-skip-ink:none ——
+       浏览器默认会在 g / y / p 这类有下伸笔画的字母处「跳过」一段（skip-ink），
+       中英文混排时下划线看着就是断断续续的，关掉跳过即连成一条。 */
+    .rich-editor u, .card-answer .answer-inner u,
+    .rich-editor span[style*="underline"], .card-answer .answer-inner span[style*="underline"] {
+        text-decoration-thickness: 1px; text-underline-offset: 2px;
+        text-decoration-skip-ink: none; -webkit-text-decoration-skip-ink: none;
+    }
+
+    .img-resize-control {
+        display: none; align-items: center; gap: 10px; margin-top: 8px;
+        padding: 6px 14px; background: #edf5ed; border-radius: 30px;
+        border: 1px solid #c2ddc2; font-size: 13px; color: #2a5a2a; flex-wrap: wrap;
+    }
+    /* 26/09/20 第 15 轮：这条面板原来是「啪」一下弹出来，同时还给图片套上一圈绿环，
+       用户说太突兀。改成 0.18s 淡入 + 轻微下滑，观感上它是"长出来"的而不是"跳出来"的。 */
+    .img-resize-control.show { display: flex; animation: imgCtlIn .18s ease both; }
+    @keyframes imgCtlIn {
+        from { opacity: 0; transform: translateY(-4px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .img-resize-control input[type="range"] {
+        flex: 1; min-width: 80px; accent-color: #4f8a4f; height: 4px; cursor: pointer;
+    }
+    .img-resize-control .size-val { font-weight: 600; min-width: 40px; text-align: center; }
+    .img-resize-control .size-px {
+        font-size: 12px; color: #5b7a5b; min-width: 92px;
+        font-variant-numeric: tabular-nums; white-space: nowrap;
+    }
+    .img-resize-control .size-lock {
+        font-size: 11.5px; color: #4f8a4f; background: #dcecd9;
+        padding: 2px 9px; border-radius: 30px; white-space: nowrap;
+    }
+    .img-resize-control .btn-reset-size {
+        background: #dcebd9; border: none; padding: 2px 14px; border-radius: 30px;
+        font-size: 12px; cursor: pointer; color: #1e4a2a;
+        transition: background 0.2s; font-family: inherit;
+    }
+    @media (hover: hover) and (pointer: fine) { .img-resize-control .btn-reset-size:hover { background: #c2ddc2; } }
+    .img-resize-control .btn-ok-size {
+        background: #6fbf8f; border: none; padding: 3px 16px; border-radius: 30px;
+        font-size: 12px; cursor: pointer; color: #fff; font-weight: 600;
+        box-shadow: 0 1px 5px rgba(80, 160, 110, .26);
+        transition: background 0.2s; font-family: inherit;
+    }
+    @media (hover: hover) and (pointer: fine) { .img-resize-control .btn-ok-size:hover { background: #5bae7d; } }
+
+    /* 26/09/21：加了「清格式」后桌面端会挤成三行，把间距和内边距各收一档，凑回一行 */
+    .editor-tools { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+    /* 26/09/20 第 17 轮：手机上点按钮残留的那块蓝色长方形（第 16 轮只关了工具栏按钮，没治干净）。
+       三条一起上：
+       ① -webkit-tap-highlight-color 是**可继承**属性，写在 html/body 上才会顺着继承到整页；
+       ② 所有可点元素再显式关一次（有些 WebView 不认继承）；
+       ③ 触摸设备上按钮被 focus 后有些内核会画焦点框 —— 只对「非键盘导航」的 focus 取消描边，
+          键盘 Tab 过去的（focus-visible）仍保留，不影响可访问性。 */
+    html, body { -webkit-tap-highlight-color: transparent; }
+    button, input, select, textarea, label, a {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+    }
+    button:focus:not(:focus-visible), a:focus:not(:focus-visible),
+    select:focus:not(:focus-visible), label:focus:not(:focus-visible) { outline: none; }
+
+    .editor-tools .tip { font-size: 12px; color: #6f8f6f; margin-left: auto; opacity: 0.7; }
+    .editor-tools button {
+        background: #dcebd9; border: none; padding: 4px 13px; border-radius: 30px;
+        font-size: 13px; cursor: pointer; color: #1e4a2a; font-weight: 500;
+        transition: background 0.2s, transform 0.1s; font-family: inherit;
+        /* 26/09/20 第 16 轮：手机上关掉点击高亮（那块残留 1 秒左右的蓝长方形）。
+           另外 :active 只留给有鼠标的设备 —— 触摸设备上它会赖着不走。 */
+        -webkit-tap-highlight-color: transparent; touch-action: manipulation; outline: none;
+        -webkit-user-select: none; user-select: none; -webkit-appearance: none;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .editor-tools button:hover { background: #c2ddc2; }
+        .editor-tools button:active { transform: scale(0.97); background: #c2ddc2; }
+    }
+    .editor-tools .sev { width: 1px; height: 20px; background: #c2ddc2; margin: 0 2px; }
+    .editor-tools .btn-format {
+        padding: 4px 13px; font-size: 14px; background: #e8e8e8; color: #2f4a2f;
+    }
+    @media (hover: hover) and (pointer: fine) { .editor-tools .btn-format:hover { background: #d6d6d6; } }
+    .editor-tools .btn-format.active { background: #a8c8a8; color: #14361f; font-weight: 700; }
+    .editor-tools .btn-insert-img { background: #d4d9c4; color: #2f4a2f; }
+    @media (hover: hover) and (pointer: fine) { .editor-tools .btn-insert-img:hover { background: #c4cdb0; } }
+    .editor-tools .btn-insert-table { background: #cfe0e8; color: #1e4a5a; }
+    @media (hover: hover) and (pointer: fine) { .editor-tools .btn-insert-table:hover { background: #b8d4e0; } }
+    .editor-tools .btn-insert-formula { background: #e2dcef; color: #3d2a6a; }
+    @media (hover: hover) and (pointer: fine) { .editor-tools .btn-insert-formula:hover { background: #d2c9e8; } }
+    .editor-tools .btn-clear-answer { background: #e6d6d6; color: #6a3a3a; }
+    @media (hover: hover) and (pointer: fine) { .editor-tools .btn-clear-answer:hover { background: #dcc4c4; } }
+
+    .btn-cancel {
+        background: #f0f5f2; color: #5a7a68; padding: 9px 16px; border-radius: 10px;
+        font-size: 13.5px; font-weight: 600; border: none; cursor: pointer;
+        font-family: inherit; min-width: 76px; transition: .15s;
+    }
+    @media (hover: hover) and (pointer: fine) { .btn-cancel:hover { background: #e4eee8; } }
+    .btn-cancel:active { background: #e4eee8; }
+
+    .btn-ok {
+        background: linear-gradient(135deg, #5ec99a, #3fa87a); color: #fff;
+        padding: 9px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 600;
+        border: none; cursor: pointer; font-family: inherit; min-width: 76px;
+        box-shadow: 0 3px 10px rgba(63, 168, 122, .26);
+    }
+    .btn-ok:active { filter: brightness(1.05); }
+    .btn-ok:disabled { background: #c8ddc8; color: #f0f5f0; cursor: not-allowed; box-shadow: none; }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #f08a72, #e05a4a); color: #fff;
+        padding: 9px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 600;
+        border: none; cursor: pointer; font-family: inherit; min-width: 76px;
+        box-shadow: 0 3px 10px rgba(224, 90, 74, .26);
+    }
+    .btn-danger:active { filter: brightness(1.05); }
+
+    .confirm-modal {
+        width: min(340px, 100%); background: #fff; border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(20, 50, 30, .28); padding: 20px 20px 16px;
+    }
+    .confirm-title { font-size: 15px; font-weight: 700; color: #1e4a2a; margin-bottom: 8px; }
+    .confirm-msg {
+        font-size: 13.5px; color: #4a6a58; line-height: 1.65;
+        white-space: pre-wrap; word-break: break-word;
+        margin-bottom: 16px; max-height: 40vh; overflow-y: auto;
+    }
+    .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+
+    #tableOverlay { z-index: 1100; }
+    .table-modal {
+        width: min(340px, 100%); background: #fff; border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(20, 50, 30, .28); padding: 20px 20px 16px;
+    }
+    .table-form {
+        display: grid; grid-template-columns: auto 1fr; gap: 10px 12px;
+        align-items: center; margin: 4px 0 18px 0;
+    }
+    .table-form label { font-size: 13.5px; font-weight: 600; color: #1f4a2a; white-space: nowrap; }
+    .table-form .field-hint { grid-column: 2 / -1; font-size: 12px; color: #8aaa8a; margin-top: -4px; font-weight: 400; }
+    .table-form input[type="number"] {
+        width: 100%; padding: 8px 12px; border-radius: 10px;
+        border: 1px solid #c2ddc2; background: #fafffa;
+        font-size: 14px; color: #1e3a2a; outline: none; font-family: inherit;
+        transition: border .2s, box-shadow .2s;
+    }
+    .table-form input[type="number"]:focus { border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80, 150, 80, .15); }
+
+    /* 26/09/20：章节管理弹层整块删除，章节列表搬进编辑卡片的「章节」选择器 */
+
+    /* ================= 导出 ================= */
+    .export-modal { width: min(680px, 100%); }
+    .export-tools {
+        padding: 12px 22px; display: flex; align-items: center; gap: 8px;
+        background: #f7fbf7; border-bottom: 1px solid #eaf3ea; flex-wrap: wrap;
+    }
+    /* 26/09/20 第 17 轮：手机上这一排会折行，「分类」两个字被挤到第一行、
+       它自己的下拉框留在第二行，看着像两组东西。把「标签 + 下拉框」绑成一组不拆开，
+       要折就整组一起折 —— 「分类」就跟着回到下拉框那一行了。 */
+    .export-tools .io-field {
+        display: inline-flex; align-items: center; gap: 6px;
+        flex-wrap: nowrap; white-space: nowrap;
+    }
+    .export-tools .btn-tiny {
+        background: #e8f3e8; color: #2f5a3f; padding: 6px 16px; border-radius: 30px;
+        font-size: 12.5px; font-weight: 600; border: none; cursor: pointer;
+        font-family: inherit; transition: background .15s, transform .1s;
+    }
+    @media (hover: hover) and (pointer: fine) { .export-tools .btn-tiny:hover { background: #d6ebd6; } }
+    .export-tools .btn-tiny:active { transform: scale(0.96); }
+    .export-count {
+        margin-left: auto; font-size: 13px; font-weight: 600;
+        color: #2f7d55; background: #e2f4eb; padding: 5px 14px; border-radius: 20px;
+        white-space: nowrap;
+    }
+    .export-count b { font-size: 14px; }
+    .export-list { flex: 1; overflow-y: auto; padding: 8px 22px 12px 22px; min-height: 180px; max-height: 52vh; }
+    .export-item {
+        display: flex; gap: 10px; align-items: flex-start;
+        padding: 10px 12px; margin: 6px 0; border-radius: 12px; cursor: pointer;
+        background: #fafcfa; border: 1.5px solid transparent;
+        transition: background .15s, border-color .15s;
+    }
+    @media (hover: hover) and (pointer: fine) { .export-item:hover { background: #f0f8f2; } }
+    .export-item.checked { background: #eefaf3; border-color: #a8dcc2; }
+    .export-item input[type="checkbox"] {
+        margin: 3px 0 0 2px; width: 17px; height: 17px;
+        accent-color: #5ec99a; cursor: pointer; flex-shrink: 0;
+    }
+    .export-item-body { flex: 1; min-width: 0; }
+    .export-item-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 5px; }
+    .export-item-meta .tag {
+        background: #dcebd9; padding: 2px 12px; border-radius: 40px;
+        font-size: 11.5px; font-weight: 600; color: #1a4a2a; white-space: nowrap;
+    }
+    .export-item-meta .qid { font-weight: 600; font-size: 13px; color: #1f5a2f; }
+    .export-item-meta .has-img {
+        background: #d9c8b0; color: #5a3f1a; padding: 0 10px; border-radius: 40px;
+        font-size: 10.5px; font-weight: 600; letter-spacing: 0.3px;
+    }
+    .export-item-q {
+        font-size: 13.5px; line-height: 1.6; color: #1c3322; word-break: break-word;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .export-empty { text-align: center; padding: 40px 20px; color: #8aaa8a; font-size: 14px; }
+
+    /* ---- 从 AI 对话导入 ---- */
+    .export-item-a {
+        margin-top: 5px; font-size: 12.5px; line-height: 1.65; color: #6d8a74;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .ai-imp-empty {
+        text-align: center; padding: 32px 20px; color: #8aaa8a;
+        font-size: 13.5px; line-height: 2;
+    }
+    .ai-imp-tip { font-size: 12.5px; color: #7d9c84; margin-right: auto; }
+
+    /* ================= 其他 ================= */
+    .toast {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+        background: #2a4a2a; color: #f0faf0; padding: 10px 28px; border-radius: 40px;
+        font-size: 14px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+        z-index: 2000; opacity: 0; transition: opacity 0.4s, transform 0.4s;
+        pointer-events: none; max-width: 88vw; text-align: center;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 640px) {
+        .app-header { flex-direction: column; align-items: stretch; padding: 14px 18px; }
+        .app-header h1 { font-size: 20px; }
+        .app-header .header-left { gap: 10px; }
+        /* 26/09/20 第 10 轮：窄屏别让右边的球换行 —— 整行不折行，让统计那条自己收窄 */
+        /* 26/09/20 第 12 轮：原来这里是 space-between，清空球被顶到整行正中间、离右边的数据球太远。
+           改成「统计贴左、两颗球一起靠右」，两球间距就等于 gap，靠得近一点。 */
+        .app-header .header-right { width: 100%; flex-wrap: nowrap; justify-content: flex-end; gap: 14px; }
+        .app-header .stats {
+            flex: 0 1 auto; min-width: 0; margin-right: auto;
+            gap: 12px; padding: 5px 12px; font-size: 13px;
+        }
+        .app-header .stats span { white-space: nowrap; }
+        /* 26/09/20 第 12 轮：手机端展开的两颗子弹改成「一上一下」垂直对称（导入在上、导出在下），
+           比原来都往下排更匀称；下边留空间，让向下那颗不压到筛选栏和「＋ 新建卡片」。
+           26/09/20 第 14 轮：上边不再撑高 —— 向上那颗正好落在标题行右侧的空白处
+           （320px 实测：球 x 233~267 / 标题 x 112~228，横向不相干；球顶 23 > 头部上沿 20）。 */
+        /* 26/09/20 第 17 轮：用户确认过 —— 球张开也不会挡住下面的筛选栏，
+           所以下边也不用再撑开了（上边第 14 轮已经去掉）。
+           两处都不撑，展开时头部高度就不变，筛选栏和「新建卡片」也不会跟着上下跳。 */
+        /* 26/09/20 第 17 轮：展开导入 / 导出球时**完全不动**头部的内边距。
+           之前是先撑下 96px、再撑下 62px、后来改成只撑下不撑上 —— 用户确认过
+           「球张开也不会挡着下面」，所以这回上下都不撑（两颗球是绝对定位的，
+           不占布局高度，撑开反而让头部在展开/收起时上下跳一下）。 */
+        .back-home { padding: 6px 13px 6px 10px; font-size: 12.5px; }
+        .filter-bar { flex-direction: column; align-items: stretch; }
+        .card-header { padding: 14px 16px 4px 16px; }
+        .card-question { padding: 4px 16px 10px 16px; font-size: 14.5px; }
+        .card-answer { padding: 0 16px 6px 16px; }
+        .card-answer .answer-inner { padding: 14px 16px; font-size: 14px; }
+        .modal-body { padding: 14px 16px; }
+        .modal-head, .modal-foot { padding-left: 16px; padding-right: 16px; }
+        .export-tools, .export-list { padding-left: 14px; padding-right: 14px; }
+        /* 26/09/21：「已选 N 条」在手机上不再自己顶到最右边，改成紧跟在「全选/清空」后面 */
+        .export-tools .export-count { margin-left: 0; }
+        .img-resize-control { flex-wrap: wrap; gap: 6px; }
+        .editor-tools .tip { display: none; }
+        .classify-row .chapter-field { flex-basis: 100%; min-width: 0; }
+        .classify-row .index-input { width: 88px; }
+        .chapter-pop-list { max-height: 200px; }
+        /* 窄屏右侧空间不够，展开的两颗球改成「一上一下」，共用同一根竖轴（球 34px，各离中心 38px → 球间留 7px 缝） */
+        .orb-wrap.open .orb-mini.io-import,
+        .orb-wrap.open .orb-mini.io-import:hover { transform: translateY(-38px) scale(1); }
+        .orb-wrap.open .orb-mini.io-export,
+        .orb-wrap.open .orb-mini.io-export:hover { transform: translateY(38px) scale(1); }
+    }
+
+    /* 26/09/20 第 10 轮：320px 这种小屏再把统计条瘦一圈，保证「统计 + 清空球 + 数据球」始终一行
+       （第 12 轮：这里原来把两球间距压到 6px，为了让「清空球往右靠」的观感在各档宽度一致，已去掉） */
+    @media (max-width: 360px) {
+        .app-header { padding: 13px 14px; }
+        .app-header .stats { gap: 8px; padding: 5px 10px; font-size: 12.5px; }
+    }
+
+    /* ================= 答案里的图片：点开看大图（浮层预览 + 放大缩小） ================= */
+    .img-viewer {
+        position: fixed; inset: 0; z-index: 1300; display: none;
+        background: rgba(10, 26, 18, .84);
+        -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+        align-items: center; justify-content: center; padding: 28px; overflow: hidden;
+    }
+    .img-viewer.show { display: flex; }
+    .img-viewer img {
+        max-width: 92vw; max-height: 76vh; border-radius: 10px; background: #fff;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
+        cursor: grab; user-select: none; -webkit-user-drag: none;
+        transform-origin: center center; will-change: transform;
+    }
+    .img-viewer img.dragging { cursor: grabbing; }
+    .img-viewer-close {
+        position: absolute; right: 18px; top: 16px; width: 38px; height: 38px;
+        border: none; border-radius: 50%; background: rgba(255, 255, 255, .92);
+        color: #2a5a3a; font-size: 17px; line-height: 1; cursor: pointer; font-family: inherit;
+        display: inline-flex; align-items: center; justify-content: center;
+    }
+    @media (hover: hover) and (pointer: fine) { .img-viewer-close:hover { background: #fff; } }
+    .img-viewer-bar {
+        position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%);
+        display: flex; align-items: center; gap: 8px;
+        background: rgba(255, 255, 255, .95); border-radius: 40px; padding: 7px 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .30); max-width: calc(100vw - 32px);
+    }
+    /* 26/09/20 第 15 轮：用户否掉了第 14 轮那版（渐变 + 高光 + 绿色主按钮），
+       要的是「浅绿色底 + 鼠标放上去有阴影」这一套。全部改回浅绿底 + 深绿字，
+       悬停时底色略深并落下阴影。
+       26/09/20 第 16 轮：用户反馈「按下凹陷太深、悬停跳出来的幅度太大」——
+       悬停不再向上跳（去掉 translateY），阴影收小一档；按下只留一层 1px 的浅内阴影。
+       「适应窗口 / 1:1」仍是主操作，用略深一点的浅绿区分，不再用白字。
+       另外统一关掉手机点击高亮，免得留一块蓝印子。 */
+    .img-viewer-bar button {
+        width: 34px; height: 34px; border: none; border-radius: 50%; cursor: pointer;
+        background: #dff0df; color: #1f5a2f; font-family: inherit;
+        font-size: 16px; font-weight: 700; line-height: 1;
+        display: inline-flex; align-items: center; justify-content: center;
+        transition: background .18s ease, box-shadow .18s ease;
+        -webkit-tap-highlight-color: transparent; touch-action: manipulation; outline: none;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .img-viewer-bar button:hover {
+            background: #c8e8cb;
+            box-shadow: 0 3px 8px rgba(40, 110, 60, .22), 0 1px 2px rgba(40, 110, 60, .10);
+        }
+    }
+    .img-viewer-bar button:active {
+        background: #bcdfc0;
+        box-shadow: inset 0 1px 2px rgba(30, 80, 50, .10);
+    }
+    .img-viewer-bar button.txt {
+        width: auto; border-radius: 30px; padding: 0 15px; font-size: 12.5px; font-weight: 600;
+        background: #cfe8d2; color: #1f5a2f;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .img-viewer-bar button.txt:hover {
+            background: #b7dcbd;
+            box-shadow: 0 3px 8px rgba(40, 110, 60, .22), 0 1px 2px rgba(40, 110, 60, .10);
+        }
+    }
+    .img-viewer-bar button.txt:active {
+        background: #a8d0af;
+        box-shadow: inset 0 1px 2px rgba(30, 80, 50, .10);
+    }
+    .img-viewer-bar .zoom-val {
+        min-width: 50px; text-align: center; font-size: 12.5px; font-weight: 700;
+        color: #1f5a2f; font-variant-numeric: tabular-nums;
+    }
+    .img-viewer-bar .vsep { width: 1px; height: 18px; background: #cfe0cf; }
+    @media (max-width: 560px) {
+        .img-viewer-bar { gap: 5px; padding: 6px 8px; }
+        .img-viewer-bar button.txt { padding: 0 9px; }
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #dce8dc; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #8fbe8f; border-radius: 10px; }
+    @media (hover: hover) and (pointer: fine) { ::-webkit-scrollbar-thumb:hover { background: #6f9e6f; } }
+</style>
+</head>
+<body>
+
+    <div class="app-header">
+        <div class="header-left">
+            <a href="../index.html" class="back-home" title="返回主页">
+                <span class="arrow">⬅</span><span>主页</span>
+            </a>
+            <h1>📒 我的卡片</h1>
+        </div>
+        <div class="header-right">
+            <div class="stats">
+                <span>📚 总卡 <span class="num" id="totalCards">0</span></span>
+                <span>⭐ 收藏 <span class="num" id="favCount">0</span></span>
+            </div>
+
+            <!-- 清空数据：绿色小圆点（hover 只把绿加深，不再转红） -->
+            <div class="orb-wrap" id="clearWrap">
+                <button type="button" class="orb-btn orb-clear" id="clearDataBtn"
+                        title="清空全部数据（卡片和章节）"><span class="orb-dot"></span></button>
+            </div>
+
+            <!-- 数据：绿色小圆点，点开才向下 / 向右出现「导入 / 导出」（照主页那两颗：粉 / 紫） -->
+            <div class="orb-wrap orb-io" id="ioWrap">
+                <div class="orb-fan">
+                    <button type="button" class="orb-mini io-import" id="importBtn" title="从 JSON 文件导入">
+                        <span class="orb-ic">📥</span><span class="orb-tx">导入</span>
+                    </button>
+                    <button type="button" class="orb-mini io-export" id="exportBtn" title="导出为 JSON 文件">
+                        <span class="orb-ic">📤</span><span class="orb-tx">导出</span>
+                    </button>
+                </div>
+                <button type="button" class="orb-btn orb-data" id="ioBtn" title="导入 / 导出数据"><span class="orb-dot"></span></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-bar" id="filterBar">
+        <button class="btn btn-primary" id="addCardBtn">＋ 新建卡片</button>
+
+        <!-- 26/09/20 第 8 轮：去掉「分类（宏微观）」筛选 —— 只留章节筛选，
+             下拉里已经按 微观 / 宏观 自动分成两组（optgroup）。 -->
+        <label for="filterChapter">章节</label>
+        <select id="filterChapter" title="章节已按微观 / 宏观自动分组"><option value="all">全部</option></select>
+
+        <label for="filterFav">⭐ 收藏</label>
+        <select id="filterFav">
+            <option value="all">全部</option>
+            <option value="fav">仅收藏</option>
+        </select>
+
+        <input type="text" id="filterSearch" placeholder="搜索题目关键词…" style="flex:1; min-width:140px;" />
+
+        <button class="btn btn-clear-filter" id="clearFilterBtn">重置筛选</button>
+        <button class="btn btn-ghost" id="expandAllBtn">全部展开</button>
+        <button class="btn btn-ghost btn-ai-import" id="aiImportBtn"
+                title="把 AI 答疑助手里的回答一键变成卡片">从 AI 对话导入</button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden />
+    </div>
+
+    <div class="card-grid" id="cardGrid"></div>
+
+    <p class="usage-hint">点「新建卡片」添加卡片 · 答案支持富文本（BIU / 图片 / 表格 / 公式）· 数据只存在本机浏览器</p>
+
+    <!-- ================= 新建 / 编辑 弹层 ================= -->
+    <div class="modal-overlay" id="editorOverlay">
+        <div class="modal">
+            <div class="modal-head">
+                <span class="title" id="modalTitle">新建卡片</span>
+                <button class="close" id="closeModalBtn" title="关闭">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <label class="field-label">
+                    分类
+                    <span class="hint">章节里按住 ⠿ 可拖动排序 · 序号用于章节内排序，如 Q1、Q2、Q10</span>
+                </label>
+                <div class="classify-row">
+                    <select class="subject-select" id="subjectSelect">
+                        <option value="微观">微观</option>
+                        <option value="宏观">宏观</option>
+                    </select>
+                    <div class="chapter-field" id="chapterField">
+                        <button type="button" class="chapter-trigger" id="chapterTrigger">
+                            <span class="ct-text empty" id="chapterTriggerText">选择章节</span>
+                            <span class="ct-caret">▼</span>
+                        </button>
+                        <div class="chapter-pop" id="chapterPop">
+                            <div class="ch-scope" id="chScope">当前分类：<b id="chScopeName">微观</b></div>
+                            <div class="chapter-pop-list" id="chapterPopList"></div>
+                            <div class="chapter-pop-new">
+                                <button type="button" class="btn-ch-new" id="chapterNewBtn">＋ 新建章节</button>
+                                <div class="ch-new-input" id="chNewInputWrap" hidden>
+                                    <input type="text" id="chapterNameInput" placeholder="输入章节名称"
+                                           autocomplete="off" maxlength="60">
+                                    <button type="button" class="btn-ch-add" id="chapterAddIcon"
+                                            title="确认新建" disabled>确认</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="text" class="index-input" id="indexInput"
+                           placeholder="序号" autocomplete="off" maxlength="12">
+                    <label class="has-img-toggle" id="hasImgToggle">
+                        <input type="checkbox" id="hasImgInput">
+                        <span>📐 有图示</span>
+                    </label>
+                </div>
+
+                <div class="field-gap"></div>
+
+                <label class="field-label" for="questionInput">题目</label>
+                <textarea class="question-input" id="questionInput"
+                          placeholder="请输入题目…（可换行）"></textarea>
+
+                <div class="field-gap"></div>
+
+                <label class="field-label">
+                    答案
+                    <span class="hint">富文本 · 表格 · 公式 · 图片</span>
+                </label>
+                <div class="rich-editor" id="answerEditor" contenteditable="true"
+                     data-placeholder="在这里写下答案…&#10;&#10;公式写法：行内 $Q_d = a - bP$，独占一行 $$E_d = \frac{\Delta Q}{\Delta P}\cdot\frac{P}{Q}$$"></div>
+
+                <div class="img-resize-control" id="imgResizeControl">
+                    <span>📐 尺寸</span>
+                    <input type="range" id="imgSizeRange" min="60" max="620" value="360" step="2" />
+                    <span class="size-val" id="imgSizeVal">360 px</span>
+                    <span class="size-px" id="imgSizePx"></span>
+                    <span class="size-lock" title="宽高比锁定；点「确认」会按目标尺寸真的压缩图片本身">🔗 锁定比例</span>
+                    <button class="btn-ok-size" id="imgSizeOkBtn">确认压缩</button>
+                    <button class="btn-reset-size" id="imgSizeCancelBtn">取消</button>
+                </div>
+
+                <div class="editor-tools">
+                    <button type="button" class="btn-format" data-cmd="bold" title="加粗（Ctrl+B）"><b>B</b></button>
+                    <button type="button" class="btn-format" data-cmd="italic" title="斜体（Ctrl+I）"><i>I</i></button>
+                    <button type="button" class="btn-format" data-cmd="underline" title="下划线（Ctrl+U）"><u>U</u></button>
+                    <button type="button" class="btn-format btn-clear-fmt" id="clearFmtBtn"
+                            title="清除格式：选中文字 → 去掉加粗/斜体/下划线；只是光标停着 → 后面打的字不再跟着前面的样式">清格式</button>
+                    <span class="sev"></span>
+                    <button type="button" class="btn-insert-img" id="insertImgBtn">🖼️ 插入图片</button>
+                    <button type="button" class="btn-insert-table" id="insertTableBtn">▦ 插入表格</button>
+                    <button type="button" class="btn-insert-formula" id="insertInlineFormulaBtn">∑ 行内公式</button>
+                    <button type="button" class="btn-insert-formula" id="insertBlockFormulaBtn">∑ 块级公式</button>
+                    <button type="button" class="btn-clear-answer" id="clearAnswerBtn">🧹 清空答案</button>
+                    <span class="tip">可直接粘贴截图 · 点图片调尺寸（点「确认压缩」会真的压小体积，不是只显示得小）· 光标停在图片右边按退格即删除</span>
+                </div>
+            </div>
+
+            <div class="modal-foot">
+                <button class="btn-cancel" id="cancelBtn">取消</button>
+                <button class="btn-ok" id="saveBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 插入表格 弹窗 ================= -->
+    <div class="modal-overlay" id="tableOverlay">
+        <div class="table-modal">
+            <div class="confirm-title">插入表格</div>
+            <div class="table-form">
+                <label for="tableRows">行数</label>
+                <input type="number" id="tableRows" value="3" min="1" max="20">
+                <label for="tableCols">列数</label>
+                <input type="number" id="tableCols" value="3" min="1" max="10">
+                <div class="field-hint">行数含表头行，最多 20 行 / 10 列</div>
+            </div>
+            <div class="confirm-actions">
+                <button class="btn-ok" id="tableOkBtn">插入</button>
+                <button class="btn-cancel" id="tableCancelBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 通用确认 弹层 ================= -->
+    <div class="modal-overlay" id="confirmOverlay">
+        <div class="confirm-modal">
+            <div class="confirm-title" id="confirmTitle">确认删除</div>
+            <div class="confirm-msg" id="confirmMsg">确定要删除这张卡片吗？</div>
+            <div class="confirm-actions">
+                <button class="btn-ok btn-danger" id="confirmOkBtn">删除</button>
+                <button class="btn-cancel" id="confirmCancelBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 清空数据 弹层 ================= -->
+    <div class="modal-overlay" id="clearOverlay">
+        <div class="confirm-modal">
+            <div class="confirm-title">清空全部数据</div>
+            <div class="confirm-msg" id="clearMsg">此操作不可恢复。</div>
+            <div class="confirm-actions">
+                <button class="btn-cancel" id="clearCancelBtn">取消</button>
+                <button class="btn-ok btn-danger" id="clearOkBtn">确认清空</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 导出选择 弹层 ================= -->
+    <div class="modal-overlay" id="exportOverlay">
+        <div class="modal export-modal">
+            <div class="modal-head">
+                <span class="title">选择要导出的卡片</span>
+                <button class="close" id="closeExportBtn" title="关闭">✕</button>
+            </div>
+
+            <div class="export-tools">
+                <button class="btn-tiny" id="exportSelectAll">全选</button>
+                <button class="btn-tiny" id="exportSelectNone">清空</button>
+                <button class="btn-tiny" id="exportSelectInvert">反选</button>
+                <span class="export-count">已选 <b id="exportCount">0</b> 张</span>
+            </div>
+
+            <div class="export-list" id="exportList"></div>
+
+            <div class="modal-foot">
+                <button class="btn-cancel" id="exportCancelBtn">取消</button>
+                <button class="btn-ok" id="exportConfirmBtn">导出</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- ================= 图片大图预览（答案里点图片打开） ================= -->
+    <div class="img-viewer" id="imgViewer">
+        <button type="button" class="img-viewer-close" id="imgViewerClose" title="关闭（Esc）">✕</button>
+        <img id="imgViewerImg" alt="图片预览">
+        <div class="img-viewer-bar">
+            <button type="button" id="imgViewerOut" title="缩小（键盘 -）">−</button>
+            <span class="zoom-val" id="imgViewerVal">100%</span>
+            <button type="button" id="imgViewerIn" title="放大（键盘 +）">＋</button>
+            <span class="vsep"></span>
+            <button type="button" class="txt" id="imgViewerFit" title="回到适应窗口的大小">适应窗口</button>
+            <button type="button" class="txt" id="imgViewerOne" title="按图片原始像素显示">1:1</button>
+        </div>
+    </div>
+
+    <!-- ================= 从 AI 对话导入 弹层 ================= -->
+    <div class="modal-overlay" id="aiImpOverlay">
+        <div class="modal export-modal">
+            <div class="modal-head">
+                <span class="title">从 AI 对话导入卡片</span>
+                <button class="close" id="closeAiImpBtn" title="关闭">✕</button>
+            </div>
+
+            <div class="export-tools">
+                <button class="btn-tiny" id="aiImpSelectAll">全选</button>
+                <button class="btn-tiny" id="aiImpSelectNone">清空</button>
+                <span class="export-count">已选 <b id="aiImpCount">0</b> 条</span>
+                <!-- 第 17 轮：label 和它的下拉框包成一组（.io-field），手机上不再被拆到两行 -->
+                <span class="io-field">
+                <label for="aiImpSubject" style="margin-left:12px;font-size:13px;color:#1f4a2a;">分类</label>
+                <select id="aiImpSubject" style="padding:4px 10px;border-radius:20px;border:1px solid #b3d9b3;background:#fafffa;font-size:13px;font-family:inherit;">
+                    <option value="微观">微观</option>
+                    <option value="宏观">宏观</option>
+                </select>
+                </span>
+                <!-- 第 8 轮：导入时也能一起把章节选了（章节下拉随上面的分类自动换） -->
+                <span class="io-field">
+                <label for="aiImpChapter" style="margin-left:10px;font-size:13px;color:#1f4a2a;">章节</label>
+                <select id="aiImpChapter" style="padding:4px 10px;border-radius:20px;border:1px solid #b3d9b3;background:#fafffa;font-size:13px;font-family:inherit;max-width:180px;">
+                    <option value="">不设章节</option>
+                </select>
+                </span>
+            </div>
+
+            <div class="export-list" id="aiImpList"></div>
+
+            <div class="modal-foot">
+                <span class="ai-imp-tip">一问一答算一张：题目取你的提问，答案取 AI 的回答；分类和章节设置见上</span>
+                <button class="btn-cancel" id="aiImpCancelBtn">取消</button>
+                <button class="btn-ok" id="aiImpConfirmBtn">导入</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+(function () {
+    'use strict';
+
+    /* ============================================================
+       数据层
+       ============================================================ */
+    var STORAGE_KEY = 'custom_cards_v1';       // 与你自己那版一致，老数据自动带过来
+    var CHAPTER_KEY = 'custom_chapters_v2';    // 26/09/20 第7轮：{ 微观:[…], 宏观:[…] }，每个分类各一条有序章节表
+    var CHAPTER_KEY_V1 = 'custom_chapters_v1'; // 老结构（一整个数组），只在第一次迁移时读
+    var UNCATEGORIZED = '未分类';
+    var SUBJECTS = ['微观', '宏观'];            // 分类：和你原来那版一样（默认微观）
+
+    var cards = [];
+    var chaptersBySubject = { '微观': [], '宏观': [] };   // 数组下标 = 该分类内的章节显示顺序
+
+    /* 分类归一化 + 取某个分类的章节表 */
+    function normSubject(s) { return (s === '宏观') ? '宏观' : '微观'; }
+    function chList(subject) {
+        var s = normSubject(subject);
+        if (!chaptersBySubject[s]) chaptersBySubject[s] = [];
+        return chaptersBySubject[s];
+    }
+    function chapterTotal() { return chList('微观').length + chList('宏观').length; }
+    function pushChapter(subject, name) {
+        name = String(name || '').trim();
+        if (!name || name === UNCATEGORIZED) return;
+        var list = chList(subject);
+        if (list.indexOf(name) < 0) list.push(name);
+    }
+
+    function safeText(text) {
+        if (text === null || text === undefined) return '';
+        return String(text)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function stripHtml(html) {
+        var tmp = document.createElement('div');
+        tmp.innerHTML = html || '';
+        return tmp.textContent || tmp.innerText || '';
+    }
+    function uid() { return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+    function chKey(c) {
+        var n = (c && c.chapter ? c.chapter : '').trim();
+        return n || UNCATEGORIZED;
+    }
+
+    /* ---- 读卡片 ---- */
+    try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        var parsed = raw ? JSON.parse(raw) : [];
+        if (Array.isArray(parsed)) {
+            cards = parsed.map(function (c) {
+                var o = Object.assign({}, c);
+                if (SUBJECTS.indexOf(o.subject) < 0) o.subject = '微观';
+                if (typeof o.chapter !== 'string') o.chapter = '';
+                if (typeof o.qid !== 'string') o.qid = '';
+                if (typeof o.hasImage !== 'boolean') o.hasImage = false;
+                if (typeof o.fav !== 'boolean') o.fav = false;
+                if (typeof o.created !== 'number') o.created = Date.now();
+                if (!o.id) o.id = uid();
+                return o;
+            });
+        }
+    } catch (e) { cards = []; }
+
+    /* ---- 读章节（v2 = 按分类分开；读不到就从老结构迁移一次） ---- */
+    (function loadChapters() {
+        var got = false;
+        try {
+            var rawCh = localStorage.getItem(CHAPTER_KEY);
+            if (rawCh !== null) {
+                var pc = JSON.parse(rawCh);
+                if (pc && !Array.isArray(pc) && typeof pc === 'object') {
+                    SUBJECTS.forEach(function (s) {
+                        if (Array.isArray(pc[s])) {
+                            chaptersBySubject[s] = pc[s]
+                                .filter(function (n) { return typeof n === 'string' && n.trim(); })
+                                .map(function (n) { return n.trim(); });
+                        }
+                    });
+                    got = true;
+                }
+            }
+        } catch (e) { got = false; }
+
+        /* 老数据：原来是一整个数组、没有分类信息 —— 按「哪张卡在用这个章节」定位归属，
+           没被任何卡片用到的章节算「微观」。 */
+        var legacy = null;
+        if (!got) {
+            try {
+                var raw1 = localStorage.getItem(CHAPTER_KEY_V1);
+                if (raw1 !== null) {
+                    var p1 = JSON.parse(raw1);
+                    if (Array.isArray(p1)) {
+                        legacy = p1.filter(function (n) { return typeof n === 'string' && n.trim(); })
+                                   .map(function (n) { return n.trim(); });
+                    }
+                }
+            } catch (e2) { legacy = null; }
+        }
+        if (legacy) {
+            legacy.forEach(function (n) {
+                var hit = cards.filter(function (c) { return (c.chapter || '').trim() === n; })[0];
+                pushChapter(hit ? hit.subject : '微观', n);
+            });
+        }
+        /* 卡片里有、章节表里没有的，补到对应分类末尾（导入 / 历史数据） */
+        cards.forEach(function (c) { pushChapter(c.subject, c.chapter); });
+
+        /* 迁移/首次使用落盘一次，免得下次又去读老结构 */
+        if (!got) persistChaptersOnly();
+    })();
+
+    function normalizeChapters() {
+        cards.forEach(function (c) { pushChapter(c.subject, c.chapter); });
+    }
+
+    function persist() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+            localStorage.setItem(CHAPTER_KEY, JSON.stringify(chaptersBySubject));
+            return true;
+        } catch (err) {
+            var full = !!(err && (err.name === 'QuotaExceededError' || err.code === 22 || err.code === 1014));
+            showToast(full ? '⚠️ 存储空间不足，图片可能太大了' : '⚠️ 保存失败');
+            return false;
+        }
+    }
+    function persistChaptersOnly() {
+        try { localStorage.setItem(CHAPTER_KEY, JSON.stringify(chaptersBySubject)); } catch (e) {}
+    }
+
+    /* ============================================================
+       排序：章节顺序 → 章节内序号自然序 → 创建时间
+       ============================================================ */
+    function naturalKey(qid) {
+        var parts = String(qid).match(/(\d+|\D+)/g) || [];
+        return parts.map(function (p) { return /^\d+$/.test(p) ? parseInt(p, 10) : p; });
+    }
+    /* 26/09/20 第 15 轮：非数字段原来是按「字符编码」硬比的 ——
+       英文看着正好是 A→Z，但汉字按 Unicode 排出来是按编码顺序（≈ 部首/笔画），
+       跟读音毫无关系。用户问「中文是不是也应按首字母」，是的 —— 这里改用 ICU 中文排序，
+       汉字按拼音首字母排、英文按字母排，中英混排也在同一条序上；数字段仍然是自然序（1 < 2 < 10）。 */
+    var ZH_COLL = (window.Intl && window.Intl.Collator)
+        ? new Intl.Collator('zh-Hans-CN', { numeric: false, sensitivity: 'base' }) : null;
+    function textCmp(a, b) {
+        a = String(a); b = String(b);
+        if (ZH_COLL) { var c = ZH_COLL.compare(a, b); if (c !== 0) return c; }
+        return a < b ? -1 : (a > b ? 1 : 0);
+    }
+    function compareQid(a, b) {
+        var ka = naturalKey(a.qid), kb = naturalKey(b.qid);
+        var n = Math.min(ka.length, kb.length);
+        for (var i = 0; i < n; i++) {
+            var va = ka[i], vb = kb[i];
+            if (typeof va === 'number' && typeof vb === 'number') {
+                if (va !== vb) return va - vb;
+            } else {
+                var sa = String(va), sb = String(vb);
+                if (sa !== sb) return textCmp(sa, sb);
+            }
+        }
+        return ka.length - kb.length;
+    }
+    /* 分类内部：章节顺序 → 章节内序号自然序 → 创建时间 */
+    function chapterIndex(card) {
+        var list = chList(card.subject);
+        var n = (card.chapter || '').trim();
+        if (!n) return list.length + 1;                  // 没选章节的排在本分类最后
+        var i = list.indexOf(n);
+        return i < 0 ? list.length : i;                  // 不在表里的也排最后
+    }
+    /* 宏观整体排在微观后面（第 7 轮） */
+    function subjectIndex(subject) { return normSubject(subject) === '宏观' ? 1 : 0; }
+    function sortCards(list) {
+        list.sort(function (a, b) {
+            var sa = subjectIndex(a.subject), sb = subjectIndex(b.subject);
+            if (sa !== sb) return sa - sb;               // ① 微观在前、宏观在后
+            var ca = chapterIndex(a), cb = chapterIndex(b);
+            if (ca !== cb) return ca - cb;
+            var aHas = !!(a.qid && a.qid.trim());
+            var bHas = !!(b.qid && b.qid.trim());
+            if (aHas && bHas) {
+                var c = compareQid(a, b);
+                if (c !== 0) return c;
+                return (a.created || 0) - (b.created || 0);
+            }
+            if (aHas) return -1;
+            if (bHas) return 1;
+            return (a.created || 0) - (b.created || 0);
+        });
+        return list;
+    }
+
+    /* ============================================================
+       DOM 引用
+       ============================================================ */
+    var grid = document.getElementById('cardGrid');
+    var totalSpan = document.getElementById('totalCards');
+    var favSpan = document.getElementById('favCount');
+    var filterChapter = document.getElementById('filterChapter');
+    var filterFav = document.getElementById('filterFav');
+    var filterSearch = document.getElementById('filterSearch');
+    var clearFilterBtn = document.getElementById('clearFilterBtn');
+    var addCardBtn = document.getElementById('addCardBtn');
+    var expandAllBtn = document.getElementById('expandAllBtn');
+    var exportBtn = document.getElementById('exportBtn');
+    var importBtn = document.getElementById('importBtn');
+    var importFile = document.getElementById('importFile');
+    var toastEl = document.getElementById('toast');
+    var clearDataBtn = document.getElementById('clearDataBtn');
+
+    var editorOverlay = document.getElementById('editorOverlay');
+    var modalTitle = document.getElementById('modalTitle');
+    var subjectSelect = document.getElementById('subjectSelect');
+    var chapterField = document.getElementById('chapterField');
+    var chapterTrigger = document.getElementById('chapterTrigger');
+    var chapterTriggerText = document.getElementById('chapterTriggerText');
+    var chapterPop = document.getElementById('chapterPop');
+    var chapterPopList = document.getElementById('chapterPopList');
+    var chScope = document.getElementById('chScope');
+    var chScopeName = document.getElementById('chScopeName');
+    var chapterNameInput = document.getElementById('chapterNameInput');
+    var chapterAddIcon = document.getElementById('chapterAddIcon');
+    var chapterNewBtn = document.getElementById('chapterNewBtn');
+    var chNewInputWrap = document.getElementById('chNewInputWrap');
+    var indexInput = document.getElementById('indexInput');
+    var hasImgToggle = document.getElementById('hasImgToggle');
+    var hasImgInput = document.getElementById('hasImgInput');
+    var questionInput = document.getElementById('questionInput');
+    var answerEditor = document.getElementById('answerEditor');
+    var closeModalBtn = document.getElementById('closeModalBtn');
+    var cancelBtn = document.getElementById('cancelBtn');
+    var saveBtn = document.getElementById('saveBtn');
+    var editorTools = editorOverlay.querySelector('.editor-tools');
+    var insertImgBtn = document.getElementById('insertImgBtn');
+    var insertTableBtn = document.getElementById('insertTableBtn');
+    var insertInlineFormulaBtn = document.getElementById('insertInlineFormulaBtn');
+    var insertBlockFormulaBtn = document.getElementById('insertBlockFormulaBtn');
+    var clearAnswerBtn = document.getElementById('clearAnswerBtn');
+    var clearFmtBtn = document.getElementById('clearFmtBtn');
+    var imgResizeCtrl = document.getElementById('imgResizeControl');
+    var imgSizeRange = document.getElementById('imgSizeRange');
+    var imgSizeVal = document.getElementById('imgSizeVal');
+    var imgSizePx = document.getElementById('imgSizePx');
+    var imgSizeOkBtn = document.getElementById('imgSizeOkBtn');
+    var imgSizeCancelBtn = document.getElementById('imgSizeCancelBtn');
+
+    /* 图片大图预览浮层（第 9 轮） */
+    var imgViewer = document.getElementById('imgViewer');
+    var imgViewerImg = document.getElementById('imgViewerImg');
+    var imgViewerVal = document.getElementById('imgViewerVal');
+    var imgViewerIn = document.getElementById('imgViewerIn');
+    var imgViewerOut = document.getElementById('imgViewerOut');
+    var imgViewerFit = document.getElementById('imgViewerFit');
+    var imgViewerOne = document.getElementById('imgViewerOne');
+    var imgViewerClose = document.getElementById('imgViewerClose');
+
+    /* 第 8 轮：分类筛选被去掉了，这里记住「上一次用过 / 当前章节筛选所属」的分类，
+       新建卡片时自动带上，省一次选择。
+       26/09/21：再按分类记住上一次使用的章节，新建卡片时默认选中，减少重复点击。 */
+    var lastSubject = '微观';
+    var lastChapterBySubject = { '微观': '', '宏观': '' };
+
+    var tableOverlay = document.getElementById('tableOverlay');
+    var tableRows = document.getElementById('tableRows');
+    var tableCols = document.getElementById('tableCols');
+    var tableOkBtn = document.getElementById('tableOkBtn');
+    var tableCancelBtn = document.getElementById('tableCancelBtn');
+
+    var confirmOverlay = document.getElementById('confirmOverlay');
+    var confirmTitle = document.getElementById('confirmTitle');
+    var confirmMsg = document.getElementById('confirmMsg');
+    var confirmOkBtn = document.getElementById('confirmOkBtn');
+    var confirmCancelBtn = document.getElementById('confirmCancelBtn');
+
+    var clearOverlay = document.getElementById('clearOverlay');
+    var clearMsg = document.getElementById('clearMsg');
+    var clearCancelBtn = document.getElementById('clearCancelBtn');
+    var clearOkBtn = document.getElementById('clearOkBtn');
+
+    var exportOverlay = document.getElementById('exportOverlay');
+    var exportList = document.getElementById('exportList');
+    var exportCount = document.getElementById('exportCount');
+    var closeExportBtn = document.getElementById('closeExportBtn');
+    var exportCancelBtn = document.getElementById('exportCancelBtn');
+    var exportConfirmBtn = document.getElementById('exportConfirmBtn');
+    var exportSelectAllBtn = document.getElementById('exportSelectAll');
+    var exportSelectNoneBtn = document.getElementById('exportSelectNone');
+    var exportSelectInvertBtn = document.getElementById('exportSelectInvert');
+
+    /* 从 AI 对话导入 */
+    var aiImportBtn = document.getElementById('aiImportBtn');
+    var aiImpOverlay = document.getElementById('aiImpOverlay');
+    var aiImpList = document.getElementById('aiImpList');
+    var aiImpCount = document.getElementById('aiImpCount');
+    var aiImpSubject = document.getElementById('aiImpSubject');
+    var aiImpChapter = document.getElementById('aiImpChapter');
+    var aiImpSelectAllBtn = document.getElementById('aiImpSelectAll');
+    var aiImpSelectNoneBtn = document.getElementById('aiImpSelectNone');
+    var closeAiImpBtn = document.getElementById('closeAiImpBtn');
+    var aiImpCancelBtn = document.getElementById('aiImpCancelBtn');
+    var aiImpConfirmBtn = document.getElementById('aiImpConfirmBtn');
+
+    var editingId = null;
+    var selectedImg = null;
+    var imgStyleBefore = null;   // 点开图片时的原始行内尺寸，供「取消」还原
+    var exportSelected = new Set();
+    var confirmAction = null;
+    var openIds = new Set();
+    var savedRange = null;
+    var toastTimer = null;
+    var renamingName = null;
+    var editorChapter = '';   // 编辑弹层里当前选中的章节
+    var aiImpPairs = [];      // [{q, a}] 从 AI 对话里配好的一问一答
+    var aiImpPicked = new Set();
+
+    /* ============================================================
+       工具
+       ============================================================ */
+    function showToast(msg) {
+        clearTimeout(toastTimer);
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2200);
+    }
+    function lockBody(on) { document.body.style.overflow = on ? 'hidden' : ''; }
+    function anyOverlayOpen() {
+        return editorOverlay.classList.contains('show') ||
+               tableOverlay.classList.contains('show') ||
+               confirmOverlay.classList.contains('show') ||
+               clearOverlay.classList.contains('show') ||
+               aiImpOverlay.classList.contains('show') ||
+               exportOverlay.classList.contains('show') ||
+               imgViewer.classList.contains('show');
+    }
+
+    function shrinkImage(img, dataUrl) {
+        var MAXW = 1200, QUALITY = 0.72, KEEP_UNDER = 220 * 1024;
+        if (!img || !dataUrl || dataUrl.indexOf('data:image/') !== 0) return;
+        if (dataUrl.length < KEEP_UNDER) return;
+        var im = new Image();
+        im.onload = function () {
+            try {
+                var w = im.naturalWidth || im.width || 1;
+                var h = im.naturalHeight || im.height || 1;
+                var scale = Math.min(1, MAXW / w);
+                var c = document.createElement('canvas');
+                c.width = Math.max(1, Math.round(w * scale));
+                c.height = Math.max(1, Math.round(h * scale));
+                var ctx = c.getContext('2d');
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(0, 0, c.width, c.height);
+                ctx.drawImage(im, 0, 0, c.width, c.height);
+                var out = c.toDataURL('image/jpeg', QUALITY);
+                if (out && out.length < dataUrl.length) { img.src = out; img.dataset.shrunk = '1'; }
+            } catch (e) {}
+        };
+        im.src = dataUrl;
+    }
+
+    /* ============================================================
+       KaTeX：把 $…$ / $$…$$ 渲染成公式（不用 auto-render，纯本地）
+       ============================================================ */
+    function renderMathIn(root) {
+        if (!root || !window.katex) return;
+        var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+        var targets = [], n;
+        while ((n = walker.nextNode())) {
+            var p = n.parentNode;
+            if (!p) continue;
+            var tag = p.nodeName;
+            if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TEXTAREA' || tag === 'PRE' || tag === 'CODE') continue;
+            if (p.closest && p.closest('.katex')) continue;
+            if (n.nodeValue.indexOf('$') < 0) continue;
+            targets.push(n);
+        }
+        targets.forEach(function (node) {
+            var text = node.nodeValue;
+            var re = /\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g;
+            if (!re.test(text)) return;
+            re.lastIndex = 0;
+            var frag = document.createDocumentFragment();
+            var last = 0, m;
+            while ((m = re.exec(text))) {
+                if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+                var src = (m[1] !== undefined) ? m[1] : m[2];
+                var span = document.createElement('span');
+                span.className = 'katex-host';
+                try {
+                    span.innerHTML = window.katex.renderToString(src, {
+                        displayMode: (m[1] !== undefined),
+                        throwOnError: false
+                    });
+                } catch (e) { span.textContent = m[0]; }
+                frag.appendChild(span);
+                last = m.index + m[0].length;
+            }
+            if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+            if (node.parentNode) node.parentNode.replaceChild(frag, node);
+        });
+    }
+    window.__renderMath = function () { renderMathIn(grid); };
+
+    /* ============================================================
+       章节相关（第 7 轮：章节归属于分类 —— 微观建的章节不会出现在宏观里）
+       ============================================================ */
+    /* 下拉框的 option value：用 JSON 存 [分类, 章节名]。
+       注意不能用 \u0000 之类做分隔符 —— HTML 解析属性时会把 NUL 换成 U+FFFD，value 就对不上了。 */
+    function chFilterValue(subject, name) { return JSON.stringify([normSubject(subject), name]); }
+    function parseChFilter(v) {
+        try {
+            var a = JSON.parse(v);
+            return (Array.isArray(a) && a.length === 2) ? { subject: a[0], name: a[1] } : null;
+        } catch (e) { return null; }
+    }
+
+    function chapterCount(name, subject) {
+        var s = normSubject(subject);
+        var n = String(name || '').trim();
+        return cards.filter(function (c) {
+            return normSubject(c.subject) === s && (c.chapter || '').trim() === n;
+        }).length;
+    }
+
+    function updateChapterFilterOptions() {
+        var prev = filterChapter.value;
+        var html = '<option value="all">全部</option>';
+        SUBJECTS.forEach(function (s) {
+            var list = chList(s);
+            if (!list.length) return;
+            html += '<optgroup label="' + safeText(s) + '">';
+            list.forEach(function (ch) {
+                html += '<option value="' + safeText(chFilterValue(s, ch)) + '">' + safeText(ch) + '</option>';
+            });
+            html += '</optgroup>';
+        });
+        filterChapter.innerHTML = html;
+        var found = false;
+        for (var i = 0; i < filterChapter.options.length; i++) {
+            if (filterChapter.options[i].value === prev) { found = true; break; }
+        }
+        filterChapter.value = found ? prev : 'all';
+    }
+
+    /* 26/09/20：原来的章节下拉换成编辑器里的章节选择器（见下方 setEditorChapter / renderChapterPop） */
+
+    function addChapter(name, subject, opts) {
+        name = String(name || '').trim();
+        if (!name) return null;
+        if (name === UNCATEGORIZED) { showToast('⚠️ 这个名称被系统占用了，换一个吧'); return null; }
+        var list = chList(subject);
+        if (list.indexOf(name) >= 0) {
+            if (!opts || !opts.silent) showToast('这个章节已经存在啦');
+            return name;
+        }
+        list.push(name);
+        persistChaptersOnly();
+        updateChapterFilterOptions();
+        if (!opts || !opts.noRender) render();
+        return name;
+    }
+
+    function renameChapter(subject, oldName, newName) {
+        var s = normSubject(subject);
+        var list = chList(s);
+        newName = String(newName || '').trim();
+        if (!newName) { showToast('⚠️ 章节名不能为空'); return false; }
+        if (newName === oldName) return true;
+        if (newName === UNCATEGORIZED) { showToast('⚠️ 这个名称被系统占用了，换一个吧'); return false; }
+        if (list.indexOf(newName) >= 0) { showToast('⚠️ 已有同名章节'); return false; }
+        var i = list.indexOf(oldName);
+        if (i < 0) return false;
+        list[i] = newName;
+        cards.forEach(function (c) {
+            if (normSubject(c.subject) === s && (c.chapter || '').trim() === oldName) c.chapter = newName;
+        });
+        persist();
+        updateChapterFilterOptions();
+        if (filterChapter.value === chFilterValue(s, oldName)) filterChapter.value = chFilterValue(s, newName);
+        render();
+        return true;
+    }
+
+    function deleteChapter(subject, name) {
+        var s = normSubject(subject);
+        var list = chList(s);
+        var i = list.indexOf(name);
+        if (i < 0) return;
+        list.splice(i, 1);
+        cards.forEach(function (c) {
+            if (normSubject(c.subject) === s && (c.chapter || '').trim() === name) c.chapter = '';
+        });
+        persist();
+        updateChapterFilterOptions();
+        if (filterChapter.value === chFilterValue(s, name)) filterChapter.value = 'all';
+        render();
+    }
+
+    /* 26/09/20：章节顺序改为在编辑卡片里直接拖动，不再单独开「管理」弹层 */
+    function applyChapterOrder(subject, fromName, beforeName) {
+        var list = chList(subject);
+        var from = list.indexOf(fromName);
+        if (from < 0) return false;
+        if (beforeName === fromName) return false;
+        var names = list.slice();
+        names.splice(from, 1);
+        var to = beforeName ? names.indexOf(beforeName) : -1;
+        if (to < 0) to = names.length;
+        names.splice(to, 0, fromName);
+        if (names.join('\u0000') === list.join('\u0000')) return false;
+        chaptersBySubject[normSubject(subject)] = names;
+        persistChaptersOnly();
+        updateChapterFilterOptions();
+        renderChapterPop();
+        render();
+        return true;
+    }
+
+    /* ============================================================
+       章节选择器（编辑器内）：点选 · ＋新建 · 拖动排序 · 重命名 / 删除
+       ============================================================ */
+    function isChapterPopOpen() { return chapterPop.classList.contains('show'); }
+
+    /* 「新建章节」那一行：默认只是个按钮，点开才变成 输入框 + 确认 */
+    function inNewChapterMode() { return !chNewInputWrap.hidden; }
+    function enterNewChapterMode() {
+        chapterNewBtn.hidden = true;
+        chNewInputWrap.hidden = false;
+        chapterNameInput.value = '';
+        chapterAddIcon.disabled = true;
+        renderChapterPop();   /* 列表里的行此刻起不可拖动 */
+        setTimeout(function () { chapterNameInput.focus(); }, 30);
+    }
+    function exitNewChapterMode() {
+        var was = !chNewInputWrap.hidden;
+        chNewInputWrap.hidden = true;
+        chapterNewBtn.hidden = false;
+        chapterNameInput.value = '';
+        if (was) renderChapterPop();
+    }
+
+    function openChapterPop() {
+        renamingName = null;
+        exitNewChapterMode();
+        chapterPop.classList.add('show');
+        renderChapterPop();
+    }
+    function closeChapterPop() {
+        renamingName = null;
+        exitNewChapterMode();
+        chapterPop.classList.remove('show');
+    }
+    /* 新建模式下不拖动（怕误触），其余时候随时可拖 */
+    function canDragChapters() { return !inNewChapterMode(); }
+
+    /* 编辑弹层里当前选中的分类（章节归属它） */
+    function editorSubject() { return normSubject(subjectSelect.value); }
+
+    function renderChapterPop() {
+        var s = editorSubject();
+        var list = chList(s);
+
+        chScopeName.textContent = s;
+        chScope.classList.toggle('macro', s === '宏观');
+
+        var html = '';
+
+        html += '<div class="ch-item' + (editorChapter ? '' : ' selected') + '" data-name="">' +
+                    '<span class="ch-grip ghost">\u283f</span>' +
+                    '<span class="ch-box">' + (editorChapter ? '' : '\u2713') + '</span>' +
+                    '<span class="ch-item-name empty-name">不选章节</span>' +
+                '</div>';
+
+        list.forEach(function (ch) {
+            if (renamingName === ch) {
+                html += '<div class="ch-item editing" data-name="' + safeText(ch) + '">' +
+                            '<span class="ch-grip ghost">\u283f</span>' +
+                            '<input type="text" class="ch-rename" id="chRenameInput" value="' + safeText(ch) + '" maxlength="60">' +
+                            '<button type="button" class="ch-mini ok" data-act="rename-ok" data-name="' + safeText(ch) + '">保存</button>' +
+                        '</div>';
+                return;
+            }
+            var on = editorChapter === ch;
+            html += '<div class="ch-item' + (on ? ' selected' : '') + '"' +
+                        (canDragChapters() ? ' draggable="true"' : '') +
+                        ' data-name="' + safeText(ch) + '">' +
+                        '<span class="ch-grip" title="按住拖动排序">\u283f</span>' +
+                        '<span class="ch-box">' + (on ? '\u2713' : '') + '</span>' +
+                        '<span class="ch-item-name">' + safeText(ch) + '</span>' +
+                        '<span class="ch-item-count">' + chapterCount(ch, s) + ' 张</span>' +
+                        '<button type="button" class="ch-mini" data-act="rename" data-name="' + safeText(ch) + '" title="重命名">✏️</button>' +
+                        '<button type="button" class="ch-mini del" data-act="del" data-name="' + safeText(ch) + '" title="删除章节">🗑️</button>' +
+                    '</div>';
+        });
+
+        if (list.length === 0) {
+            html += '<div class="ch-empty">「' + safeText(s) + '」还没有章节<br>点下面的「＋ 新建章节」加一个</div>';
+        }
+        chapterPopList.innerHTML = html;
+        updateChapterAddIcon();
+
+        if (renamingName !== null) {
+            var inp = document.getElementById('chRenameInput');
+            if (inp) { inp.focus(); inp.select(); }
+        }
+    }
+
+    function updateChapterAddIcon() {
+        chapterAddIcon.disabled = !chapterNameInput.value.trim();
+    }
+
+    function setEditorChapter(name) {
+        editorChapter = (name || '').trim();
+        renderChapterTrigger();
+    }
+    function renderChapterTrigger() {
+        chapterTriggerText.textContent = editorChapter || '选择章节';
+        chapterTriggerText.classList.toggle('empty', !editorChapter);
+    }
+
+    function pickChapter(name) {
+        setEditorChapter(name);
+        closeChapterPop();
+    }
+
+    function submitChapterName() {
+        var v = chapterNameInput.value.trim();
+        if (!v) { showToast('⚠️ 请先输入章节名'); chapterNameInput.focus(); return; }
+        var s = editorSubject();
+        if (chList(s).indexOf(v) >= 0) { pickChapter(v); return; }
+        var name = addChapter(v, s);
+        if (name) {
+            pickChapter(name);
+            showToast('✅ 已在「' + s + '」下新建章节「' + name + '」');
+        }
+    }
+
+    /* 第 7 轮：改分类 → 章节跟着换表；原来选的章节如果不在新分类里就自动取消 */
+    subjectSelect.addEventListener('change', function () {
+        var s = editorSubject();
+        if (editorChapter && chList(s).indexOf(editorChapter) < 0) {
+            editorChapter = '';
+            renderChapterTrigger();
+        }
+        if (isChapterPopOpen()) renderChapterPop();
+    });
+
+    chapterTrigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (isChapterPopOpen()) closeChapterPop(); else openChapterPop();
+    });
+    document.addEventListener('click', function (e) {
+        if (!isChapterPopOpen()) return;
+        if (chapterField.contains(e.target)) return;
+        closeChapterPop();
+    });
+
+    chapterNameInput.addEventListener('input', updateChapterAddIcon);
+    chapterNameInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); submitChapterName(); return; }
+        /* 新建模式下 Esc 收掉那一行；否则关掉整个浮层 */
+        if (e.key === 'Escape') {
+            e.preventDefault(); e.stopPropagation();
+            if (inNewChapterMode()) exitNewChapterMode(); else closeChapterPop();
+        }
+    });
+    chapterNewBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        enterNewChapterMode();
+    });
+    chapterAddIcon.addEventListener('click', function (e) {
+        e.stopPropagation();
+        submitChapterName();
+    });
+
+    chapterPopList.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+
+        var btn = t.closest('.ch-mini');
+        if (btn) {
+            e.stopPropagation();
+            var act = btn.dataset.act;
+            var name = btn.dataset.name;
+            if (act === 'rename') { renamingName = name; renderChapterPop(); return; }
+            if (act === 'rename-ok') {
+                var inp = document.getElementById('chRenameInput');
+                var v = inp ? inp.value : '';
+                if (renameChapter(editorSubject(), name, v)) { renamingName = null; renderChapterPop(); showToast('✅ 章节已重命名'); }
+                return;
+            }
+            if (act === 'del') {
+                var cnt = chapterCount(name, editorSubject());
+                openConfirm({
+                    title: '删除章节',
+                    msg: '删除「' + name + '」？\n' + (cnt ? '该章节下的 ' + cnt + ' 张卡片会变成没选章节的状态，卡片不会被删除。' : '该章节下目前没有卡片。'),
+                    okText: '删除',
+                    danger: true,
+                    onOk: function () {
+                        deleteChapter(editorSubject(), name);
+                        renamingName = null;
+                        renderChapterPop();
+                        showToast('🗑️ 章节已删除');
+                    }
+                });
+                return;
+            }
+            return;
+        }
+
+        var item = t.closest('.ch-item');
+        if (!item) return;
+        if (t.tagName === 'INPUT') return;
+        e.stopPropagation();
+        pickChapter(item.dataset.name || '');
+    });
+
+    chapterPopList.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        var inp = e.target.closest ? e.target.closest('.ch-rename') : null;
+        if (!inp) return;
+        e.preventDefault();
+        var row = inp.closest('.ch-item');
+        var name = row ? row.dataset.name : null;
+        if (name && renameChapter(editorSubject(), name, inp.value)) {
+            renamingName = null;
+            renderChapterPop();
+            showToast('✅ 章节已重命名');
+        }
+    });
+
+    /* ---- 拖动排序（HTML5 拖放，松手即生效） ---- */
+    var dragName = null;
+    function clearDropMarks() {
+        chapterPopList.querySelectorAll('.ch-item').forEach(function (el) {
+            el.classList.remove('drop-before', 'drop-after');
+        });
+    }
+    function chapterPopItems() {
+        return Array.prototype.filter.call(
+            chapterPopList.querySelectorAll('.ch-item'),
+            function (el) { return !!el.dataset.name; }
+        );
+    }
+    chapterPopList.addEventListener('dragstart', function (e) {
+        var item = e.target.closest ? e.target.closest('.ch-item') : null;
+        if (!item || !item.dataset.name || !canDragChapters()) { e.preventDefault(); return; }
+        dragName = item.dataset.name;
+        item.classList.add('dragging');
+        try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', dragName); } catch (x) {}
+    });
+    chapterPopList.addEventListener('dragover', function (e) {
+        if (!dragName) return;
+        e.preventDefault();
+        try { e.dataTransfer.dropEffect = 'move'; } catch (x) {}
+        var items = chapterPopItems();
+        clearDropMarks();
+        if (!items.length) return;
+        var mark = null;
+        for (var i = 0; i < items.length; i++) {
+            var r = items[i].getBoundingClientRect();
+            if (e.clientY < r.top + r.height / 2) { mark = items[i]; break; }
+        }
+        if (mark) mark.classList.add('drop-before');
+        else items[items.length - 1].classList.add('drop-after');
+    });
+    chapterPopList.addEventListener('drop', function (e) {
+        if (!dragName) return;
+        e.preventDefault();
+        var items = chapterPopItems();
+        var before = null;
+        for (var i = 0; i < items.length; i++) {
+            var r = items[i].getBoundingClientRect();
+            if (e.clientY < r.top + r.height / 2) { before = items[i].dataset.name; break; }
+        }
+        var moved = dragName;
+        dragName = null;
+        clearDropMarks();
+        if (before === moved) return;
+        if (applyChapterOrder(editorSubject(), moved, before)) showToast('↕️ 章节顺序已更新');
+    });
+    chapterPopList.addEventListener('dragend', function () {
+        dragName = null;
+        clearDropMarks();
+        chapterPopList.querySelectorAll('.ch-item').forEach(function (el) { el.classList.remove('dragging'); });
+    });
+
+    /* ============================================================
+       筛选 + 渲染
+       ============================================================ */
+    function getFilteredCards() {
+        /* 第 8 轮：不再有「分类」筛选，章节筛选自带分类（选项值里含分类） */
+        var chVal = filterChapter.value;
+        var chPick = (chVal === 'all') ? null : parseChFilter(chVal);
+        var favVal = filterFav.value;
+        var kw = filterSearch.value.trim().toLowerCase();
+
+        var filtered = cards.filter(function (c) {
+            if (chPick && (normSubject(c.subject) !== chPick.subject || (c.chapter || '').trim() !== chPick.name)) return false;
+            if (favVal === 'fav' && !c.fav) return false;
+            if (kw) {
+                var q = (c.question || '').toLowerCase();
+                var a = stripHtml(c.answerHtml || '').toLowerCase();
+                var ch = (c.chapter || '').toLowerCase();
+                var qid = (c.qid || '').toLowerCase();
+                if (q.indexOf(kw) < 0 && a.indexOf(kw) < 0 &&
+                    ch.indexOf(kw) < 0 && qid.indexOf(kw) < 0) return false;
+            }
+            return true;
+        });
+
+        return sortCards(filtered);
+    }
+
+    function cardHTML(c) {
+        var hasAnswerContent =
+            (c.answerHtml && c.answerHtml.replace(/<[^>]*>/g, '').trim()) ||
+            (c.answerHtml && c.answerHtml.indexOf('<img') >= 0);
+        var answerHtml = hasAnswerContent
+            ? c.answerHtml
+            : '<p style="color:#8aaa8a;font-style:italic;">（暂无答案）</p>';
+
+        var subj = normSubject(c.subject);
+        var chName = (c.chapter || '').trim();
+        /* 第 7 轮：分类和章节合成一个标签（「微观 · 需求」），不再拆成两个标签 */
+        var tagText = chName ? (subj + ' · ' + chName) : subj;
+        var subjectHtml = '<span class="tag subj ' + (subj === '宏观' ? 'macro' : 'micro') + '">' +
+                          safeText(tagText) + '</span>';
+        var qidHtml = c.qid ? '<span class="qid">' + safeText(c.qid) + '</span>' : '';
+        var hasImgHtml = c.hasImage ? '<span class="has-img">📐 有图示</span>' : '';
+        var isOpen = openIds.has(c.id);
+
+        return '' +
+        '<div class="card-item' + (c.fav ? ' favorited' : '') + '" data-id="' + safeText(c.id) + '">' +
+            '<div class="card-header">' +
+                '<div class="label">' + subjectHtml + qidHtml + hasImgHtml + '</div>' +
+                '<div class="card-actions">' +
+                    '<button class="btn-fav' + (c.fav ? ' active' : '') + '" data-id="' + safeText(c.id) + '" title="' + (c.fav ? '取消收藏' : '收藏') + '">' +
+                        (c.fav ? '⭐' : '☆') +
+                    '</button>' +
+                    '<button class="btn-edit" data-id="' + safeText(c.id) + '" title="编辑">✏️</button>' +
+                    '<button class="btn-del"  data-id="' + safeText(c.id) + '" title="删除">🗑️</button>' +
+                '</div>' +
+            '</div>' +
+            '<div class="card-question" data-id="' + safeText(c.id) + '">' +
+                '<span class="q-text">' + safeText(c.question) + '</span>' +
+                '<span class="toggle-hint">(点击展开答案)</span>' +
+            '</div>' +
+            '<div class="card-answer' + (isOpen ? ' open' : '') + '" data-id="' + safeText(c.id) + '">' +
+                '<div class="answer-inner">' + answerHtml + '</div>' +
+            '</div>' +
+        '</div>';
+    }
+
+    function render() {
+        var list = getFilteredCards();
+        totalSpan.textContent = cards.length;
+        favSpan.textContent = cards.filter(function (c) { return c.fav; }).length;
+
+        if (list.length === 0) {
+            grid.innerHTML = cards.length === 0
+                ? '<div class="empty-state">' +
+                      '<span class="big">🌱</span>' +
+                      '还没有任何卡片' +
+                      '<span class="sub">点击「新建卡片」开始记录吧</span>' +
+                  '</div>'
+                : '<div class="no-result">🌿 没有找到匹配的卡片，试试调整筛选条件吧</div>';
+            return;
+        }
+
+        /* 第 7 轮：分组键 = 分类 + 章节（同一章节名在微观/宏观下互不相干），空字符串 = 没选章节 */
+        function groupInfo(c) {
+            var s = normSubject(c.subject);
+            var n = (c.chapter || '').trim();
+            return n ? { key: s + '\u0000' + n, text: s + ' · ' + n } : { key: '', text: '' };
+        }
+        var counts = Object.create(null);
+        var texts = Object.create(null);
+        list.forEach(function (c) {
+            var g = groupInfo(c);
+            counts[g.key] = (counts[g.key] || 0) + 1;
+            texts[g.key] = g.text;
+        });
+
+        var html = '', lastKey = null;
+        list.forEach(function (c) {
+            var k = groupInfo(c).key;
+            if (k !== lastKey) {
+                /* 26/09/20：不再显示「未分类」这个分组名 —— 没选章节的卡片直接排在最后，不带标题 */
+                if (k !== '') {
+                    html += '<div class="chapter-divider">' +
+                                '<span class="cd-name">' + safeText(texts[k]) + '</span>' +
+                                '<span class="cd-count">' + counts[k] + ' 张</span>' +
+                            '</div>';
+                }
+                lastKey = k;
+            }
+            html += cardHTML(c);
+        });
+        grid.innerHTML = html;
+        renderMathIn(grid);
+    }
+
+    /* ============================================================
+       卡片区事件
+       ============================================================ */
+    function applyFav(id, fav) {
+        var el = grid.querySelector('.card-item[data-id="' + id + '"]');
+        if (el) {
+            el.classList.toggle('favorited', fav);
+            var btn = el.querySelector('.btn-fav');
+            if (btn) {
+                btn.classList.toggle('active', fav);
+                btn.textContent = fav ? '⭐' : '☆';
+                btn.title = fav ? '取消收藏' : '收藏';
+            }
+        }
+        favSpan.textContent = cards.filter(function (c) { return c.fav; }).length;
+    }
+
+    grid.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+
+        /* 第 9 轮：答案（非编辑状态）里的图片 —— 点一下开大图浮层，可以 + / - 缩放 */
+        if (t.tagName === 'IMG' && t.closest('.card-answer')) {
+            e.stopPropagation();
+            openImgViewer(t.getAttribute('src'));
+            return;
+        }
+
+        var favBtn = t.closest('.btn-fav');
+        if (favBtn) {
+            e.stopPropagation();
+            var id = favBtn.dataset.id;
+            var c = cards.find(function (x) { return x.id === id; });
+            if (c) {
+                c.fav = !c.fav;
+                persist();
+                /* 26/09/20：只改这一个卡片的样式，不整表重绘，收藏时不会有“换色动效” */
+                if (filterFav.value === 'fav') render();
+                else applyFav(id, c.fav);
+                showToast(c.fav ? '⭐ 已收藏' : '已取消收藏');
+            }
+            return;
+        }
+
+        var editBtn = t.closest('.btn-edit');
+        if (editBtn) { e.stopPropagation(); openEditor(editBtn.dataset.id); return; }
+
+        var delBtn = t.closest('.btn-del');
+        if (delBtn) {
+            e.stopPropagation();
+            var did = delBtn.dataset.id;
+            var dc = cards.find(function (x) { return x.id === did; });
+            if (dc) openConfirmDeleteCard(dc);
+            return;
+        }
+
+        var q = t.closest('.card-question');
+        if (q) {
+            var card = q.closest('.card-item');
+            if (!card) return;
+            var cid = card.dataset.id;
+            var ans = card.querySelector('.card-answer');
+            if (!ans) return;
+            var willOpen = !ans.classList.contains('open');
+            ans.classList.toggle('open', willOpen);
+            if (willOpen) openIds.add(cid); else openIds.delete(cid);
+        }
+    });
+
+    /* ============================================================
+       通用确认弹层
+       ============================================================ */
+    function openConfirm(opt) {
+        confirmTitle.textContent = opt.title || '确认';
+        confirmMsg.textContent = opt.msg || '';
+        confirmOkBtn.textContent = opt.okText || '确定';
+        confirmOkBtn.className = 'btn-ok' + (opt.danger ? ' btn-danger' : '');
+        confirmAction = opt.onOk || null;
+        confirmOverlay.classList.add('show');
+        lockBody(true);
+    }
+    function closeConfirm() {
+        confirmAction = null;
+        confirmOverlay.classList.remove('show');
+        if (!anyOverlayOpen()) lockBody(false);
+    }
+    confirmCancelBtn.addEventListener('click', closeConfirm);
+    confirmOverlay.addEventListener('click', function (e) {
+        if (e.target === confirmOverlay) closeConfirm();
+    });
+    confirmOkBtn.addEventListener('click', function () {
+        var fn = confirmAction;
+        closeConfirm();
+        if (fn) fn();
+    });
+
+    function openConfirmDeleteCard(card) {
+        var preview = (card.question || '').slice(0, 60);
+        openConfirm({
+            title: '确认删除',
+            msg: '确定要删除「' + preview + (card.question && card.question.length > 60 ? '…' : '') + '」这张卡片吗？',
+            okText: '删除',
+            danger: true,
+            onOk: function () {
+                var before = cards.length;
+                cards = cards.filter(function (c) { return c.id !== card.id; });
+                if (cards.length !== before) {
+                    openIds.delete(card.id);
+                    persist();
+                    updateChapterFilterOptions();
+                    render();
+                    showToast('🗑️ 卡片已删除');
+                }
+            }
+        });
+    }
+
+    /* ============================================================
+       清空全部数据
+       ============================================================ */
+    function openClearData() {
+        if (cards.length === 0 && chapterTotal() === 0) {
+            showToast('本来就没有数据哦~');
+            return;
+        }
+        clearMsg.textContent =
+            '当前有 ' + cards.length + ' 张卡片、' + chapterTotal() + ' 个章节。\n' +
+            '此操作不可恢复，卡片和章节都会被删除。\n' +
+            '如需保留，请先点顶部右侧的绿色小球导出备份。';
+        clearOverlay.classList.add('show');
+        lockBody(true);
+    }
+    function closeClearData() {
+        clearOverlay.classList.remove('show');
+        if (!anyOverlayOpen()) lockBody(false);
+    }
+    /* ---- 顶部蓝球：点开才出现「导入 / 导出」---- */
+    function toggleIo(open) {
+        var willOpen = (typeof open === 'boolean') ? open : !ioWrap.classList.contains('open');
+        ioWrap.classList.toggle('open', willOpen);
+        /* 26/09/20 第 10 轮：手机端展开的两个球会落到头部卡片外面、压住筛选栏，
+           所以同时给 header 打个标记，让卡片往下长高一点（只有窄屏那条 CSS 会用到）。 */
+        var hd = document.querySelector('.app-header');
+        if (hd) hd.classList.toggle('orb-open', willOpen);
+    }
+    ioBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleIo();
+    });
+    ioWrap.addEventListener('click', function (e) { e.stopPropagation(); });
+    document.addEventListener('click', function () {
+        if (ioWrap.classList.contains('open')) toggleIo(false);
+    });
+
+    clearDataBtn.addEventListener('click', openClearData);
+    clearCancelBtn.addEventListener('click', closeClearData);
+    clearOverlay.addEventListener('click', function (e) {
+        if (e.target === clearOverlay) closeClearData();
+    });
+    clearOkBtn.addEventListener('click', function () {
+        cards = [];
+        chaptersBySubject = { '微观': [], '宏观': [] };
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(CHAPTER_KEY);
+            localStorage.removeItem(CHAPTER_KEY_V1);   /* 老结构也一并清掉，别让它又被迁移回来 */
+        } catch (e) {}
+        openIds.clear();
+        filterChapter.value = 'all';
+        filterFav.value = 'all';
+        filterSearch.value = '';
+        updateChapterFilterOptions();
+        render();
+        closeClearData();
+        showToast('已清空全部数据');
+    });
+
+    /* ============================================================
+       编辑弹层
+       ============================================================ */
+    function openEditor(id) {
+        editingId = id || null;
+        clearImgSelection();
+        savedRange = null;
+        closeChapterPop();
+
+        if (id) {
+            var c = cards.find(function (x) { return x.id === id; });
+            if (!c) { showToast('😅 卡片不存在'); return; }
+            modalTitle.textContent = '编辑卡片';
+            indexInput.value = c.qid || '';
+            hasImgInput.checked = !!c.hasImage;
+            hasImgToggle.classList.toggle('active', !!c.hasImage);
+            questionInput.value = c.question || '';
+            answerEditor.innerHTML = c.answerHtml || '';
+            subjectSelect.value = (SUBJECTS.indexOf(c.subject) >= 0) ? c.subject : '微观';
+            setEditorChapter(c.chapter || '');
+        } else {
+            modalTitle.textContent = '新建卡片';
+            indexInput.value = '';
+            hasImgInput.checked = false;
+            hasImgToggle.classList.remove('active');
+            questionInput.value = '';
+            answerEditor.innerHTML = '';
+            /* 新建时默认沿用当前筛选的章节（只在分类对得上时才沿用），省一次选择 */
+            var fp = parseChFilter(filterChapter.value);
+            /* 第 8 轮：分类筛选没了，默认分类 = 当前章节筛选所属分类；没选章节就用上次用过的 */
+            var defSubj = (fp && SUBJECTS.indexOf(fp.subject) >= 0)
+                ? fp.subject
+                : (SUBJECTS.indexOf(lastSubject) >= 0 ? lastSubject : '微观');
+            subjectSelect.value = defSubj;
+            var def = (fp && fp.subject === defSubj) ? fp.name : '';
+            /* 26/09/21：优先记忆上次该分类使用的章节；若章节已被删则回退到当前筛选章节/空 */
+            var mem = lastChapterBySubject[defSubj] || '';
+            if (mem && chList(defSubj).indexOf(mem) >= 0) def = mem;
+            setEditorChapter(def);
+        }
+
+        editorOverlay.classList.add('show');
+        lockBody(true);
+        /* 26/09/20：不再自动聚焦「分类」下拉 —— 之前一打开就给它套上绿色对焦圈，
+           用户点别处或选完值后焦点一走绿色就没了，看着像闪了一下。新建时直接聚焦题目。 */
+        if (!id) setTimeout(function () { questionInput.focus(); }, 60);
+    }
+
+    function closeEditor() {
+        editorOverlay.classList.remove('show');
+        if (!anyOverlayOpen()) lockBody(false);
+        clearImgSelection();
+        closeChapterPop();
+        editingId = null;
+        savedRange = null;
+    }
+
+    function clearImgSelection() {
+        answerEditor.querySelectorAll('img').forEach(function (i) { i.classList.remove('selected'); });
+        selectedImg = null;
+        imgResizeCtrl.classList.remove('show');
+        imgSizeVal.textContent = imgSizeRange.value + ' px';
+        imgSizePx.textContent = '';
+        imgStyleBefore = null;
+    }
+    function isEditorEmpty() {
+        var html = answerEditor.innerHTML.trim();
+        if (html === '' || html === '<br>' || html === '<div><br></div>') return true;
+        if (answerEditor.querySelector('img')) return false;
+        return answerEditor.textContent.trim() === '';
+    }
+    function getAnswerHtml() {
+        if (isEditorEmpty()) return '';
+        var tmp = document.createElement('div');
+        tmp.innerHTML = answerEditor.innerHTML;
+        tmp.querySelectorAll('img.selected').forEach(function (i) { i.classList.remove('selected'); });
+        return tmp.innerHTML.trim();
+    }
+
+    function saveCard() {
+        var q = questionInput.value.trim();
+        if (!q) { showToast('⚠️ 请先填写题目'); questionInput.focus(); return; }
+
+        var ch = editorChapter || '';
+        var subj = (SUBJECTS.indexOf(subjectSelect.value) >= 0) ? subjectSelect.value : '微观';
+        var qid = indexInput.value.trim();
+        var hasImage = !!hasImgInput.checked;
+        var a = getAnswerHtml();
+
+        if (editingId) {
+            var c = cards.find(function (x) { return x.id === editingId; });
+            if (c) {
+                c.subject = subj;
+                c.chapter = ch;
+                c.qid = qid;
+                c.hasImage = hasImage;
+                c.question = q;
+                c.answerHtml = a;
+                c.updated = Date.now();
+            }
+        } else {
+            cards.push({
+                id: uid(),
+                subject: subj,
+                chapter: ch,
+                qid: qid,
+                hasImage: hasImage,
+                question: q,
+                answerHtml: a,
+                fav: false,
+                created: Date.now()
+            });
+        }
+
+        if (!persist()) return;
+        lastSubject = subj;          /* 第 8 轮：记住这次用的分类，下次新建自动带上 */
+        lastChapterBySubject[subj] = ch;   /* 26/09/21：记住该分类下最近用的章节 */
+        closeEditor();
+        updateChapterFilterOptions();
+        render();
+        showToast('✅ 已保存');
+    }
+
+    addCardBtn.addEventListener('click', function () { openEditor(null); });
+    closeModalBtn.addEventListener('click', closeEditor);
+    cancelBtn.addEventListener('click', closeEditor);
+    saveBtn.addEventListener('click', saveCard);
+
+    hasImgInput.addEventListener('change', function () {
+        hasImgToggle.classList.toggle('active', this.checked);
+    });
+
+    editorOverlay.addEventListener('click', function (e) {
+        if (e.target === editorOverlay) closeEditor();
+    });
+
+    /* ============================================================
+       富文本编辑器
+       ============================================================ */
+    /* 26/09/20 第 13 轮：手机点按钮时，系统会把编辑框里的选区清掉、再塞一个「空光标」回来。
+       如果把这个空光标也当成最新选区记下来，BIU / 公式就会落空 —— 所以：
+         · 选中一段文字（非空选区）：总是记；
+         · 只有空光标：必须是「刚在编辑框里真的点/敲过」才记；
+           工具栏按钮按下的那一瞬间（下面会给窗口）也不算。 */
+    var toolbarPressUntil = 0;      /* 按工具栏按钮的抖动窗口 */
+    var lastEdInteraction = 0;      /* 最近一次真的在编辑框里动过 */
+
+    /* 记下的那个位置如果已经不在文档里了（内容被整体换过），就别再用它 */
+    function pruneSavedRange() {
+        if (!savedRange) return;
+        try {
+            if (document.body.contains(savedRange.startContainer) && document.body.contains(savedRange.endContainer)) return;
+        } catch (e) {}
+        savedRange = null;
+    }
+
+    function rememberEditorRange() {
+        pruneSavedRange();
+        var sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0) return;
+        var node = sel.anchorNode;
+        if (!node || !answerEditor.contains(node)) return;
+        var r;
+        try { r = sel.getRangeAt(0).cloneRange(); } catch (e) { return; }
+        if (r.collapsed) {
+            /* 第 16 轮：只看「是不是正按着工具栏按钮」，不再拿时间窗去猜。
+               旧写法额外看「900ms 内有没有在编辑框里动过」，可手指拖选文字
+               不触发 click / keyup，这个窗经常判错 —— BIU 才会时灵时不灵。 */
+            if (savedRange && Date.now() < toolbarPressUntil) return;
+        }
+        savedRange = r;
+    }
+
+    document.addEventListener('selectionchange', rememberEditorRange);
+
+    /* 第 16 轮：在 document 的**捕获阶段**就把「按下了工具栏按钮」记下来。
+       捕获阶段跑在浏览器默认动作之前，而手机上「清掉选区 + 塞回空光标」
+       恰恰是 touchstart 的默认动作 —— 等冒泡到工具栏上时选区早被清掉了。
+       这里先拍快照，click 时再从快照恢复，BIU 才稳。 */
+    ['touchstart', 'mousedown'].forEach(function (ev) {
+        document.addEventListener(ev, function (e) {
+            if (!e.target || !e.target.closest) return;
+            if (!e.target.closest('.editor-tools')) return;
+            toolbarPressUntil = Date.now() + 900;
+            rememberEditorRange();
+        }, true);
+    });
+
+    /* 编辑框上「真的动过」的事件（点、敲、摸、粘贴…）才算一次交互 */
+    ['mouseup', 'keyup', 'touchend', 'input', 'click', 'paste'].forEach(function (ev) {
+        answerEditor.addEventListener(ev, function () { lastEdInteraction = Date.now(); }, true);
+    });
+
+    /* 当前手里这个「空光标」，是不是别人塞进来的？
+       （点工具栏按钮 / 触摸时系统会把选区抖掉，换成一个空光标 —— 它不是用户的本意） */
+    function liveCaretIsBogus() {
+        pruneSavedRange();
+        var sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0) return false;
+        var r;
+        try { r = sel.getRangeAt(0); } catch (e) { return false; }
+        if (!r.collapsed) return false;                        /* 真的选中了一段，就是好的 */
+        if (!savedRange) return false;                         /* 手里也没有别的，就用它 */
+        if (!savedRange.collapsed) return true;                /* 刚才明明有选区，现在却只剩空光标 → 是被清掉的 */
+        return Date.now() < toolbarPressUntil;                 /* 两个都是空光标：只在按按钮那一下怀疑当前的 */
+    }
+
+    function getEditorRange() {
+        pruneSavedRange();
+        var sel = window.getSelection();
+        if (sel && sel.rangeCount > 0 && sel.anchorNode && answerEditor.contains(sel.anchorNode)
+            && !liveCaretIsBogus()) {
+            return sel.getRangeAt(0);
+        }
+        if (savedRange) {
+            try {
+                answerEditor.focus();
+                /* 用记住的边界点「新建」一个 Range，而不是把记下那个直接塞回去：
+                   旧对象可能已经被浏览器钳过位置，新建的最准。 */
+                var live = document.createRange();
+                live.setStart(savedRange.startContainer, savedRange.startOffset);
+                live.setEnd(savedRange.endContainer, savedRange.endOffset);
+                sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(live);
+                return live;
+            } catch (e) { savedRange = null; }
+        }
+        answerEditor.focus();
+        var range = document.createRange();
+        range.selectNodeContents(answerEditor);
+        range.collapse(false);
+        return range;
+    }
+
+    function insertHtmlAtCursor(html) {
+        var range = getEditorRange();
+        range.deleteContents();
+        var frag = range.createContextualFragment(html);
+        var lastNode = frag.lastChild;
+        range.insertNode(frag);
+        if (lastNode) { range.setStartAfter(lastNode); range.collapse(true); }
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        try { savedRange = sel.getRangeAt(0).cloneRange(); } catch (e) {}
+    }
+
+    function insertTextAtCursor(text, cursorOffset) {
+        var range = getEditorRange();
+        range.deleteContents();
+        var node = document.createTextNode(text);
+        range.insertNode(node);
+        if (typeof cursorOffset === 'number') {
+            var p = Math.max(0, Math.min(cursorOffset, text.length));
+            range.setStart(node, p); range.setEnd(node, p);
+        } else {
+            range.setStartAfter(node); range.setEndAfter(node);
+        }
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        try { savedRange = sel.getRangeAt(0).cloneRange(); } catch (e) {}
+    }
+
+    function insertNodeAtCursor(node) {
+        var range = getEditorRange();
+        range.deleteContents();
+        range.insertNode(node);
+        range.setStartAfter(node);
+        range.collapse(true);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        try { savedRange = sel.getRangeAt(0).cloneRange(); } catch (e) {}
+    }
+
+    /* 工具栏按钮：mousedown 阻止默认，避免编辑器失焦丢选区 */
+    editorTools.addEventListener('mousedown', function (e) {
+        var b = e.target.closest ? e.target.closest('button') : null;
+        if (!b) return;
+        e.preventDefault();
+        toolbarPressUntil = Date.now() + 800;   /* 这段窗口里的选区抖动一律不算 */
+        rememberEditorRange();
+    });
+
+    /* 26/09/20 第 13 轮：手机上没有 mousedown 这一下，手指点按钮时系统会先把编辑框的
+       选区清掉。所以在 touchstart 阶段就把选区存进 savedRange（并开抖动窗口），点下去再恢复。 */
+    editorTools.addEventListener('touchstart', function (e) {
+        var b = e.target.closest ? e.target.closest('button') : null;
+        if (!b) return;
+        toolbarPressUntil = Date.now() + 800;
+        rememberEditorRange();
+    }, { passive: true });
+
+    /* ---- BIU ---- */
+    editorTools.addEventListener('click', function (e) {
+        var b = e.target.closest ? e.target.closest('button[data-cmd]') : null;
+        if (!b) return;
+        if (Date.now() < (b.__runAt || 0) + 300) return;   /* 防重复执行 */
+        b.__runAt = Date.now();
+        b.__clickAt = Date.now();
+        var cmd = b.getAttribute('data-cmd');
+        /* 先恢复光标/选区再执行：手机（和部分国产内核）点按钮会把选区清掉，
+           直接 execCommand 等于什么都没做；恢复后才是「选中文字点 B 就变粗」。 */
+        try { getEditorRange(); } catch (x) {}
+        answerEditor.focus();
+        try { document.execCommand(cmd, false, null); } catch (x) {}
+        lastEdInteraction = Date.now();   /* 这是编辑框里的一次真实动作 */
+        toolbarPressUntil = 0;            /* 第 16 轮：执行完就解除抖动窗，好记下命令后的真实光标 */
+        rememberEditorRange();
+        syncFormatButtons();
+    });
+    /* 26/09/20 第 16 轮兜底：手机上 click 偶尔会被浏览器吞掉（手指微动、键盘顶起页面、
+       选区小手柄正好盖住按钮），表现就是「按钮点不动」。
+       touchend 之后 320ms 还没等到 click 就自己补一次；click 真来了就不补。 */
+    editorTools.addEventListener('touchend', function (e) {
+        var b = e.target.closest ? e.target.closest('button[data-cmd]') : null;
+        if (!b) return;
+        var t = Date.now();
+        setTimeout(function () {
+            if ((b.__clickAt || 0) >= t) return;
+            b.click();
+        }, 320);
+    }, { passive: true });
+    function syncFormatButtons() {
+        ['bold', 'italic', 'underline'].forEach(function (cmd) {
+            var b = editorTools.querySelector('button[data-cmd="' + cmd + '"]');
+            if (!b) return;
+            var on = false;
+            try { on = document.queryCommandState(cmd); } catch (e) {}
+            b.classList.toggle('active', !!on);
+        });
+    }
+    document.addEventListener('selectionchange', function () {
+        var sel = window.getSelection();
+        if (!sel || !sel.anchorNode) return;
+        if (answerEditor.contains(sel.anchorNode)) syncFormatButtons();
+    });
+
+    /* ---- BIU 快捷键：Ctrl+B / Ctrl+I / Ctrl+U（Mac 上 Cmd 同效） ---- */
+    function editorShortcutCmd(e) {
+        if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey) return '';
+        var k = e.key ? e.key.toLowerCase() : '';
+        if (k === 'b') return 'bold';
+        if (k === 'i') return 'italic';
+        if (k === 'u') return 'underline';
+        return '';
+    }
+    answerEditor.addEventListener('keydown', function (e) {
+        var cmd = editorShortcutCmd(e);
+        if (!cmd) return;
+        e.preventDefault();
+        try { getEditorRange(); } catch (x) {}
+        answerEditor.focus();
+        try { document.execCommand(cmd, false, null); } catch (x) {}
+        syncFormatButtons();
+    });
+
+    /* ---- 清除格式（26/09/20 第 18 轮）----
+       两种情况：
+       ① 选了字 —— 把选中部分的加粗 / 斜体 / 下划线等全部去掉；
+       ② 只是光标停在那里（没选字）—— 关掉「接下来打字会带上的样式」。
+          例如在一段粗体后面接着写，光标一直是粗的，怎么点 B 都像取消不掉；
+          点一下这里，后面打的字就恢复成正常字，不会再被前面的样式带着走。 */
+    clearFmtBtn.addEventListener('click', function () {
+        try { getEditorRange(); } catch (x) {}
+        answerEditor.focus();
+        try { document.execCommand('styleWithCSS', false, false); } catch (x) {}
+        var sel = window.getSelection();
+        var collapsed = !sel || !sel.rangeCount || sel.isCollapsed;
+        if (!collapsed) {
+            try { document.execCommand('removeFormat'); } catch (x) {}
+            try { document.execCommand('unlink'); } catch (x) {}
+            /* removeFormat 会留下空壳标签（<b></b>），顺手清掉，免得下次点 B 又整段变粗 */
+            try {
+                answerEditor.querySelectorAll('b,i,u,strong,em').forEach(function (el) {
+                    if (!el.textContent && !el.querySelector('img,br')) el.remove();
+                });
+            } catch (x) {}
+        } else {
+            /* 光标收缩：把几项「待生效」的打字样式逐个关掉（execCommand 在这种
+               光标下只改接下来要打的字，不会动已经写好的内容） */
+            ['bold', 'italic', 'underline', 'strikeThrough'].forEach(function (c) {
+                try { if (document.queryCommandState(c)) document.execCommand(c, false, null); } catch (x) {}
+            });
+        }
+        lastEdInteraction = Date.now();
+        toolbarPressUntil = 0;
+        rememberEditorRange();
+        syncFormatButtons();
+        showToast('已清除格式');
+    });
+
+    /* ---- 清空答案 ---- */
+    clearAnswerBtn.addEventListener('click', function () {
+        if (isEditorEmpty()) { showToast('答案本来就是空的'); return; }
+        openConfirm({
+            title: '清空答案',
+            msg: '确定要清空这张卡片的答案吗？',
+            okText: '清空',
+            danger: true,
+            onOk: function () {
+                answerEditor.innerHTML = '';
+                clearImgSelection();
+                showToast('🧹 答案已清空（记得点保存）');
+            }
+        });
+    });
+
+    /* ============================================================
+       插入表格
+       ============================================================ */
+    function openTableDialog() {
+        tableRows.value = 3;
+        tableCols.value = 3;
+        tableOverlay.classList.add('show');
+        /* 26/09/20 第 17 轮：手机上编辑态（光标在答案里闪、键盘弹着）点「插入表格」时，
+           键盘弹出来却没有光标在行列数里 —— 焦点还留在答案编辑框。
+           先把焦点从编辑框挪走（键盘才会对准输入框），再把光标放进「行数」并全选。 */
+        try { answerEditor.blur(); } catch (e) {}
+        setTimeout(function () {
+            try { tableRows.focus(); } catch (e) {}
+            try { tableRows.select(); } catch (e) {}
+        }, 80);
+    }
+    function closeTableDialog() { tableOverlay.classList.remove('show'); }
+
+    function confirmInsertTable() {
+        var r = parseInt(tableRows.value, 10);
+        var c = parseInt(tableCols.value, 10);
+        if (isNaN(r)) r = 3;
+        if (isNaN(c)) c = 3;
+        r = Math.max(1, Math.min(20, r));
+        c = Math.max(1, Math.min(10, c));
+
+        var html = '<table><thead><tr>';
+        for (var i = 0; i < c; i++) html += '<th>表头' + (i + 1) + '</th>';
+        html += '</tr></thead><tbody>';
+        for (var k = 1; k < r; k++) {
+            html += '<tr>';
+            for (var j = 0; j < c; j++) html += '<td>&nbsp;</td>';
+            html += '</tr>';
+        }
+        html += '</tbody></table><p><br></p>';
+
+        insertHtmlAtCursor(html);
+        closeTableDialog();
+        showToast('▦ 表格已插入，点击单元格可直接编辑');
+    }
+
+    insertTableBtn.addEventListener('click', openTableDialog);
+    tableOkBtn.addEventListener('click', confirmInsertTable);
+    tableCancelBtn.addEventListener('click', closeTableDialog);
+    tableOverlay.addEventListener('click', function (e) {
+        if (e.target === tableOverlay) closeTableDialog();
+    });
+    tableRows.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); tableCols.focus(); tableCols.select(); }
+    });
+    tableCols.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); confirmInsertTable(); }
+    });
+
+    /* ============================================================
+       插入图片 / 公式
+       ============================================================ */
+    function readAndInsertImage(file) {
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+            var img = document.createElement('img');
+            img.src = ev.target.result;
+            img.alt = '图片';
+            /* 原图只留在 JS 里（不写进 DOM）：点「确认」压缩时从这张原图重新采样，
+               反复调整也不会一代比一代糊；保存进 localStorage 的是压缩后的小图。 */
+            img.__origSrc = ev.target.result;
+            var probe = new Image();
+            probe.onload = function () {
+                img.__origW = probe.naturalWidth || 0;
+                img.__origH = probe.naturalHeight || 0;
+            };
+            probe.src = ev.target.result;
+            /* 第 8 轮：一插进来就给「半屏左右」的像素宽度，不再默认占满整行 */
+            applyImgWidthPx(img, Math.round(editorRowWidth() * IMG_DEFAULT_RATIO));
+            shrinkImage(img, ev.target.result);
+            insertNodeAtCursor(img);
+            /* 插完光标就停在图片右边 —— 直接按退格即可删掉这张图 */
+            showToast('🖼️ 图片已插入 · 点图片调尺寸，确认后会真的压缩体积');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    insertImgBtn.addEventListener('click', function () {
+        /* 26/09/20 第 17 轮：编辑态（光标在闪、键盘弹着）直接弹文件选择器时，
+           键盘收起和选择器弹出撞在一起，页面会「闪一下」。
+           先主动收键盘、隔 160ms 再弹选择器，两件事排队做就顺了。
+           光标位置在 getEditorRange / savedRange 里已经记着，收键盘不会丢。 */
+        try { answerEditor.blur(); } catch (e) {}
+        setTimeout(function () {
+            var fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+            fileInput.onchange = function () {
+                var file = this.files && this.files[0];
+                if (file) readAndInsertImage(file);
+                document.body.removeChild(fileInput);
+            };
+            fileInput.click();
+        }, 160);
+    });
+
+    answerEditor.addEventListener('paste', function (e) {
+        var items = e.clipboardData && e.clipboardData.items;
+        if (!items) return;
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            if (item.type && item.type.indexOf('image/') === 0) {
+                e.preventDefault();
+                readAndInsertImage(item.getAsFile());
+                break;
+            }
+        }
+    });
+
+    /* 26/09/20 第 10 轮：还原 —— 按钮只插入占位的「公式」两字（不塞任何真的公式内容），
+       插完自动选中「公式」二字，直接打 LaTeX 就替换掉了。
+       提示小字（输入框里的灰色示例、右下角说明）才是需要改的地方。 */
+
+    function selectInsertedFormula(text, pad) {
+        var sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0) return;
+        var r = sel.getRangeAt(0);
+        var n = r.startContainer;
+        if (!n || n.nodeType !== 3) return;
+        var s = n.textContent, at = r.startOffset, base = at - text.length;
+        if (base < 0 || s.slice(base, at) !== text) return;
+        var rr = document.createRange();
+        rr.setStart(n, base + pad);
+        rr.setEnd(n, at - pad);
+        sel.removeAllRanges(); sel.addRange(rr);
+        try { savedRange = sel.getRangeAt(0).cloneRange(); } catch (e) {}
+    }
+
+    insertInlineFormulaBtn.addEventListener('click', function () {
+        var t = '$公式$';
+        insertTextAtCursor(t, t.length);
+        selectInsertedFormula(t, 1);
+        /* 第 17 轮：不再弹提示 —— 插完已经自动选中「公式」二字，直接打字就替换了 */
+    });
+
+    insertBlockFormulaBtn.addEventListener('click', function () {
+        var t = '$$公式$$';
+        insertTextAtCursor(t, t.length);
+        selectInsertedFormula(t, 2);
+    });
+
+    answerEditor.addEventListener('input', function () {
+        var h = this.innerHTML.trim();
+        if (h === '<br>' || h === '<div><br></div>') this.innerHTML = '';
+    });
+
+    /* ---- 图片「宽度」：滑块直接给像素宽度，只改宽、高自动 → 宽高比始终锁定；
+            滑块只做预览，点「确认」才落定。
+       26/09/20 第 8 轮换机制：原来是 10%~200% 的百分比 ——
+       ① 默认 100% 一插进来就占满整行，太大；
+       ② 觉得「调到最小也不算小」（百分比是相对整行宽算的，对小图尤其不准）；
+       ③ 200% 那种放大基本用不上。
+       现在改成「像素宽度」：默认约 55% 行宽，范围 60px ~ 编辑器整行宽，不做放大。 */
+    var IMG_MIN_PX = 60;
+    var IMG_DEFAULT_RATIO = 0.55;
+
+    function editorRowWidth() {
+        var cs = window.getComputedStyle(answerEditor);
+        var w = answerEditor.clientWidth
+              - parseFloat(cs.paddingLeft || 0) - parseFloat(cs.paddingRight || 0) - 6;
+        return Math.max(160, Math.round(w));
+    }
+    function imgWidthPxOf(img) {
+        if (!img) return Math.round(editorRowWidth() * IMG_DEFAULT_RATIO);
+        var r = img.getBoundingClientRect();
+        if (r.width >= 1) return Math.round(r.width);
+        var w = parseInt(img.style.width, 10);
+        if (w > 0) return w;
+        return Math.round(editorRowWidth() * IMG_DEFAULT_RATIO);
+    }
+    /* 应用一个像素宽度：只写 width、height:auto，并把 maxHeight 顶掉 —— 宽高比锁死 */
+    function applyImgWidthPx(img, px) {
+        if (!img) return;
+        px = Math.max(IMG_MIN_PX, Math.round(px));
+        img.style.width = px + 'px';
+        img.style.maxWidth = '100%';
+        img.style.height = 'auto';
+        img.style.maxHeight = 'none';    /* 否则会被 CSS 里 300px 的 max-height 顶住、把比例压坏 */
+    }
+    function syncImgRangeBounds() {
+        imgSizeRange.min = String(IMG_MIN_PX);
+        imgSizeRange.max = String(Math.max(IMG_MIN_PX + 20, editorRowWidth()));
+    }
+    function snapshotImgStyle(img) {
+        imgStyleBefore = img ? {
+            width: img.style.width,
+            maxWidth: img.style.maxWidth,
+            height: img.style.height,
+            maxHeight: img.style.maxHeight
+        } : null;
+    }
+    function restoreImgStyle() {
+        if (!selectedImg || !imgStyleBefore) return;
+        selectedImg.style.width = imgStyleBefore.width;
+        selectedImg.style.maxWidth = imgStyleBefore.maxWidth;
+        selectedImg.style.height = imgStyleBefore.height;
+        selectedImg.style.maxHeight = imgStyleBefore.maxHeight;
+    }
+    /* ---- 记住「原图」：只存在 JS 属性里，不写进 DOM，保存时不会把原图再存一份 ---- */
+    function rememberOrigImg(img) {
+        if (!img) return;
+        if (!img.__origSrc) {
+            img.__origSrc = img.src;
+            img.__origW = img.naturalWidth || 0;
+            img.__origH = img.naturalHeight || 0;
+        }
+        if (!img.__origW || !img.__origH) {
+            img.__origW = img.naturalWidth || img.__origW || 0;
+            img.__origH = img.naturalHeight || img.__origH || 0;
+        }
+    }
+    function targetImgHeightPx(px) {
+        var ow = selectedImg && selectedImg.__origW, oh = selectedImg && selectedImg.__origH;
+        if (!ow || !oh) return 0;
+        return Math.max(1, Math.round(px * oh / ow));
+    }
+    function kbOf(dataUrl) { return Math.round((dataUrl ? dataUrl.length : 0) * 0.75 / 1024); }
+
+    /* 26/09/20 第 16 轮：用户看不懂「原始 206×116 px → 目标 236×133 px」这种纯像素串，
+       真正关心的是「这图占多大」。改成把体积（KB）也标出来；目标体积真去编码一次量，
+       比按面积估算准。拖动时防抖 200ms 才算，所以不卡手。 */
+    var imgKbTimer = null;
+    function estimateImgKb(img, px, cb) {
+        var src = img && img.__origSrc;
+        if (!src) { cb(0); return; }
+        var im = new Image();
+        im.onload = function () {
+            try {
+                var w = im.naturalWidth || 1, h = im.naturalHeight || 1;
+                var th = Math.max(1, Math.round(px * h / w));
+                var cv = document.createElement('canvas');
+                cv.width = px; cv.height = th;
+                var ctx = cv.getContext('2d');
+                ctx.drawImage(im, 0, 0, px, th);
+                if (cv.toBlob) cv.toBlob(function (b) { cb(b ? Math.round(b.size / 1024) : 0); }, 'image/jpeg', 0.9);
+                else cb(kbOf(cv.toDataURL('image/jpeg', 0.9)));
+            } catch (e) { cb(0); }
+        };
+        im.onerror = function () { cb(0); };
+        im.src = src;
+    }
+
+    function refreshImgSizeText() {
+        if (!selectedImg) { imgSizePx.textContent = ''; return; }
+        var ow = selectedImg.__origW || 0, oh = selectedImg.__origH || 0;
+        if (!ow || !oh) { imgSizePx.textContent = ''; return; }
+        var px = parseInt(imgSizeRange.value, 10) || ow;
+        var okb = kbOf(selectedImg.__origSrc || '');
+        imgSizePx.textContent = '原图 ' + ow + '×' + oh + '（' + okb + ' KB） → 目标 ' + px + '×' + targetImgHeightPx(px);
+        clearTimeout(imgKbTimer);
+        imgKbTimer = setTimeout(function () {
+            if (!selectedImg) return;
+            var p2 = parseInt(imgSizeRange.value, 10) || ow;
+            estimateImgKb(selectedImg, p2, function (kb) {
+                if (!selectedImg || (parseInt(imgSizeRange.value, 10) || ow) !== p2) return;  /* 手已拖走，作废 */
+                imgSizePx.textContent = '原图 ' + ow + '×' + oh + '（' + okb + ' KB） → 目标 ' +
+                    p2 + '×' + targetImgHeightPx(p2) + '（' + kb + ' KB）';
+            });
+        }, 200);
+    }
+
+    /* ---- 真的把图片重新采样成目标尺寸（改的是图片本身，不是只显示得小一点） ----
+       26/09/20 第 9 轮：原图一直留在 img.__origSrc 里，每次压缩都从原图算，
+       所以反复调不会一代比一代糊；无透明像素就压成 JPEG，体积能小一大截。 */
+    function resampleImgToWidth(img, px, cb) {
+        rememberOrigImg(img);
+        var src = img.__origSrc, ow = img.__origW || 0, oh = img.__origH || 0;
+        if (!src || !ow || !oh) { cb({ ok: false }); return; }
+        px = Math.max(IMG_MIN_PX, Math.round(px));
+
+        if (px >= ow) {                    /* 不做放大：直接还原成原图 */
+            img.src = src;
+            img.style.width = ''; img.style.maxWidth = ''; img.style.height = ''; img.style.maxHeight = '';
+            cb({ ok: true, w: ow, h: oh, noUpscale: true, before: src.length, after: src.length });
+            return;
+        }
+        var h = Math.max(1, Math.round(px * oh / ow));
+        var im = new Image();
+        im.onload = function () {
+            try {
+                var cv = document.createElement('canvas');
+                cv.width = px; cv.height = h;
+                var ctx = cv.getContext('2d');
+                ctx.drawImage(im, 0, 0, px, h);
+                var hasAlpha = false;
+                try {
+                    var d = ctx.getImageData(0, 0, px, h).data;
+                    for (var i = 3; i < d.length; i += 4) { if (d[i] < 250) { hasAlpha = true; break; } }
+                } catch (e) {}
+                var out = hasAlpha ? cv.toDataURL('image/png') : cv.toDataURL('image/jpeg', 0.9);
+                img.src = out;
+                img.style.width = ''; img.style.maxWidth = ''; img.style.height = ''; img.style.maxHeight = '';
+                cb({ ok: true, w: px, h: h, noUpscale: false, before: src.length, after: out.length });
+            } catch (e) { cb({ ok: false }); }
+        };
+        im.onerror = function () { cb({ ok: false }); };
+        im.src = src;
+    }
+
+    answerEditor.addEventListener('click', function (e) {
+        var img = e.target && e.target.closest ? e.target.closest('img') : null;
+        if (img && answerEditor.contains(img)) {
+            answerEditor.querySelectorAll('img').forEach(function (i) { i.classList.remove('selected'); });
+            img.classList.add('selected');
+            selectedImg = img;
+            rememberOrigImg(img);
+            snapshotImgStyle(img);
+            syncImgRangeBounds();
+            var px = imgWidthPxOf(img);
+            var maxPx = parseInt(imgSizeRange.max, 10);
+            if (px > maxPx) px = maxPx;
+            imgSizeRange.value = String(px);
+            imgSizeVal.textContent = px + ' px';
+            imgResizeCtrl.classList.add('show');
+            refreshImgSizeText();
+        } else {
+            clearImgSelection();
+        }
+    });
+
+    imgSizeRange.addEventListener('input', function () {
+        if (!selectedImg) return;
+        var val = parseInt(this.value, 10);
+        imgSizeVal.textContent = val + ' px';
+        applyImgWidthPx(selectedImg, val);   /* 拖动时先看个效果，点「确认」才真的压缩 */
+        refreshImgSizeText();
+    });
+
+    /* 确认：真的压缩图片本身（重采样成目标像素），不是只改显示尺寸 */
+    imgSizeOkBtn.addEventListener('click', function () {
+        if (!selectedImg) return;
+        var img = selectedImg;
+        var px = parseInt(imgSizeRange.value, 10);
+        /* 先撤掉预览用的内联尺寸，压缩完就让图片按自己的真实像素显示 */
+        img.style.width = ''; img.style.maxWidth = ''; img.style.height = ''; img.style.maxHeight = '';
+        imgSizeOkBtn.disabled = true;
+        showToast('📐 正在压缩…');
+        resampleImgToWidth(img, px, function (res) {
+            imgSizeOkBtn.disabled = false;
+            clearImgSelection();
+            if (!res.ok) { showToast('⚠️ 这张图没法压缩，先保持原样'); return; }
+            if (res.noUpscale) { showToast('📐 已还原成原始尺寸 ' + res.w + ' × ' + res.h + ' px'); return; }
+            var b = kbOf({ length: res.before }), a = kbOf({ length: res.after });
+            showToast('📐 已压缩成 ' + res.w + ' × ' + res.h + ' px · 体积 ' + b + ' KB → ' + a + ' KB');
+        });
+    });
+
+    /* 取消：回到点开图片时的显示尺寸（图片本身没动过） */
+    imgSizeCancelBtn.addEventListener('click', function () {
+        if (!selectedImg) { clearImgSelection(); return; }
+        restoreImgStyle();
+        clearImgSelection();
+    });
+
+    /* ============================================================
+       第 9 轮：答案里的图片，点开看大图（浮层 + 放大缩小 + 拖动 + 滚轮）
+       ============================================================ */
+    var imgViewerScale = 1, imgViewerX = 0, imgViewerY = 0;
+
+    function imgViewerApply() {
+        imgViewerImg.style.transform =
+            'translate(' + imgViewerX + 'px,' + imgViewerY + 'px) scale(' + imgViewerScale + ')';
+        imgViewerVal.textContent = Math.round(imgViewerScale * 100) + '%';
+    }
+    function imgViewerBaseWidth() {
+        var w = imgViewerImg.getBoundingClientRect().width;
+        return imgViewerScale ? (w / imgViewerScale) : w;
+    }
+    function imgViewerReset() {
+        imgViewerScale = 1; imgViewerX = 0; imgViewerY = 0;
+        imgViewerImg.classList.remove('dragging');
+        imgViewerImg.style.transform = '';
+        imgViewerVal.textContent = '100%';
+    }
+    function imgViewerZoom(factor) {
+        imgViewerScale = Math.max(0.2, Math.min(6, imgViewerScale * factor));
+        imgViewerApply();
+    }
+    function openImgViewer(src) {
+        if (!src) return;
+        imgViewerImg.src = src;
+        imgViewerReset();
+        imgViewer.classList.add('show');
+        lockBody(true);
+    }
+    function closeImgViewer() {
+        if (!imgViewer.classList.contains('show')) return;
+        imgViewer.classList.remove('show');
+        imgViewerImg.removeAttribute('src');
+        imgViewerReset();
+        if (!anyOverlayOpen()) lockBody(false);
+    }
+
+    imgViewerIn.addEventListener('click', function () { imgViewerZoom(1.25); });
+    imgViewerOut.addEventListener('click', function () { imgViewerZoom(1 / 1.25); });
+    imgViewerFit.addEventListener('click', function () { imgViewerReset(); });
+    imgViewerOne.addEventListener('click', function () {
+        var base = imgViewerBaseWidth();
+        var nw = imgViewerImg.naturalWidth || base;
+        if (base > 0) {
+            imgViewerScale = Math.max(0.2, Math.min(6, nw / base));
+            imgViewerX = 0; imgViewerY = 0; imgViewerApply();
+        }
+    });
+    imgViewerClose.addEventListener('click', closeImgViewer);
+
+    /* 点背景关掉（点在图片上不关） */
+    imgViewer.addEventListener('click', function (e) { if (e.target === imgViewer) closeImgViewer(); });
+
+    /* 滚轮缩放 */
+    imgViewer.addEventListener('wheel', function (e) {
+        e.preventDefault();
+        imgViewerZoom(e.deltaY < 0 ? 1.15 : 1 / 1.15);
+    }, { passive: false });
+
+    /* 按住拖动平移 */
+    (function () {
+        var dragging = false, sx = 0, sy = 0, ox = 0, oy = 0;
+        imgViewerImg.addEventListener('pointerdown', function (e) {
+            dragging = true;
+            sx = e.clientX; sy = e.clientY;
+            ox = imgViewerX; oy = imgViewerY;
+            imgViewerImg.classList.add('dragging');
+            try { imgViewerImg.setPointerCapture(e.pointerId); } catch (err) {}
+            e.preventDefault();
+        });
+        imgViewerImg.addEventListener('pointermove', function (e) {
+            if (!dragging) return;
+            imgViewerX = ox + (e.clientX - sx);
+            imgViewerY = oy + (e.clientY - sy);
+            imgViewerApply();
+        });
+        function stopDrag(e) {
+            if (!dragging) return;
+            dragging = false;
+            imgViewerImg.classList.remove('dragging');
+            try { imgViewerImg.releasePointerCapture(e.pointerId); } catch (err) {}
+        }
+        imgViewerImg.addEventListener('pointerup', stopDrag);
+        imgViewerImg.addEventListener('pointercancel', stopDrag);
+    })();
+
+    /* ============================================================
+       导出 / 导入
+       ============================================================ */
+    function hasActiveFilter() {
+        return filterChapter.value !== 'all' ||
+               filterFav.value === 'fav' ||
+               filterSearch.value.trim() !== '';
+    }
+
+    function openExportPanel() {
+        if (cards.length === 0) { showToast('还没有卡片可以导出哦~'); return; }
+        exportSelected = new Set();
+        if (hasActiveFilter()) {
+            getFilteredCards().forEach(function (c) { exportSelected.add(c.id); });
+        } else {
+            sortCards(cards.slice()).forEach(function (c) { exportSelected.add(c.id); });
+        }
+        renderExportList();
+        exportOverlay.classList.add('show');
+        lockBody(true);
+    }
+    function closeExportPanel() {
+        exportOverlay.classList.remove('show');
+        if (!anyOverlayOpen()) lockBody(false);
+        exportSelected = new Set();
+    }
+
+    function renderExportList() {
+        if (cards.length === 0) {
+            exportList.innerHTML = '<div class="export-empty">还没有卡片可以导出哦~</div>';
+            updateExportCount();
+            return;
+        }
+        var sorted = sortCards(cards.slice());
+        exportList.innerHTML = sorted.map(function (c) {
+            var checked = exportSelected.has(c.id);
+            var subj = (c.subject === '宏观') ? '宏观' : '微观';
+            var subjectHtml = '<span class="tag subj ' + (subj === '宏观' ? 'macro' : 'micro') + '">' + subj + '</span>';
+            var chapterHtml = c.chapter ? '<span class="tag">' + safeText(c.chapter) + '</span>' : '';
+            var qidHtml = c.qid ? '<span class="qid">' + safeText(c.qid) + '</span>' : '';
+            var hasImgHtml = c.hasImage ? '<span class="has-img">📐 有图示</span>' : '';
+            return '' +
+            '<label class="export-item' + (checked ? ' checked' : '') + '" data-id="' + safeText(c.id) + '">' +
+                '<input type="checkbox" data-id="' + safeText(c.id) + '"' + (checked ? ' checked' : '') + '>' +
+                '<div class="export-item-body">' +
+                    '<div class="export-item-meta">' + subjectHtml + chapterHtml + qidHtml + hasImgHtml + '</div>' +
+                    '<div class="export-item-q">' + safeText(c.question) + '</div>' +
+                '</div>' +
+            '</label>';
+        }).join('');
+        updateExportCount();
+    }
+
+    function updateExportCount() {
+        var n = exportSelected.size;
+        exportCount.textContent = n;
+        exportConfirmBtn.disabled = n === 0;
+        exportConfirmBtn.textContent = n > 0 ? '导出 (' + n + ')' : '导出';
+    }
+
+    exportList.addEventListener('click', function (e) {
+        var item = e.target.closest ? e.target.closest('.export-item') : null;
+        if (!item) return;
+        var id = item.dataset.id;
+        if (!id) return;
+        if (e.target.tagName === 'INPUT') return;
+        e.preventDefault();
+        if (exportSelected.has(id)) exportSelected.delete(id);
+        else exportSelected.add(id);
+        var cb = item.querySelector('input[type="checkbox"]');
+        if (cb) cb.checked = exportSelected.has(id);
+        item.classList.toggle('checked', exportSelected.has(id));
+        updateExportCount();
+    });
+
+    exportList.addEventListener('change', function (e) {
+        var cb = e.target;
+        if (!cb || cb.type !== 'checkbox') return;
+        var id = cb.dataset.id;
+        var item = cb.closest('.export-item');
+        if (cb.checked) exportSelected.add(id);
+        else exportSelected.delete(id);
+        if (item) item.classList.toggle('checked', cb.checked);
+        updateExportCount();
+    });
+
+    exportSelectAllBtn.addEventListener('click', function () {
+        exportSelected = new Set(cards.map(function (c) { return c.id; }));
+        renderExportList();
+    });
+    exportSelectNoneBtn.addEventListener('click', function () {
+        exportSelected = new Set();
+        renderExportList();
+    });
+    exportSelectInvertBtn.addEventListener('click', function () {
+        var next = new Set();
+        cards.forEach(function (c) { if (!exportSelected.has(c.id)) next.add(c.id); });
+        exportSelected = next;
+        renderExportList();
+    });
+
+    exportConfirmBtn.addEventListener('click', function () {
+        if (exportSelected.size === 0) { showToast('⚠️ 请至少勾选一张卡片'); return; }
+
+        var list = sortCards(cards.filter(function (c) { return exportSelected.has(c.id); }));
+        /* 导出带上章节顺序（按分类分开），换设备导入后顺序不会乱 */
+        var payload = {
+            app: 'my-cards',
+            version: 3,
+            exportedAt: new Date().toISOString(),
+            chapters: { '微观': chList('微观').slice(), '宏观': chList('宏观').slice() },
+            cards: list
+        };
+        var data = JSON.stringify(payload, null, 2);
+        var blob = new Blob([data], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        var d = new Date();
+        var stamp = d.getFullYear() + '-' +
+            String(d.getMonth() + 1).padStart(2, '0') + '-' +
+            String(d.getDate()).padStart(2, '0');
+        a.href = url;
+        a.download = '我的卡片_' + stamp + '_' + list.length + '张.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+
+        showToast('📤 已导出 ' + list.length + ' 张卡片');
+        closeExportPanel();
+    });
+
+    closeExportBtn.addEventListener('click', closeExportPanel);
+    exportCancelBtn.addEventListener('click', closeExportPanel);
+    exportOverlay.addEventListener('click', function (e) {
+        if (e.target === exportOverlay) closeExportPanel();
+    });
+
+    /* ---- 导入 ---- */
+    importBtn.addEventListener('click', function () { toggleIo(false); importFile.click(); });
+
+    importFile.addEventListener('change', function () {
+        var file = this.files && this.files[0];
+        if (!file) return;
+
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+            try {
+                var parsed = JSON.parse(ev.target.result);
+                var incoming = [];
+                var legacyCh = [];      /* 老文件：一整条章节表，没有分类，等卡片读完再按卡片定位 */
+
+                if (Array.isArray(parsed)) {
+                    incoming = parsed;                                  /* 老格式：只有卡片数组 */
+                } else if (parsed && Array.isArray(parsed.cards)) {
+                    incoming = parsed.cards;
+                    if (parsed.chapters && !Array.isArray(parsed.chapters) && typeof parsed.chapters === 'object') {
+                        /* 新格式 v3：按分类分开的章节表 */
+                        SUBJECTS.forEach(function (s) {
+                            if (Array.isArray(parsed.chapters[s])) {
+                                parsed.chapters[s].forEach(function (n) { pushChapter(s, n); });
+                            }
+                        });
+                    } else if (Array.isArray(parsed.chapters)) {
+                        legacyCh = parsed.chapters.filter(function (n) { return typeof n === 'string' && n.trim(); });
+                    }
+                } else {
+                    throw new Error('bad format');
+                }
+
+                var added = 0;
+                incoming.forEach(function (item) {
+                    if (item && typeof item.question === 'string') {
+                        var ch = (typeof item.chapter === 'string' ? item.chapter : '').trim();
+                        if (ch === UNCATEGORIZED) ch = '';
+                        var subj = (SUBJECTS.indexOf(item.subject) >= 0) ? item.subject : '微观';
+                        pushChapter(subj, ch);
+                        cards.push({
+                            id: uid(),
+                            subject: subj,
+                            chapter: ch,
+                            qid: typeof item.qid === 'string' ? item.qid : (typeof item.index === 'string' ? item.index : ''),
+                            hasImage: !!item.hasImage,
+                            question: item.question,
+                            answerHtml: item.answerHtml || item.answer || '',
+                            fav: !!item.fav,
+                            created: item.created || Date.now()
+                        });
+                        added++;
+                    }
+                });
+
+                /* 老文件的章节表：按「哪张卡在用」定位到分类 */
+                legacyCh.forEach(function (n) {
+                    var hit = cards.filter(function (c) { return (c.chapter || '').trim() === n; })[0];
+                    pushChapter(hit ? hit.subject : '微观', n);
+                });
+
+                if (added === 0) {
+                    showToast('⚠️ 文件里没有可导入的卡片');
+                } else {
+                    normalizeChapters();
+                    persist();
+                    updateChapterFilterOptions();
+                    render();
+                    showToast('📥 已导入 ' + added + ' 张卡片');
+                }
+            } catch (err) {
+                showToast('⚠️ 导入失败：文件格式不正确');
+            }
+            importFile.value = '';
+        };
+        reader.readAsText(file);
+    });
+
+    /* ============================================================
+       从 AI 对话导入
+       ------------------------------------------------------------
+       读的是 AI 答疑助手存在本地的对话记录（ai_assistant_history_v1），
+       把「一问一答」配成一张卡片：题目 = 你的提问，答案 = AI 的回答。
+       前提：本页与子页放在同一个站点目录下（同源），localStorage 才通。
+       ============================================================ */
+    var AI_HISTORY_KEY = 'ai_assistant_history_v1';
+
+    function oneLine(s) {
+        return String(s || '').replace(/\s+/g, ' ').trim();
+    }
+    /* 把 markdown 的符号去掉，只留下一句话做预览/题目 */
+    function mdPlain(s) {
+        return String(s || '')
+            .replace(/```[\s\S]*?```/g, ' ')
+            .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+            .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+            .replace(/^\s{0,3}#{1,6}\s+/gm, '')
+            .replace(/^\s*>\s?/gm, '')
+            .replace(/^\s*([-*+]|\d+[.)])\s+/gm, '')
+            .replace(/\*\*|__|~~|`/g, '')
+            .replace(/[*_]/g, '');
+    }
+    function escHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function inlineMd(s) {
+        var t = escHtml(s);
+        t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+        t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        t = t.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+        t = t.replace(/~~([^~]+)~~/g, '<s>$1</s>');
+        t = t.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        return t;
+    }
+    function isTableRow(s) { return /^\s*\|.*\|\s*$/.test(s); }
+    function isTableSep(s) { return /^\s*\|?[\s:\-|]+\|[\s:\-|]*$/.test(s) && /-/.test(s); }
+    function splitRow(s) {
+        return s.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(function (x) { return x.trim(); });
+    }
+
+    /* markdown -> 富文本 HTML（公式 $…$ / $$…$$ 原样留着，交给页面里的 KaTeX 渲染） */
+    function mdToHtml(md) {
+        var src = String(md || '').replace(/\r\n?/g, '\n');
+        var fences = [];
+        src = src.replace(/```[^\n]*\n([\s\S]*?)```/g, function (m, code) {
+            fences.push('<pre><code>' + escHtml(code.replace(/\n+$/, '')) + '</code></pre>');
+            return '\n\u0000F' + (fences.length - 1) + '\u0000\n';
+        });
+
+        var lines = src.split('\n');
+        var out = [];
+        var i = 0;
+        while (i < lines.length) {
+            var line = lines[i];
+            if (!line.trim()) { i++; continue; }
+
+            var fm = line.trim().match(/^\u0000F(\d+)\u0000$/);
+            if (fm) { out.push(fences[+fm[1]] || ''); i++; continue; }
+
+            /* 表格 */
+            if (isTableRow(line) && i + 1 < lines.length && isTableSep(lines[i + 1])) {
+                var head = splitRow(line);
+                i += 2;
+                var rows = [];
+                while (i < lines.length && isTableRow(lines[i])) { rows.push(splitRow(lines[i])); i++; }
+                var th = head.map(function (h) { return '<th>' + inlineMd(h) + '</th>'; }).join('');
+                var tb = rows.map(function (r) {
+                    return '<tr>' + head.map(function (_, ci) { return '<td>' + inlineMd(r[ci] || '') + '</td>'; }).join('') + '</tr>';
+                }).join('');
+                out.push('<table><thead><tr>' + th + '</tr></thead><tbody>' + tb + '</tbody></table>');
+                continue;
+            }
+
+            /* 标题 */
+            var h = line.match(/^(#{1,6})\s+(.*)$/);
+            if (h) { var lv = Math.min(6, h[1].length); out.push('<h' + lv + '>' + inlineMd(h[2]) + '</h' + lv + '>'); i++; continue; }
+
+            /* 分隔线 */
+            if (/^\s*([-*_])\s*\1\s*\1[\s\-*_]*$/.test(line)) { out.push('<hr>'); i++; continue; }
+
+            /* 引用 */
+            if (/^\s*>\s?/.test(line)) {
+                var q = [];
+                while (i < lines.length && /^\s*>\s?/.test(lines[i])) { q.push(lines[i].replace(/^\s*>\s?/, '')); i++; }
+                out.push('<blockquote>' + q.map(function (x) { return inlineMd(x); }).join('<br>') + '</blockquote>');
+                continue;
+            }
+
+            /* 列表 */
+            if (/^\s*([-*+]|\d+[.)])\s+/.test(line)) {
+                var ordered = /^\s*\d+[.)]\s+/.test(line);
+                var items = [];
+                while (i < lines.length && /^\s*([-*+]|\d+[.)])\s+/.test(lines[i])) {
+                    items.push(lines[i].replace(/^\s*([-*+]|\d+[.)])\s+/, ''));
+                    i++;
+                }
+                out.push('<' + (ordered ? 'ol' : 'ul') + '>' +
+                    items.map(function (t) { return '<li>' + inlineMd(t) + '</li>'; }).join('') +
+                    '</' + (ordered ? 'ol' : 'ul') + '>');
+                continue;
+            }
+
+            /* 段落：连续非空行合成一段（p 里是 pre-wrap，换行会保留） */
+            var para = [];
+            while (i < lines.length && lines[i].trim() &&
+                   !/^\s*>\s?/.test(lines[i]) &&
+                   !/^\s*([-*+]|\d+[.)])\s+/.test(lines[i]) &&
+                   !/^#{1,6}\s+/.test(lines[i]) &&
+                   !(isTableRow(lines[i]) && i + 1 < lines.length && isTableSep(lines[i + 1])) &&
+                   !/^\u0000F\d+\u0000$/.test(lines[i].trim())) {
+                para.push(lines[i]);
+                i++;
+            }
+            if (!para.length) { i++; continue; }
+            out.push('<p>' + para.map(inlineMd).join('\n') + '</p>');
+        }
+        return out.join('');
+    }
+
+    function loadAiPairs() {
+        var hist = [];
+        try {
+            var raw = localStorage.getItem(AI_HISTORY_KEY);
+            if (raw) hist = JSON.parse(raw) || [];
+        } catch (e) { hist = []; }
+        if (!Array.isArray(hist)) hist = [];
+        var pairs = [], pendingQ = '';
+        hist.forEach(function (m) {
+            if (!m) return;
+            var txt = String(m.content || '');
+            if (m.role === 'user') {
+                pendingQ = txt;
+            } else if (m.role === 'assistant' && txt.trim()) {
+                pairs.push({ q: pendingQ, a: txt });
+                pendingQ = '';
+            }
+        });
+        return pairs;
+    }
+
+    function updateAiImpCount() {
+        aiImpCount.textContent = aiImpPicked.size;
+    }
+    function renderAiImpList() {
+        if (!aiImpPairs.length) {
+            aiImpList.innerHTML = '<div class="ai-imp-empty">还没读到 AI 对话记录<br>' +
+                '先在页面右下角的「AI 答疑助手」里聊几句，再回来点这里</div>';
+            return;
+        }
+        var html = '';
+        aiImpPairs.forEach(function (p, i) {
+            var checked = aiImpPicked.has(i);
+            var q = oneLine(mdPlain(p.q)) || '（这条没有提问）';
+            var a = oneLine(mdPlain(p.a)).slice(0, 150) || '（空回答）';
+            html += '<label class="export-item' + (checked ? ' checked' : '') + '" data-i="' + i + '">' +
+                        '<input type="checkbox" data-i="' + i + '"' + (checked ? ' checked' : '') + '>' +
+                        '<div class="export-item-body">' +
+                            '<div class="export-item-q">' + safeText(q.slice(0, 120)) + (q.length > 120 ? '…' : '') + '</div>' +
+                            '<div class="export-item-a">' + safeText(a) + (a.length >= 150 ? '…' : '') + '</div>' +
+                        '</div>' +
+                    '</label>';
+        });
+        aiImpList.innerHTML = html;
+        updateAiImpCount();
+    }
+
+    /* 第 8 轮：章节下拉跟着「分类」走 —— 切分类时换成对应分类的章节表 */
+    function updateAiImpChapterOptions(prefer) {
+        var s = normSubject(aiImpSubject.value);
+        var list = chList(s);
+        var prev = (typeof prefer === 'string') ? prefer : aiImpChapter.value;
+        var html = '<option value="">不设章节</option>';
+        list.forEach(function (ch) {
+            html += '<option value="' + safeText(ch) + '">' + safeText(ch) + '</option>';
+        });
+        aiImpChapter.innerHTML = html;
+        aiImpChapter.value = (list.indexOf(prev) >= 0) ? prev : '';
+    }
+
+    function openAiImp() {
+        aiImpPairs = loadAiPairs();
+        aiImpPicked = new Set();
+        aiImpPairs.forEach(function (p, i) { aiImpPicked.add(i); });   // 默认全选
+        /* 分类：优先跟当前章节筛选一致，否则用上次用过的 */
+        var fp = parseChFilter(filterChapter.value);
+        var defSubj = (fp && SUBJECTS.indexOf(fp.subject) >= 0)
+            ? fp.subject
+            : (SUBJECTS.indexOf(lastSubject) >= 0 ? lastSubject : '微观');
+        aiImpSubject.value = defSubj;
+        updateAiImpChapterOptions((fp && fp.subject === defSubj) ? fp.name : '');
+        renderAiImpList();
+        aiImpOverlay.classList.add('show');
+        lockBody(true);
+    }
+    function closeAiImp() {
+        aiImpOverlay.classList.remove('show');
+        if (!anyOverlayOpen()) lockBody(false);
+    }
+
+    function doAiImport() {
+        var picked = [];
+        aiImpPairs.forEach(function (p, i) { if (aiImpPicked.has(i)) picked.push(p); });
+        if (!picked.length) { showToast('⚠️ 先勾选要导入的对话'); return; }
+        var subj = SUBJECTS.indexOf(aiImpSubject.value) >= 0 ? aiImpSubject.value : '微观';
+        var chName = String(aiImpChapter.value || '').trim();
+        if (chName && chList(subj).indexOf(chName) < 0) chName = '';   // 分类换过就对不上了，丢掉
+        picked.forEach(function (p) {
+            var q = oneLine(p.q);
+            if (!q) q = oneLine(mdPlain(p.a)).slice(0, 60) || '（AI 回答）';
+            cards.push({
+                id: uid(),
+                subject: subj,
+                chapter: chName,
+                qid: '',
+                hasImage: false,
+                question: q,
+                answerHtml: mdToHtml(p.a),
+                fav: false,
+                created: Date.now()
+            });
+        });
+        lastSubject = subj;
+        lastChapterBySubject[subj] = chName || '';
+        persist();
+        updateChapterFilterOptions();
+        render();
+        closeAiImp();
+        showToast('✅ 已导入 ' + picked.length + ' 张卡片' +
+            (chName ? '（' + subj + ' · ' + chName + '）' : '（未设章节，可再编辑补上）'));
+    }
+
+    aiImportBtn.addEventListener('click', function () { this.blur(); openAiImp(); });
+    closeAiImpBtn.addEventListener('click', closeAiImp);
+    aiImpCancelBtn.addEventListener('click', closeAiImp);
+    aiImpConfirmBtn.addEventListener('click', doAiImport);
+    aiImpSubject.addEventListener('change', function () { updateAiImpChapterOptions(''); });
+    aiImpSelectAllBtn.addEventListener('click', function () {
+        aiImpPairs.forEach(function (p, i) { aiImpPicked.add(i); });
+        renderAiImpList();
+    });
+    aiImpSelectNoneBtn.addEventListener('click', function () {
+        aiImpPicked = new Set();
+        renderAiImpList();
+    });
+    aiImpList.addEventListener('change', function (e) {
+        var box = e.target;
+        if (!box || box.type !== 'checkbox') return;
+        var i = +box.dataset.i;
+        if (box.checked) aiImpPicked.add(i); else aiImpPicked.delete(i);
+        var item = box.closest('.export-item');
+        if (item) item.classList.toggle('checked', box.checked);
+        updateAiImpCount();
+    });
+
+    /* ============================================================
+       筛选栏 + 键盘
+       ============================================================ */
+    var searchTimer = null;
+    filterSearch.addEventListener('input', function () {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(render, 220);
+    });
+    filterChapter.addEventListener('change', render);
+    filterFav.addEventListener('change', render);
+
+    /* 下拉选完自动收起（与子页一致） */
+    document.querySelectorAll('.filter-bar select').forEach(function (sel) {
+        sel.addEventListener('change', function () { this.blur(); });
+    });
+
+    clearFilterBtn.addEventListener('click', function () {
+        filterChapter.value = 'all';
+        filterFav.value = 'all';
+        filterSearch.value = '';
+        render();
+    });
+
+    var allExpanded = false;
+    expandAllBtn.addEventListener('click', function () {
+        allExpanded = !allExpanded;
+        grid.querySelectorAll('.card-item').forEach(function (card) {
+            var id = card.dataset.id;
+            var ans = card.querySelector('.card-answer');
+            if (!ans) return;
+            ans.classList.toggle('open', allExpanded);
+            if (allExpanded) openIds.add(id); else openIds.delete(id);
+        });
+        expandAllBtn.textContent = allExpanded ? '全部收起' : '全部展开';
+    });
+
+    exportBtn.addEventListener('click', openExportPanel);
+
+    document.addEventListener('keydown', function (e) {
+        if (tableOverlay.classList.contains('show')) {
+            if (e.key === 'Escape') { e.preventDefault(); closeTableDialog(); }
+            return;
+        }
+        if (clearOverlay.classList.contains('show')) {
+            if (e.key === 'Escape') { e.preventDefault(); closeClearData(); }
+            return;
+        }
+        if (confirmOverlay.classList.contains('show')) {
+            if (e.key === 'Escape') { e.preventDefault(); closeConfirm(); }
+            if (e.key === 'Enter') { e.preventDefault(); confirmOkBtn.click(); }
+            return;
+        }
+        if (editorOverlay.classList.contains('show')) {
+            if (e.key === 'Escape') {
+                if (isChapterPopOpen()) { e.preventDefault(); closeChapterPop(); return; }
+                e.preventDefault(); closeEditor();
+            }
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); saveCard(); }
+            return;
+        }
+        if (exportOverlay.classList.contains('show')) {
+            if (e.key === 'Escape') { e.preventDefault(); closeExportPanel(); }
+            return;
+        }
+        if (aiImpOverlay.classList.contains('show')) {
+            if (e.key === 'Escape') { e.preventDefault(); closeAiImp(); }
+            return;
+        }
+    });
+
+    /* 图片大图预览的键盘操作：Esc 关闭、+ / - 缩放、0 回到适应窗口 */
+    document.addEventListener('keydown', function (e) {
+        if (!imgViewer.classList.contains('show')) return;
+        if (e.key === 'Escape') { e.preventDefault(); closeImgViewer(); return; }
+        if (e.key === '+' || e.key === '=') { e.preventDefault(); imgViewerZoom(1.25); return; }
+        if (e.key === '-' || e.key === '_') { e.preventDefault(); imgViewerZoom(1 / 1.25); return; }
+        if (e.key === '0') { e.preventDefault(); imgViewerReset(); }
+    });
+
+    /* ============================================================
+       初始化
+       ============================================================ */
+    try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) {}
+    normalizeChapters();
+    updateChapterFilterOptions();
+    render();
+    /* 从 AI 助手那边跳过来时带 #ai，落地直接弹导入面板 */
+    if (/(^|[#&])ai($|[&])/i.test(location.hash || '')) {
+        setTimeout(openAiImp, 260);
+    }
+    /* KaTeX 可能比脚本晚到，补渲染几次 */
+    setTimeout(function () { renderMathIn(grid); }, 400);
+    setTimeout(function () { renderMathIn(grid); }, 1200);
+
+})();
+</script>
+</body>
+</html>

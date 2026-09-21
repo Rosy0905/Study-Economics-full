@@ -992,6 +992,39 @@ footer {
 .cbtn-ok:active { filter: brightness(0.97); transform: scale(0.97); }
 .cbtn-export:active { filter: brightness(0.97); transform: scale(0.97); }
 .exp-opt:active { background: #eef7f2; border-color: #b9e2cd; }
+/* ===== 方案 B：网格下方一条通栏「我的卡片」 ===== */
+.mine-bar {
+  position: relative; display: flex; align-items: center; gap: 16px;
+  margin: 0 0 22px; padding: 16px 22px 16px 26px;
+  background: #fff; border: 1px dashed #cfe3d7; border-radius: 16px;
+  text-decoration: none; color: inherit; overflow: hidden;
+  box-shadow: 0 4px 14px rgba(70, 115, 90, .07);
+  transition: transform .2s cubic-bezier(.2,.7,.4,1), box-shadow .2s ease, border-color .2s ease;
+}
+.mine-bar::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+  background: linear-gradient(180deg, #5B8FA8, #8FBBD0); transition: width .2s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .mine-bar:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(70, 115, 90, .14); border-color: #b9d8c4; }
+  .mine-bar:hover::before { width: 8px; }
+  .mine-bar:hover .mine-bar-go { opacity: 1; transform: translateX(3px); }
+}
+.mine-bar:active { transform: translateY(-1px); }
+.mine-bar-ic {
+  width: 46px; height: 46px; flex-shrink: 0; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  background: #EDF4F8; font-size: 23px; line-height: 1;
+}
+.mine-bar-txt { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
+.mine-bar-txt b { font-size: 16px; font-weight: 600; color: #1e4a2a; letter-spacing: .3px; }
+.mine-bar-txt i { font-style: normal; font-size: 12.5px; color: #75907c; line-height: 1.5; }
+.mine-bar-go { font-size: 12.5px; font-weight: 600; color: #4E86A2; opacity: .55; white-space: nowrap;
+  transition: opacity .2s ease, transform .2s ease; }
+@media (max-width: 560px) {
+  .mine-bar { padding: 14px 18px 14px 22px; gap: 12px; }
+  .mine-bar-txt i { font-size: 12px; }
+}
 </style>
     <meta name="AIGC" content='{"AIGC":{"Label":"2","ContentProducer":"WUSIGRAM","ProduceID":"xnObO5Ilgu7lB1GxAxmCpw2LCwPCjmx8kjl2d3Txsdg=","ReservedCode1":"rUhPLxJt9zQ5PlAXxGBDxpfKGSrQBObcCfnYogxXo310AW4aGYOEofwRf4YK81OqT1Nd2v7ScV0r0taDSEbL8Q==","ContentPropagator":"","PropagateID":"","ReservedCode2":""}}'>
 </head>
@@ -1004,6 +1037,17 @@ footer {
   </header>
 
   <div class="grid" id="moduleGrid"></div>
+
+  <!-- 方案 B：一条通栏，插在网格和「学习进度」之间 -->
+  <a class="mine-bar" href="./9my-cards/">
+    <span class="mine-bar-ic">📒</span>
+    <span class="mine-bar-txt">
+      <b>我的卡片</b>
+      <i>自己整理与收藏的卡片</i>
+    </span>
+    <span class="mine-bar-go">进入 →</span>
+  </a>
+
 
   <!-- ============ 学习进度 + 朗读 + 清除 + 同步 ============ -->
   <div class="note-bar" id="noteBar">
@@ -1658,7 +1702,10 @@ function renderHome() {
   const exportCancel  = document.getElementById('exportCancel');
 
   /* ---------- 存储 key 分类 ---------- */
-  const MODULE_PREFIXES = MODULES.map(m => m.storagePrefix).filter(Boolean);
+  /* 26/09/20：主页新增「我的卡片」入口，它的卡片和章节不在八个模块里，
+     但导出 / 同步时也一起带上，否则备份里会漏掉自己整理的卡片。 */
+  const MODULE_PREFIXES = MODULES.map(m => m.storagePrefix).filter(Boolean)
+                          .concat(['custom_cards_', 'custom_chapters_']);
 
   /* 学习数据（全局） */
   const ALLOW = ['eco_kb_progress', 'eco_kb_tts_rate'];

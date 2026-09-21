@@ -410,17 +410,18 @@ body.shared-ai-view .ai-close{display:none;}
   .ai-msgs{padding:16px 34px 6px 16px;}
   .ai-msg-actions{opacity:.7;pointer-events:auto;}
   .ai-act-btn{width:26px;height:26px;}
-  /* 手机端一律保持原样：垂直位置、横条间距、可滚高度都不动 */
-  .ai-progress{right:6px;padding:4px 0;top:50%;}
-  /* 手机端没有那张弹出卡片，横条列是唯一的入口，得让它自己的滚动条露出来 */
-  .ai-progress-list{gap:6px;max-height:78vh;overflow-y:auto;scrollbar-width:thin;-ms-overflow-style:auto;}
-  .ai-progress-list::-webkit-scrollbar{width:4px;display:block;}
-  .ai-progress-list::-webkit-scrollbar-thumb{background:#cfe8db;border-radius:10px;}
-  .ai-progress-list::-webkit-scrollbar-track{background:transparent;}
-  .ai-tick{width:14px;height:22px;}
+  /* 26/09/21：手机端改用与电脑端同一套 —— 高度受限的横条列 + 点一下弹出的小卡片
+     （小卡片里逐行显示每轮提问）。以前手机上把卡片整块 display:none，横条列又给了
+     78vh，条数一多就从窗口中间一路铺到底，把输入框和发送键压在下面点不到。 */
+  .ai-progress{right:4px;padding:4px 0;top:calc(50% - var(--aiHeadHalf,30px));transform:translateY(-50%);}
+  .ai-progress-list{gap:0;max-height:calc(var(--aiCardMax,240px) - 12px);overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;}
+  .ai-progress-list::-webkit-scrollbar{width:0;height:0;display:none;}
+  .ai-tick{width:16px;height:24px;}
   .ai-tick::after{width:10px;height:2px;}
-  .ai-tick.active::after{width:14px;}
-  .ai-progress-panel{display:none;}
+  .ai-tick.active::after{width:16px;}
+  .ai-progress-panel{display:block;right:-6px;width:min(74vw,270px);max-height:var(--aiCardMax,240px);}
+  .ai-progress-panel-inner{max-height:calc(var(--aiCardMax,240px) - 12px);}
+  .ai-progress-item{height:24px;padding:0 12px;font-size:12.5px;line-height:24px;}
   .ai-input-wrap{padding:8px 10px calc(8px + env(safe-area-inset-bottom));}
   .ai-input-wrap textarea{min-height:38px;padding:9px 12px;font-size:14px;}
   .ai-attach-btn{width:42px;height:42px;border-radius:12px;}
@@ -503,7 +504,7 @@ body.shared-ai-view .ai-close{display:none;}
     custom:   { name: '自定义（OpenAI 兼容）', base: '', model: '', hint: '兼容 /chat/completions 的接口' }
   };
 
-  var SYS_VER = 'v4';
+  var SYS_VER = 'v5';
 
   var DEFAULT_SYSTEM = [
     '你是南开大学经济学考研（847经济学）的专属答疑助手，只讲微观经济学和宏观经济学两门课。',
@@ -512,9 +513,6 @@ body.shared-ai-view .ai-close{display:none;}
     '微观：消费者行为、生产者行为、完全竞争/垄断/垄断竞争/寡头、博弈论、要素市场、一般均衡与福利经济学、市场失灵。',
     '宏观：宏观经济数据、IS-LM、AD-AS、开放经济、失业与通胀、菲利普斯曲线、经济增长、宏观经济政策争论、宏观流派、消费与投资微观基础。',
     '',
-    '【不涉及】',
-    '政治经济学、计量经济学、金融学专业课内容。',
-    '',
     '【回答方式】',
     '（1）概念类：先给精准定义，再讲经济学直觉，必要时画图或列式，最后给考研答题要点。',
     '（2）推导类：分步推导，每步标注依据，关键结论加粗。',
@@ -522,42 +520,17 @@ body.shared-ai-view .ai-close{display:none;}
     '（4）对比类：必须用表格。',
     '（5）答题类：按"总—分—总"给框架。',
     '',
-    '【关于用户上传的图片与文件】',
-    '用户可能上传题目截图、手写笔记照片、讲义图片或文本文件。',
-    '请先看清图片/文件里的题目原文再作答，不要凭猜测编题。',
-    '若图片模糊、被截断或关键信息缺失，直接说明"这里看不清/缺了哪一部分"，请用户补充，不要硬答。',
-    '若图片内容与页面卡片题目相关，可结合卡片上下文一起回答。',
-    '',
     '【卡片指代规则】',
-    '提到用户在看的内容时，一律用卡片的【标签】指代（如"你现在看的这道消费者行为题"），',
-    '绝对不要用"第1张""第2张"这种序号，因为序号每次都在变。',
-    '若上下文里出现"焦点已切换"，说明用户已经换题，直接按新的标签回答，',
-    '不要反问"你是不是还在看上一张"。',
+    '提到用户在看的内容时，一律用卡片的【标签】指代。',
+    '若上下文里出现"焦点已切换"，说明用户已经换题，直接按新的标签回答。用户说“看这张”默认是目前标签的卡片。',
     '',
-    '【格式要求（必须遵守）】',
-    '· 所有数学符号和公式必须用 LaTeX 语法：',
-    '  - 行内公式：$P = MR$、$MRS_{xy} = P_x/P_y$、$u = x^a y^b$',
-    '  - 独立公式：$$MR = P\\left(1 - \\frac{1}{|e_d|}\\right)$$',
-    '· 绝对不要用 Unicode 符号拼公式（不要写 ⋅ ≤ ∞ ∑ ∂ π α 这种），一律用 LaTeX',
-    '· 比较运算符 >、<、≥、≤ 在公式内直接用 >、<、\\geq、\\leq，不要写 &gt; &lt;',
+    '【格式要求】',
+    '· 所有数学公式用 LaTeX：行内 $...$，独立 $$...$，不要用 Unicode 符号拼公式',
     '· 对比、分类、总结类信息用 Markdown 表格',
-    '· 小标题用 ## 或 ###，要点如要分层级用（1）、①、a.（优先下述编号格式），关键词用 **加粗**',
-    '· 不要输出 --- 这种分割线，用空行或小标题分隔章节即可',
-    '',
-    '【编号格式（必须严格遵守，不允许例外）】',
-    '分点回答时，绝对禁止使用任何 Markdown 列表符号：',
-    '· 不要用 "- "、"* "、"+" 开头',
-    '· 不要用 "1. "、"2. "、"3. " 开头',
-    '· 不要用 "1、2、3、" 开头',
-    '一律改用中文括号编号，格式如下：',
-    '（1）第一点内容，单独成段。',
-    '（2）第二点内容，单独成段。',
-    '（3）第三点内容，单独成段。',
-    '不够用的情况用①②③、a.b.c.或者罗马数字也是被允许的。',
-    '这样可以避免在渲染时产生多余空行。小标题仍可用 ## 或 ###，加粗仍可用 **加粗**，公式仍用 $...$ 或 $$...$$。',
+    '· 小标题用 ## 或 ###，分点用（1）、①、a.等（不要用Markdown列表符号！），关键词用 **加粗**',
+    '· 不要输出 --- 分割线，用空行或小标题分隔章节即可',
     '',
     '【学习辅助】',
-    '- 遇到典型题型，主动提"这是南开真题常考风格"或"这是XX名校真题"',
     '- 遇到容易混淆的概念，主动做对比',
     '- 遇到高频考点，主动提醒"这是高频考点，结论要背下来"',
     '',
@@ -835,6 +808,10 @@ body.shared-ai-view .ai-close{display:none;}
   }
   function showConfig() {
     if (isSharedView) return;              /* 分享视图禁止打开配置页 */
+    /* 离开对话前先记住滚到哪儿了：配置页一挂 .ai-body 就 display:none，
+       消息区高度归零、浏览器会把 scrollTop 清成 0。以前没记，回来就只能按
+       「上次关窗时的旧位置」甚至 0 还原，看着就像整段对话自己往上跳了一截。 */
+    try { savedScrollTop = msgsEl.scrollTop; } catch (e) {}
     configEl.classList.remove('hide'); bodyEl.classList.add('hide');
     headTitle.textContent = 'AI 答疑助手 · 设置'; fillConfigForm();
   }
@@ -845,21 +822,27 @@ body.shared-ai-view .ai-close{display:none;}
     stickBottom = false;
     renderHistory();
 
-    setTimeout(function () {
-      try {
-        if (isSharedView) {
-          msgsEl.scrollTop = 0;            // 分享视图：从头开始看
-        } else if (savedScrollTop !== null) {
-          msgsEl.scrollTop = savedScrollTop;
-        } else {
-          msgsEl.scrollTop = msgsEl.scrollHeight;
-        }
-        var gap = msgsEl.scrollHeight - msgsEl.scrollTop - msgsEl.clientHeight;
-        stickBottom = gap < 60;
-      } catch (e) {}
-      if (!isSharedView) inputEl.focus();
-      buildNav();
-    }, 120);
+    requestAnimationFrame(function () {
+      setTimeout(function () {
+        try {
+          if (isSharedView) {
+            msgsEl.scrollTop = 0;            // 分享视图：从头开始看
+          } else {
+            /* 先给它一个最大值（ renderHistory 已经滚到底了），再把记下的位置压回去；
+               如果记下的位置超过了当前内容高度，就以内容底部为准。 */
+            msgsEl.scrollTop = msgsEl.scrollHeight;
+            if (savedScrollTop !== null) {
+              msgsEl.scrollTop = Math.min(savedScrollTop, Math.max(0, msgsEl.scrollHeight - msgsEl.clientHeight));
+            }
+          }
+          var gap = msgsEl.scrollHeight - msgsEl.scrollTop - msgsEl.clientHeight;
+          stickBottom = gap < 60;
+        } catch (e) {}
+        /* 导航条必须等滚动位置定下来再建，否则高亮的还是「重绘瞬间」那一条 */
+        buildNav();
+        if (!isSharedView) inputEl.focus({ preventScroll: true });
+      }, 60);
+    });
   }
   function hasValidCfg() { return cfg.key && cfg.base && cfg.model; }
 
@@ -994,10 +977,20 @@ body.shared-ai-view .ai-close{display:none;}
     setTimeout(buildNav, 260);
   }
   function closePanel() {
+    /* 26/09/21：生成中关窗不等于「作废这一次回答」。
+       以前这里直接 stopStream()，已经吐出来的字既不进历史、DOM 里那条气泡下次重绘
+       也会被整个清掉，等于白等一场。现在改成正常收尾：
+       停掉网络请求 + 把已收到的部分原样存成一条完整消息（还能接着 regenerate）。 */
+    if (isStreaming) {
+      streamToken++;
+      if (controller) { try { controller.abort(); } catch (e) {} controller = null; }
+      finalizeStream({ name: 'AbortError' });
+    } else {
+      stopStream();
+    }
     panel.classList.remove('show');
     fab.classList.remove('hidden');
     if (!isSharedView && isMobile()) unlockBodyScroll();
-    stopStream();
     try { savedScrollTop = msgsEl.scrollTop; } catch (e) {}
   }
 
@@ -1033,12 +1026,15 @@ body.shared-ai-view .ai-close{display:none;}
   /* 进入"勾选分享"模式：每条消息可点选，仅把选中的部分生成分享（链接/图片） */
   /* 消息点击统一用事件委托：只在勾选模式下生效，
      避免逐条绑定点击监听后退出模式仍残留导致正常状态下点消息出现高亮 */
-  msgsEl.addEventListener('click', function (e) {
+    msgsEl.addEventListener('click', function (e) {
     if (!selecting) return;
     var div = e.target && e.target.closest ? e.target.closest('.ai-msg') : null;
     if (!div) return;
     if (div.classList.contains('sys') || div.classList.contains('err')) return;
     var idx = +div.dataset.idx;
+    /* 拿不到合法下标（这条消息还没落进 history，比如正在流式输出的那条）就不让它勾选，
+       免得又攒出一个 NaN key 把计数搞乱 */
+    if (!isFinite(idx) || idx < 0) { showToast('这条还没生成完，等它结束再勾选'); return; }
     if (selectedSet[idx]) { delete selectedSet[idx]; div.classList.remove('selected'); }
     else { selectedSet[idx] = true; div.classList.add('selected'); }
     updateShareCount();
@@ -1082,16 +1078,42 @@ body.shared-ai-view .ai-close{display:none;}
     return msgsEl.querySelectorAll('.ai-msg:not(.sys):not(.err)').length;
   }
 
+  /* 勾选用的是 history 下标，一旦 history 被删/被截断，旧下标就指到别的消息去了。
+     这两个函数在所有会改动 history 的地方之后调用，保证「勾的是哪条」永远对得上：
+       pruneSelection()          —— 丢掉越界 / 非数字的下标（NaN、超过长度的）
+       shiftSelectionAfter(n)    —— 第 n 条被删了，后面所有下标减 1          */
+  function pruneSelection() {
+    Object.keys(selectedSet).forEach(function (k) {
+      var i = +k;
+      if (!isFinite(i) || i < 0 || i >= history.length) delete selectedSet[k];
+    });
+  }
+  function shiftSelectionAfter(fromIdx) {
+    var old = selectedSet;
+    selectedSet = {};
+    Object.keys(old).forEach(function (k) {
+      var i = +k;
+      if (!isFinite(i)) return;
+      if (i === fromIdx) return;                       /* 被删掉的那条，随之消失 */
+      selectedSet[i > fromIdx ? i - 1 : i] = true;
+    });
+  }
+
   function updateShareCount() {
+    pruneSelection();                 /* 每次刷新计数前先校正，界面上的数字不会说谎 */
     var n = Object.keys(selectedSet).length;
     var c = $('aiShareCount'); if (c) c.textContent = '已选 ' + n + ' 条';
     var g = $('aiShareGen'); if (g) g.disabled = n === 0;
+    /* 「全选 / 取消全选」按钮文字跟着实际状态走（别的路径改动勾选后不会标错） */
+    var all = $('aiShareAll');
+    if (all) all.textContent = (n > 0 && n === countSelectable()) ? '取消全选' : '全选';
   }
 
   function genShareLink() {
     var picked = [];
+    pruneSelection();
     history.forEach(function (m, i) { if (selectedSet[i]) picked.push(m); });
-    if (!picked.length) { showToast('请先勾选要分享的消息'); return; }
+    if (!picked.length) { showToast('勾选状态已失效，请重新点选要分享的消息'); return; }
     var enc = encodeConv(picked);
     if (!enc) { showToast('暂无可分享的内容'); return; }
     if (enc.length > 16000) { showToast('所选内容过长，请减少勾选'); return; }
@@ -1110,8 +1132,9 @@ body.shared-ai-view .ai-close{display:none;}
   function openShareChoice() {
     if (shareImgBusy) { showToast('正在生成分享图片，请稍候…'); return; }
     var picked = [];
+    pruneSelection();
     history.forEach(function (m, i) { if (selectedSet[i]) picked.push(m); });
-    if (!picked.length) { showToast('请先勾选要分享的消息'); return; }
+    if (!picked.length) { showToast('勾选状态已失效，请重新点选要分享的消息'); return; }
     var overlay = document.createElement('div');
     overlay.className = 'ai-share-choice-ov';
     overlay.innerHTML =
@@ -1185,8 +1208,17 @@ body.shared-ai-view .ai-close{display:none;}
   function generateShareImage() {
     if (shareImgBusy) return;
     var picked = [];
+    pruneSelection();
     history.forEach(function (m, i) { if (selectedSet[i]) picked.push({ m: m, i: i }); });
-    if (!picked.length) { showToast('请先勾选要分享的消息'); return; }
+    if (!picked.length) { showToast('勾选状态已失效，请重新点选要分享的消息'); return; }
+    /* 勾了但在页面上找不到对应节点的那几条（比如 DOM 里那条已被替换走了），
+       发出前先补 —— 否则生成出来的图片会莫名其妙少几条 */
+    if (picked.some(function (p) { return !msgsEl.querySelector('.ai-msg[data-idx="' + p.i + '"]'); })) {
+      renderHistory();
+      picked = [];
+      history.forEach(function (m, i) { if (selectedSet[i]) picked.push({ m: m, i: i }); });
+      if (!picked.length) { showToast('请重新点选要分享的消息'); return; }
+    }
     shareImgBusy = true;
     showToast('正在生成分享图片，请稍候…');
     loadShareHtml2Canvas().then(function (h2c) {
@@ -1363,14 +1395,15 @@ body.shared-ai-view .ai-close{display:none;}
     $('aiShareGen').addEventListener('click', openShareChoice);
     $('aiShareCancel').addEventListener('click', exitSelectMode);
     $('aiShareAll').addEventListener('click', function () {
+      pruneSelection();
       var allSel = Object.keys(selectedSet).length === countSelectable() && countSelectable() > 0;
       msgsEl.querySelectorAll('.ai-msg').forEach(function (div) {
         if (div.classList.contains('sys') || div.classList.contains('err')) return;
         var idx = +div.dataset.idx;
+        if (!isFinite(idx) || idx < 0) return;        /* 正在生成的那条不选 */
         if (allSel) { delete selectedSet[idx]; div.classList.remove('selected'); }
         else { selectedSet[idx] = true; div.classList.add('selected'); }
       });
-      $('aiShareAll').textContent = allSel ? '全选' : '取消全选';
       updateShareCount();
     });
   }
@@ -1744,7 +1777,14 @@ body.shared-ai-view .ai-close{display:none;}
     return t;
   }
 
-  window.__AI_RERENDER__ = function () { renderHistory(); };
+  /* KaTeX 加载完了要把页面上那些土黄色的 $…$ 换成正经公式 —— 但正在打字的时候不能整屏重绘：
+     renderHistory() 会清空消息区，正在流式的那条气泡的 DOM 引用就断在半空，
+     后面再吐出来的字全写到一个「不在页面上」的节点里，用户看着像答案凭空消失。
+     所以流式期间先记一笔，等 finalizeStream 收尾后再统一重绘。 */
+  window.__AI_RERENDER__ = function () {
+    if (isStreaming) { katexPendingRerender = true; return; }
+    renderHistory();
+  };
 
   /* ===================== 复制功能 ===================== */
   function copyToClipboard(text, onSuccess) {
@@ -1780,9 +1820,17 @@ body.shared-ai-view .ai-close{display:none;}
 
   var SEND_ICON  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
   var PAUSE_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+  var katexPendingRerender = false;   /* KaTeX 迟到期间正在流式输出 → 收尾后再重绘 */
   var PLAY_ICON  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>';
 
   function attachMsgActions(div, rawText, role, idx) {
+    /* 把消息在 history 里的下标写回 DOM。
+       勾选分享（删除/重绘后的状态还原、生成图片找节点）全靠这个 data-idx：
+       以前只有「整屏重绘」（renderHistory）才写，流式追加 / 发送后立即产生的消息没有，
+       于是点它们勾选时 +undefined → NaN，所有新消息共用一个 key「NaN」，
+       计数永远显示 1、生成分享又提示「请先勾选」。 */
+    if (typeof idx === 'number' && idx >= 0) div.dataset.idx = idx;
+
     var wrap = document.createElement('div');
     wrap.className = 'ai-msg-actions';
 
@@ -1848,6 +1896,9 @@ body.shared-ai-view .ai-close{display:none;}
       if (!ok) return;
       history.splice(idx, 1);
       saveHistory();
+      /* 删掉一条后，它后面所有消息的 history 下标都往前挪一位 —— 勾选跟着挪，
+         否则会「勾了第 5 条、结果指着第 6 条」这种张冠李戴 */
+      if (selecting) shiftSelectionAfter(idx);
       renderHistory();
       showToast('已删除该条消息');
     });
@@ -1868,6 +1919,11 @@ body.shared-ai-view .ai-close{display:none;}
 
     history = history.slice(0, userIdx);
     saveHistory();
+    /* 重新生成会把这条之后的记录全部砍掉，对应的勾选自然也没了 */
+    if (selecting) {
+      Object.keys(selectedSet).forEach(function (k) { if (+k >= userIdx) delete selectedSet[k]; });
+      updateShareCount();
+    }
     renderHistory();
 
     inputEl.value = userText;
@@ -2145,14 +2201,26 @@ body.shared-ai-view .ai-close{display:none;}
   /* 量出两个尺寸写进 CSS 变量（面板每次开/缩放、浏览器窗口变化都会重新量）：
        --aiHeadHalf  标题栏高度的一半 → 让进度条相对「整个 AI 窗口」垂直居中
        --aiCardMax   窗口高度的一半   → 卡片与横条列的高度上限，超出在里面滚动 */
+  /* 26/09/21：--aiCardMax 不再简单取「窗口一半」。
+     条数多的时候，一半高度的进度条会从窗口中间一路盖到输入框，把发送键顶掉。
+     现在的算法是：在「窗口一半」和「标题栏与输入框之间的可用高度」里取小的，
+     并且上下两侧各留 AI_NAV_GAP 的余量 —— 无论多少条，它都待在中间那一块里滚。 */
+  var AI_NAV_GAP = 14;
   function syncNavMetrics() {
     if (!panel) return;
     /* 用 offsetHeight 而不是 getBoundingClientRect().height：
        面板展开时带着 scale(.96) 的动画，矩形高度会被缩放值污染，量出来偏小。 */
     var h = panel.offsetHeight;
-    if (h) panel.style.setProperty('--aiCardMax', Math.round(h / 2) + 'px');
     var head = panel.querySelector('.ai-head');
-    if (head) panel.style.setProperty('--aiHeadHalf', Math.round(head.offsetHeight / 2) + 'px');
+    var headH = head ? head.offsetHeight : 0;
+    if (head) panel.style.setProperty('--aiHeadHalf', Math.round(headH / 2) + 'px');
+    if (!h) return;
+    /* 底部被隐藏时（比如勾选分享模式收起了输入栏）那段高度可以让出来 */
+    var foot = panel.querySelector('.ai-input-wrap');
+    var footH = (foot && foot.offsetParent !== null) ? foot.offsetHeight : 0;
+    var avail = h - headH - footH - AI_NAV_GAP * 2;
+    var max = Math.min(Math.round(h / 2) - 24, avail);
+    panel.style.setProperty('--aiCardMax', Math.max(96, Math.round(max)) + 'px');
   }
 
   /* 把横条列滚到「当前这一条」可见的位置（与消息滚到哪儿保持一致） */
@@ -2199,6 +2267,8 @@ body.shared-ai-view .ai-close{display:none;}
         item.addEventListener('click', function (e) {
           e.stopPropagation();
           navScrollTo(i);
+          /* 触屏：选完就把小卡片收起来，<｜hy_place▁holder▁no▁813｜>地看着内容自己跳过去 */
+          if (document.body && typeof hideNavPanel === 'function') setTimeout(hideNavPanel, 60);
         });
         panelInner.appendChild(item);
       }
@@ -2264,16 +2334,38 @@ body.shared-ai-view .ai-close{display:none;}
     }
   }
 
+  /* 触屏没有 hover，改用「点一下展开 / 再点收起」；鼠标环境维持悬停展开。 */
+  function isCoarsePointer() {
+    try { return !!(window.matchMedia && window.matchMedia('(pointer:coarse)').matches); }
+    catch (e) { return false; }
+  }
+  function showNavPanel() { var p = document.getElementById('aiProgressPanel'); if (p) p.classList.add('show'); }
+  function hideNavPanel() { var p = document.getElementById('aiProgressPanel'); if (p) p.classList.remove('show'); }
+
   function initNavEvents() {
     var progress = document.getElementById('aiProgress');
     var panelEl = document.getElementById('aiProgressPanel');
     if (!progress || !panelEl) return;
 
     progress.addEventListener('mouseenter', function () {
-      panelEl.classList.add('show');
+      if (isCoarsePointer()) return;      /* 触屏点按 own toggle，不再挂 hover */
+      showNavPanel();
     });
     progress.addEventListener('mouseleave', function () {
-      panelEl.classList.remove('show');
+      if (isCoarsePointer()) return;
+      hideNavPanel();
+    });
+    /* 触屏：点进度条区域展开/收起小卡片 */
+    progress.addEventListener('click', function (e) {
+      if (!isCoarsePointer()) return;
+      e.stopPropagation();
+      panelEl.classList.toggle('show');
+    });
+    /* 触屏：点别处收起 */
+    document.addEventListener('click', function (e) {
+      if (!panelEl.classList.contains('show')) return;
+      if (progress.contains(e.target) || panelEl.contains(e.target)) return;
+      hideNavPanel();
     });
 
     /* 横条列 ↔ 卡片 两向同步滚动。
@@ -2314,6 +2406,8 @@ body.shared-ai-view .ai-close{display:none;}
       buildNav();
       return;
     }
+    /* 重绘前先把失效的勾选清掉，还原出来的高亮才与真实的勾选一一对应 */
+    if (selecting && !isSharedView) pruneSelection();
     history.forEach(function (m, i) {
       if (isSharedView && i === 0) {
         var banner = document.createElement('div');
@@ -2388,6 +2482,12 @@ body.shared-ai-view .ai-close{display:none;}
     var step = remain > 200 ? 6 : remain > 60 ? 3 : 1;
     st.shown = st.target.slice(0, st.shown.length + step);
     st.el.innerHTML = renderMD(st.shown);
+    /* KaTeX 是异步加载的：开聊那一瞬间它可能还没到，公式会先显示成土黄色的 $…$。
+       一旦它到位，就把当前这条重渲一遍，把黄色源码换成排好版的公式
+       （只在真的还有 fallback 时才重渲，正常的打字不做无用功）。 */
+    if (katexReady && st.el.querySelector('.ai-formula-fallback')) {
+      st.el.innerHTML = renderMD(st.shown);
+    }
     if (st.cursor) st.el.appendChild(st.cursor);
     scrollToBottom();
   }
@@ -2526,6 +2626,12 @@ body.shared-ai-view .ai-close{display:none;}
     updateInputPlaceholder();
     scrollToBottom();
     buildNav();
+    /* KaTeX 是在流式过程中姗姗来迟的：这时候才能安全整屏重绘，
+       把这场对话里残留的 $…$ 全部换成排好版的公式 */
+    if (katexPendingRerender) {
+      katexPendingRerender = false;
+      renderHistory();
+    }
   }
 
   /* ===================== 发送 ===================== */
