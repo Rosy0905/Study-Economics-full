@@ -194,6 +194,14 @@
         '.note-editor h3{font-size:14.8px;}',
         '.note-editor h4{font-size:14.6px;}',
         '.note-editor h5{font-size:14.2px;}',
+        /* 26/09/21 第 38 轮：从网页 / AI 回答粘贴进来的内容常自带内联颜色（多是各路墨绿），
+           内联样式优先级最高，会把笔记正文盖成「有的黑有的绿」。这里把正文元素的字色
+           统一压成中性黑 —— !important 才压得住内联样式。
+           例外：链接保持绿色、占位提示保持浅绿斜体（它们的选择器更长，不会被这里吃掉）。
+           公式 .katex 用 currentColor 取色，跟着变黑，不受影响。 */
+        '.note-editor :where(h1,h2,h3,h4,h5,h6,p,li,ul,ol,div,span,font,b,strong,em,i,u,s,blockquote,td,th){color:#1a1a1a !important;}',
+        '.note-editor :where(a){color:#2f7d55 !important;}',
+        '.note-editor .note-placeholder{color:#8aaa8a !important;}',
 
         /* 图片浮层预览 */
         '.rte-viewer{display:none;position:fixed;inset:0;background:rgba(14,32,22,.86);z-index:9999;',

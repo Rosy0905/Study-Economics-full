@@ -413,6 +413,14 @@
        统一近黑。编辑器和答案区都管，收藏态另有更近黑的规则，不冲突。 */
     .card-answer .answer-inner b, .card-answer .answer-inner strong,
     .rich-editor b, .rich-editor strong { color: #000; }
+    /* 26/09/21 第 38 轮：AI 导入 / 从别处粘贴的内容常自带内联墨绿色，内联样式优先级最高，
+       答案区于是出现「有的黑有的绿」。这里把正文元素的字色统一压成中性黑（!important
+       才压得住内联样式）；链接保留绿色，代码块保留原来的深色（浅绿底上更清楚）。 */
+    .card-answer .answer-inner :where(h1,h2,h3,h4,h5,h6,p,li,ul,ol,div,span,font,b,strong,em,i,u,s,blockquote,td,th),
+    .rich-editor :where(h1,h2,h3,h4,h5,h6,p,li,ul,ol,div,span,font,b,strong,em,i,u,s,blockquote,td,th) {
+        color: #1a1a1a !important;
+    }
+    .card-answer .answer-inner a, .rich-editor a { color: #2f7d55 !important; }
 
     .empty-state, .no-result {
         text-align: center; padding: 50px 20px; color: #4f7a4f;
