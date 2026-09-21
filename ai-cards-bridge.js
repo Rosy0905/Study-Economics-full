@@ -132,20 +132,21 @@
     function oneLine(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
 
     /* ---------------- 存卡片 ---------------- */
-    function saveCard(question, answerMdOrHtml, isHtml) {
+    function saveCard(question, answerMdOrHtml, isHtml, subject, chapter) {
         var answerHtml = answerMdOrHtml || '';
         var cards = readJson(CARDS_KEY, []);
         if (!Array.isArray(cards)) cards = [];
         // 防重复：题目+答案内容一样就不重复存
         var q = oneLine(question) || oneLine(mdPlain(isHtml ? '' : answerHtml)).slice(0, 60) || '（AI 回答）';
+        var subj = (subject === '宏观' ? '宏观' : '微观');
         var dup = cards.some(function (c) {
             return c && c.question === q && String(c.answerHtml || '') === answerHtml;
         });
         if (dup) { toast('这张卡片已经有了'); return false; }
         cards.push({
             id: uid(),
-            subject: DEFAULT_SUBJECT,
-            chapter: '',
+            subject: subj,
+            chapter: String(chapter || '').trim(),
             qid: '',
             hasImage: /<img/i.test(answerHtml),
             question: q,
@@ -187,24 +188,52 @@
     }
 
     /* ---------------- 存卡片前的确认弹窗 ----------------
-       原来点了就存，手滑一下就多一张卡。现在先弹出来给他看清楚：
-       题目是什么、答案长什么样，点了「存入」才真的写进去。 */
+       26/09/21：弹窗里可以编辑题目、编辑答案、选宏观/微观、选章节，
+       确认后才按用户选好的分类和章节存进去。 */
     var confirmOv = null;
+    function readChapters() {
+        var ch = readJson(CHAPTER_KEY, null);
+        if (!ch || typeof ch !== 'object') return { '微观': [], '宏观': [] };
+        return {
+            '微观': Array.isArray(ch['微观']) ? ch['微观'] : [],
+            '宏观': Array.isArray(ch['宏观']) ? ch['宏观'] : []
+        };
+    }
+    function buildChapterOptions(subject, selected) {
+        var list = readChapters()[subject] || [];
+        var html = '<option value="">不选章节</option>';
+        list.forEach(function (ch) {
+            html += '<option value="' + safeText(ch) + '"' + (ch === selected ? ' selected' : '') + '>' + safeText(ch) + '</option>';
+        });
+        return html;
+    }
     function askSave(question, answerHtml) {
         return new Promise(function (resolve) {
             closeConfirm();
             var qText = oneLine(question) || '（AI 回答）';
             var preview = sanitizePreview(answerHtml);
+            var subject = DEFAULT_SUBJECT;
+            /* 如果“我的卡片”里记住了上次用的分类/章节，优先用那个 */
+            try {
+                var lastCfg = JSON.parse(localStorage.getItem('ai_cards_last_cfg') || '{}');
+                if (lastCfg.subject) subject = lastCfg.subject;
+            } catch (e) {}
 
             confirmOv = document.createElement('div');
             confirmOv.className = 'mycards-confirm-ov';
             confirmOv.innerHTML =
                 '<div class="mycards-confirm-box">' +
                   '<div class="mycards-confirm-title">存成卡片</div>' +
-                  '<div class="mycards-confirm-sub">题目</div>' +
-                  '<div class="mycards-confirm-q"></div>' +
-                  '<div class="mycards-confirm-sub">答案预览</div>' +
-                  '<div class="mycards-confirm-a"></div>' +
+                  '<div class="mycards-confirm-row">' +
+                    '<label>分类</label>' +
+                    '<select class="mycards-select mycards-subject"><option value="微观">微观</option><option value="宏观">宏观</option></select>' +
+                    '<label>章节</label>' +
+                    '<select class="mycards-select mycards-chapter"></select>' +
+                  '</div>' +
+                  '<div class="mycards-confirm-sub">题目（可直接编辑）</div>' +
+                  '<div class="mycards-confirm-q" contenteditable="true" spellcheck="false"></div>' +
+                  '<div class="mycards-confirm-sub">答案（可直接编辑）</div>' +
+                  '<div class="mycards-confirm-a" contenteditable="true" spellcheck="false"></div>' +
                   '<div class="mycards-confirm-btns">' +
                     '<button type="button" class="mycards-btn mycards-btn-cancel">取消</button>' +
                     '<button type="button" class="mycards-btn mycards-btn-ok">存入</button>' +
@@ -212,16 +241,38 @@
                 '</div>';
             document.body.appendChild(confirmOv);
 
-            /* textContent 而不是 innerHTML：题目是用户自己写的，直接塞文本最安全 */
-            confirmOv.querySelector('.mycards-confirm-q').textContent = qText;
-            confirmOv.querySelector('.mycards-confirm-a').innerHTML = preview || '<span style="color:#9ab;">（空内容）</span>';
+            var subjSel = confirmOv.querySelector('.mycards-subject');
+            var chapSel = confirmOv.querySelector('.mycards-chapter');
+            var qBox = confirmOv.querySelector('.mycards-confirm-q');
+            var aBox = confirmOv.querySelector('.mycards-confirm-a');
+
+            subjSel.value = subject;
+            chapSel.innerHTML = buildChapterOptions(subject, '');
+            subjSel.addEventListener('change', function () {
+                var prev = chapSel.value;
+                chapSel.innerHTML = buildChapterOptions(subjSel.value, prev);
+            });
+
+            qBox.textContent = qText;
+            aBox.innerHTML = preview || '<span style="color:#9ab;">（空内容）</span>';
 
             requestAnimationFrame(function () { if (confirmOv) confirmOv.classList.add('show'); });
 
             var finish = function (v) { closeConfirm(); resolve(v); };
-            confirmOv.querySelector('.mycards-btn-cancel').addEventListener('click', function () { finish(false); });
-            confirmOv.querySelector('.mycards-btn-ok').addEventListener('click', function () { finish(true); });
-            confirmOv.addEventListener('click', function (e) { if (e.target === confirmOv) finish(false); });
+            confirmOv.querySelector('.mycards-btn-cancel').addEventListener('click', function () { finish({ ok: false }); });
+            confirmOv.querySelector('.mycards-btn-ok').addEventListener('click', function () {
+                try {
+                    localStorage.setItem('ai_cards_last_cfg', JSON.stringify({ subject: subjSel.value }));
+                } catch (e) {}
+                finish({
+                    ok: true,
+                    question: qBox.textContent || qText,
+                    answerHtml: aBox.innerHTML,
+                    subject: subjSel.value,
+                    chapter: chapSel.value
+                });
+            });
+            confirmOv.addEventListener('click', function (e) { if (e.target === confirmOv) finish({ ok: false }); });
         });
     }
     function askRemove(question) {
@@ -306,11 +357,19 @@
             'font-family:inherit;transform:translateY(10px);transition:transform .18s;}' +
             '.mycards-confirm-ov.show .mycards-confirm-box{transform:translateY(0);}' +
             '.mycards-confirm-title{font-size:15.5px;font-weight:700;color:#1e5a3a;margin-bottom:2px;}' +
+            '.mycards-confirm-row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;}' +
+            '.mycards-confirm-row label{font-size:12px;color:#8aa;}' +
+            '.mycards-select{appearance:none;-webkit-appearance:none;border:1px solid #d5e8de;border-radius:20px;' +
+            'background:#f8fbf9 url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%236a8f76%27 stroke-width=%272%27%3E%3Cpath d=%27M6 9l6 6 6-6%27/%3E%3C/svg%3E") no-repeat right 10px center;' +
+            'padding:7px 26px 7px 12px;font-size:13px;color:#1c3322;font-family:inherit;cursor:pointer;outline:none;}' +
+            '.mycards-select:focus{border-color:#8bcbb0;background-color:#f3faf6;}' +
             '.mycards-confirm-sub{font-size:12px;color:#8aa;margin-top:10px;margin-bottom:4px;}' +
             '.mycards-confirm-q{font-size:13.5px;color:#1c3322;font-weight:700;line-height:1.6;word-break:break-word;' +
-            'background:#f3faf6;border-radius:9px;padding:8px 10px;}' +
-            '.mycards-confirm-a{max-height:52vh;overflow-y:auto;font-size:13px;color:#3a5a48;line-height:1.7;' +
-            'background:#f8fbf9;border:1px solid #e2efe8;border-radius:9px;padding:9px 11px;word-break:break-word;}' +
+            'background:#f3faf6;border-radius:9px;padding:8px 10px;outline:none;min-height:26px;}' +
+            '.mycards-confirm-q:focus{box-shadow:0 0 0 2px #c8ead8;}' +
+            '.mycards-confirm-a{max-height:46vh;overflow-y:auto;font-size:13px;color:#3a5a48;line-height:1.7;' +
+            'background:#f8fbf9;border:1px solid #e2efe8;border-radius:9px;padding:9px 11px;word-break:break-word;outline:none;}' +
+            '.mycards-confirm-a:focus{box-shadow:0 0 0 2px #c8ead8;}' +
             '.mycards-confirm-a table{border-collapse:collapse;width:100%;}' +
             '.mycards-confirm-a th,.mycards-confirm-a td{border:1px solid #d5e8de;padding:3px 6px;font-size:12px;}' +
             '.mycards-confirm-a p{margin:0 0 .4em;}' +
@@ -409,9 +468,9 @@
                     }
                 });
             } else {
-                askSave(c2.q, c2.ans).then(function (yes) {
-                    if (!yes) return;
-                    if (saveCard(c2.q, c2.ans, false)) {
+                askSave(c2.q, c2.ans).then(function (res) {
+                    if (!res || !res.ok) return;
+                    if (saveCard(res.question, res.answerHtml, true, res.subject, res.chapter)) {
                         btn.classList.add('saved');
                         btn.title = '已存成卡片，点击可移出';
                         toast('已存进「我的卡片」');
