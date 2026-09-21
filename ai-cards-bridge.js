@@ -49,11 +49,18 @@
     /* ---------------- markdown -> 富文本 HTML（与我的卡片页同一套规则） ---------------- */
     function inlineMd(s) {
         var t = esc(s);
+        /* 26/09/21：先保护 $...$ / $$...$$ 公式，避免 * 斜体破坏 LaTeX 结构 */
+        var maths = [];
+        t = t.replace(/\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g, function (m) {
+            maths.push(m);
+            return '\u0000M' + (maths.length - 1) + '\u0000';
+        });
         t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
         t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
         t = t.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
         t = t.replace(/~~([^~]+)~~/g, '<s>$1</s>');
         t = t.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        t = t.replace(/\u0000M(\d+)\u0000/g, function (_, i) { return maths[+i]; });
         return t;
     }
     function isTableRow(s) { return /^\s*\|.*\|\s*$/.test(s); }
@@ -132,7 +139,7 @@
     function oneLine(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
 
     /* ---------------- 存卡片 ---------------- */
-    function saveCard(question, answerMdOrHtml, isHtml, subject, chapter) {
+    function saveCard(question, answerMdOrHtml, isHtml, subject, chapter, originalQuestion) {
         var answerHtml = answerMdOrHtml || '';
         var cards = readJson(CARDS_KEY, []);
         if (!Array.isArray(cards)) cards = [];
@@ -140,7 +147,8 @@
         var q = oneLine(question) || oneLine(mdPlain(isHtml ? '' : answerHtml)).slice(0, 60) || '（AI 回答）';
         var subj = (subject === '宏观' ? '宏观' : '微观');
         var dup = cards.some(function (c) {
-            return c && c.question === q && String(c.answerHtml || '') === answerHtml;
+            return c && String(c.answerHtml || '') === answerHtml &&
+                (c.question === q || c.originalQuestion === q || (!c.originalQuestion && c.question === q));
         });
         if (dup) { toast('这张卡片已经有了'); return false; }
         cards.push({
@@ -150,6 +158,7 @@
             qid: '',
             hasImage: /<img/i.test(answerHtml),
             question: q,
+            originalQuestion: oneLine(originalQuestion || question) || q,
             answerHtml: answerHtml,
             fav: false,
             created: Date.now()
@@ -171,7 +180,10 @@
         if (!Array.isArray(cards)) cards = [];
         var before = cards.length;
         cards = cards.filter(function (c) {
-            return !(c && c.question === q && String(c.answerHtml || '') === answerHtml);
+            if (!c || String(c.answerHtml || '') !== answerHtml) return true;
+            if (c.originalQuestion && c.originalQuestion === q) return false;
+            if (c.question === q) return false;
+            return true;
         });
         if (cards.length === before) { toast('卡片已不存在'); return false; }
         try { localStorage.setItem(CARDS_KEY, JSON.stringify(cards)); }
@@ -183,7 +195,9 @@
         var cards = readJson(CARDS_KEY, []);
         if (!Array.isArray(cards)) return false;
         return cards.some(function (c) {
-            return c && c.question === q && String(c.answerHtml || '') === answerHtml;
+            if (!c || String(c.answerHtml || '') !== answerHtml) return false;
+            if (c.originalQuestion && c.originalQuestion === q) return true;
+            return c.question === q;
         });
     }
 
@@ -213,10 +227,12 @@
             var qText = oneLine(question) || '（AI 回答）';
             var preview = sanitizePreview(answerHtml);
             var subject = DEFAULT_SUBJECT;
+            var lastChapter = '';
             /* 如果“我的卡片”里记住了上次用的分类/章节，优先用那个 */
             try {
                 var lastCfg = JSON.parse(localStorage.getItem('ai_cards_last_cfg') || '{}');
                 if (lastCfg.subject) subject = lastCfg.subject;
+                if (lastCfg.chapter) lastChapter = lastCfg.chapter;
             } catch (e) {}
 
             confirmOv = document.createElement('div');
@@ -247,7 +263,7 @@
             var aBox = confirmOv.querySelector('.mycards-confirm-a');
 
             subjSel.value = subject;
-            chapSel.innerHTML = buildChapterOptions(subject, '');
+            chapSel.innerHTML = buildChapterOptions(subject, lastChapter);
             subjSel.addEventListener('change', function () {
                 var prev = chapSel.value;
                 chapSel.innerHTML = buildChapterOptions(subjSel.value, prev);
@@ -271,11 +287,12 @@
             confirmOv.querySelector('.mycards-btn-cancel').addEventListener('click', function () { finish({ ok: false }); });
             confirmOv.querySelector('.mycards-btn-ok').addEventListener('click', function () {
                 try {
-                    localStorage.setItem('ai_cards_last_cfg', JSON.stringify({ subject: subjSel.value }));
+                    localStorage.setItem('ai_cards_last_cfg', JSON.stringify({ subject: subjSel.value, chapter: chapSel.value }));
                 } catch (e) {}
                 finish({
                     ok: true,
                     question: qBox.textContent || qText,
+                    originalQuestion: qText,
                     answerHtml: answerHtml,
                     subject: subjSel.value,
                     chapter: chapSel.value
@@ -479,7 +496,7 @@
             } else {
                 askSave(c2.q, c2.ans).then(function (res) {
                     if (!res || !res.ok) return;
-                    if (saveCard(res.question, res.answerHtml, true, res.subject, res.chapter)) {
+                    if (saveCard(res.question, res.answerHtml, true, res.subject, res.chapter, res.originalQuestion)) {
                         btn.classList.add('saved');
                         btn.title = '已存成卡片，点击可移出';
                         toast('已存进「我的卡片」');
@@ -505,8 +522,7 @@
             entry.id = 'mycardsEntry';
             entry.title = '打开「我的卡片」';
             entry.innerHTML = CARD_ICON;
-            entry.style.cssText = 'background:transparent;border:none;cursor:pointer;color:inherit;' +
-                'padding:0;display:inline-flex;align-items:center;opacity:.85;';
+            entry.style.cssText = '';
             entry.addEventListener('click', function (e) {
                 e.stopPropagation();
                 if (OPEN_IN_NEW_TAB) window.open(MY_CARDS_URL, '_blank');
