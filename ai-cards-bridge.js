@@ -366,6 +366,7 @@
             '.mycards-confirm-sub{font-size:12px;color:#8aa;margin-top:10px;margin-bottom:4px;}' +
             '.mycards-confirm-q{font-size:13.5px;color:#1c3322;font-weight:700;line-height:1.6;' +
             'background:#f3faf6;border-radius:9px;padding:8px 10px;outline:none;min-height:26px;' +
+            'display:flex;align-items:center;flex-wrap:wrap;' +
             'white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;max-height:22vh;overflow-y:auto;}' +
             '.mycards-confirm-q:focus{box-shadow:0 0 0 2px #c8ead8;}' +
             '.mycards-confirm-a{max-height:50vh;overflow-y:auto;font-size:13px;color:#3a5a48;line-height:1.7;' +
