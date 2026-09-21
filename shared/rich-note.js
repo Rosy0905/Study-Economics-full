@@ -339,6 +339,27 @@
         });
     }
 
+    /* 26/09/21 第 39 轮：保存前把公式「还原」成 $...$ 源码再存进 localStorage。
+       之前存的是 KaTeX 渲染后的 HTML —— 一个简单公式就是几十个带内联样式的 <span>，
+       实测标记开销 25 倍（一条 654 字的笔记存了 60KB，膨胀 94 倍）。改成存源码后：
+         ① 体积瘦 25 倍；
+         ② 公式能再次编辑了（渲染后的 HTML 里根本没有 LaTeX 原文，改不动）；
+         ③ 备份文件干净可读，不再是满屏 <span style="margin-right:...">。
+       只处理本脚本渲染出来的 .katex-host（身上带 data-tex 源码）。老笔记里那些
+       没有源码的公式一律不动 —— 内容不会丢，只是体积照旧。 */
+    function deflateMath(root) {
+        if (!root) return 0;
+        var n = 0;
+        root.querySelectorAll('.katex-host').forEach(function (host) {
+            var tex = host.getAttribute('data-tex');
+            if (!tex) return;                    /* 无源码的老公式：原样保留，绝不丢内容 */
+            var disp = host.getAttribute('data-disp') === '1';
+            var txt = document.createTextNode(disp ? ('$$' + tex + '$$') : ('$' + tex + '$'));
+            if (host.parentNode) { host.parentNode.replaceChild(txt, host); n++; }
+        });
+        return n;
+    }
+
     /* ======================= D. 图片：重采样 / 压缩 ======================== */
     function dataUrlHasAlpha(dataUrl) {
         return /^data:image\/png/i.test(dataUrl);
@@ -1451,6 +1472,11 @@
             var b = e.target && e.target.closest ? e.target.closest('.note-save') : null;
             if (!b) return;
             var id = b.getAttribute('data-id');
+            /* 第 39 轮：趁页面自己的保存逻辑（同步读 innerHTML）还没跑，先把渲染好的
+               公式还原成 $...$ 源码 —— 这样存进 localStorage 的就是源码，不是几十个 span。
+               捕获阶段保证了这段一定在页面保存之前执行。 */
+            var ed0 = document.querySelector('.note-editor[data-id="' + id + '"]');
+            if (ed0) deflateMath(ed0);
             setTimeout(function () {
                 var ed = document.querySelector('.note-editor[data-id="' + id + '"]');
                 if (ed && ed.getAttribute('contenteditable') !== 'true') renderMathIn(ed);
