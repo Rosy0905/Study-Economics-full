@@ -354,7 +354,7 @@
     .card-answer .answer-inner th,
     .card-answer .answer-inner td {
         border: 1px solid #c2ddc2; padding: 7px 11px;
-        text-align: left; vertical-align: top;
+        text-align: left; vertical-align: middle;
     }
     .card-answer .answer-inner th { background: #e8f3e8; font-weight: 600; }
     .card-item.favorited .card-answer .answer-inner th,
@@ -3468,11 +3468,18 @@
     }
     function inlineMd(s) {
         var t = escHtml(s);
+        /* 26/09/21：先保护 $...$ / $$...$$ 公式，避免 * 斜体破坏 LaTeX 结构 */
+        var maths = [];
+        t = t.replace(/\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g, function (m) {
+            maths.push(m);
+            return '\u0000M' + (maths.length - 1) + '\u0000';
+        });
         t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
         t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
         t = t.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
         t = t.replace(/~~([^~]+)~~/g, '<s>$1</s>');
         t = t.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        t = t.replace(/\u0000M(\d+)\u0000/g, function (_, i) { return maths[+i]; });
         return t;
     }
     function isTableRow(s) { return /^\s*\|.*\|\s*$/.test(s); }
