@@ -231,7 +231,7 @@
                     '<select class="mycards-select mycards-chapter"></select>' +
                   '</div>' +
                   '<div class="mycards-confirm-sub">题目（可直接编辑）</div>' +
-                  '<div class="mycards-confirm-q" contenteditable="true" spellcheck="false"></div>' +
+                  '<div class="mycards-confirm-q" contenteditable="plaintext-only" spellcheck="false"></div>' +
                   '<div class="mycards-confirm-sub">答案预览</div>' +
                   '<div class="mycards-confirm-a"></div>' +
                   '<div class="mycards-confirm-btns">' +
@@ -255,6 +255,15 @@
 
             qBox.textContent = qText;
             aBox.innerHTML = preview || '<span style="color:#9ab;">（空内容）</span>';
+
+            /* 26/09/21：粘贴时强制纯文本，保持题目区固定样式 */
+            qBox.addEventListener('paste', function (e) {
+                e.preventDefault();
+                var text = '';
+                try { text = (e.clipboardData || window.clipboardData).getData('text/plain'); }
+                catch (err) {}
+                document.execCommand('insertText', false, text);
+            });
 
             requestAnimationFrame(function () { if (confirmOv) confirmOv.classList.add('show'); });
 
@@ -366,7 +375,6 @@
             '.mycards-confirm-sub{font-size:12px;color:#8aa;margin-top:10px;margin-bottom:4px;}' +
             '.mycards-confirm-q{font-size:13.5px;color:#1c3322;font-weight:700;line-height:1.6;' +
             'background:#f3faf6;border-radius:9px;padding:8px 10px;outline:none;min-height:26px;' +
-            'display:flex;align-items:center;flex-wrap:wrap;' +
             'white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;max-height:22vh;overflow-y:auto;}' +
             '.mycards-confirm-q:focus{box-shadow:0 0 0 2px #c8ead8;}' +
             '.mycards-confirm-a{max-height:50vh;overflow-y:auto;font-size:13px;color:#3a5a48;line-height:1.7;' +
