@@ -144,9 +144,11 @@
            所以默认状态可以不留那 2px 透明边框，选中时画面也不会跳一下。 */
         '.note-editor img.rte-sel{box-shadow:0 0 0 3px rgba(79,138,79,.28);}',
 
-        /* 富文本里的表格（原页面笔记区没有表格样式，补上，和「我的卡片」一致） */
-        '.note-editor table{border-collapse:collapse;width:100%;margin:8px 0;font-size:14px;}',
-        '.note-editor th,.note-editor td{border:1px solid #c2ddc2;padding:6px 10px;min-width:40px;vertical-align:top;}',
+        /* 富文本里的表格（原页面笔记区没有表格样式，补上，和「我的卡片」一致）
+           26/09/21 第 33 轮：与「我的卡片」同步收紧 —— 单元格文字垂直居中，
+           padding 6px 10px → 5px 9px，行高 1.55，表格上下留白 8px → 6px。 */
+        '.note-editor table{border-collapse:collapse;width:100%;margin:6px 0;font-size:14px;line-height:1.55;}',
+        '.note-editor th,.note-editor td{border:1px solid #c2ddc2;padding:5px 9px;min-width:40px;vertical-align:middle;}',
         '.note-editor th{background:#e8f3e8;font-weight:600;text-align:left;}',
         /* 26/09/21：表格后面自动生成的空段落，保证至少有一行高，并且点空白处能把光标放进去 */
         '.note-editor p.rte-after-tbl{min-height:1.6em;}',
@@ -175,8 +177,23 @@
            用户觉得黑字更统一 —— 占位符仍是浅绿斜体（它自己的选择器更长，不会被这里盖掉）。 */
         '.card-note-area .note-editor{color:#000;}',
         '.note-editor b,.note-editor strong{color:#000;}',
-        /* 块级公式单独占一行，跟正文分开一点 */
-        '.note-editor .katex-display{margin:10px 0;}',
+        /* 块级公式单独占一行，跟正文分开一点。
+           26/09/21 第 33 轮：KaTeX 默认 1.21em 比正文大 21%，在 14px 的笔记里很占地方。
+           第 34 轮回调：行内 0.95em 太小、分式看不清 —— 行内 1.05em，独占 1.12em。
+           独占块不能再写行高 1：那会把 ∂ / ∫ 这类上下伸展的符号裁掉，行高放到 1.35。
+           与「我的卡片」保持同一套参数。 */
+        '.note-editor .katex{font-size:1.05em;}',
+        '.note-editor .katex-display>.katex{font-size:1.12em;line-height:1;padding:0.25em 0;}',
+        '.note-editor .katex-display{margin:1px 0;overflow-x:auto;}',
+        /* 粘贴进来的标题：浏览器默认 h1 是 2em（28px），在 14px 的笔记里大得离谱，
+           按「我的卡片」同一套值收一档。 */
+        '.note-editor h1,.note-editor h2,.note-editor h3,.note-editor h4,.note-editor h5{',
+        'color:#1a3322;font-weight:700;line-height:1.45;margin:0.75em 0 0.3em 0;}',
+        '.note-editor h1{font-size:15.5px;}',
+        '.note-editor h2{font-size:15px;}',
+        '.note-editor h3{font-size:14.8px;}',
+        '.note-editor h4{font-size:14.6px;}',
+        '.note-editor h5{font-size:14.2px;}',
 
         /* 图片浮层预览 */
         '.rte-viewer{display:none;position:fixed;inset:0;background:rgba(14,32,22,.86);z-index:9999;',
@@ -248,6 +265,32 @@
     /* ======================= C. 公式渲染 ================================== */
     function renderMathIn(root) {
         if (!root || !window.katex) return;
+        /* 26/09/21 第 36 轮：修复「同一行写过一次公式后再写一个就不渲染、时灵时不灵」。
+           根因：光标点在已渲染公式后面时，浏览器会把光标放进公式内部（.katex 里最深的
+           行内盒），这时新打的 $...$ 文本节点就成了 .katex 的后代，而下方渲染循环会跳过
+           .katex 里的所有文本 —— 于是新公式永远不渲染，保不齐还把旧公式结构撑坏。
+           治法两步：
+           ① 渲染时把 LaTeX 源码记在 data-tex / data-disp 上；光标若溜进公式内部，
+              打字前会被 handleFormulaKeys 弹出到公式外，退格/删除则整块删掉——
+              全程用 execCommand，所以 Ctrl+Z 仍然有效（第 37 轮：
+              上一版把公式设成 contenteditable=false，结果删不掉、撤销也失效，已回退该做法）；
+           ② 每次渲染前扫一遍旧公式，发现 .katex 里混入了含 $ 的文本（历史上被打坏的），
+              就用 data-tex 还原成源码、连同被打进来的文本一起交还本次循环重新渲染。 */
+        root.querySelectorAll('.katex-host').forEach(function (host) {
+            var k = host.querySelector('.katex');
+            if (!k) return;
+            var stray = '';
+            var w = document.createTreeWalker(k, NodeFilter.SHOW_TEXT, null);
+            var t;
+            while ((t = w.nextNode())) {
+                if (t.nodeValue.indexOf('$') > -1) stray += t.nodeValue;
+            }
+            if (!stray) return;
+            var tex = host.getAttribute('data-tex') || '';
+            var disp = host.getAttribute('data-disp') === '1';
+            var src = tex ? (disp ? '$$' + tex + '$$' : '$' + tex + '$') : '';
+            host.parentNode.replaceChild(document.createTextNode(src + stray), host);
+        });
         var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
         var targets = [], n;
         while ((n = walker.nextNode())) {
@@ -271,6 +314,9 @@
                 var src = (m[1] !== undefined) ? m[1] : m[2];
                 var span = document.createElement('span');
                 span.className = 'katex-host';
+                /* 记下源码，供第 36/37 轮的「打坏了要还原」与公式整体删除使用 */
+                span.setAttribute('data-tex', src);
+                span.setAttribute('data-disp', (m[1] !== undefined) ? '1' : '0');
                 try {
                     span.innerHTML = window.katex.renderToString(src, {
                         displayMode: (m[1] !== undefined),
@@ -1185,8 +1231,104 @@
             return false;
         }
 
+        /* 26/09/21 第 37 轮：公式（.katex-host）的键盘处理。
+           上一版把公式设成 contenteditable=false 防光标钻进去，结果删不掉、Ctrl+Z 失效。
+           现在公式保持可编辑（原生删除/撤销照常），只在两个时机接管：
+           ① 退格/删除键落在公式上或紧贴公式 → 整块删掉，用 execCommand 所以能撤销；
+           ② 光标溜进公式内部时打字 → 先把光标弹到公式外面，再让字符正常输入。 */
+        function caretHost() {
+            var sel = window.getSelection();
+            if (!sel || !sel.rangeCount) return null;
+            var r = sel.getRangeAt(0);
+            var n = r.startContainer;
+            var el = n.nodeType === 1 ? n : n.parentNode;
+            return (el && el.closest) ? el.closest('.katex-host') : null;
+        }
+        function placeCaretAfter(host) {
+            var sel = window.getSelection();
+            if (!sel) return;
+            var rr = document.createRange();
+            rr.setStartAfter(host);
+            rr.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(rr);
+        }
+        /* 光标紧贴的前/后一个公式块（Backspace 看前面，Delete 看后面） */
+        function adjacentHost(back) {
+            var sel = window.getSelection();
+            if (!sel || !sel.rangeCount) return null;
+            var r = sel.getRangeAt(0);
+            if (!r.collapsed) return null;
+            var c = r.startContainer;
+            if (c.nodeType === 3) {
+                var atEdge = back ? (r.startOffset === 0) : (r.startOffset === c.nodeValue.length);
+                if (!atEdge) return null;
+                var sib = back ? c.previousSibling : c.nextSibling;
+                while (sib && sib.nodeType === 3 && !sib.nodeValue.length) sib = back ? sib.previousSibling : sib.nextSibling;
+                if (!sib || sib.nodeType !== 1) return null;
+                if (sib.classList.contains('katex-host')) return sib;
+                var d = back ? sib.lastElementChild : sib.firstElementChild;
+                if (d && d.classList.contains('katex-host')) return d;
+                return null;
+            }
+            var kids = c.childNodes;
+            var node = kids[back ? r.startOffset - 1 : r.startOffset];
+            if (!node || node.nodeType !== 1) return null;
+            if (node.classList.contains('katex-host')) return node;
+            var dd = back ? node.lastElementChild : node.firstElementChild;
+            return (dd && dd.classList.contains('katex-host')) ? dd : null;
+        }
+        function deleteHost(host) {
+            var sel = window.getSelection();
+            var r = document.createRange();
+            r.selectNode(host);
+            sel.removeAllRanges();
+            sel.addRange(r);
+            var ok = false;
+            try { ok = document.execCommand('delete', false, null); } catch (x) {}
+            if (!ok || document.contains(host)) { try { host.parentNode.removeChild(host); } catch (x) {} }
+        }
+        function handleFormulaKeys(editor, e) {
+            if (editor.getAttribute('contenteditable') !== 'true') return false;
+            if (e.ctrlKey || e.metaKey || e.altKey) return false;
+            var sel = window.getSelection();
+            if (!sel || !sel.rangeCount || !editor.contains(sel.anchorNode)) return false;
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                var h = caretHost() || adjacentHost(e.key === 'Backspace');
+                if (!h || !editor.contains(h)) return false;
+                e.preventDefault();
+                deleteHost(h);
+                rememberRange(editor);
+                return true;
+            }
+            /* 普通字符：光标在公式里就把光标弹到公式后面，避免打进公式内部 */
+            if (e.key && e.key.length === 1) {
+                var inside = caretHost();
+                if (!inside) return false;
+                placeCaretAfter(inside);
+            }
+            return false;
+        }
+
+        /* 兜底：上面只在 keydown 时弹光标，但输入法、execCommand('insertText')、
+           粘贴等路径不经过 keydown。这里在真正写入前再拦一次（输入法交给
+           compositionstart，避免打断正在拼字的 composition）。 */
+        editor.addEventListener('beforeinput', function (e) {
+            if (!e || e.inputType === 'insertCompositionText') return;
+            if (editor.getAttribute('contenteditable') !== 'true') return;
+            var inside = caretHost();
+            if (!inside) return;
+            placeCaretAfter(inside);
+        });
+        editor.addEventListener('compositionstart', function () {
+            if (editor.getAttribute('contenteditable') !== 'true') return;
+            var inside = caretHost();
+            if (inside) placeCaretAfter(inside);
+        });
+
         /* Ctrl/Cmd + B/I/U */
         editor.addEventListener('keydown', function (e) {
+            if (handleFormulaKeys(editor, e)) return;
             if (handleTableDelete(editor, e)) return;
             if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey) return;
             var k = e.key ? e.key.toLowerCase() : '';
@@ -1290,9 +1432,28 @@
         document.querySelectorAll('.card-note-area').forEach(attach);
     }
 
+    /* 26/09/21 第 35 轮：子页自己的「保存」按钮（.note-save）保存时只把 innerHTML 存进
+       localStorage，不会重新渲染公式 —— 于是笔记里一直是 $$…$$ 源码，要刷新页面才变公式。
+       这里补一次：点完保存（等它自己的处理跑完）就把该条笔记的公式重新渲染一遍。 */
+    function hookNativeSave() {
+        /* 必须用捕获阶段：子页的保存按钮委托挂在卡片容器上，handler 里调了
+           e.stopPropagation()，冒泡阶段的 document 监听收不到这个 click。
+           捕获阶段先拿到事件，再用 setTimeout 等它自己的保存逻辑（同步）跑完。 */
+        document.addEventListener('click', function (e) {
+            var b = e.target && e.target.closest ? e.target.closest('.note-save') : null;
+            if (!b) return;
+            var id = b.getAttribute('data-id');
+            setTimeout(function () {
+                var ed = document.querySelector('.note-editor[data-id="' + id + '"]');
+                if (ed && ed.getAttribute('contenteditable') !== 'true') renderMathIn(ed);
+            }, 80);
+        }, true);
+    }
+
     function start() {
         injectStyle();
         scan();
+        hookNativeSave();
         var mo = new MutationObserver(function () { scan(); });
         mo.observe(document.body, { childList: true, subtree: true });
         /* 老笔记里的公式也渲染一遍 */

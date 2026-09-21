@@ -349,11 +349,11 @@
         color: #555;
     }
     .card-answer .answer-inner table {
-        border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 14px;
+        border-collapse: collapse; width: 100%; margin: 6px 0; font-size: 14px; line-height: 1.55;
     }
     .card-answer .answer-inner th,
     .card-answer .answer-inner td {
-        border: 1px solid #c2ddc2; padding: 7px 11px;
+        border: 1px solid #c2ddc2; padding: 5px 9px;
         text-align: left; vertical-align: middle;
     }
     .card-answer .answer-inner th { background: #e8f3e8; font-weight: 600; }
@@ -363,7 +363,17 @@
     .card-item.favorited .card-answer .answer-inner blockquote {
         border-left-color: #e8d9b0; color: #5a4a1a;
     }
-    .card-answer .answer-inner .katex-display { margin: 10px 0; overflow-x: auto; overflow-y: hidden; }
+    /* 26/09/21 第 30 轮：KaTeX 默认 1.21em，公式比正文大 21%，卡片里显得很占地方。
+       第 34 轮回调：行内 0.95em 太小，分式看不清 —— 行内回到 1.05em（约 15.5px），
+       独占 1.12em（约 16.6px，比行内大 7%，层级仍在）。
+       重要：独占公式块不能再写 overflow-y:hidden + 行高 1 —— 那会把 ∂、∫ 这类
+       有上下伸展的符号连同分式的上下缘一起裁掉（第 32 轮截图中偏导符号显示不全）。
+       行高放到 1.35 给足高度空间，只保留横向滚动。
+       编辑器（.rich-editor）同步，保证「编辑时所见 = 保存后所见」。 */
+    .card-answer .answer-inner .katex, .rich-editor .katex { font-size: 1.05em; }
+    .card-answer .answer-inner .katex-display > .katex,
+    .rich-editor .katex-display > .katex { font-size: 1.12em; line-height: 1; padding: 0.25em 0; }
+    .card-answer .answer-inner .katex-display, .rich-editor .katex-display { margin: 1px 0; overflow-x: auto; }
     /* 从 AI 回答导入的内容可能带标题 / 代码块 / 分隔线 / 链接 */
     .card-answer .answer-inner h1, .rich-editor h1,
     .card-answer .answer-inner h2, .rich-editor h2,
@@ -376,9 +386,9 @@
     .card-answer .answer-inner h1:first-child, .rich-editor h1:first-child,
     .card-answer .answer-inner h2:first-child, .rich-editor h2:first-child,
     .card-answer .answer-inner h3:first-child, .rich-editor h3:first-child { margin-top: 0; }
-    .card-answer .answer-inner h1, .rich-editor h1 { font-size: 17px; }
-    .card-answer .answer-inner h2, .rich-editor h2 { font-size: 16px; }
-    .card-answer .answer-inner h3, .rich-editor h3 { font-size: 15.2px; }
+    .card-answer .answer-inner h1, .rich-editor h1 { font-size: 15.5px; }
+    .card-answer .answer-inner h2, .rich-editor h2 { font-size: 15px; }
+    .card-answer .answer-inner h3, .rich-editor h3 { font-size: 14.8px; }
     .card-answer .answer-inner h4, .rich-editor h4 { font-size: 14.6px; }
     .card-answer .answer-inner h5, .rich-editor h5 { font-size: 14.2px; }
     .card-answer .answer-inner pre, .rich-editor pre {
