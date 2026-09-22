@@ -3412,9 +3412,20 @@
                     throw new Error('bad format');
                 }
 
+                /* 26/09/22：导入改为去重合并——按「题目 + 答案」比对，
+                   本机已有的和文件里互相重复的都只保留一张，不重复堆叠 */
+                var seen = {};
+                cards.forEach(function (c) {
+                    seen[String(c.question || '').trim() + '\u0001' + (c.answerHtml || '')] = 1;
+                });
+
                 var added = 0;
+                var skipped = 0;
                 incoming.forEach(function (item) {
                     if (item && typeof item.question === 'string') {
+                        var sig = String(item.question).trim() + '\u0001' + (item.answerHtml || item.answer || '');
+                        if (seen[sig]) { skipped++; return; }
+                        seen[sig] = 1;
                         var ch = (typeof item.chapter === 'string' ? item.chapter : '').trim();
                         if (ch === UNCATEGORIZED) ch = '';
                         var subj = (SUBJECTS.indexOf(item.subject) >= 0) ? item.subject : '微观';
@@ -3440,14 +3451,14 @@
                     pushChapter(hit ? hit.subject : '微观', n);
                 });
 
-                if (added === 0) {
+                if (added === 0 && skipped === 0) {
                     showToast('⚠️ 文件里没有可导入的卡片');
                 } else {
                     normalizeChapters();
                     persist();
                     updateChapterFilterOptions();
                     render();
-                    showToast('📥 已导入 ' + added + ' 张卡片');
+                    showToast('📥 已导入 ' + added + ' 张卡片' + (skipped ? '，跳过重复 ' + skipped + ' 张' : ''));
                 }
             } catch (err) {
                 showToast('⚠️ 导入失败：文件格式不正确');
