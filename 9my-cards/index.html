@@ -374,6 +374,8 @@
     .card-answer .answer-inner .katex-display > .katex,
     .rich-editor .katex-display > .katex { font-size: 1.12em; line-height: 1; padding: 0.25em 0; }
     .card-answer .answer-inner .katex-display, .rich-editor .katex-display { margin: 1px 0; overflow-x: auto; }
+/* 公式盒只显示横向滚动条，隐藏右侧竖滚动条（避免手机上出现绿色竖线） */
+.card-answer .answer-inner .katex-display::-webkit-scrollbar:vertical, .rich-editor .katex-display::-webkit-scrollbar:vertical { width: 0; }
     /* 从 AI 回答导入的内容可能带标题 / 代码块 / 分隔线 / 链接 */
     .card-answer .answer-inner h1, .rich-editor h1,
     .card-answer .answer-inner h2, .rich-editor h2,
