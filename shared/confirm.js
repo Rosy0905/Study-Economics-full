@@ -2,7 +2,8 @@
    统一的确认弹层（替代 window.confirm，规避微信内核 bug）
    - 主页与 8 个子页共用这一份实现，改一次全站生效
    - 在 ai-assistant.js 之前引入即可，全局 window.showConfirm(opts) 可用
-   - opts: { title, message, okText, cancelText, danger } -> Promise<boolean>
+   - opts: { title, message, okText, cancelText, danger, wide } -> Promise<boolean>
+   - wide: true 时用加宽弹层（长提示语用，如主页导入确认）
    ============================================================ */
 (function () {
   'use strict';
@@ -22,11 +23,14 @@
   padding:20px 20px 16px;transform:translateY(8px) scale(.96);
   transition:transform .22s cubic-bezier(.34,1.56,.64,1);
 }
+.ai-confirm-box--wide{width:min(430px,100%);padding:20px 22px 16px;}
+.ai-confirm-box--wide .ai-confirm-msg{max-height:52vh;font-size:13.5px;}
 .ai-confirm-overlay.show .ai-confirm-box{transform:translateY(0) scale(1);}
 .ai-confirm-title{font-size:15px;font-weight:700;color:#1e4a2a;margin-bottom:8px;}
 .ai-confirm-msg{font-size:13.5px;color:#4a6a58;line-height:1.65;
   white-space:pre-wrap;word-break:break-word;margin-bottom:16px;
   max-height:40vh;overflow-y:auto;}
+.ai-confirm-msg b{font-weight:600;color:#2e4a3a;}
 .ai-confirm-actions{display:flex;gap:10px;justify-content:flex-end;}
 .ai-confirm-btn{
   flex:0 0 auto;min-width:76px;padding:9px 16px;border-radius:10px;
@@ -64,9 +68,10 @@
       var overlay = document.createElement('div');
       overlay.className = 'ai-confirm-overlay';
       overlay.innerHTML =
-        '<div class="ai-confirm-box">' +
+        '<div class="ai-confirm-box' + (opts.wide ? ' ai-confirm-box--wide' : '') + '">' +
           '<div class="ai-confirm-title">' + escapeHtml(opts.title || '确认') + '</div>' +
-          '<div class="ai-confirm-msg">' + escapeHtml(opts.message || '') + '</div>' +
+          '<div class="ai-confirm-msg">' +
+            escapeHtml(opts.message || '').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</div>' +
           '<div class="ai-confirm-actions">' +
             '<button class="ai-confirm-btn ok' + (opts.danger ? ' danger' : '') + '">' +
               escapeHtml(opts.okText || '确定') + '</button>' +
