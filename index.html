@@ -2237,15 +2237,49 @@ function renderHome() {
       }
 
       const hasAI = keys.some(k => k.indexOf(AI_CFG_PREFIX) === 0);
+
+      /* 26/09/22：备份里的数据块按模块归类，弹窗里用“人话”说清会动到哪些模块 */
+      const MODULE_LABELS = [
+        ['micro_recite_',    '1·背诵（微观）'],
+        ['macro_recite_',    '2·背诵（宏观）'],
+        ['calc_key_',        '3·计算要点'],
+        ['calc_special_',    '4·计算专项'],
+        ['micro_short_',     '5·简答专项（微观）'],
+        ['macro_short_',     '6·简答专项（宏观）'],
+        ['essay_',           '7·论述专项'],
+        ['past_exams_',      '8·历年真题']
+      ];
+      const moduleNames = [];
+      MODULE_LABELS.forEach(m => {
+        const hit = keys.some(k => k === m[0] || k.indexOf(m[0]) === 0);
+        if (hit && moduleNames.indexOf(m[1]) < 0) moduleNames.push(m[1]);
+      });
+      const hasCards = keys.some(k => k.indexOf('custom_cards_') === 0 || k.indexOf('custom_chapters_') === 0);
+      const hasProgress = keys.some(k => k === 'eco_kb_progress' || k === 'eco_kb_tts_rate');
+      const hasHistory = keys.some(k => k.indexOf('ai_assistant_history_') === 0);
+      const studyParts = [];
+      if (moduleNames.length) studyParts.push(moduleNames.length + ' 个模块');
+      if (hasCards) studyParts.push('我的卡片');
+      if (hasProgress) studyParts.push('首页学习进度');
+
       /* 统一走 shared/confirm.js 的弹层，避免微信内核下 window.confirm 失效 */
       const ask = window.showConfirm
         || function (o) { return Promise.resolve(window.confirm(o.message)); };
+      let msg = '即将导入 ' + keys.length + ' 条数据。\n';
+      if (studyParts.length) {
+        msg += '📑 **学习数据**：包含 ' + studyParts.join('、');
+        if (moduleNames.length) msg += '，其中模块内容涵盖 ' + moduleNames.join('、');
+        msg += '。\n';
+      }
+      if (hasAI) msg += '⚙️ **AI 配置**：包含提示词等，本机已有的 API Key 会保留。\n';
+      if (hasHistory) msg += '💭 **AI 对话历史**：包含 AI 答疑助手的全部对话历史。\n';
+      msg += '\n⚠️ 导入是整块替换：备份文件里带着哪个模块的内容，本机对应模块的记录就整个换成文件里的，不是逐张比较后合并。\n'
+        + '⚠️ 本机有、文件里没有的模块不受影响，如收藏、笔记、编辑、自测标记等，文件里有对应数据的才覆盖，没有的不动。\n\n'
+        + '确定继续吗？';
       const ok = await ask({
         title: '导入数据',
-        message: '即将导入 ' + keys.length + ' 条数据。\n\n'
-          + (hasAI ? '📦 包含 AI 助手配置（提示词 / 面板尺寸等），但不含 API Key。\n导入后本机已有的 API Key 会保留。\n\n' : '')
-          + '同名的记录会被覆盖，本机独有而文件里没有的记录会保留。\n\n'
-          + '确定继续吗？',
+        wide: true,
+        message: msg,
         okText: '导入'
       });
       if (!ok) return;
