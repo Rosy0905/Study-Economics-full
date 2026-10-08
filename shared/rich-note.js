@@ -150,6 +150,10 @@
         '.note-editor table{border-collapse:collapse;width:100%;margin:6px 0;font-size:14px;line-height:1.55;}',
         '.note-editor th,.note-editor td{border:1px solid #c2ddc2;padding:5px 9px;min-width:40px;vertical-align:middle;}',
         '.note-editor th{background:#e8f3e8;font-weight:600;text-align:left;}',
+/* 收藏态：笔记区表格跟着变暖（与外层米黄底一致） */
+'.card-item.favorited .card-note-area .note-editor table th,',
+'.card-item.favorited .card-note-area .note-editor table td{border-color:#e8d9b0;}',
+'.card-item.favorited .card-note-area .note-editor table th{background:#f6eddd;}',
         /* 26/09/21：表格后面自动生成的空段落，保证至少有一行高，并且点空白处能把光标放进去 */
         '.note-editor p.rte-after-tbl{min-height:1.6em;}',
         '.note-editor img{border-radius:10px;margin:6px 2px;}',
