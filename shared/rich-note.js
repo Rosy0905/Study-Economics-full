@@ -150,7 +150,17 @@
         '.note-editor table{border-collapse:collapse;width:100%;margin:6px 0;font-size:14px;line-height:1.55;}',
         '.note-editor th,.note-editor td{border:1px solid #c2ddc2;padding:5px 9px;min-width:40px;vertical-align:middle;}',
         '.note-editor th{background:#e8f3e8;font-weight:600;text-align:left;}',
-/* 收藏态：笔记区表格跟着变暖（与外层米黄底一致） */
+       /* 行内代码 / 代码块 / 引用块：对齐「我的卡片」的观感，并支持收藏态变暖 */
+'.note-editor code{background:#e8f3e8;padding:1px 6px;border-radius:5px;',
+'font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;}',
+'.note-editor pre{background:#eef6ef;border:1px solid #dceade;border-radius:10px;',
+'padding:10px 12px;margin:.5em 0;overflow-x:auto;font-size:13px;line-height:1.6;white-space:pre;}',
+'.note-editor pre code{background:transparent;padding:0;}',
+'.note-editor blockquote{border-left:4px solid #b3ddc3;padding-left:12px;margin:.5em 0;}',
+'.card-item.favorited .card-note-area .note-editor code{background:#f1e7cd;}',
+'.card-item.favorited .card-note-area .note-editor pre{background:#f6eddd;border-color:#e8d9b0;}',
+'.card-item.favorited .card-note-area .note-editor blockquote{border-left-color:#e8d9b0;}',
+       /* 收藏态：笔记区表格跟着变暖（与外层米黄底一致） */
 '.card-item.favorited .card-note-area .note-editor table th,',
 '.card-item.favorited .card-note-area .note-editor table td{border-color:#e8d9b0;}',
 '.card-item.favorited .card-note-area .note-editor table th{background:#f6eddd;}',
