@@ -164,6 +164,10 @@
 '.card-item.favorited .card-note-area .note-editor table th,',
 '.card-item.favorited .card-note-area .note-editor table td{border-color:#e8d9b0;}',
 '.card-item.favorited .card-note-area .note-editor table th{background:#f6eddd;}',
+       /* 列表缩进：子页有 * { padding: 0 } 会把 ul/ol 的默认缩进清掉，
+   这里补回来（跟「我的卡片」保持一致的 1.6em） */
+'.note-editor ul, .note-editor ol { padding-left: 1.6em; margin: .4em 0; }',
+'.note-editor li { margin: .18em 0; }',
         /* 26/09/21：表格后面自动生成的空段落，保证至少有一行高，并且点空白处能把光标放进去 */
         '.note-editor p.rte-after-tbl{min-height:1.6em;}',
         '.note-editor img{border-radius:10px;margin:6px 2px;}',
