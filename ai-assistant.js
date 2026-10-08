@@ -504,7 +504,7 @@ body.shared-ai-view .ai-close{display:none;}
     custom:   { name: '自定义（OpenAI 兼容）', base: '', model: '', hint: '兼容 /chat/completions 的接口' }
   };
 
-  var SYS_VER = 'v7';
+  var SYS_VER = 'v6';
 
   var DEFAULT_SYSTEM = [
     '你是南开大学经济学考研（847经济学）的专属答疑助手，只讲微观经济学和宏观经济学两门课。',
@@ -533,7 +533,7 @@ body.shared-ai-view .ai-close{display:none;}
     '【格式要求】',
     '· 所有数学公式用 LaTeX：行内 $...$，独立 $$...$，不要用 Unicode 符号拼公式',
     '· 对比、分类、总结类信息用 Markdown 表格',
-    '· 小标题用 ## 或 ###，分点用（1）、①、a.等（禁止使用Markdown列表符号“-”），关键词用 **加粗**',
+    '· 小标题用 ## 或 ###，分点用（1）、①、a.等（不要用Markdown列表符号！），关键词用 **加粗**',
     '· 不要输出 --- 分割线，用空行或小标题分隔章节即可',
     '· 题目出现含根号的无理数结果，不需要主动化为小数',
     '',
