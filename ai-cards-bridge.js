@@ -126,7 +126,7 @@
                 para.push(lines[i]); i++;
             }
             if (!para.length) { i++; continue; }
-            out.push('<p>' + para.map(inlineMd).join('\n') + '</p>');
+            out.push('<p>' + para.map(inlineMd).join('<br>') + '</p>');
         }
         return out.join('');
     }
