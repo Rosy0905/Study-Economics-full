@@ -533,7 +533,7 @@ body.shared-ai-view .ai-close{display:none;}
     '【格式要求】',
     '· 所有数学公式用 LaTeX：行内 $...$，独立 $$...$，不要用 Unicode 符号拼公式',
     '· 对比、分类、总结类信息用 Markdown 表格',
-    '· 小标题用 ## 或 ###，分点用（1）、①、a.等（不要用Markdown列表符号！），关键词用 **加粗**',
+    '· 小标题一级用 `##`、二级用 `###`；正文分点层级固定为第一层 `（1）`、第二层 `①`、第三层 `a.`（任何层级都不得使用 `-`、`*`、`+`！），关键词用 **加粗**',
     '· 不要输出 --- 分割线，用空行或小标题分隔章节即可',
     '· 题目出现含根号的无理数结果，不需要主动化为小数',
     '',
@@ -1728,10 +1728,11 @@ body.shared-ai-view .ai-close{display:none;}
       if (quoteRegex.test(line)) {
         var quoteLines = [];
         while (i < lines.length && quoteRegex.test(lines[i])) {
-          var m = lines[i].match(quoteRegex);
-          quoteLines.push(m[1]);
-          i++;
-        }
+        var m = lines[i].match(quoteRegex);
+        var c = m[1];
+        if (c.trim()) quoteLines.push(c);       /* ← 忽略块内空行 */
+        i++;
+      }
         out.push('<blockquote>' + quoteLines.join('<br>') + '</blockquote>');
         continue;
       }
