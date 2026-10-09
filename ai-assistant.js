@@ -504,7 +504,7 @@ body.shared-ai-view .ai-close{display:none;}
     custom:   { name: '自定义（OpenAI 兼容）', base: '', model: '', hint: '兼容 /chat/completions 的接口' }
   };
 
-  var SYS_VER = 'v6';
+  var SYS_VER = 'v7';
 
   var DEFAULT_SYSTEM = [
     '你是南开大学经济学考研（847经济学）的专属答疑助手，只讲微观经济学和宏观经济学两门课。',
