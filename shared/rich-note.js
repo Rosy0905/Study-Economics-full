@@ -1452,7 +1452,11 @@
                 if (/^\s*([-*_])\s*\1\s*\1[\s\-*_]*$/.test(line)) { out.push('<hr>'); i++; continue; }
                 if (/^\s*>\s?/.test(line)) {
                     var q = [];
-                    while (i < lines.length && /^\s*>\s?/.test(lines[i])) { q.push(lines[i].replace(/^\s*>\s?/, '')); i++; }
+                    while (i < lines.length && /^\s*>\s?/.test(lines[i])) {
+                        var qc = lines[i].replace(/^\s*>\s?/, '');
+                        if (qc.trim()) q.push(qc);
+                        i++;
+                    }
                     out.push('<blockquote>' + q.map(inlineMd).join('<br>') + '</blockquote>');
                     continue;
                 }
