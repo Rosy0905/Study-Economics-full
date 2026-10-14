@@ -384,6 +384,41 @@ body.shared-ai-view .ai-close{display:none;}
 .ai-msg.user .ai-file-chip{background:rgba(255,255,255,.25);color:#fff;border-color:rgba(255,255,255,.4);}
 .ai-msg-text{white-space:pre-wrap;word-break:break-word;}
 
+/* ===== 编辑用户消息（就地编辑，仿 DeepSeek） ===== */
+.ai-act-edit:active{background:#eaf6ef;color:#3fa87a;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-act-edit:hover{background:#eaf6ef;color:#3fa87a;}
+}
+.ai-edit-box{
+  width:100%;box-sizing:border-box;background:#fff;
+  border:1.5px solid #e2f0e8;border-radius:18px;padding:12px 14px;
+  transition:border-color .18s,box-shadow .18s;
+}
+.ai-edit-box.focus{border-color:#5ec99a;box-shadow:0 0 0 3px rgba(94,201,154,.16);}
+.ai-edit-box .ai-msg-attach{margin:0 0 8px;}
+.ai-edit-textarea{
+  width:100%;box-sizing:border-box;display:block;
+  min-height:22px;max-height:320px;margin:0;padding:0;
+  border:none;outline:none;background:transparent;resize:vertical;
+  color:#1c3322;font-size:13.5px;font-family:inherit;line-height:1.55;
+}
+.ai-edit-bar{display:flex;gap:8px;justify-content:flex-end;margin-top:10px;}
+.ai-edit-cancel,.ai-edit-ok{
+  border:none;border-radius:18px;padding:6px 18px;font-size:13px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:background .15s,transform .12s,filter .15s;
+  white-space:nowrap;flex:none;
+}
+.ai-edit-cancel{background:#fff;border:1px solid #d8ebdf;color:#5a7a68;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-edit-cancel:hover{background:#f3faf6;}
+}
+.ai-edit-cancel:active{background:#eef4f1;}
+.ai-edit-ok{background:linear-gradient(135deg,#5ec99a,#3fa87a);color:#fff;}
+@media (hover: hover) and (pointer: fine) {
+  .ai-edit-ok:hover{filter:brightness(1.05);}
+}
+.ai-edit-ok:active{transform:scale(.96);}
+
 /* ===== 大图查看 ===== */
 .ai-lightbox{
   position:fixed;inset:0;z-index:3000;background:rgba(16,40,28,.82);
@@ -1825,6 +1860,7 @@ body.shared-ai-view .ai-close{display:none;}
   var CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
   var REGEN_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 9"/></svg>';
   var DEL_ICON   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>';
+  var EDIT_ICON  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 
   var SEND_ICON  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
   var PAUSE_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
@@ -1886,6 +1922,19 @@ body.shared-ai-view .ai-close{display:none;}
       wrap.appendChild(delBtn);
     }
 
+    /* 编辑：仅用户自己的消息可编辑（分享视图/生成中由 editUserMsg 内部再守一次） */
+    if (!isSharedView && role === 'user' && typeof idx === 'number' && idx >= 0) {
+      var editBtn = document.createElement('button');
+      editBtn.className = 'ai-act-btn ai-act-edit';
+      editBtn.title = '编辑';
+      editBtn.innerHTML = EDIT_ICON;
+      editBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        editUserMsg(div, idx);
+      });
+      wrap.appendChild(editBtn);
+    }
+
     div.appendChild(wrap);
   }
 
@@ -1939,6 +1988,134 @@ body.shared-ai-view .ai-close{display:none;}
     pendingAttachments = atts;
     renderAttachBar();
 
+    send();
+  }
+
+  /* ===================== 编辑用户消息（就地编辑后重新发送，仿 DeepSeek） ===================== */
+  function editUserMsg(div, idx) {
+    if (isSharedView) return;                 /* 分享视图只读：禁止编辑 */
+    if (isStreaming) { showToast('正在回复中，请稍候'); return; }
+    if (typeof idx !== 'number' || idx < 0 || idx >= history.length) return;
+    if (div._editing) return;
+    var m = history[idx];
+    if (!m || m.role !== 'user') return;
+    div._editing = true;
+
+    var txtNode = div.querySelector('.ai-msg-text');
+    var actions = div.querySelector('.ai-msg-actions');
+    var original = m.content || '';
+
+    /* 编辑时把绿气泡背景中和成透明，让白底编辑卡干净展示（退出编辑后还原） */
+    var prevBg = div.style.background;
+    var prevShadow = div.style.boxShadow;
+    var prevWidth = div.style.width;
+    var prevBoxSizing = div.style.boxSizing;
+    var prevPadding = div.style.padding;
+    /* 先量出原消息气泡的真实宽度，把气泡固定成这个宽度、并清零内边距，编辑框外尺寸才能和原消息一致；
+       超短消息时原宽连按钮都放不下，给一个最小编辑宽度兜底 */
+    var origW = div.getBoundingClientRect().width;
+    var MIN_EDIT_W = 240;
+    var editW = Math.max(origW, MIN_EDIT_W);
+    div.style.background = 'transparent';
+    div.style.boxShadow = 'none';
+    div.style.boxSizing = 'border-box';
+    div.style.padding = '0';
+    div.style.width = editW + 'px';
+
+    var box = document.createElement('div');
+    box.className = 'ai-edit-box';
+
+    /* 原附件：只读展示（只显示、不增删），位置在正文上方 */
+    var atts = (m.attachments || []).slice();
+    if (atts.length) box.appendChild(buildAttachView(atts));
+
+    var ta = document.createElement('textarea');
+    ta.className = 'ai-edit-textarea';
+    ta.value = original;
+
+    var bar = document.createElement('div');
+    bar.className = 'ai-edit-bar';
+    var cancelBtn = document.createElement('button');
+    cancelBtn.type = 'button'; cancelBtn.className = 'ai-edit-cancel'; cancelBtn.textContent = '取消';
+    var okBtn = document.createElement('button');
+    okBtn.type = 'button'; okBtn.className = 'ai-edit-ok'; okBtn.textContent = '发送';
+    bar.appendChild(cancelBtn); bar.appendChild(okBtn);
+
+    box.appendChild(ta);
+    box.appendChild(bar);
+
+    if (txtNode) txtNode.style.display = 'none';
+    if (actions) actions.style.display = 'none';
+    div.appendChild(box);
+
+    /* 自动撑高：默认与原消息一致，随内容/窗口伸缩，右下角可拖拽 */
+    function fit() { ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight) + 'px'; }
+    ta.addEventListener('input', fit);
+    window.addEventListener('resize', fit);
+    function onFocus() { box.classList.add('focus'); }
+    function onBlur() { box.classList.remove('focus'); }
+    ta.addEventListener('focus', onFocus);
+    ta.addEventListener('blur', onBlur);
+
+    ta.focus();
+    fit();
+    try { ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e) {}
+
+    function cleanup() {
+      div._editing = false;
+      ta.removeEventListener('input', fit);
+      window.removeEventListener('resize', fit);
+      ta.removeEventListener('focus', onFocus);
+      ta.removeEventListener('blur', onBlur);
+      box.remove();
+      div.style.background = prevBg;
+      div.style.boxShadow = prevShadow;
+      div.style.width = prevWidth;
+      div.style.boxSizing = prevBoxSizing;
+      div.style.padding = prevPadding;
+      if (txtNode) txtNode.style.display = '';
+      if (actions) actions.style.display = '';
+    }
+    function cancel() {
+      if (!div._editing) return;
+      cleanup();
+    }
+    function save() {
+      if (!div._editing) return;
+      var newText = ta.value.trim();
+      if (!newText) { showToast('内容不能为空'); ta.focus(); return; }
+      cleanup();
+      /* 编辑时保留原附件（v1 约定），只重发文字、附件原样带走 */
+      resendAsEdited(idx, newText, atts);
+    }
+    okBtn.addEventListener('click', save);
+    cancelBtn.addEventListener('click', cancel);
+    ta.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+      else if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); save(); }
+    });
+  }
+
+  function resendAsEdited(idx, newText, atts) {
+    if (isSharedView) return;
+    if (isStreaming) { showToast('正在回复中，请稍候'); return; }
+    if (idx < 0 || idx >= history.length) return;
+
+    /* 砍掉这条用户消息及其之后所有内容（与 regenerateFrom 同理）：
+       截断后旧内容不会进入发给 AI 的历史（buildApiMessages 只读 history），
+       所以 AI 不保留已丢弃的回答/提问的记忆 */
+    history = history.slice(0, idx);
+    saveHistory();
+    if (selecting) {
+      Object.keys(selectedSet).forEach(function (k) { if (+k >= idx) delete selectedSet[k]; });
+      updateShareCount();
+    }
+    renderHistory();
+
+    inputEl.value = newText;
+    inputEl.style.height = 'auto';
+    pendingAttachments = (atts && atts.length) ? atts : [];
+    renderAttachBar();
     send();
   }
 
