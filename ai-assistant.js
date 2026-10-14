@@ -2003,6 +2003,7 @@ body.shared-ai-view .ai-close{display:none;}
 
     var txtNode = div.querySelector('.ai-msg-text');
     var actions = div.querySelector('.ai-msg-actions');
+    var attachNode = div.querySelector('.ai-msg-attach');
     var original = m.content || '';
 
     /* 编辑时把绿气泡背景中和成透明，让白底编辑卡干净展示（退出编辑后还原） */
@@ -2046,6 +2047,7 @@ body.shared-ai-view .ai-close{display:none;}
 
     if (txtNode) txtNode.style.display = 'none';
     if (actions) actions.style.display = 'none';
+    if (attachNode) attachNode.style.display = 'none';
     div.appendChild(box);
 
     /* 自动撑高：默认与原消息一致，随内容/窗口伸缩，右下角可拖拽 */
@@ -2075,6 +2077,7 @@ body.shared-ai-view .ai-close{display:none;}
       div.style.padding = prevPadding;
       if (txtNode) txtNode.style.display = '';
       if (actions) actions.style.display = '';
+      if (attachNode) attachNode.style.display = '';
     }
     function cancel() {
       if (!div._editing) return;
