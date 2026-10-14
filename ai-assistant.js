@@ -1816,6 +1816,7 @@ body.shared-ai-view .ai-close{display:none;}
     t = t.replace(/<p>\s*<\/p>/g, '');
     t = t.replace(/(<(?:pre|ul|ol|h[3-6]|blockquote|div)[^>]*>)<br>/g, '$1');
     t = t.replace(/<br>(<\/(?:pre|ul|ol|h[3-6]|blockquote|div)>)/g, '$1');
+    t = t.replace(/(<\/(?:pre|ul|ol|h[3-6]|blockquote|div)>)<br>/g, '$1');
 
     return t;
   }
