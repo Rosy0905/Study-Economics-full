@@ -326,7 +326,7 @@
     .card-answer.open { display: block; }
     .card-answer .answer-inner {
         background: #f3faf3; padding: 18px 22px; border-radius: 14px;
-        font-size: 14.8px; line-height: 1.75; color: #1a3322; word-break: break-word;
+        font-size: 13.8px; line-height: 1.75; color: #1a3322; word-break: break-word;
     }
     .card-answer .answer-inner p {
         margin: 0 0 0.2em 0; padding: 0;
@@ -349,7 +349,7 @@
         color: #555;
     }
     .card-answer .answer-inner table {
-        border-collapse: collapse; width: 100%; margin: 6px 0; font-size: 14px; line-height: 1.55;
+        border-collapse: collapse; width: 100%; margin: 6px 0; font-size: 13px; line-height: 1.55;
     }
     .card-answer .answer-inner th,
     .card-answer .answer-inner td {
@@ -380,22 +380,45 @@
 /* 公式盒只显示横向滚动条，隐藏右侧竖滚动条（避免手机上出现绿色竖线） */
 .card-answer .answer-inner .katex-display::-webkit-scrollbar:vertical, .rich-editor .katex-display::-webkit-scrollbar:vertical { width: 0; }
     /* 从 AI 回答导入的内容可能带标题 / 代码块 / 分隔线 / 链接 */
-    .card-answer .answer-inner h1, .rich-editor h1,
-    .card-answer .answer-inner h2, .rich-editor h2,
-    .card-answer .answer-inner h3, .rich-editor h3,
-    .card-answer .answer-inner h4, .rich-editor h4,
-    .card-answer .answer-inner h5, .rich-editor h5 {
+    /* 答案区标题：亮绿，与 AI 回复一致 */
+    .card-answer .answer-inner h1,
+    .card-answer .answer-inner h2,
+    .card-answer .answer-inner h3,
+    .card-answer .answer-inner h4,
+    .card-answer .answer-inner h5 {
+        color: #1e5a3a; font-weight: 700; line-height: 1.45;
+        margin: 0.75em 0 0.3em 0;
+    }
+    /* 编辑器标题：维持原墨绿 #1a3322，按约定不动（用户要求编辑器不用管） */
+    .rich-editor h1,
+    .rich-editor h2,
+    .rich-editor h3,
+    .rich-editor h4,
+    .rich-editor h5 {
         color: #1a3322; font-weight: 700; line-height: 1.45;
         margin: 0.75em 0 0.3em 0;
     }
     .card-answer .answer-inner h1:first-child, .rich-editor h1:first-child,
     .card-answer .answer-inner h2:first-child, .rich-editor h2:first-child,
     .card-answer .answer-inner h3:first-child, .rich-editor h3:first-child { margin-top: 0; }
-    .card-answer .answer-inner h1, .rich-editor h1 { font-size: 15.5px; }
-    .card-answer .answer-inner h2, .rich-editor h2 { font-size: 15px; }
-    .card-answer .answer-inner h3, .rich-editor h3 { font-size: 14.8px; }
-    .card-answer .answer-inner h4, .rich-editor h4 { font-size: 14.6px; }
-    .card-answer .answer-inner h5, .rich-editor h5 { font-size: 14.2px; }
+    .card-answer .answer-inner h1 { font-size: 16px; }
+    .card-answer .answer-inner h2 { font-size: 15.5px; }
+    .card-answer .answer-inner h3 { font-size: 15px; }
+    .card-answer .answer-inner h4 { font-size: 14.2px; }
+    .card-answer .answer-inner h5 { font-size: 13.6px; }
+    .rich-editor h1 { font-size: 15.5px; }
+    .rich-editor h2 { font-size: 15px; }
+    .rich-editor h3 { font-size: 14.8px; }
+    .rich-editor h4 { font-size: 14.6px; }
+    .rich-editor h5 { font-size: 14.2px; }
+    .card-item.favorited .card-answer .answer-inner h1,
+    .card-item.favorited .card-answer .answer-inner h2,
+    .card-item.favorited .card-answer .answer-inner h3,
+    .card-item.favorited .card-answer .answer-inner h4,
+    .card-item.favorited .card-answer .answer-inner h5 { color: #8a6a1a; }
+    /* 收藏态加粗：字重同普通态(700)，字色同样由强制黑规则接管 */
+    .card-item.favorited .card-answer .answer-inner b,
+    .card-item.favorited .card-answer .answer-inner strong { font-weight: 700; }
     .card-answer .answer-inner pre, .rich-editor pre {
         background: #eef6ef; border: 1px solid #dceade; border-radius: 10px;
         padding: 10px 12px; margin: 0.5em 0; overflow-x: auto;
@@ -410,13 +433,18 @@
     .card-answer .answer-inner pre code, .rich-editor pre code {
         background: transparent; padding: 0; color: #1a3322; font-size: 13px;
     }
+    /* 26/10/15：答案区代码 / 公式字号对齐 AI 回复（编辑器维持原样，用户要求不动） */
+    .card-answer .answer-inner code { font-size: 12.8px; }
+    .card-answer .answer-inner pre { font-size: 12.6px; }
+    .card-answer .answer-inner pre code { font-size: 12.6px; }
+    .card-answer .answer-inner .katex { font-size: 1.02em; }
+    .card-answer .answer-inner .katex-display > .katex { font-size: 1.02em; }
     .card-answer .answer-inner hr, .rich-editor hr {
         border: none; border-top: 1px solid #d3e6d3; margin: 12px 0;
     }
     .card-answer .answer-inner a, .rich-editor a { color: #2f7d55; }
-    /* 26/09/20 第 14 轮：加粗不再跟着正文的墨绿走（#1a3322 一加粗就显得发绿），
-       统一近黑。编辑器和答案区都管，收藏态另有更近黑的规则，不冲突。 */
-    .card-answer .answer-inner b, .card-answer .answer-inner strong,
+    /* 答案区加粗：粗体(700)，字色由下方第 38 轮强制黑规则统一为纯黑 #1a1a1a */
+    .card-answer .answer-inner b, .card-answer .answer-inner strong { font-weight: 700; }
     .rich-editor b, .rich-editor strong { color: #000; }
     /* 26/09/21 第 38 轮：AI 导入 / 从别处粘贴的内容常自带内联墨绿色，内联样式优先级最高，
        答案区于是出现「有的黑有的绿」。这里把正文元素的字色统一压成中性黑（!important
@@ -2664,6 +2692,36 @@
         try { savedRange = sel.getRangeAt(0).cloneRange(); } catch (e) {}
     }
 
+    /* 26/10/15 方案甲：在光标处插入一段 HTML（用于把 Markdown 转成的 HTML 粘进答案区）。
+       用 DocumentFragment 把转换结果逐节点插入，避免多套一层 wrapper <div>。 */
+    function insertHtmlAtCursor(html) {
+        var tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        var frag = document.createDocumentFragment();
+        while (tmp.firstChild) frag.appendChild(tmp.firstChild);
+        var range = getEditorRange();
+        range.deleteContents();
+        var last = frag.lastChild;
+        range.insertNode(frag);
+        if (last) { range.setStartAfter(last); range.collapse(true); }
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        try { savedRange = sel.getRangeAt(0).cloneRange(); } catch (e) {}
+    }
+
+    /* 26/10/15 方案甲：判断纯文本是否像 Markdown。仅在这些标记出现时才转 HTML；
+       普通纯文本、或剪贴板已带 text/html 的不动，避免误转与膨胀。 */
+    function looksLikeMarkdown(s) {
+        return /(^|\n)\s{0,3}#{1,6}\s/.test(s)        /* 标题 */
+            || /\*\*|__/.test(s)                       /* 加粗 */
+            || /\$\$/.test(s)                          /* 行间公式 $$ */
+            || /(^|\n)[^\n]*\|[^\n]*\|/.test(s)        /* 表格（一行里俩 |） */
+            || /(^|\n)\s*[-*+]\s+\S/.test(s)           /* 无序列表 */
+            || /(^|\n)\s*\d+[.)]\s+\S/.test(s)         /* 有序列表 */
+            || /```/.test(s);                          /* 代码块 */
+    }
+
     /* 工具栏按钮：mousedown 阻止默认，避免编辑器失焦丢选区 */
     editorTools.addEventListener('mousedown', function (e) {
         var b = e.target.closest ? e.target.closest('button') : null;
@@ -2902,16 +2960,32 @@
     });
 
     answerEditor.addEventListener('paste', function (e) {
-        var items = e.clipboardData && e.clipboardData.items;
-        if (!items) return;
-        for (var i = 0; i < items.length; i++) {
-            var item = items[i];
-            if (item.type && item.type.indexOf('image/') === 0) {
-                e.preventDefault();
-                readAndInsertImage(item.getAsFile());
-                break;
+        var cd = e.clipboardData;
+        if (!cd) return;
+        var items = cd.items;
+        /* ① 图片优先：与原来一致 */
+        if (items) {
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                if (item.type && item.type.indexOf('image/') === 0) {
+                    e.preventDefault();
+                    readAndInsertImage(item.getAsFile());
+                    return;
+                }
             }
         }
+        /* ② 剪贴板自带 HTML（鼠标选字复制 / Word / 网页）—— 原样放过，不转换、不膨胀 */
+        var html = '';
+        try { html = cd.getData('text/html'); } catch (x) {}
+        if (html && html.trim()) return;
+        /* ③ 纯文本：看着像 Markdown 才转成 HTML 插入；普通纯文本仍走浏览器默认粘贴 */
+        var text = '';
+        try { text = cd.getData('text/plain'); } catch (x) {}
+        if (!text || !text.trim()) return;
+        if (!looksLikeMarkdown(text)) return;
+        e.preventDefault();
+        insertHtmlAtCursor(mdToHtml(text));
+        showToast('📋 已按 Markdown 渲染粘贴');
     });
 
     /* 26/09/20 第 10 轮：还原 —— 按钮只插入占位的「公式」两字（不塞任何真的公式内容），
