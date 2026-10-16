@@ -2170,7 +2170,7 @@
         return '' +
         '<div class="card-item' + (c.fav ? ' favorited' : '') + '" data-id="' + safeText(c.id) + '">' +
             '<div class="card-header">' +
-                '<div class="label">' + subjectHtml + qidHtml + hasImgHtml + '</div>' +
+                '<div class="label">' + subjectHtml + ' ' + qidHtml + ' ' + hasImgHtml + '</div>' +
                 '<div class="card-actions">' +
                     '<button class="btn-fav' + (c.fav ? ' active' : '') + '" data-id="' + safeText(c.id) + '" title="' + (c.fav ? '取消收藏' : '收藏') + '">' +
                         (c.fav ? '⭐' : '☆') +
@@ -3906,5 +3906,11 @@
 
 })();
 </script>
+
+<!-- ============================================================
+     AI 答疑助手：与八个子页同一套脚本（自动读取当前卡片）
+     放在页面末尾是有意的，它不等页面加载完就自己挂载
+     ============================================================ -->
+<script src="../ai-assistant.js"></script>
 </body>
 </html>

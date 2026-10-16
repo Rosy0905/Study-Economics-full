@@ -84,6 +84,15 @@
 .ai-head-l{display:flex;align-items:center;gap:9px;font-weight:700;color:#1e4a2a;font-size:14.5px;padding-left:10px;}
 .ai-dot{width:9px;height:9px;border-radius:50%;background:#3fae8c;box-shadow:0 0 0 3px rgba(63,174,140,.2);}
 .ai-head-r{display:flex;gap:4px;}
+.ai-readcard{display:inline-flex;align-items:center;gap:6px;margin-left:9px;padding:3px 10px 3px 11px;border-radius:20px;border:.5px solid #a9cfbc;background:transparent;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s;}
+.ai-readcard .ai-rc-txt{font-size:12px;font-weight:500;color:#2f6b52;line-height:1;transition:color .15s;}
+.ai-readcard svg{width:14px;height:14px;display:block;flex:0 0 auto;}
+.ai-readcard .ai-rc-off{display:none;}
+.ai-readcard.off{border-color:#d3ded8;}
+.ai-readcard.off .ai-rc-txt{color:#9aada4;}
+.ai-readcard.off .ai-rc-on{display:none;}
+.ai-readcard.off .ai-rc-off{display:block;}
+@media (hover:hover) and (pointer:fine){.ai-readcard:hover{background:rgba(63,174,140,.09);}}
 .ai-head-r button{width:32px;height:32px;border:none;background:transparent;cursor:pointer;border-radius:9px;color:#5a8068;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
 @media (hover: hover) and (pointer: fine) {
   .ai-head-r button:hover{background:#d3ecdf;color:#1e4a2a;}
@@ -478,7 +487,7 @@ body.shared-ai-view .ai-close{display:none;}
     + '<div class="ai-panel" id="aiPanel">'
     +   '<div class="ai-resize" id="aiResize" title="拖动调整大小"></div>'
     +   '<div class="ai-head">'
-    +     '<div class="ai-head-l"><span class="ai-dot"></span><span id="aiHeadTitle">AI 答疑助手</span></div>'
+    +     '<div class="ai-head-l"><span class="ai-dot"></span><span id="aiHeadTitle">AI 答疑助手</span><button id="aiReadCard" class="ai-readcard" title="读取当前卡片"><span class="ai-rc-txt">读卡</span><svg class="ai-rc-on" viewBox="0 0 24 24" fill="none" stroke="#34775c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M7 10h6"/><path d="M7 14h4"/></svg><svg class="ai-rc-off" viewBox="0 0 24 24" fill="none" stroke="#a3b5ab" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M7 10h6"/><path d="M7 14h4"/><path d="M4 4l16 16"/></svg></button></div>'
     +     '<div class="ai-head-r">'
     +       '<button id="aiClear" title="清空对话"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>'
     +       '<button id="aiSetting" title="设置"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>'
@@ -588,6 +597,7 @@ body.shared-ai-view .ai-close{display:none;}
   var $ = function (id) { return document.getElementById(id); };
   var fab = $('aiFab'), panel = $('aiPanel'), closeBtn = $('aiClose'),
       clearBtn = $('aiClear'), settingBtn = $('aiSetting'), shareBtn = $('aiShare'),
+      readCardBtn = $('aiReadCard'),
       resizeHandle = $('aiResize'),
       configEl = $('aiConfig'), bodyEl = $('aiBody'),
       msgsEl = $('aiMsgs'), inputEl = $('aiInput'), sendBtn = $('aiSend'),
@@ -654,7 +664,7 @@ body.shared-ai-view .ai-close{display:none;}
 
   function loadCfg() {
     try { var r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch (e) {}
-    return { preset: 'deepseek', base: '', model: '', key: '', system: DEFAULT_SYSTEM };
+    return { preset: 'deepseek', base: '', model: '', key: '', system: DEFAULT_SYSTEM, readCard: true };
   }
   function saveCfg() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg)); } catch (e) {} }
 
@@ -1065,6 +1075,94 @@ body.shared-ai-view .ai-close{display:none;}
     enterSelectMode();
   });
 
+  /* 读卡开关：控制发消息时是否把当前卡片上下文喂给 AI */
+  var pendingReadCard = null;   /* 刚刚切换过读卡开关：'on' / 'off'；随下一条消息发一次告示后清空 */
+
+  /* 关闭态：基础人设里【卡片指代规则】和「可结合卡片上下文一起回答」是带标题的正式条目，
+     而关闭读卡原来只是末尾一句话，一条小声明压不住两条正式规则 → 模型时而听话时而犯迷糊。
+     所以关闭态必须显式声明「优先于上文所有卡片相关规则」，并点名作废那几条。 */
+  var OFF_TOGGLE_NOTE =
+      '【★★★ 读卡开关刚刚关闭（本条优先于上文所有与卡片相关的规则）★★★】\n'
+    + '用户刚刚关掉了读卡。本轮你不会收到任何卡片内容，也不知道用户在看哪一张卡。\n'
+    + '因此上文【卡片指代规则】，以及「可结合卡片上下文一起回答」等涉及卡片的规则，一律不适用。\n'
+    + '不要猜测、不要编造，也不要复述之前对话里出现过的卡片标签或题目，那些内容已作废。\n'
+    + '若用户问「这张卡/这道题怎么答」而你手头没有题目原文，直接告诉他读卡已关闭、'
+    + '请他把题目发你或点开读卡，不要硬答。\n'
+    + '只依据用户本条消息的文字与上传的图片/文件作答。\n';
+
+  var OFF_STEADY_NOTE =
+      '【★★★ 读卡开关：已关闭（本条优先于上文所有与卡片相关的规则）★★★】\n'
+    + '本轮不附带任何卡片内容，也不知道用户在看哪一张卡。上文【卡片指代规则】等涉及卡片的规则一律不适用，'
+    + '不要猜、不要编、不要引用之前对话里的卡片内容。\n'
+    + '用户问「这张卡怎么答」而没有题目原文时，直接告诉他读卡已关闭、请他把题目发你或点开读卡；'
+    + '只依据用户本条文字与图片/文件作答。';
+
+  /* 开启态：卡片块在提示的「上文」（拼装顺序是 人设 → 页面上下文 → 本条提示）。
+     绝不能写成「下文」，否则模型会往下找卡片、找不到就说「没读到」。
+     这里还把焦点卡的真实标签直接抄进提示，让它没有"读不到"的余地。 */
+  function buildOnNote(cardLabel, isToggle) {
+    var head = isToggle ? '【★★★ 读卡开关刚刚开启 ★★★】\n' : '';
+    if (cardLabel) {
+      return head + '本轮【当前卡片】是「' + cardLabel + '」，它的标签、题目、答案已在上文一并提供。'
+           + '上文【卡片指代规则】恢复适用，请直接按这张卡作答，不要问用户在看哪一张。';
+    }
+    return head + '本轮读卡已开启，但屏幕上没有可见的卡片（用户可能不在卡片列表页，或卡片滚出了视口），'
+         + '所以本轮没有附带任何卡片内容。若用户问某张卡，请说明没能定位到卡片，请他发题目。';
+  }
+
+  /* 从页面上下文里取出焦点卡的标签（把标签直接写进提示，杜绝"没读到卡片"） */
+  function pickCardLabel(pageCtx) {
+    if (!pageCtx) return '';
+    var i = pageCtx.indexOf('\u6807\u7b7e\uff1a');
+    if (i < 0) return '';
+    return pageCtx.slice(i + 3).split('\n')[0].trim();
+  }
+
+  /* 取本次请求要附带的读卡提示：
+     刚切换过 → 用一次性告示（发完即清）；否则给一行常驻状态声明。
+     peek=true 时只看不消费，供诊断用。 */
+  function takeReadCardNote(cardLabel, peek) {
+    var switched = pendingReadCard;
+    if (!peek) pendingReadCard = null;
+
+    if (cfg.readCard === false) {
+      return switched === 'off' ? OFF_TOGGLE_NOTE : OFF_STEADY_NOTE;
+    }
+    return buildOnNote(cardLabel, switched === 'on');
+  }
+
+  /* 诊断：在控制台执行 __AI_SEES__() 可原样看到「下一条消息会发给 AI 的 system 提示」，
+     不改动任何状态，方便核对读卡开关到底生效没有 */
+  window.__AI_SEES__ = function () {
+    var pageCtx = (cfg.readCard === false) ? '' : buildPageContext(false);
+    var note = takeReadCardNote(pickCardLabel(pageCtx), true);
+    var s = cfg.system
+          + (pageCtx ? '\n\n===== 当前页面上下文 =====\n' + pageCtx : '')
+          + (note ? '\n\n' + note : '');
+    console.log(s);
+    return s;
+  };
+
+  function syncReadCardUI() {
+    if (!readCardBtn) return;
+    if (cfg.readCard === false) readCardBtn.classList.add('off');
+    else readCardBtn.classList.remove('off');
+    readCardBtn.title = (cfg.readCard === false ? '当前：不读卡' : '当前：读取当前卡片') + '（点按切换）';
+  }
+  syncReadCardUI();
+
+  if (readCardBtn) readCardBtn.addEventListener('click', function () {
+    if (isSharedView) return;
+    cfg.readCard = (cfg.readCard === false);
+    saveCfg();
+    syncReadCardUI();
+    /* 记一条告示，随下一次发消息一次性带给 AI；关闭时顺带清掉焦点基线，
+       免得下次重开时拿一段"跨越关闭期"的旧记录比对，冒出一句误导的「焦点已切换」 */
+    pendingReadCard = cfg.readCard ? 'on' : 'off';
+    if (cfg.readCard === false) { lastSentFocusKey = null; lastSentFocusLabel = ''; }
+    showToast(cfg.readCard ? '已开启读卡 · 会读取当前卡片' : '已关闭读卡 · 只按你说的话和截图回答');
+  });
+
   /* 进入"勾选分享"模式：每条消息可点选，仅把选中的部分生成分享（链接/图片） */
   /* 消息点击统一用事件委托：只在勾选模式下生效，
      避免逐条绑定点击监听后退出模式仍残留导致正常状态下点消息出现高亮 */
@@ -1458,7 +1556,7 @@ body.shared-ai-view .ai-close{display:none;}
     if (!base) { alert('请填写 API 地址'); return; }
     if (!model) { alert('请填写模型名称'); return; }
     if (!key) { alert('请填写 API Key'); return; }
-    cfg = { preset: cfgPreset.value, base: base, model: model, key: key, system: system };
+    cfg = { preset: cfgPreset.value, base: base, model: model, key: key, system: system, readCard: cfg.readCard !== false };
     saveCfg(); showChat(); showToast('配置已保存 ✓');
   });
 
@@ -2857,8 +2955,12 @@ body.shared-ai-view .ai-close{display:none;}
     savedScrollTop = null;
     addMsg('user', text, history.length - 1, { attachments: atts });
 
-    var pageCtx = buildPageContext(true);
+    var pageCtx = (cfg.readCard === false) ? '' : buildPageContext(true);
+    var readCardNote = takeReadCardNote(pickCardLabel(pageCtx));
     var systemContent = cfg.system + (pageCtx ? '\n\n===== 当前页面上下文 =====\n' + pageCtx : '');
+    /* 读卡提示拼在 system 提示最末尾（紧贴用户这条消息，位置最显眼） */
+    if (readCardNote) systemContent += '\n\n' + readCardNote;
+
     var messages = buildApiMessages(systemContent);
 
     var aiDiv = document.createElement('div');
