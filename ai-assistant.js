@@ -1615,6 +1615,22 @@ body.shared-ai-view .ai-close{display:none;}
     return { key: cardKey(card), label: label, q: q, a: a, n: n };
   }
 
+  /* 把长文本压到上限内：尽量截在句末，并明确标注「这是节选」，
+     免得 AI 只看到半张卡就断言"原文没提到这个点"。
+     clipped 用来收集本轮被节选的字段名，稍后统一提示。 */
+  function clipForAI(text, maxChars, name, clipped) {
+    var s = String(text == null ? '' : text);
+    if (s.length <= maxChars) return s;
+
+    var cut = s.slice(0, maxChars);
+    var m = cut.match(/[。！？；\n][^。！？；\n]*$/);   /* 找最后一个句末标点 */
+    if (m && m.index > maxChars * 0.7) cut = cut.slice(0, m.index + 1);  /* 别切在半句话上 */
+
+    if (clipped) clipped.push({ name: name, total: s.length, sent: cut.length });
+    return cut + '\n〔' + name + '为节选：原文共 ' + s.length + ' 字，此处只发前 '
+         + cut.length + ' 字，剩余 ' + (s.length - cut.length) + ' 字未发送〕';
+  }
+
   var lastFocusedCardKey = null;
   var lastSentFocusKey   = null;
   var lastSentFocusLabel = '';
@@ -1697,6 +1713,7 @@ body.shared-ai-view .ai-close{display:none;}
     }
 
     var ctx = '';
+    var clipped = [];   /* 本轮被节选的字段，结尾统一提示 AI */
     var h1 = document.querySelector('.app-header h1, header h1, h1');
     var pageTitle = h1 ? h1.textContent.replace(/^[^\u4e00-\u9fa5A-Za-z]+/, '').trim() : '';
     if (pageTitle) ctx += '【当前模块】' + pageTitle + '\n';
@@ -1718,9 +1735,18 @@ body.shared-ai-view .ai-close{display:none;}
 
       ctx += '\n【当前卡片】\n';
       ctx += '标签：' + focusLabel + '\n';
-      if (fc.q) ctx += '题目：' + fc.q.slice(0, 400) + '\n';
-      if (fc.a) ctx += '答案：' + fc.a.slice(0, 1600) + '\n';
-      if (fc.n) ctx += '用户笔记：' + fc.n.slice(0, 800) + '\n';
+
+      /* 动态预算：一张卡最多给 AI 10000 字。题目最多 1200、笔记最多 1500，
+         题目和笔记占得多，答案就让出额度（答案上限 9000，保底 2000） */
+      var BUDGET_TOTAL = 10000;
+      var qTxt = fc.q || '', aTxt = fc.a || '', nTxt = fc.n || '';
+      var qUsed = Math.min(qTxt.length, 1200);
+      var nUsed = Math.min(nTxt.length, 1500);
+      var aLimit = Math.max(2000, Math.min(9000, BUDGET_TOTAL - qUsed - nUsed));
+
+      if (qTxt) ctx += '题目：' + clipForAI(qTxt, 1200, '题目', clipped) + '\n';
+      if (aTxt) ctx += '答案：' + clipForAI(aTxt, aLimit, '答案', clipped) + '\n';
+      if (nTxt) ctx += '用户笔记：' + clipForAI(nTxt, 1500, '笔记', clipped) + '\n';
 
       var refs = [];
       for (var k = 0; k < visible.length && refs.length < 2; k++) {
@@ -1752,6 +1778,16 @@ body.shared-ai-view .ai-close{display:none;}
     var paper = document.querySelector('#filterPaper option:checked');
     if (subj  && subj.value  !== 'all') ctx += '\n【筛选·专业】' + subj.textContent;
     if (paper && paper.value !== 'all') ctx += '\n【筛选·套卷】' + paper.textContent;
+
+    /* 有节选时，在最后再点名一次：让 AI 知道自己拿到的是半张卡 */
+    if (clipped.length) {
+      var clipDesc = clipped.map(function (c) {
+        return c.name + '（原文 ' + c.total + ' 字，只发了前 ' + c.sent + ' 字）';
+      }).join('、');
+      ctx += '\n【★★★ 节选提示：' + clipDesc + '，后面还有内容没有发送。'
+           + '凡是要用到没显示的部分才能判断的地方，不要凭猜测下结论，'
+           + '直接告诉用户"当前只看到它的一部分"，并说清是哪一部分。★★★】';
+    }
 
     return ctx.trim();
   }
