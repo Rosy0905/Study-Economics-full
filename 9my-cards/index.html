@@ -269,6 +269,20 @@
     }
     .card-item.favorited { border-left-color: #d4a24e; background: #fdfbf6; }
 
+    /* 26/10/17：AI 存卡后把那张卡滚到眼前，用一圈绿色光晕闪两下指个路（outline 不占布局） */
+    @keyframes cardFlash {
+        0%   { outline-color: rgba(63, 174, 140, 0.85); outline-offset: 2px; }
+        70%  { outline-color: rgba(63, 174, 140, 0.30); outline-offset: 7px; }
+        100% { outline-color: rgba(63, 174, 140, 0);    outline-offset: 9px; }
+    }
+    .card-item.card-flash {
+        outline: 2px solid rgba(63, 174, 140, 0);
+        animation: cardFlash 0.9s ease-out 2;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .card-item.card-flash { animation: none; outline-color: rgba(63, 174, 140, 0.55); }
+    }
+
     .card-header {
         padding: 16px 22px 8px 22px;
         display: flex; justify-content: space-between; align-items: flex-start;
@@ -1054,6 +1068,8 @@
     ::-webkit-scrollbar-thumb { background: #8fbe8f; border-radius: 10px; }
     @media (hover: hover) and (pointer: fine) { ::-webkit-scrollbar-thumb:hover { background: #6f9e6f; } }
 </style>
+<!-- 26/10/17：筛选记忆（页面首次 render 前用 FilterMemory.apply() 还原，避免先画全量再变） -->
+<script src="../shared/filter-memory.js"></script>
 </head>
 <body>
 
@@ -1380,24 +1396,29 @@
         return n || UNCATEGORIZED;
     }
 
-    /* ---- 读卡片 ---- */
-    try {
-        var raw = localStorage.getItem(STORAGE_KEY);
-        var parsed = raw ? JSON.parse(raw) : [];
-        if (Array.isArray(parsed)) {
-            cards = parsed.map(function (c) {
-                var o = Object.assign({}, c);
-                if (SUBJECTS.indexOf(o.subject) < 0) o.subject = '微观';
-                if (typeof o.chapter !== 'string') o.chapter = '';
-                if (typeof o.qid !== 'string') o.qid = '';
-                if (typeof o.hasImage !== 'boolean') o.hasImage = false;
-                if (typeof o.fav !== 'boolean') o.fav = false;
-                if (typeof o.created !== 'number') o.created = Date.now();
-                if (!o.id) o.id = uid();
-                return o;
-            });
-        }
-    } catch (e) { cards = []; }
+    /* ---- 读卡片（单独成函数：AI 面板里存卡后要重读一次再重绘） ---- */
+    function readCardsFromStorage() {
+        var out = [];
+        try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            var parsed = raw ? JSON.parse(raw) : [];
+            if (Array.isArray(parsed)) {
+                out = parsed.map(function (c) {
+                    var o = Object.assign({}, c);
+                    if (SUBJECTS.indexOf(o.subject) < 0) o.subject = '微观';
+                    if (typeof o.chapter !== 'string') o.chapter = '';
+                    if (typeof o.qid !== 'string') o.qid = '';
+                    if (typeof o.hasImage !== 'boolean') o.hasImage = false;
+                    if (typeof o.fav !== 'boolean') o.fav = false;
+                    if (typeof o.created !== 'number') o.created = Date.now();
+                    if (!o.id) o.id = uid();
+                    return o;
+                });
+            }
+        } catch (e) { out = []; }
+        return out;
+    }
+    cards = readCardsFromStorage();
 
     /* ---- 读章节（v2 = 按分类分开；读不到就从老结构迁移一次） ---- */
     (function loadChapters() {
@@ -3895,7 +3916,52 @@
     try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) {}
     normalizeChapters();
     updateChapterFilterOptions();
+    /* 26/10/17：还原上次的筛选（章节下拉是动态生成的，必须等它建好再恢复） */
+    if (window.FilterMemory) FilterMemory.apply();
     render();
+    /* 26/10/17：AI 面板里「存成卡片 / 移出卡片」后立刻重绘本页。
+       同一个页面写 localStorage 不会触发 storage 事件，靠 ai-cards-bridge.js 广播的 mycards:changed */
+    window.addEventListener('mycards:changed', function (e) {
+        var d = (e && e.detail) || {};
+        cards = readCardsFromStorage();
+        normalizeChapters();
+        persistChaptersOnly();
+        updateChapterFilterOptions();
+        render();
+        if (d.type === 'add' && d.id) focusNewCard(d.id);
+    });
+
+    /* 26/10/17：重绘本身不会动滚动条，但新卡是按「分类 → 章节 → 题号」排的，
+       经常插在视口上方老远，看着就像「什么也没发生」。这里把它滚到眼前亮一下。 */
+    function focusNewCard(id) {
+        var node = null;
+        var nodes = grid.querySelectorAll('.card-item');
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].dataset.id === id) { node = nodes[i]; break; }
+        }
+
+        if (!node) {
+            /* 被当前筛选挡住了：不硬拽滚动条，只报个位置，免得正在做的事被打断 */
+            var c = null;
+            for (var j = 0; j < cards.length; j++) {
+                if (cards[j].id === id) { c = cards[j]; break; }
+            }
+            if (c) {
+                var where = normSubject(c.subject) + (c.chapter ? ' · ' + c.chapter : '');
+                showToast('已存进「' + where + '」，当前筛选看不到它');
+            }
+            return;
+        }
+
+        var top = node.getBoundingClientRect().top + (window.pageYOffset || 0) - 24;
+        try { window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' }); }
+        catch (err) { window.scrollTo(0, Math.max(0, top)); }
+
+        node.classList.remove('card-flash');
+        void node.offsetWidth;               // 强制重排，让动画能连着重放
+        node.classList.add('card-flash');
+        setTimeout(function () { node.classList.remove('card-flash'); }, 2000);
+    }
     /* 从 AI 助手那边跳过来时带 #ai，落地直接弹导入面板 */
     if (/(^|[#&])ai($|[&])/i.test(location.hash || '')) {
         setTimeout(openAiImp, 260);
@@ -3917,5 +3983,10 @@
      ============================================================ -->
 <script src="../shared/confirm.js"></script>
 <script src="../ai-assistant.js"></script>
+<!-- 26/10/17：AI 回答「存成卡片」按钮。本页就是「我的卡片」，所以桥接里会自动跳过右上角那个入口
+     （点了只会打开它自己），只给每条回答加存卡按钮；存完由上面的 mycards:changed 监听即时重绘 -->
+<script src="../ai-cards-bridge.js"></script>
+<!-- 26/10/17：板块串连导航（顶栏「← 主页」右侧的序号圆钮，这页显示 9；面板仍是那八个板块，新开页面） -->
+<script src="../shared/section-nav.js"></script>
 </body>
 </html>

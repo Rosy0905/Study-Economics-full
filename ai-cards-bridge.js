@@ -32,6 +32,18 @@
     var CHAPTER_KEY = 'custom_chapters_v2';   // 26/09/20 第7轮起：章节按分类分开存 { 微观:[…], 宏观:[…] }
     var AI_HISTORY_KEY = 'ai_assistant_history_v1';
 
+    /* 26/10/17：本页就是「我的卡片」时，右上角那个入口会打开它自己，没有意义 → 只装存卡按钮 */
+    var IS_CARDS_PAGE = /\/9my-cards\//i.test(location.pathname);
+    /* 存 / 移卡片后广播一声，卡片页自己接到就重绘，不用手动刷新。
+       带上卡片 id —— 卡片页要靠它把刚存的那张滚到眼前。 */
+    function notifyChanged(type, id) {
+        try {
+            window.dispatchEvent(new CustomEvent('mycards:changed', {
+                detail: { type: type, id: id || '' }
+            }));
+        } catch (e) {}
+    }
+
     /* ---------------- 小工具 ---------------- */
     function esc(s) {
         return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -155,8 +167,9 @@
                 (c.question === q || c.originalQuestion === q || (!c.originalQuestion && c.question === q));
         });
         if (dup) { toast('这张卡片已经有了'); return false; }
+        var newId = uid();
         cards.push({
-            id: uid(),
+            id: newId,
             subject: subj,
             chapter: String(chapter || '').trim(),
             qid: '',
@@ -176,6 +189,7 @@
             toast('存不下了，去「我的卡片」里导出清理一下');
             return false;
         }
+        notifyChanged('add', newId);
         return true;
     }
     function removeCard(question, answerHtml) {
@@ -192,6 +206,7 @@
         if (cards.length === before) { toast('卡片已不存在'); return false; }
         try { localStorage.setItem(CARDS_KEY, JSON.stringify(cards)); }
         catch (e) { toast('移除失败，存储受限'); return false; }
+        notifyChanged('remove');
         return true;
     }
     function isSaved(question, answerHtml) {
@@ -519,7 +534,7 @@
 
         /* 1) 顶部入口按钮 */
         var headR = panel.querySelector('.ai-head-r');
-        if (headR && !headR.querySelector('.mycards-entry')) {
+        if (headR && !IS_CARDS_PAGE && !headR.querySelector('.mycards-entry')) {
             var entry = document.createElement('button');
             entry.type = 'button';
             entry.className = 'mycards-entry';

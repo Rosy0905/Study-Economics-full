@@ -71,7 +71,7 @@
 .ai-fab.hidden{opacity:0;pointer-events:none;transform:scale(.5);}
 
 /* ===== 面板 ===== */
-.ai-panel{position:fixed;right:22px;bottom:22px;z-index:950;width:min(440px,calc(100vw - 32px));height:min(660px,calc(100vh - 44px));background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(30,70,45,.22),0 0 0 1px rgba(180,220,200,.4);display:flex;flex-direction:column;overflow:hidden;opacity:0;pointer-events:none;transform:translateY(20px) scale(.96);transition:opacity .25s,transform .3s cubic-bezier(.34,1.56,.64,1);}
+.ai-panel{position:fixed;right:22px;bottom:22px;z-index:950;width:min(440px,calc(100vw - 32px));height:min(660px,calc(100vh - 44px));background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(30,70,45,.22),0 0 0 1px rgba(180,220,200,.4);display:flex;flex-direction:column;overflow:hidden;opacity:0;pointer-events:none;transform:translateY(20px) scale(.96);transition:opacity .25s,transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .18s ease;}
 .ai-panel.show{opacity:1;pointer-events:auto;transform:translateY(0) scale(1);}
 
 .ai-resize{position:absolute;left:0;top:0;width:34px;height:34px;cursor:nwse-resize;z-index:20;border-radius:20px 0 0 0;transition:background .15s;}
@@ -308,7 +308,7 @@ body.shared-ai-view .ai-close{display:none;}
 .ai-msg.ai .ai-table tbody tr:nth-child(even) td{background:#fafdfc;}
 
 /* ===== 输入区（纵向：附件条 + 输入行） ===== */
-.ai-input-wrap{flex:0 0 auto;padding:10px 12px 12px;border-top:1px solid #e8f2ec;background:#fbfefc;display:flex;flex-direction:column;gap:8px;}
+.ai-input-wrap{position:relative;flex:0 0 auto;padding:10px 12px 12px;border-top:1px solid #e8f2ec;background:#fbfefc;display:flex;flex-direction:column;gap:8px;}
 .ai-input-row{display:flex;gap:8px;align-items:flex-end;}
 .ai-input-wrap textarea{flex:1;min-height:42px;max-height:140px;padding:10px 14px;border:1.5px solid #d8ebdf;border-radius:14px;background:#fff;font-size:13.8px;color:#1e3a2a;font-family:inherit;line-height:1.55;resize:none;outline:none;overflow-y:auto;}
 .ai-input-wrap textarea:focus{border-color:#5ec99a;box-shadow:0 0 0 3px rgba(94,201,154,.15);}
@@ -360,6 +360,19 @@ body.shared-ai-view .ai-close{display:none;}
 /* ===== 附件：待发送预览条 ===== */
 .ai-attach-bar{display:flex;flex-wrap:wrap;gap:7px;}
 .ai-attach-bar:empty{display:none;}
+/* 26/10/17：把文件拖进对话框时的提示 —— 外圈描绿、输入框变虚线，输入框上方浮一条「松手添加」 */
+.ai-panel.drop-active{box-shadow:0 20px 60px rgba(30,70,45,.22),0 0 0 2px #5ec99a;}
+.ai-panel.drop-active .ai-input-wrap textarea{border-color:#5ec99a;border-style:dashed;background:#f7fdfa;}
+.ai-drop-hint{
+  position:absolute;left:12px;right:12px;top:-38px;z-index:30;pointer-events:none;
+  padding:7px 12px;border-radius:10px;text-align:center;
+  background:rgba(238,249,243,.97);border:1px solid #b7e3cc;
+  color:#2a6a4a;font-size:12.5px;letter-spacing:.2px;
+  box-shadow:0 4px 14px rgba(63,168,122,.12);
+  opacity:0;transform:translateY(6px);
+  transition:opacity .16s ease,transform .16s ease;
+}
+.ai-drop-hint.show{opacity:1;transform:translateY(0);}
 .ai-chip{
   display:flex;align-items:center;gap:6px;max-width:190px;
   padding:4px 6px 4px 5px;background:#eef9f3;border:1px solid #d3ecdf;border-radius:10px;
@@ -517,7 +530,7 @@ body.shared-ai-view .ai-close{display:none;}
     +       '<div class="ai-attach-bar" id="aiAttachBar"></div>'
     +       '<div class="ai-input-row">'
     +         '<textarea id="aiInput" rows="1" placeholder="输入问题…"></textarea>'
-    +         '<button class="ai-attach-btn" id="aiAttachBtn" type="button" title="上传图片或文件（也可直接 Ctrl+V 粘贴图片）">'
+    +         '<button class="ai-attach-btn" id="aiAttachBtn" type="button" title="上传图片或文件（也可直接 Ctrl+V 粘贴、或把文件拖进来）">'
     +           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
     +             '<path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>'
     +           '</svg>'
@@ -2277,29 +2290,38 @@ body.shared-ai-view .ai-close{display:none;}
     var files = Array.prototype.slice.call(fileList || []);
     if (!files.length) return;
 
+    /* 26/10/17：图片要过 canvas 压缩、文本要 FileReader，两者都是异步的，
+       处理完成的先后跟传进来的先后没关系（文本通常比图片快得多）。
+       所以按传入顺序先给每个文件占一格，谁处理完就往自己那格里放，
+       最后按格子顺序落进附件栏 —— 保证附件顺序 = 你拖进来时的顺序。 */
+    var slots = [];
+    var taken = 0;                 // 本次占掉的坑位
     var jobs = [];
-    files.forEach(function (f) {
-      if (pendingAttachments.length + jobs.length >= MAX_FILES) {
+
+    files.forEach(function (f, idx) {
+      if (pendingAttachments.length + taken >= MAX_FILES) {
         showToast('最多同时上传 ' + MAX_FILES + ' 个附件');
         return;
       }
       if (isImageFile(f)) {
         if (f.size > MAX_IMG_BYTES) { showToast((f.name || '图片') + ' 超过 12MB，已跳过'); return; }
+        taken++;
         jobs.push(
           compressImage(f).then(function (c) {
-            pendingAttachments.push({
+            slots[idx] = {
               type: 'image',
               name: f.name || '粘贴的图片',
               dataUrl: c.dataUrl,
               w: c.w, h: c.h
-            });
+            };
           }).catch(function () { showToast('图片处理失败：' + (f.name || '')); })
         );
       } else {
         if (f.size > MAX_TXT_BYTES) { showToast((f.name || '文件') + ' 超过 2MB，已跳过'); return; }
+        taken++;
         jobs.push(
           readTextFile(f).then(function (txt) {
-            pendingAttachments.push({ type: 'text', name: f.name || '文本文件', text: txt });
+            slots[idx] = { type: 'text', name: f.name || '文本文件', text: txt };
           }).catch(function () { showToast('文件读取失败：' + (f.name || '')); })
         );
       }
@@ -2307,8 +2329,13 @@ body.shared-ai-view .ai-close{display:none;}
 
     if (!jobs.length) return;
     Promise.all(jobs).then(function () {
+      var added = 0;
+      slots.forEach(function (s) {
+        if (s) { pendingAttachments.push(s); added++; }
+      });
+      if (!added) return;
       renderAttachBar();
-      if (pendingAttachments.length) showToast('已添加 ' + pendingAttachments.length + ' 个附件');
+      showToast('已添加 ' + added + ' 个附件');
     });
   }
 
@@ -3124,6 +3151,85 @@ body.shared-ai-view .ai-close{display:none;}
     if (document.activeElement === inputEl) return;
     if (!panel.contains(e.target)) return;
     handlePaste(e);
+  });
+
+  /* ===================== 拖拽添加附件 =====================
+     26/10/17：以前只有「按钮选择」和「粘贴图片」两条路，现在拖进来也行。
+     面板打开时整页都接住拖拽：落在面板里就加附件，落在面板外只提示一句 ——
+     否则浏览器会把文件当新页面打开，当前页面就没了。 */
+  var dropHint = document.createElement('div');
+  dropHint.className = 'ai-drop-hint';
+  dropHint.innerHTML = '<span class="ai-drop-text">松手添加图片 / 文件</span>';
+  (panel.querySelector('.ai-input-wrap') || panel).appendChild(dropHint);
+  var dropTipEl = dropHint.querySelector('.ai-drop-text');
+
+  var dragDepth = 0;   // dragenter / dragleave 会在每个子孙元素上反复触发，用计数抵消抖动
+  var dropOn = false;  // 提示只在「拖到面板里」时亮
+  var dropCount = -1;
+
+  /* 首次配置 API 时聊天区是收起的，那时没有地方放附件，别弹提示 */
+  function canDrop() {
+    return panel.classList.contains('show') && bodyEl && !bodyEl.classList.contains('hide');
+  }
+
+  function isFileDrag(e) {
+    var dt = e.dataTransfer;
+    if (!dt || !dt.types) return false;
+    for (var i = 0; i < dt.types.length; i++) {
+      if (dt.types[i] === 'Files') return true;
+    }
+    return false;
+  }
+
+  function setDropHint(on, count) {
+    if (on && dropTipEl && count !== dropCount) {
+      dropCount = count;
+      dropTipEl.textContent = count > 1 ? '松手添加 ' + count + ' 个文件' : '松手添加图片 / 文件';
+    }
+    if (!on) dropCount = -1;
+    if (on === dropOn) return;
+    dropOn = on;
+    dropHint.classList.toggle('show', on);
+    panel.classList.toggle('drop-active', on);
+  }
+
+  document.addEventListener('dragenter', function (e) {
+    if (!panel.classList.contains('show') || !isFileDrag(e)) return;
+    dragDepth++;
+  });
+
+  document.addEventListener('dragover', function (e) {
+    if (!panel.classList.contains('show') || !isFileDrag(e)) return;
+    e.preventDefault();                     // 不拦就等于没接住，drop 也不会来
+    e.dataTransfer.dropEffect = 'copy';
+    /* 拖到面板外也接住（免得浏览器直接打开文件把当前页顶掉），但只在面板里才亮提示 */
+    if (canDrop() && panel.contains(e.target)) {
+      setDropHint(true, e.dataTransfer.items ? e.dataTransfer.items.length : 0);
+    } else {
+      setDropHint(false);
+    }
+  });
+
+  document.addEventListener('dragleave', function (e) {
+    if (!panel.classList.contains('show') || !isFileDrag(e)) return;
+    dragDepth--;
+    if (dragDepth <= 0) { dragDepth = 0; setDropHint(false); }
+  });
+
+  document.addEventListener('drop', function (e) {
+    if (!panel.classList.contains('show') || !isFileDrag(e)) return;
+    e.preventDefault();
+    dragDepth = 0;
+    setDropHint(false);
+
+    var files = e.dataTransfer.files;
+    if (!files || !files.length) return;
+    if (!canDrop()) { showToast('先填好 API 配置，再拖文件进来'); return; }
+    if (!panel.contains(e.target)) {
+      showToast('把文件拖到 AI 答疑助手的窗口里');
+      return;
+    }
+    addFiles(files);
   });
 
   /* 发送按钮：

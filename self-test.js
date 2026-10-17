@@ -30,10 +30,30 @@
     var MODE_LABEL = HAS_ANSWER ? '自测模式' : '错题本';
 
     /* ---------- 状态 ---------- */
-    var ON = false;
+    /* 26/10/17：开关与统计条筛选也持久化 —— 刷新后仍停在上次的自测状态。
+       只记「开 / 关」和「看哪一档」，不记哪几张已揭晓（自测本来就该重来）。 */
+    var ON_KEY     = KEY + '_on';
+    var FILTER_KEY = KEY + '_filter';
+    function readOn() {
+        try { return localStorage.getItem(ON_KEY) === '1'; } catch (e) { return false; }
+    }
+    function writeOn(v) {
+        try { localStorage.setItem(ON_KEY, v ? '1' : '0'); } catch (e) {}
+    }
+    function readChip() {
+        try {
+            var v = localStorage.getItem(FILTER_KEY);
+            return (v === 'all' || v === 'weak' || v === 'ok' || v === 'meh' || v === 'no' || v === 'none') ? v : 'all';
+        } catch (e) { return 'all'; }
+    }
+    function writeChip(v) {
+        try { localStorage.setItem(FILTER_KEY, v); } catch (e) {}
+    }
+
+    var ON = readOn();
     var marks = load();          // { 卡片id: 'ok' | 'meh' | 'no' }
     var revealed = {};           // 运行时：该卡答案是否已揭晓
-    var filter = 'all';
+    var filter = readChip();
     var openBefore = [];         // 进入自测前已展开的卡片，退出时还原
 
     function load() {
@@ -132,6 +152,13 @@
           '<div class="st-chip c-no" data-f="no">忘了<b id="stNo">0</b></div>' +
           '<div class="st-chip c-left" data-f="none">未测<b id="stLeft">0</b></div>';
     grid.parentNode.insertBefore(statsBar, grid);
+
+    /* 26/10/17：还原上次选中的统计档位（HTML 默认给「全部」加了 sel） */
+    if (filter !== 'all') {
+        Array.prototype.forEach.call(statsBar.querySelectorAll('.st-chip'), function (c) {
+            c.classList.toggle('sel', c.getAttribute('data-f') === filter);
+        });
+    }
 
     var toggle = document.getElementById('stToggle');
     if (!toggle) return;
@@ -314,6 +341,7 @@
 
     toggle.addEventListener('change', function () {
         ON = toggle.checked;
+        writeOn(ON);
         window.__selfTestOn = ON;                 // AI 据此不读答案
         window.__stFocusId = null;               // 切换开关时重置焦点标记
         document.body.classList.toggle('st-on', ON);
@@ -338,6 +366,7 @@
         statsBar.querySelectorAll('.st-chip').forEach(function (s) { s.classList.remove('sel'); });
         chip.classList.add('sel');
         filter = chip.getAttribute('data-f');
+        writeChip(filter);
         applyAll();
     });
 

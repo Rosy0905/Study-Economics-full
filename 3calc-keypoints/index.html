@@ -867,6 +867,8 @@
 .back-home:active { background: #a8d0a8; transform: translateX(-1px); }
 .card-note-area .img-resize-control .btn-reset-size:active { background: #b2d2b2; transform: scale(0.96); }
 </style>
+<!-- 26/10/17：筛选记忆（页面首次 render 前用 FilterMemory.apply() 还原，避免先画全量再变） -->
+<script src="../shared/filter-memory.js"></script>
 </head>
 <body>
 
@@ -4925,6 +4927,8 @@ function renderAnswerParagraphs(text) {
         // ---- 初始渲染 ----
 buildSpecialOptions();
 
+                /* 26/10/17：还原上次的筛选（必须在首次 render 之前，否则会先画全量再变） */
+                if (window.FilterMemory) FilterMemory.apply();
                 render();
 
         setTimeout(() => {
@@ -4947,5 +4951,7 @@ buildSpecialOptions();
 <script src="../shared/storage-guard.js"></script>
 <!-- 26/09/20：笔记区富文本工具栏（加粗 / 斜体 / 下划线 / 清除格式 / 图片 / 表格 / 公式） -->
 <script src="../shared/rich-note.js"></script>
+<!-- 26/10/16：板块串连导航（顶栏「← 主页」右侧的序号圆钮，点开任选板块，新开页面） -->
+<script src="../shared/section-nav.js"></script>
 </body>
 </html>
