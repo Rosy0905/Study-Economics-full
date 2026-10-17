@@ -319,6 +319,22 @@
         document.getElementById('stNo').textContent   = no;
         document.getElementById('stWeak').textContent = meh + no;
         document.getElementById('stLeft').textContent = none;
+
+        /* 顶部「已学」：全局口径 —— 数所有标记过的卡（会了 / 模糊 / 忘了 都算），
+           不受搜索、筛选影响，跟「收藏」一样是整本手册的总数。
+           注意不能用 cards.length - none，cards 是当前渲染出来的卡，筛选后会缩水。 */
+        var learnedTag = document.getElementById('learnedTag');
+        if (learnedTag) {
+            learnedTag.style.display = ON ? '' : 'none';
+            var learnedNum = document.getElementById('learnedCount');
+            if (learnedNum) {
+                var learnedAll = 0;
+                for (var lk in marks) {
+                    if (Object.prototype.hasOwnProperty.call(marks, lk) && marks[lk]) learnedAll++;
+                }
+                learnedNum.textContent = learnedAll;
+            }
+        }
     }
 
     /* ---------- 开关 ---------- */
