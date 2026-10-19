@@ -216,17 +216,12 @@ header p {
   box-shadow: 0 0 0 3px rgba(212, 162, 78, .15);
 }
 
-.note-bar .tip {
-  font-size: 11.5px;
-  color: #b0a184;
-  white-space: nowrap;
-  min-width: 42px;
-  text-align: right;
-}
+/* 原来输入框右边的「已保存」提示已取消：保存反馈只在卡片里给 */
 
 /* ================= 朗读（TTS） ================= */
 .tts {
   flex: 0 0 auto;
+  margin-left: 10px;
   display: flex;
   align-items: center;
   gap: 7px;
@@ -303,6 +298,7 @@ header p {
   cursor: pointer;
   flex: 0 0 auto;
 }
+.note-bar .tts-range { flex: 0 0 84px; width: 84px; min-width: 0; padding-left: 7px; padding-right: 7px; }
 .tts-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -952,7 +948,7 @@ footer {
 
   .tts-btn { width: 30px; height: 30px; }
   .tts-btn svg { width: 13px; height: 13px; }
-  .tts-range { width: 52px; }
+  .note-bar .tts-range { flex: 0 0 66px; width: 66px; }
   .tts-val { font-size: 10px; min-width: 34px; padding: 2px 6px; }
 
   .clear-btn { width: 40px; height: 40px; font-size: 10.5px; }
@@ -979,7 +975,7 @@ footer {
   }
   .petal-num { font-size: 7.5px; }
   .petal-ic { font-size: 10px; }
-  .tts-range { width: 42px; }
+  .note-bar .tts-range { flex: 0 0 56px; width: 56px; }
 }
 
 ::-webkit-scrollbar { width: 7px; }
@@ -1025,6 +1021,68 @@ footer {
   .mine-bar { padding: 14px 18px 14px 22px; gap: 12px; }
   .mine-bar-txt i { font-size: 12px; }
 }
+
+/* ================= 学习进度卡片（点进度条弹出，原位置不动） ================= */
+/* 只有输入框本身是可点的，进度条其余空白不弹卡 */
+.note-bar { cursor: default; }
+#progressNote { cursor: pointer; }
+
+.prog-overlay {
+  position: fixed; inset: 0; padding: 20px;
+  background: rgba(28, 48, 36, .34);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; opacity: 0; pointer-events: none; transition: opacity .25s ease;
+}
+.prog-overlay.show { opacity: 1; pointer-events: auto; }
+.prog-card {
+  width: min(92vw, 620px); max-height: 86vh;
+  display: flex; flex-direction: column;
+  background: #fdf9ee; border: 2px solid #d4a24e; border-radius: 20px;
+  padding: 16px 18px 14px;
+  box-shadow: 0 24px 60px rgba(25, 60, 42, .20);
+  transform: translateY(14px) scale(.96);
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.prog-overlay.show .prog-card { transform: translateY(0) scale(1); }
+.prog-card-head { display: flex; align-items: center; gap: 10px; padding: 0 2px 12px; }
+.prog-card-head .ttl { font-size: 15px; font-weight: 700; color: #7a5a2a; letter-spacing: .3px; }
+.prog-card-head .dt { font-size: 11.5px; color: #b0a184; }
+.prog-card-close {
+  margin-left: auto; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+  border: 1px solid #ecd9a8; background: #fbf1d8; color: #8b6c2e; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; transition: .18s;
+}
+.prog-card-close:hover { background: #f6e6c2; }
+#progressFull {
+  width: 100%; flex: 1; min-height: 260px; resize: none;
+  font-family: inherit; font-size: 14px; line-height: 1.9; color: #3f3a1a;
+  background: #fffdf6; border: 1px solid #e8ddc0; border-radius: 12px;
+  padding: 12px 15px; outline: none; transition: .2s;
+}
+#progressFull::placeholder { color: #c4b48d; }
+#progressFull:focus { border-color: #d4a24e; box-shadow: 0 0 0 3px rgba(212, 162, 78, .15); }
+.prog-card-foot { display: flex; align-items: center; gap: 10px; padding: 10px 2px 0; flex-wrap: wrap; }
+.prog-foot-cnt { font-size: 11.5px; color: #b0a184; white-space: nowrap; }
+.prog-foot-cnt.saved { color: #6aa87f; }
+.prog-tools { display: flex; gap: 8px; margin-left: auto; }
+.prog-tool {
+  font-family: inherit; font-size: 12px; cursor: pointer; color: #8b6c2e;
+  background: #fbf1d8; border: 1px solid #ecd9a8; border-radius: 20px;
+  padding: 5px 13px; transition: .18s; white-space: nowrap;
+  display: flex; align-items: center; gap: 5px;
+}
+.prog-tool:hover { background: #f6e6c2; }
+.prog-tool:active { transform: translateY(1px); }
+.prog-tool.speaking { background: #f7dfae; border-color: #d4a24e; color: #7a5a2a; }
+.prog-tool.paused { background: #f7dfae; border-color: #d4a24e; color: #7a5a2a; }
+.prog-tool.danger { background: #fbe4d9; border-color: #e3ab8e; color: #b1502e; }
+.prog-tool.done { background: #e2f4e8; border-color: #9ccfa9; color: #3d7d51; }
+@media (max-width: 560px) {
+  .prog-card { width: 100%; max-height: 88vh; padding: 14px 13px 12px; border-radius: 18px; }
+  #progressFull { min-height: 190px; font-size: 13.5px; }
+  .prog-tool { padding: 5px 11px; font-size: 11.5px; }
+}
 </style>
     <meta name="AIGC" content='{"AIGC":{"Label":"2","ContentProducer":"WUSIGRAM","ProduceID":"xnObO5Ilgu7lB1GxAxmCpw2LCwPCjmx8kjl2d3Txsdg=","ReservedCode1":"rUhPLxJt9zQ5PlAXxGBDxpfKGSrQBObcCfnYogxXo310AW4aGYOEofwRf4YK81OqT1Nd2v7ScV0r0taDSEbL8Q==","ContentPropagator":"","PropagateID":"","ReservedCode2":""}}'>
 </head>
@@ -1053,7 +1111,6 @@ footer {
   <div class="note-bar" id="noteBar">
     <span class="lb">📝 学习进度</span>
     <input id="progressNote" placeholder="随手记一句：今天背到哪、哪块还没搞懂、下一步计划…" />
-    <span class="tip" id="saveTip"></span>
 
     <!-- 朗读控件 -->
     <div class="tts">
@@ -1095,6 +1152,26 @@ footer {
 
 <!-- 隐藏的文件选择器（导入用） -->
 <input type="file" id="importFile" accept=".json,application/json" style="display:none" />
+
+<!-- ============ 学习进度卡片（点击进度条弹出） ============ -->
+<div class="prog-overlay" id="progOverlay">
+  <div class="prog-card" role="dialog" aria-labelledby="progCardTtl">
+    <div class="prog-card-head">
+      <span class="ttl" id="progCardTtl">📝 学习进度</span>
+      <span class="dt" id="progCardDate"></span>
+      <button class="prog-card-close" id="progCardClose" type="button" aria-label="关闭">✕</button>
+    </div>
+    <textarea id="progressFull" placeholder="随手写：今天背到哪、哪块还没搞懂、下一步计划…"></textarea>
+    <div class="prog-card-foot">
+      <span class="prog-foot-cnt" id="progCardCount">0 字</span>
+      <div class="prog-tools">
+        <button class="prog-tool" id="progTts" type="button">🔊 朗读</button>
+        <button class="prog-tool" id="progClear" type="button">清空</button>
+        <button class="prog-tool" id="progSave" type="button">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ============ 确认清除弹层 ============ -->
 <div class="confirm-overlay" id="confirmOverlay">
@@ -1273,7 +1350,6 @@ function renderHome() {
 (function () {
   const PROG_KEY = 'eco_kb_progress';
   const input = document.getElementById('progressNote');
-  const tip = document.getElementById('saveTip');
   let timer = null;
 
   try { input.value = localStorage.getItem(PROG_KEY) || ''; } catch (e) {}
@@ -1281,13 +1357,7 @@ function renderHome() {
   input.addEventListener('input', () => {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      try {
-        localStorage.setItem(PROG_KEY, input.value);
-        tip.textContent = '已保存';
-        setTimeout(() => { tip.textContent = ''; }, 1200);
-      } catch (e) {
-        tip.textContent = '保存失败';
-      }
+      try { localStorage.setItem(PROG_KEY, input.value); } catch (e) {}
     }, 400);
   });
 })();
@@ -1350,6 +1420,7 @@ function renderHome() {
   let currentRate = 1;
   let chunks = [];          // 切分后的句子数组
   let cursor = 0;           // 当前读到第几段
+  let pausedChunk = 0;      // 暂停时停在哪一段
 
   try {
     const saved = parseFloat(localStorage.getItem(RATE_KEY));
@@ -1399,6 +1470,7 @@ function renderHome() {
     clearTimeout(rateTimer);
     clearTimeout(resumeTimer);
     try { synth.cancel(); } catch (e) {}
+    try { synth.resume(); } catch (e) {}
     cursor = 0;
     if (state !== 'idle') setState('idle');
   }
@@ -1409,24 +1481,43 @@ function renderHome() {
     const clean = String(text).replace(/\r?\n+/g, '。').replace(/\s+/g, ' ').trim();
     if (!clean) return [];
     const sentences = clean.match(/[^。！？!?；;]+[。！？!?；;]?/g) || [clean];
+
+    /* 几句拼成一段再交给引擎：一段一句的话，每个句号都要收尾一次，听着就是卡顿 */
+    const CHUNK = 110;   // 每段目标长度
+    const HARD  = 170;   // 单段硬上限，超了才在逗号处切
     const out = [];
-    for (let s of sentences) {
-      s = s.trim();
+    let buf = '';
+    for (let raw of sentences) {
+      const s = raw.trim();
       if (!s) continue;
-      while (s.length > 110) {
-        let cut = -1;
-        for (const mark of ['，', ',', '、', ' ']) {
-          const i = s.lastIndexOf(mark, 110);
-          if (i > 40) { cut = i + 1; break; }
-        }
-        if (cut < 0) cut = 110;
-        out.push(s.slice(0, cut));
-        s = s.slice(cut);
-      }
-      if (s) out.push(s);
+      if (buf && buf.length + s.length > CHUNK) { out.push(buf); buf = s; }
+      else { buf += s; }
     }
-    return out;
+    if (buf) out.push(buf);
+
+    const final = [];
+    for (let piece of out) {
+      while (piece.length > HARD) {
+        let cut = -1;
+        for (const mark of ['，', ',', '、', '；', ';', ' ']) {
+          const i = piece.lastIndexOf(mark, HARD);
+          if (i > HARD * 0.4) { cut = i + 1; break; }
+        }
+        if (cut < 0) cut = HARD;
+        final.push(piece.slice(0, cut));
+        piece = piece.slice(cut);
+      }
+      if (piece) final.push(piece);
+    }
+
+    /* 段尾的句号 / 分号会被引擎再「收一次尾」，换段本身还有一次间隙，
+       两次叠在一起就听着像愣了半天。段边界天然就该停，所以把尾巴上的
+       句读符号去掉；！？ 留着，那是语气，不是停顿。 */
+    return final
+      .map(s => s.replace(/[。；;，,、:：]+$/, '').trim() || s)
+      .filter(Boolean);
   }
+
 
   function makeUtterance(text) {
     const u = new SpeechSynthesisUtterance(text);
@@ -1439,19 +1530,31 @@ function renderHome() {
   }
 
   /* 从第 i 段开始读 */
-  function speakFrom(i) {
+  function speakFrom(i, fresh) {
     clearTimeout(resumeTimer);
     const my = ++token;
-    try { synth.cancel(); } catch (e) {}
+    const restart = fresh !== false;
+    /* 只有换语速、从头开始这类「真·重启」才清空队列；
+       一段读完自然接下一段时不能 cancel，否则每个标点都要静音一下 */
+    if (restart) {
+      try { synth.cancel(); } catch (e) {}
+      /* Chrome 老毛病：pause 之后 cancel，合成器会卡在 paused，之后 speak 全哑 */
+      try { synth.resume(); } catch (e) {}
+    }
     if (!chunks.length) { setState('idle'); return; }
-    /* 有些手机浏览器在 cancel() 之后立刻 speak() 会不出声，隔一小会儿再开口 */
     resumeTimer = setTimeout(() => {
       if (my !== token || !chunks.length) return;
       cursor = Math.max(0, Math.min(i, chunks.length - 1));
       const u = makeUtterance(chunks[cursor]);
       u.onend = () => {
         if (my !== token) return;
-        if (cursor + 1 < chunks.length) { cursor++; speakFrom(cursor); }
+        /* 暂停期间这一段自己读完了：只推进游标，不开口 */
+        if (state === 'paused') {
+          if (cursor + 1 < chunks.length) cursor++;
+          pausedChunk = cursor;
+          return;
+        }
+        if (cursor + 1 < chunks.length) { cursor++; speakFrom(cursor, false); }
         else { cursor = 0; setState('idle'); }
       };
       u.onerror = () => {
@@ -1459,9 +1562,10 @@ function renderHome() {
         cursor = 0;
         setState('idle');
       };
+      try { synth.resume(); } catch (e) {}
       try { synth.speak(u); } catch (e) {}
       setState('speaking');
-    }, 100);
+    }, restart ? 100 : 0);
   }
 
   btn.addEventListener('click', e => {
@@ -1476,7 +1580,7 @@ function renderHome() {
       /* 暂停：优先用浏览器自带的 pause()，它能停在句子中间 */
       try { synth.pause(); } catch (err) {}
       clearTimeout(resumeTimer);
-      token++;
+      pausedChunk = cursor;
       setState('paused');
     } else {
       /* 继续：先试浏览器自带的 resume()；300 毫秒后检查一下，
@@ -1484,13 +1588,15 @@ function renderHome() {
       let ok = false;
       try { synth.resume(); ok = true; } catch (err) {}
       setState('speaking');
-      if (!ok) { speakFrom(cursor); return; }
+      if (!ok) { speakFrom(pausedChunk); return; }
       resumeTimer = setTimeout(() => {
         if (state !== 'speaking') return;
-        let stillPaused = false, alive = true;
-        try { stillPaused = synth.paused === true; alive = synth.speaking === true; } catch (err) {}
-        if (stillPaused || !alive) speakFrom(cursor);
-      }, 300);
+        let alive = false;
+        try {
+          alive = synth.speaking === true || synth.pending === true || synth.paused === true;
+        } catch (err) { alive = false; }
+        if (!alive) speakFrom(pausedChunk);
+      }, 500);
     }
   });
 
@@ -2351,6 +2457,193 @@ function renderHome() {
    ⑧ 初始化页面
    ========================================================== */
 renderHome();
+</script>
+<script>
+/* 学习进度卡片：点进度条弹卡，原进度条与朗读/清除/同步位置全部不动 */
+(function () {
+  var KEY = 'eco_kb_progress';
+  var KEY_AT = 'eco_kb_progress_at';
+  var SAVE_DELAY = 2500;
+
+  var bar   = document.getElementById('noteBar');
+  var input = document.getElementById('progressNote');
+  var ov    = document.getElementById('progOverlay');
+  var ta    = document.getElementById('progressFull');
+  var cnt   = document.getElementById('progCardCount');
+  var dtEl  = document.getElementById('progCardDate');
+  var btnTts = document.getElementById('progTts');
+  var mainTts = document.getElementById('ttsBtn');
+  if (!bar || !ov || !ta) return;
+
+  var timer = null;
+  var synth = window.speechSynthesis;
+  var lastSpoken = null;
+
+  input.setAttribute('readonly', 'readonly');
+  input.title = '点击展开写';
+
+  /* 正在读（或暂停中）就停掉，回到「没读过」的状态：
+     念的内容一旦和框里对不上，就该闭嘴 */
+  function stopIfPlaying() {
+    if (!mainTts) return;
+    var busy = mainTts.classList.contains('speaking') || mainTts.classList.contains('paused');
+    if (!busy) return;
+    try { if (window.stopTTS) window.stopTTS(); } catch (e) {}
+    lastSpoken = null;
+  }
+
+  function readStore() {
+    try { return localStorage.getItem(KEY) || input.value || ''; }
+    catch (e) { return input.value || ''; }
+  }
+  function count() { cnt.textContent = ta.value.replace(/\s/g, '').length + ' 字'; }
+
+  /* 顶部日期 = 最后一次保存的时间 */
+  function renderDate() {
+    var t = 0;
+    try { t = parseInt(localStorage.getItem(KEY_AT) || '0', 10); } catch (e) {}
+    if (!t) { dtEl.textContent = '还没有记录'; return; }
+    var d = new Date(t);
+    var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+    dtEl.textContent = '最后保存 ' + (d.getMonth() + 1) + '.' + d.getDate() +
+      ' 周' + '日一二三四五六'[d.getDay()] + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  function doSave(showTip) {
+    var v = ta.value;
+    try {
+      localStorage.setItem(KEY, v);
+      localStorage.setItem(KEY_AT, String(Date.now()));
+      input.value = v.replace(/[\r\n]+/g, ' ');
+      if (showTip) {
+        cnt.classList.add('saved');
+        cnt.textContent = '已保存';
+        setTimeout(function () {
+          cnt.classList.remove('saved');
+          count();
+        }, 1200);
+      }
+    } catch (e) {
+      cnt.textContent = '保存失败';
+    }
+    renderDate();
+    count();
+  }
+
+  function open() {
+    ta.value = readStore();
+    count();
+    renderDate();
+    /* 输入框只是「门把手」，点开就把焦点交出去，光标别在遮罩后面一闪一闪 */
+    try { input.blur(); } catch (e) {}
+    ov.classList.add('show');
+  }
+  function close() {
+    /* 朗读不随关闭中断：想停就点主界面那条进度栏的朗读键，或再打开卡片点朗读 */
+    ov.classList.remove('show');
+  }
+
+  /* 只有点「输入框本体」才弹卡片；进度条空白、朗读、清除、同步都不触发 */
+  input.addEventListener('click', function (e) {
+    e.preventDefault();
+    open();
+  });
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      e.preventDefault();
+      open();
+    }
+  });
+  document.getElementById('progCardClose').addEventListener('click', close);
+  ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && ov.classList.contains('show')) close();
+  });
+
+  /* 自动保存：停手 2.5 秒才写盘；同时，一改字就停读（念的已经是旧内容了） */
+  ta.addEventListener('input', function () {
+    stopIfPlaying();
+    count();
+    clearTimeout(timer);
+    timer = setTimeout(function () { doSave(false); }, SAVE_DELAY);
+  });
+
+  /* 手动保存 */
+  var btnSave = document.getElementById('progSave');
+  var saveHold = null;
+  btnSave.addEventListener('click', function () {
+    clearTimeout(timer);
+    doSave(true);
+    var old = btnSave.textContent;
+    btnSave.textContent = '已保存 ✓';
+    btnSave.classList.add('done');
+    clearTimeout(saveHold);
+    saveHold = setTimeout(function () {
+      btnSave.textContent = old;
+      btnSave.classList.remove('done');
+    }, 1400);
+  });
+
+  /* 清空卡片：点两次才真清，防手滑 */
+  var btnClear = document.getElementById('progClear');
+  var clearArm = null;
+  function resetClear() {
+    clearArm = null;
+    btnClear.textContent = '清空';
+    btnClear.classList.remove('danger');
+  }
+  btnClear.addEventListener('click', function () {
+    if (!clearArm) {
+      btnClear.textContent = '确定清空？';
+      btnClear.classList.add('danger');
+      clearArm = setTimeout(resetClear, 3000);
+      return;
+    }
+    clearTimeout(clearArm);
+    resetClear();
+    clearTimeout(timer);
+    /* 清空就得闭嘴：不然念的还是已经删掉的内容 */
+    stopIfPlaying();
+    lastSpoken = null;
+    ta.value = '';
+    doSave(true);
+    ta.focus();
+  });
+
+  /* 朗读卡片内容，语速跟主界面滑条一致 */
+  /* 朗读完全交给主界面那个播放器：暂停 / 继续 / 语速 / 状态共用一套 */
+
+  function flat(t) { return String(t || '').replace(/[\r\n]+/g, ' '); }
+
+  function syncTtsLabel() {
+    if (!mainTts) return;
+    var playing = mainTts.classList.contains('speaking');
+    var paused  = mainTts.classList.contains('paused');
+    btnTts.textContent = playing ? '⏸ 暂停' : (paused ? '▶ 继续' : '🔊 朗读');
+    btnTts.classList.toggle('speaking', playing);
+    btnTts.classList.toggle('paused', paused);
+  }
+
+  if (mainTts) {
+    new MutationObserver(syncTtsLabel).observe(mainTts, { attributes: true, attributeFilter: ['class'] });
+    syncTtsLabel();
+  }
+
+  btnTts.addEventListener('click', function () {
+    if (!mainTts) return;
+    var text = flat(ta.value);
+    if (!text.trim()) return;
+    /* 先把最新内容推给主输入框，保证读的是刚写的东西 */
+    input.value = text;
+    /* 内容改过了就先复位播放器，免得从上次停下的位置接着念 */
+    if (lastSpoken !== null && lastSpoken !== text) {
+      try { if (window.stopTTS) window.stopTTS(); } catch (e) {}
+    }
+    lastSpoken = text;
+    mainTts.click();
+    setTimeout(syncTtsLabel, 100);
+  });
+})();
 </script>
 </body>
 </html>
