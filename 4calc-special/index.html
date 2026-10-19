@@ -673,13 +673,13 @@ function buildSubOptions(major){
 }
 
 /* ============= 单卡模式 ============= */
-function exitSingleMode(){
+function exitSingleMode(silent){
   if(singleModeId === null) return;
   singleModeId = null; history = []; historyIndex = -1;
   singleModeBar.classList.remove('show');
   filterBar.classList.remove('disabled');
   render();
-  showToast('📋 已退出抽查模式');
+  if (!silent) showToast('📋 已退出抽查模式');
 }
 function enterSingleMode(id){
   if(!id) return;
@@ -690,7 +690,7 @@ function enterSingleMode(id){
     return;
   }
   const card = getCardData(id);
-  if(!card){showToast('😅 卡片不存在');return;}
+  if(!card){showToast('🫥卡片不存在哦~');return;}
   singleModeId = id;
   const existIdx = history.indexOf(id);
   if(existIdx !== -1){historyIndex = existIdx;}
@@ -722,10 +722,14 @@ function goPrevCard(){
 }
 function goNextCard(){
   if(singleModeId === null) return;
-  const ids = getFilteredIds();
-  if(ids.length <= 1){showToast('😅 没有更多卡片可抽查');return;}
+  /* 26/10/19 方案C：下一张同样守档位 */
+  const baseIds = getFilteredIds();
+  const pool = (typeof window.__stPool === 'function') ? window.__stPool(baseIds) : null;
+  const ids = pool || baseIds;
+  /* 26/10/19：池子只剩 1 张不能直接拦，可能是另一张没抽过的卡 */
+  if(ids.length === 0){showToast('🤧没有更多卡片可抽查了~');return;}
   const available = ids.filter(id => id !== singleModeId);
-  if(available.length === 0){showToast('😅 没有更多卡片可抽查');return;}
+  if(available.length === 0){showToast('🤧没有更多卡片可抽查了~');return;}
   const randomId = available[Math.floor(Math.random() * available.length)];
   history = history.slice(0, historyIndex + 1);
   history.push(randomId);
@@ -738,9 +742,13 @@ function goNextCard(){
   if(card) showToast(`▶ 下一张: ${card.sub || card.major} · ${card.qid}`);
 }
 function doRandom(){
-  const ids = getFilteredIds();
-  if(ids.length === 0){showToast('😅 当前没有卡片可抽查，请调整筛选条件');return;}
-  if(singleModeId !== null){exitSingleMode();setTimeout(()=>{doRandom();},150);return;}
+  /* 26/10/19 方案C：自测档位优先 */
+  const baseIds = getFilteredIds();
+  const pool = (typeof window.__stPool === 'function') ? window.__stPool(baseIds) : null;
+  const ids = pool || baseIds;
+  if(ids.length === 0){showToast(pool ? '🎯 当前档位没有卡片可抽，换个档位或先自评几张吧' : '😶‍🌫️当前没有卡片可抽查，请调整筛选条件~');return;}
+  /* 26/10/19：按 R 或重复点抽查时静默退出 */
+  if(singleModeId !== null){exitSingleMode(true);setTimeout(()=>{doRandom();},150);return;}
   const randomId = ids[Math.floor(Math.random() * ids.length)];
   enterSingleMode(randomId);
 }

@@ -2007,7 +2007,7 @@ function renderAnswerParagraphs(text) {
             return { ...original };
         }
 
-        function exitSingleMode() {
+        function exitSingleMode(silent) {
             if (singleModeId === null) return;
             singleModeId = null;
             history = [];
@@ -2015,7 +2015,7 @@ function renderAnswerParagraphs(text) {
             singleModeBar.classList.remove('show');
             filterBar.classList.remove('disabled');
             render();
-            showToast('📋 已退出抽查模式');
+            if (!silent) showToast('📋 已退出抽查模式');
         }
 
         function enterSingleMode(id) {
@@ -2028,7 +2028,7 @@ function renderAnswerParagraphs(text) {
             }
             const card = getCardData(id);
             if (!card) {
-                showToast('😅 卡片不存在');
+                showToast('🫥卡片不存在哦~');
                 return;
             }
             singleModeId = id;
@@ -2082,14 +2082,19 @@ function renderAnswerParagraphs(text) {
 
         function goNextCard() {
             if (singleModeId === null) return;
-            const ids = getFilteredIds();
-            if (ids.length <= 1) {
-                showToast('😅 没有更多卡片可抽查');
+            /* 26/10/19 方案C：下一张同样守档位 */
+            const baseIds = getFilteredIds();
+            const pool = (typeof window.__stPool === 'function') ? window.__stPool(baseIds) : null;
+            const ids = pool || baseIds;
+            /* 26/10/19：不能按「池子只剩 1 张」直接拦。自评会把当前卡移出档位，
+               池里剩的那 1 张可能是另一张还没抽过的卡，真正该拦的是下面排除当前卡之后为空 */
+            if (ids.length === 0) {
+                showToast('🤧没有更多卡片可抽查了~');
                 return;
             }
             const available = ids.filter(id => id !== singleModeId);
             if (available.length === 0) {
-                showToast('😅 没有更多卡片可抽查');
+                showToast('🤧没有更多卡片可抽查了~');
                 return;
             }
             const randomId = available[Math.floor(Math.random() * available.length)];
@@ -2107,13 +2112,18 @@ function renderAnswerParagraphs(text) {
         }
 
         function doRandom() {
-            const ids = getFilteredIds();
+            /* 26/10/19 方案C：自测开着且选了档位时，只从该档位的卡里抽；
+               __stPool 返回 null 表示不限制，照旧用全池。 */
+            const baseIds = getFilteredIds();
+            const pool = (typeof window.__stPool === 'function') ? window.__stPool(baseIds) : null;
+            const ids = pool || baseIds;
             if (ids.length === 0) {
-                showToast('😅 当前没有卡片可抽查，请调整筛选条件');
+                showToast(pool ? '🎯 当前档位没有卡片可抽，换个档位或先自评几张吧' : '😶‍🌫️当前没有卡片可抽查，请调整筛选条件~');
                 return;
             }
             if (singleModeId !== null) {
-                exitSingleMode();
+                /* 26/10/19：按 R 或重复点抽查时静默退出，避免连播两条提示 */
+                exitSingleMode(true);
                 setTimeout(() => { doRandom(); }, 150);
                 return;
             }

@@ -55,6 +55,7 @@
     var revealed = {};           // 运行时：该卡答案是否已揭晓
     var filter = readChip();
     var openBefore = [];         // 进入自测前已展开的卡片，退出时还原
+    var statsIds = null;         // 统计口径：最近一次多卡浏览时的卡片 id 列表（抽查时靠它算总数）
 
     function load() {
         try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; }
@@ -249,7 +250,11 @@
         if (filter === 'no')   show = m === 'no';
         if (filter === 'weak') show = (m === 'meh' || m === 'no');
         if (filter === 'none') show = !m;
-        if (!show) card.classList.add('st-hide');
+        /* 26/10/19：抽查（单卡）模式下永不隐藏。
+           抽查的卡池已经按档位挑过，但当前这张可能是抽查途中改档位后
+           就不再符合档位的卡；把它 display:none 掉会整页空白。
+           多卡浏览时照旧按档位隐藏，行为不变。 */
+        if (!show && !grid.classList.contains('single-mode')) card.classList.add('st-hide');
 
         var rate = card.querySelector('.st-rate');
         if (rate) {
@@ -270,6 +275,25 @@
             }
         }
     }
+
+    /* ---------- 对外接口：给页面「随机抽查」用的档位卡池 ---------- */
+    /* 页面把当前筛选结果（章节 / 收藏 / 搜索）的 id 列表传进来，这里再按自测档位筛一遍：
+       - 自测没开、档位是「全部」、或没传 id → 返回 null，页面照旧用全池，行为完全不变
+       - 否则返回数组（可能是空数组，表示这一档一张卡都没有）
+       为什么不由这里直接读网格：抽查时网格里只渲染当前这一张卡，
+       用 allCards() 只能拿到一张，算不出全量的档位池。 */
+    window.__stPool = function (ids) {
+        if (!ON || filter === 'all' || !ids || typeof ids.filter !== 'function' || !ids.length) return null;
+        return ids.filter(function (id) {
+            var m = marks[id];
+            if (filter === 'ok')   return m === 'ok';
+            if (filter === 'meh')  return m === 'meh';
+            if (filter === 'no')   return m === 'no';
+            if (filter === 'weak') return (m === 'meh' || m === 'no');
+            if (filter === 'none') return !m;
+            return true;
+        });
+    };
 
     /* ---------- 全量应用 ---------- */
     /* 统计条宽度跟随卡片区（各页 max-width 不同，运行时读取最稳） */
@@ -305,15 +329,26 @@
     }
 
     function updateStats(cards) {
+        /* 26/10/19：抽查（单卡）时网格里只剩当前这一张，直接用 allCards() 算会把
+           全本总数缩成 1，很误导。所以单卡时改用「进入抽查前记下的那份 id 列表」
+           来算 —— 数字不缩水，而且抽查中重新自评（比如在「未测」里点会了）时，
+           各项会实时跟着变，不用退出抽查才刷新。 */
+        var ids = cards.map(cardId);
+        if (grid.classList.contains('single-mode')) {
+            if (!statsIds || !statsIds.length) return;   // 没有可比对的旧口径就保持原样
+            ids = statsIds;
+        } else {
+            statsIds = ids;                              // 多卡浏览时随时更新口径
+        }
         var ok = 0, meh = 0, no = 0, none = 0;
-        cards.forEach(function (c) {
-            var m = marks[cardId(c)];
+        ids.forEach(function (id) {
+            var m = marks[id];
             if (m === 'ok') ok++;
             else if (m === 'meh') meh++;
             else if (m === 'no') no++;
             else none++;
         });
-        document.getElementById('stAll').textContent  = cards.length;
+        document.getElementById('stAll').textContent  = ids.length;
         document.getElementById('stOk').textContent   = ok;
         document.getElementById('stMeh').textContent  = meh;
         document.getElementById('stNo').textContent   = no;
