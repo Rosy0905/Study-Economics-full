@@ -265,70 +265,76 @@
         .paper-head h2 { font-size: 18.5px; }
     }
     /* ---------- 左侧题号导航面板 ---------- */
+    /* --npm = 屏幕左缘 → 正文卡片左缘 的距离，由 JS 用 clientWidth 实测写入。
+       不用 100vw 估算：各浏览器滚动条宽度不同（Firefox 比 Chrome 宽好几个 px），
+       估算值会让面板整体偏左、左右间距不等。面板在该区间内水平居中 → 左距＝右距 */
     #navPanel {
         position: fixed; z-index: 40;
-        /* 100vw 含滚动条：先扣 ~10px 才是内容左缘；面板在左侧余量里水平居中，两侧间距相等 */
-        --npm: calc((100vw - 1000px) / 2 - 10px);
-        --npw: min(168px, max(96px, calc(var(--npm) - 26px)));
+        --npm: 200px;
+        --npw: min(168px, max(100px, calc(var(--npm) - 32px)));
         width: var(--npw);
-        left: max(8px, calc((var(--npm) - var(--npw)) / 2));
+        left: max(0px, calc((var(--npm) - var(--npw)) / 2));
         top: 50%; transform: translateY(-50%);
         max-height: calc(100vh - 130px); display: flex; flex-direction: column;
     }
     #navPanel .np-card {
-        background: #fff; border-radius: 14px; padding: 12px 12px 10px 12px;
+        background: #fff; border-radius: 13px; padding: 11px 11px 9px 11px;
         box-shadow: 0 2px 10px rgba(60,110,60,.10); overflow-y: auto; flex: 0 1 auto;
         scrollbar-width: thin;
     }
-    #navPanel .np-title { font-size: 12px; color: #6a8a70; margin: 0 2px 8px 2px; line-height: 1.5; }
-    #navPanel .np-title b { color: #1e4a2a; font-size: 12.5px; }
-    #navPanel .np-row { display: flex; align-items: flex-start; gap: 6px; margin-bottom: 9px; }
+    #navPanel .np-title { font-size: 11.5px; color: #6a8a70; margin: 0 2px 7px 2px; line-height: 1.45; }
+    #navPanel .np-title b { color: #1e4a2a; font-size: 12px; }
+    #navPanel .np-row { display: flex; align-items: flex-start; gap: 5px; margin-bottom: 8px; }
     #navPanel .np-row:last-child { margin-bottom: 2px; }
     #navPanel .np-type {
-        flex: 0 0 auto; font-size: 12px; color: #4d7a58; font-weight: 600;
-        padding-top: 4px; letter-spacing: .5px;
+        flex: 0 0 auto; font-size: 11.5px; color: #4d7a58; font-weight: 600;
+        padding-top: 3px; letter-spacing: .4px;
     }
-    #navPanel .np-nums { display: flex; flex-wrap: wrap; gap: 4px; }
+    #navPanel .np-nums { display: flex; flex-wrap: wrap; gap: 3.5px; }
     #navPanel .np-nums a {
-        min-width: 24px; height: 24px; border-radius: 7px; text-decoration: none;
+        min-width: 23px; height: 23px; border-radius: 6px; text-decoration: none;
         display: inline-flex; align-items: center; justify-content: center;
-        background: #f2faf2; color: #23502f; font-size: 12.5px;
+        background: #f2faf2; color: #23502f; font-size: 12px;
         font-variant-numeric: tabular-nums; transition: background .15s, color .15s;
     }
     #navPanel .np-nums a:hover { background: #dff0df; }
     #navPanel .np-nums a.on { background: #1f6b3a; color: #fff; font-weight: 700; }
     #navPanel .np-fab { display: none; }
-    /* 面板变窄时内部紧凑化，题号自动重排（npw<168 ⇔ vw<1408） */
-    @media (max-width: 1407px) and (min-width: 1260px) {
-        #navPanel .np-title { font-size: 11px; margin-bottom: 6px; }
-        #navPanel .np-title b { font-size: 11.5px; }
-        #navPanel .np-row { gap: 4px; margin-bottom: 7px; }
-        #navPanel .np-type { font-size: 11px; padding-top: 3px; letter-spacing: 0; }
-        #navPanel .np-nums { gap: 3px; }
-        #navPanel .np-nums a { min-width: 20px; height: 20px; font-size: 11.5px; border-radius: 6px; }
-        #navPanel .np-card { padding: 9px 9px 8px 9px; }
+    /* 标题备长短两版：窄档（100–167px）用短版，否则「2021 年（应经）」在 86px 内宽里会断成「2021 年（应／经）」 */
+    #navPanel .np-t-short { display: none; }
+    #navPanel.np-tight .np-t-long { display: none; }
+    #navPanel.np-tight .np-t-short { display: inline; }
+    /* 面板变窄时内部紧凑化：由 JS 按实测余量切 .np-tight（宽 100–168px 连续伸缩，随余量走） */
+    #navPanel.np-tight .np-title { font-size: 10.5px; margin-bottom: 5px; }
+    #navPanel.np-tight .np-title b { font-size: 11px; }
+    #navPanel.np-tight .np-row { gap: 3px; margin-bottom: 6px; }
+    #navPanel.np-tight .np-type { font-size: 10.5px; padding-top: 2px; letter-spacing: 0; }
+    #navPanel.np-tight .np-nums { gap: 2px; }
+    #navPanel.np-tight .np-nums a { min-width: 22px; height: 20px; font-size: 11px; border-radius: 5px; }
+    #navPanel.np-tight .np-card { padding: 8px 8px 7px 8px; border-radius: 12px; }
+    /* 余量实在放不下面板：收成左下角横排小按钮，点击向上弹出浮层（不挡正文中部视线） */
+    #navPanel.np-mini {
+        width: auto; max-height: none;
+        left: 14px; right: auto; top: auto; bottom: 16px; transform: none;
     }
-    /* 空间不足：左缘「题号」小按钮，点击弹出浮层（余量放不下 96px 面板 ⇔ vw<1260） */
-    @media (max-width: 1259px) {
-        #navPanel { width: auto; max-height: none; }
-        #navPanel .np-card {
-            display: none; position: fixed; left: 12px; top: 50%;
-            transform: translateY(-50%); width: 168px; max-height: calc(100vh - 130px);
-            box-shadow: 0 6px 24px rgba(40,90,50,.28);
-        }
-        #navPanel.open .np-card { display: block; }
-        #navPanel.open .np-fab { display: none; }
-        #navPanel .np-fab {
-            display: flex; flex-direction: column; align-items: center; gap: 2px;
-            position: fixed; left: 8px; top: 50%; transform: translateY(-50%);
-            background: #fff; border: none; cursor: pointer; z-index: 41;
-            color: #4d7a58; font-size: 12.5px; font-weight: 600; line-height: 1.35;
-            padding: 9px 7px; border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(60,110,60,.18);
-            font-family: inherit;
-        }
-        #navPanel .np-fab:hover { background: #f2faf2; }
+    #navPanel.np-mini .np-card {
+        display: none; position: fixed;
+        left: 14px; bottom: 60px; top: auto; transform: none;
+        width: 168px; max-height: min(72vh, calc(100vh - 130px));
+        box-shadow: 0 6px 24px rgba(40,90,50,.28);
     }
+    #navPanel.np-mini.open .np-card { display: block; }
+    #navPanel.np-mini.open .np-fab { display: none; }
+    #navPanel.np-mini .np-fab {
+        display: inline-flex; flex-direction: row; align-items: center; gap: 2px;
+        position: static;
+        background: #fff; border: none; cursor: pointer;
+        color: #4d7a58; font-size: 12.5px; font-weight: 600; line-height: 1.2;
+        padding: 8px 13px; border-radius: 999px;
+        box-shadow: 0 2px 10px rgba(60,110,60,.18);
+        font-family: inherit;
+    }
+    #navPanel.np-mini .np-fab:hover { background: #f2faf2; }
     @media print {
         #navPanel { display: none !important; }
         body { background: #fff; padding: 0; }
@@ -717,14 +723,49 @@
     }
 
     /* ---------- 左侧题号面板：构建 ---------- */
+    /* 面板基准：实测「屏幕左缘 → 正文卡片左缘」的距离写入 --npm（不用 100vw，滚动条宽度各浏览器不同）。
+       顺带按实测余量切档：≥184px 全宽面板 / 88–183px 紧凑面板（76–168 连续伸缩）/ <88px 左下角小按钮。
+       因为判的是实测余量而不是 vw 断点，Firefox 缩放到 120% 时只要还剩位置就保留面板。 */
+    function layoutNav() {
+        var panel = document.getElementById('navPanel');
+        if (!panel) return;
+        var cs = getComputedStyle(document.body);
+        var padL = parseFloat(cs.paddingLeft) || 0;
+        var padR = parseFloat(cs.paddingRight) || 0;
+        var cw = document.documentElement.clientWidth;   /* 不含滚动条，跨浏览器口径一致 */
+        /* 正文宽度：视口变窄时从 1000 收到 cw−280，留出面板位置。
+           目的是让面板左距＝右距＝16px——窄视口下若死守 1000px，余量只剩 100px 左右，
+           面板不是贴着正文就是被压成一条。收窄后正文最多只少 180px，行宽仍舒适 */
+        var cMax = Math.max(860, Math.min(1000, cw - 280));
+        function gapOf(c) { return padL + Math.max(0, (cw - padL - padR - c) / 2); }
+        var gap = gapOf(cMax);
+        var npw = Math.min(168, gap - 32);
+        var mini = npw < 100;
+        if (mini) {
+            cMax = 1000;                 /* 收成小按钮时正文不必再让位 */
+            gap = gapOf(cMax);
+            npw = 0;
+        }
+        var wide = document.querySelectorAll('.content, .topbar, .yearbar, .rec-bar');
+        for (var i = 0; i < wide.length; i++) wide[i].style.maxWidth = cMax + 'px';
+        panel.style.setProperty('--npm', gap.toFixed(2) + 'px');
+        panel.classList.toggle('np-mini', mini);
+        panel.classList.toggle('np-tight', !mini && npw < 168);
+        if (mini) panel.classList.remove('open');
+    }
+
     function buildNavPanel(paper, navParts) {
         var panel = document.getElementById('navPanel');
         var rows = document.getElementById('npRows');
         navCur = null;
         if (!navParts.length) { panel.hidden = true; return; }
+        layoutNav();
         panel.hidden = false;
+        /* 标题备长短两版：窄档（96–167px）用短版，避免「2021 年（应经）」在 80px 内宽里断成「（应／经）」 */
+        var tShort = paper.title.replace(/（[^）]*）\s*$/, '').trim() || paper.title;
         document.getElementById('npTitle').innerHTML =
-            '<b>' + esc(paper.title) + '</b><br>' + esc(paper.subject);
+            '<b><span class="np-t-long">' + esc(paper.title) + '</span>' +
+            '<span class="np-t-short">' + esc(tShort) + '</span></b><br>' + esc(paper.subject);
         var h = '';
         navParts.forEach(function (part) {
             h += '<div class="np-row"><span class="np-type">' + esc(part.type) + '</span>' +
@@ -879,6 +920,14 @@
         clearTimeout(navSpyTimer);
         navSpyTimer = setTimeout(function () { navSpy(); }, 80);
     }, { passive: true });
+    /* 窗口尺寸 / 浏览器缩放变化：重算面板基准（rAF 节流，只改变量不重建 DOM） */
+    var navResizeRaf = 0;
+    function onNavResize() {
+        if (navResizeRaf) return;
+        navResizeRaf = requestAnimationFrame(function () { navResizeRaf = 0; layoutNav(); });
+    }
+    window.addEventListener('resize', onNavResize);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', onNavResize);
 
     document.getElementById('npFab').addEventListener('click', function () {
         navPanelEl.classList.toggle('open');
