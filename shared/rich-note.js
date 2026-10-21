@@ -164,6 +164,10 @@
 '.card-item.favorited .card-note-area .note-editor table th,',
 '.card-item.favorited .card-note-area .note-editor table td{border-color:#e8d9b0;}',
 '.card-item.favorited .card-note-area .note-editor table th{background:#f6eddd;}',
+       /* 26/10/20：收藏态（卡片转暖黄）时，笔记区的占位提示「✏️ 点击写下笔记…」还是浅绿，
+          很违和。必须带 !important —— 上面那条 .note-editor .note-placeholder 是 !important，
+          各子页自己的 .favorited 覆盖没带，压不住。只改这一处，工具栏保持原色。 */
+'.card-item.favorited .note-editor .note-placeholder{color:#b8a478 !important;}',
        /* 列表缩进：子页有 * { padding: 0 } 会把 ul/ol 的默认缩进清掉，
    这里补回来（跟「我的卡片」保持一致的 1.6em） */
 '.note-editor ul, .note-editor ol { padding-left: 1.6em; margin: .4em 0; }',

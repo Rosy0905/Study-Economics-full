@@ -1385,6 +1385,15 @@
             .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
+    /* 26/10/20：题目里的空行（\n\n）在 .q-text{white-space:pre-wrap} 下会渲染成真实空行，
+       和其余九页「题目紧凑、小问紧跟」的排法不一致，统一压成单换行。
+       注意只作用于「题目」，答案（answer-inner）是富文本，段落间距保留。 */
+    function cleanQ(s) {
+        return String(s === null || s === undefined ? '' : s)
+            .replace(/\r\n?/g, '\n')
+            .replace(/\n[ \t\u3000]*\n+/g, '\n')
+            .trim();
+    }
     function stripHtml(html) {
         var tmp = document.createElement('div');
         tmp.innerHTML = html || '';
@@ -1412,6 +1421,7 @@
                     if (typeof o.fav !== 'boolean') o.fav = false;
                     if (typeof o.created !== 'number') o.created = Date.now();
                     if (!o.id) o.id = uid();
+                    o.question = cleanQ(o.question);   /* 26/10/20：题目去空行 */
                     return o;
                 });
             }
@@ -2516,7 +2526,7 @@
     }
 
     function saveCard() {
-        var q = questionInput.value.trim();
+        var q = cleanQ(questionInput.value);
         if (!q) { showToast('⚠️ 请先填写题目'); questionInput.focus(); return; }
 
         var ch = editorChapter || '';
@@ -3536,7 +3546,7 @@
                             chapter: ch,
                             qid: typeof item.qid === 'string' ? item.qid : (typeof item.index === 'string' ? item.index : ''),
                             hasImage: !!item.hasImage,
-                            question: item.question,
+                            question: cleanQ(item.question),
                             answerHtml: item.answerHtml || item.answer || '',
                             fav: !!item.fav,
                             created: item.created || Date.now()
