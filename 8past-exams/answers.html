@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="../icons/icon.svg">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>真题答案册 · 南开经济学</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+        background: #f0f7f0; color: #1e3a2a; padding: 20px;
+    }
+    .topbar {
+        max-width: 1000px; margin: 0 auto 14px auto; background: #d9edd9;
+        padding: 14px 22px 12px 22px; border-radius: 18px;
+        box-shadow: 0 4px 12px rgba(60, 110, 60, 0.12);
+    }
+    .tb-row1 { display: flex; align-items: center; gap: 13px; }
+    .tb-sep { width: 1px; height: 26px; background: rgba(90, 140, 95, .28); flex: 0 0 auto; }
+    .tb-title { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .topbar .back {
+        display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+        background: #b8d8b8; color: #14401f; padding: 6px 14px; border-radius: 30px;
+        font-size: 13px; font-weight: 600;
+    }
+    .topbar .back:hover { background: #a8d0a8; }
+    .topbar h1 { font-size: 18px; font-weight: 600; color: #1e4a2a; letter-spacing: .3px; line-height: 1.35; }
+    .tb-sub { font-size: 11.5px; color: #55805f; letter-spacing: .2px; }
+    .tb-row2 {
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        margin-top: 11px; padding-top: 11px;
+        border-top: 1px solid rgba(110, 165, 115, 0.28);
+    }
+    .chips { display: flex; gap: 7px; flex-wrap: wrap; flex: 1 1 auto; min-width: 0; }
+    .tb-tools { flex: 0 0 auto; margin-left: auto; display: flex; align-items: center; }
+    .topbar input {
+        padding: 8px 16px; border-radius: 30px; border: 1px solid #b3d9b3;
+        background: #fafffa; font-size: 13px; color: #1e3a2a; outline: none;
+        width: 260px;
+    }
+    .topbar input::placeholder { color: #86a98c; }
+    .topbar input:focus { border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80,150,80,.2); }
+    .chip2 {
+        background: #fff; border: 1px solid #e6f0e6; border-radius: 12px;
+        padding: 5px 12px; font-size: 12.5px; color: #4a6a52; cursor: pointer;
+        user-select: none; box-shadow: 0 2px 8px rgba(60,100,60,.07);
+        transition: border-color .16s, background .16s, box-shadow .16s;
+        display: inline-flex; align-items: center; gap: 2px;
+    }
+    .chip2:hover { border-color: #9ccfae; }
+    .chip2 b { margin-left: 4px; font-size: 13px; font-weight: 700; }
+    .chip2.sel { border-color: #5ec99a; background: #eefaf3; box-shadow: 0 0 0 2px rgba(94,201,154,.16); }
+    .chip2.c-ok b { color: #2b7a2b; }
+    .chip2.c-meh b { color: #c98a2b; }
+    .chip2.c-no b { color: #b85050; }
+    .chip2.c-weak b { color: #b85050; }
+    .chip2.c-none b { color: #5f7f8f; }
+
+    .rec-bar {
+        background: #f3f9f0; border: 1px solid #dcecd6; color: #4a6a52;
+        border-radius: 10px; padding: 8px 14px; font-size: 12px; line-height: 1.65;
+        margin-bottom: 12px;
+    }
+    .rec-bar b { color: #2f5d3f; }
+    .rec-bar .rec-num { font-weight: 700; color: #1f6b3a; }
+
+    /* 卷别切换：学科下拉 + 年份单行 */
+    .yearbar {
+        max-width: 1000px; margin: 0 auto 12px auto; background: #e6f3e6;
+        border-radius: 14px; padding: 4px 10px;
+        display: flex; align-items: center; gap: 0; min-width: 0;
+    }
+    .yb-pick { position: relative; flex: 0 0 auto; }
+    .yb-btn {
+        display: inline-flex; align-items: center; gap: 5px; height: 26px;
+        border: 0; border-radius: 8px; padding: 0 9px; cursor: pointer;
+        background: #cfe6cf; color: #14401f; font-size: 12px; font-weight: 600;
+        font-family: inherit; letter-spacing: .2px; transition: background .15s;
+    }
+    .yb-btn:hover { background: #c2dfc2; }
+    .yb-btn svg { width: 9px; height: 9px; opacity: .55; transition: transform .16s; }
+    .yb-pick.open .yb-btn svg { transform: rotate(180deg); }
+    .yb-menu {
+        position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; display: none;
+        background: #fff; border-radius: 11px; padding: 4px; min-width: 132px;
+        box-shadow: 0 8px 22px rgba(35, 75, 40, .18), 0 0 0 1px rgba(90,140,95,.1);
+    }
+    .yb-pick.open .yb-menu { display: block; }
+    .yb-menu button {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        width: 100%; border: 0; background: none; font-family: inherit;
+        font-size: 12.5px; color: #23502f; padding: 6px 9px; border-radius: 7px;
+        cursor: pointer; text-align: left; white-space: nowrap;
+    }
+    .yb-menu button:hover { background: #eff8ef; }
+    .yb-menu button.on { background: #e3f1e3; color: #10381c; font-weight: 700; }
+    .yb-menu button span { font-size: 11px; font-weight: 400; color: #7f9a84; }
+
+    .yearbar .yb-years {
+        flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 1px;
+        padding-left: 10px;
+        overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+        scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    }
+    .yearbar .yb-years::-webkit-scrollbar { display: none; }
+    .yearbar .yb-years a {
+        flex: 0 0 auto; display: inline-flex; align-items: center; height: 21px;
+        padding: 0 6px; border-radius: 6px; text-decoration: none;
+        color: #23502f; font-size: 12.5px; line-height: 1;
+        font-variant-numeric: tabular-nums; transition: background .15s, color .15s;
+    }
+    .yearbar .yb-years a:hover { background: #d3e8d3; }
+    .yearbar .yb-years a.active { background: #1f6b3a; color: #fff; font-weight: 600; }
+    .yearbar .yb-years a.pend { opacity: .5; }
+    .yearbar .yb-years a.active.pend { opacity: .9; }
+
+    .content { max-width: 1000px; margin: 0 auto; min-width: 0; }
+    .paper-head {
+        background: #fff; border-radius: 16px; padding: 18px 22px; margin-bottom: 12px;
+        box-shadow: 0 2px 8px rgba(60,110,60,.07);
+    }
+    .paper-head .crumb { font-size: 12px; color: #6a8a70; letter-spacing: .4px; margin-bottom: 5px; }
+    .paper-head h2 { font-size: 21px; font-weight: 600; color: #1e4a2a; }
+    .paper-head .meta { font-size: 12.5px; color: #5f7a63; margin-top: 5px; }
+
+    .part { margin-bottom: 16px; }
+    .part > h3 {
+        font-size: 14.5px; font-weight: 600; color: #1f4a2a; margin: 0 4px 9px 4px;
+        display: flex; align-items: baseline; gap: 9px;
+    }
+    .part > h3 span { font-size: 12px; font-weight: 400; color: #6a8a70; }
+
+    .item {
+        background: #fff; border-radius: 14px; padding: 16px 20px 16px 20px;
+        margin-bottom: 11px; box-shadow: 0 2px 8px rgba(60,110,60,.06);
+        scroll-margin-top: 20px; transition: box-shadow .25s, outline-color .25s;
+        outline: 2px solid transparent;
+    }
+    .item.flash { outline-color: #d4a24e; box-shadow: 0 4px 18px rgba(180,140,60,.28); }
+    .q-head { display: flex; gap: 11px; align-items: flex-start; }
+    .q-head .no {
+        flex-shrink: 0; width: 23px; height: 23px; border-radius: 7px;
+        background: #e3f0e3; color: #1f6b3a; font-size: 12.5px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center; margin-top: 3px;
+    }
+    .q-head .stem {
+        font-size: 15px; line-height: 1.8; color: #1c3322; white-space: pre-wrap;
+        word-break: break-word; overflow-wrap: anywhere; flex: 1; min-width: 0;
+    }
+    .ans {
+        margin: 14px 0 0 0; background: #f2f8ef; border: 1px solid #e4efe0;
+        border-radius: 11px; border-left: 3px solid #a9cfa9;
+        padding: 13px 18px 14px 18px;
+    }
+    .ans-label {
+        display: inline-block; font-size: 11px; font-weight: 600; color: #4a7a55;
+        letter-spacing: 0; background: #e2efdd; padding: 2px 10px; border-radius: 20px;
+        margin-bottom: 9px;
+    }
+    .ans-body {
+        font-size: 14.5px; line-height: 1.9; color: #24382a;
+        word-break: break-word; overflow-wrap: anywhere;
+    }
+    /* 首行缩进两字；段间距学 demo 版：段与段之间留足呼吸感 */
+    .ans-body p { margin: 0 0 .45em 0; text-indent: 2em; }
+    .ans-body p.par { margin-top: .8em; }
+    .ans-body p.fm, .ans-body p.fig { text-indent: 0; }
+    /* 独立成行的整行【标签】（如【补充：…】）：随正文首行缩进，不再顶格（小0主人定 26/10/21） */
+    .ans-body p.ah { text-indent: 2em; }
+    /* 提示/校注/注：随正文首行缩进（小0主人定，26/10/21） */
+    /* 「第一，」是①的分点：与正文同宽同缩进，只靠序号本身区分层级 */
+    .ans-body p.lv3 { margin-top: .35em; }
+    /* 单独成行的小标题：①从用户角度分析 / （2）企业持有存货的原因： */
+    .ans-body p.sub {
+        font-weight: 600; color: #1c4a2c;
+        margin: .7em 0 .3em 0; letter-spacing: .2px;
+        text-indent: 1em;   /* 比正文 2em 少一点，让 ① 第一，看起来归它管 */
+    }
+    .ans-body p.sub:first-child { margin-top: 0; }
+    .ans-body p:last-child { margin-bottom: 0; }
+    /* 行首【标签】：单独成行时整行加粗，跟正文时只加粗标签 */
+    .ans-body .ah-tag { font-weight: 700; color: #1c4a2c; }
+    /* 小标题：【（1）跨期预算约束】 */
+    .ans-body p.ah {
+        font-weight: 700; color: #1c4a2c; margin-top: 1.05em; margin-bottom: .45em;
+        letter-spacing: .2px;
+    }
+    .ans-body p.ah:first-child { margin-top: 0; }
+    /* 公式行：学计算要点页，淡底 + 圆角 + 衬线体 + 宽度自适
+       v21：左缘对齐计算专项页 p.formula（margin-left:2em，底色与正文首行缩进文字齐平，不再凸出） */
+    .ans-body p.fm {
+        font-family: 'Times New Roman', 'Cambria Math', 'SimSun', 'Songti SC', serif;
+        font-size: 14.5px; color: #1c4a3a; background: #e6f1e3;
+        border-radius: 6px; padding: 2px 10px; margin: .55em 0 .55em 2em;
+        display: block; width: fit-content; max-width: 100%;
+        white-space: pre-wrap; line-height: 1.75;
+    }
+    .ans-body p.fm .fm-cn {
+        font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        font-size: 13.5px; color: #2c4a35;
+    }
+    .ans-body p.fm .fm-end { color: #a3bba8; }
+    .ans-body p.lead { margin-bottom: .2em; }
+    /* 图示占位：极淡底 + 虚线框居中，跟正文区分得开又不腻 */
+    .ans-body p.fig {
+        font-size: 12.5px; color: #52705d; background: #eaf3e6;
+        border-radius: 7px; padding: 5px 11px; margin: .55em 0 .7em 0; line-height: 1.8;
+    }
+    /* 学长提示：按原书放在答案末尾，只留个小标签，不做卡片 */
+    .ans-body p.ans-tip {
+        font-size: 13.6px; line-height: 1.85; color: #5b7263;
+        margin-top: 1.05em !important;
+    }
+    .ans-body p.ans-tip b { color: #3f6b4d; font-weight: 600; }
+
+    /* 答案前的出处小字：淡绿底注释式，整块一条，不加标识、不加粗 */
+    .src {
+        margin-top: 12px; background: #f6faf4;
+        border-left: 2px solid #cde1c7; border-radius: 0 8px 8px 0;
+        padding: 6px 12px 6px 10px;
+        display: flex; flex-direction: column; gap: 3px;
+    }
+    .src-row { display: block; }
+    .src-t {
+        display: block; font-size: 12px; line-height: 1.8; color: #5f7a65;
+        overflow-wrap: anywhere;
+    }
+    .src + .ans { margin-top: 11px; }
+
+    .ans.ans-empty { background: #fafcf8; border-color: #eef3ea; border-left-color: #d8e5d2; }
+    .ans.ans-empty .ans-label { background: #eef3ea; color: #7f9a84; }
+    .ans-wait { font-size: 13px; color: #8aa08f; line-height: 1.9; }
+
+    .empty {
+        background: #fff; border-radius: 14px; padding: 44px 20px; text-align: center;
+        color: #6a8a70; font-size: 14px; line-height: 1.9;
+    }
+    .empty span { font-size: 12.5px; color: #8aa692; }
+
+    @media (max-width: 780px) {
+        body { padding: 12px; }
+        .yearbar { padding: 4px 8px; margin-bottom: 10px; border-radius: 12px; }
+        .yb-btn { height: 24px; font-size: 11.5px; padding: 0 7px; }
+        .yb-menu { min-width: 126px; }
+        .yearbar .yb-years { padding-left: 8px; }
+        .yearbar .yb-years a { height: 20px; font-size: 12px; padding: 0 5px; }
+        .topbar { position: static; padding: 12px 14px 10px 14px; }
+        .topbar h1 { font-size: 16.5px; }
+        .tb-row1 { flex-wrap: wrap; gap: 9px; }
+        .tb-title { flex: 1 1 auto; }
+        .tb-row2 { gap: 9px; }
+        .chips { flex: 1 1 100%; gap: 6px; }
+        .tb-tools { flex: 1 1 100%; width: 100%; margin-left: 0; }
+        .topbar input { width: 100%; }
+        .ans-body p.fm { margin-left: .5em; font-size: 14px; }
+        .ans-body p.fig { font-size: 12px; padding: 6px 9px; }
+        .src { padding: 6px 10px 6px 8px; }
+        .src-t { font-size: 11.5px; }
+        .chip2 { padding: 4px 10px; font-size: 12px; }
+        .rec-bar { padding: 9px 13px; font-size: 12px; }
+        .item { padding: 14px 14px 13px 14px; }
+        .ans { padding: 12px 13px 12px 13px; }
+        .paper-head { padding: 15px 17px; }
+        .paper-head h2 { font-size: 18.5px; }
+    }
+    /* ---------- 左侧题号导航面板 ---------- */
+    #navPanel {
+        position: fixed; z-index: 40;
+        /* 100vw 含滚动条：先扣 ~10px 才是内容左缘；面板在左侧余量里水平居中，两侧间距相等 */
+        --npm: calc((100vw - 1000px) / 2 - 10px);
+        --npw: min(168px, max(96px, calc(var(--npm) - 26px)));
+        width: var(--npw);
+        left: max(8px, calc((var(--npm) - var(--npw)) / 2));
+        top: 50%; transform: translateY(-50%);
+        max-height: calc(100vh - 130px); display: flex; flex-direction: column;
+    }
+    #navPanel .np-card {
+        background: #fff; border-radius: 14px; padding: 12px 12px 10px 12px;
+        box-shadow: 0 2px 10px rgba(60,110,60,.10); overflow-y: auto; flex: 0 1 auto;
+        scrollbar-width: thin;
+    }
+    #navPanel .np-title { font-size: 12px; color: #6a8a70; margin: 0 2px 8px 2px; line-height: 1.5; }
+    #navPanel .np-title b { color: #1e4a2a; font-size: 12.5px; }
+    #navPanel .np-row { display: flex; align-items: flex-start; gap: 6px; margin-bottom: 9px; }
+    #navPanel .np-row:last-child { margin-bottom: 2px; }
+    #navPanel .np-type {
+        flex: 0 0 auto; font-size: 12px; color: #4d7a58; font-weight: 600;
+        padding-top: 4px; letter-spacing: .5px;
+    }
+    #navPanel .np-nums { display: flex; flex-wrap: wrap; gap: 4px; }
+    #navPanel .np-nums a {
+        min-width: 24px; height: 24px; border-radius: 7px; text-decoration: none;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: #f2faf2; color: #23502f; font-size: 12.5px;
+        font-variant-numeric: tabular-nums; transition: background .15s, color .15s;
+    }
+    #navPanel .np-nums a:hover { background: #dff0df; }
+    #navPanel .np-nums a.on { background: #1f6b3a; color: #fff; font-weight: 700; }
+    #navPanel .np-fab { display: none; }
+    /* 面板变窄时内部紧凑化，题号自动重排（npw<168 ⇔ vw<1408） */
+    @media (max-width: 1407px) and (min-width: 1260px) {
+        #navPanel .np-title { font-size: 11px; margin-bottom: 6px; }
+        #navPanel .np-title b { font-size: 11.5px; }
+        #navPanel .np-row { gap: 4px; margin-bottom: 7px; }
+        #navPanel .np-type { font-size: 11px; padding-top: 3px; letter-spacing: 0; }
+        #navPanel .np-nums { gap: 3px; }
+        #navPanel .np-nums a { min-width: 20px; height: 20px; font-size: 11.5px; border-radius: 6px; }
+        #navPanel .np-card { padding: 9px 9px 8px 9px; }
+    }
+    /* 空间不足：左缘「题号」小按钮，点击弹出浮层（余量放不下 96px 面板 ⇔ vw<1260） */
+    @media (max-width: 1259px) {
+        #navPanel { width: auto; max-height: none; }
+        #navPanel .np-card {
+            display: none; position: fixed; left: 12px; top: 50%;
+            transform: translateY(-50%); width: 168px; max-height: calc(100vh - 130px);
+            box-shadow: 0 6px 24px rgba(40,90,50,.28);
+        }
+        #navPanel.open .np-card { display: block; }
+        #navPanel.open .np-fab { display: none; }
+        #navPanel .np-fab {
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            position: fixed; left: 8px; top: 50%; transform: translateY(-50%);
+            background: #fff; border: none; cursor: pointer; z-index: 41;
+            color: #4d7a58; font-size: 12.5px; font-weight: 600; line-height: 1.35;
+            padding: 9px 7px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(60,110,60,.18);
+            font-family: inherit;
+        }
+        #navPanel .np-fab:hover { background: #f2faf2; }
+    }
+    @media print {
+        #navPanel { display: none !important; }
+        body { background: #fff; padding: 0; }
+        .topbar, .yearbar, .rec-bar { display: none !important; }
+        .content { max-width: none; }
+        .item { box-shadow: none; break-inside: avoid; page-break-inside: avoid; }
+        .ans { background: #fff; border: 0.5px solid #ccc; }
+        .paper-head { box-shadow: none; }
+    }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="tb-row1">
+        <a class="back" href="index.html">⬅ 题库</a>
+        <span class="tb-sep"></span>
+        <div class="tb-title">
+            <h1>真题答案册</h1>
+            <div class="tb-sub" id="tbSub"></div>
+        </div>
+    </div>
+    <div class="tb-row2">
+        <div class="chips" id="chips"></div>
+        <div class="tb-tools">
+            <input id="searchInput" type="text" placeholder="搜题干 / 答案关键词…" />
+        </div>
+    </div>
+</div>
+
+<div class="yearbar" id="yearbar"></div>
+<section class="content" id="content"></section>
+
+<aside id="navPanel" hidden>
+    <div class="np-card"><div class="np-title" id="npTitle"></div><div id="npRows"></div></div>
+    <button class="np-fab" id="npFab" title="题号目录"><span>题</span><span>号</span></button>
+</aside>
+
+<script src="answers-data.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    var BOOK = window.ANSWER_BOOK;
+    if (!BOOK || !BOOK.papers || !BOOK.papers.length) {
+        document.getElementById('content').innerHTML = '<div class="empty">答案数据没加载上</div>';
+        return;
+    }
+
+    var CN = ['一', '二', '三', '四', '五', '六'];
+    var MARKS_KEY = 'past_exams_selftest';
+    var MARKS = (function () {
+        try { return JSON.parse(localStorage.getItem(MARKS_KEY)) || {}; } catch (e) { return {}; }
+    })();
+    var facet = 'all';
+    var keyword = '';
+    var currentKey = null;
+    var lastSubj = {};   /* 每个学科最后看的卷 */
+
+    var yearbarEl = document.getElementById('yearbar');
+    var contentEl = document.getElementById('content');
+    var chipsEl = document.getElementById('chips');
+    var searchInput = document.getElementById('searchInput');
+
+    function esc(s) {
+        return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+    function cleanStem(s) {
+        return String(s || '').replace(/\n[ \t]*\n[\s]*/g, '\n');
+    }
+
+    /* 是否是一个"纯公式行"：有关键关系符、中文极少、非引导句 */
+    function isFormula(t) {
+        if (!t || t.length > 110) return false;
+        if (/^[A-Za-z][A-Za-z0-9_^']*\s*=\s*\{$/.test(t)) return true;   // v21：分段函数大括号组首行（X={ / Y={），与各段行连成公式块
+        if (/[：:]$/.test(t)) return false;
+        if (!/[=≈≥≤≠<>]/.test(t) && !/^(max|min|s\.t\.)/i.test(t)) return false;   // max/min/s.t. 开头的大括号组行即使无关系符也算公式
+        if (/（[^）]*）[。.]?$/.test(t)) return false;   // 结尾带中文括注的算正文
+        if (/[\u4e00-\u9fa5][：:]/.test(t)) return false; // 句中带中文引导句（「可得：」「解得：」）的算正文行
+        var cn = (t.match(/[\u4e00-\u9fa5]/g) || []).length;
+        if (cn > 0) return false;   // v13：整行无汉字才算纯公式——「当I(t)=…时」「从而…」这类带字的行一律正文
+        var rest = t.replace(/[\u4e00-\u9fa5\s，。；：、""''（）()【】,]/g, '');
+        return rest.length >= 4 && /[A-Za-z0-9]/.test(rest);
+    }
+
+    /* 公式块：中文字符换回正文字体，避免衬线体缺字形；拆行残留的行尾标点直接去掉 */
+    function fmHtml(t) {
+        t = String(t).replace(/[，。；、]+$/, '');
+        return esc(t).replace(/([\u4e00-\u9fa5，。；：、]+)/g, '<span class="fm-cn">$1</span>');
+    }
+
+    /* 答案正文渲染：小标题 / 公式块 / 普通段落
+       版式参考《计算要点》《专项训练》：正文首行缩进两字，仅小问标题行加粗，公式淡绿底 */
+    var RE_NUM = /^(（[0-9一二三四五六七八九十]{1,3}）|[\u2460-\u2469]|第[一二三四五六七八九十]{1,2}，)/;
+    /* 序号不单独加粗——只有小问标题行（p.sub）整体加粗，其余一律正文字重 */
+    function withNum(s) {
+        return esc(s);
+    }
+    /* 「第一，」「第二，」是①的分点，缩进一层 */
+    var RE_DI = /^第[一二三四五六七八九十]+，/;
+    /* 小问标题：只有（N）开头的短行；①②③④、第一第二都是正文，不加粗 */
+    var RE_SUB = /^（[0-9一二三四五六七八九十]{1,3}）/;
+    function isSubHead(t) {
+        if (!RE_SUB.test(t)) return false;
+        var body = t.replace(RE_SUB, '');
+        if (!body.trim()) return false;
+        if (/[。！？；]/.test(body)) return false;      // 带句读的是正文，不是标题
+        return body.length <= 30;                        // 太长的当正文
+    }
+    /* （v12 已废弃自动拆行 splitInline——断行一律由数据源控制） */
+    function renderAns(text) {
+        var lines = String(text || '（暂无答案）').split('\n');
+        var out = '', gap = false;   // gap：上一个空行，用来区分“段”与“行”
+        function emit(cls, html, blk) {
+            var c = (cls || '') + (gap || blk ? ' par' : '');
+            out += '<p' + (c.trim() ? ' class="' + c.trim() + '"' : '') + '>' + html + '</p>';
+            gap = false;
+        }
+        var bc = false;   // 已进入【补充题】：其解答行首的「解：」要保留，样式同标签
+        lines.forEach(function (raw) {
+            var t = raw.replace(/\s+$/, '');
+            if (!t.trim()) { gap = true; return; }
+            var mDa = t.match(/^[答解][:：]\s*/);
+            if (mDa) {
+                if (bc && mDa[0].charAt(0) === '解') {
+                    // 补充题解答开头的「解：」不剥除，显示为【解】标签（小0主人定）
+                    emit('', '<span class="ah-tag">【解】</span>' + withNum(t.slice(mDa[0].length)), true);
+                    return;
+                }
+                t = t.slice(mDa[0].length);   // 「答：」「解：」不进正文，让小问标题顶到位
+                if (!t.trim()) { gap = true; return; }
+            }
+            // 图示占位
+            if (/^［\s*此处有图示/.test(t)) { emit('fig', esc(t), true); return; }
+            // 提示/校注：原书提示放末尾；校注是订正说明
+            var mNote = t.match(/^【((?:[^】]{0,10})?(?:提示|校注|注))】([\s\S]*)$/);
+            if (mNote) { emit('ans-tip', '<b>【' + esc(mNote[1]) + '】</b>' + esc(mNote[2]), true); return; }
+            var mAh = t.match(/^\s*【([^【]+?)】\s*$/);
+            if (mAh) { if (mAh[1] === '补充题') bc = true; emit('ah', esc(mAh[1])); return; }
+            // 行首【标签】后面还跟着正文
+            var mTag = t.match(/^\s*(【[^】]{1,20}】)\s*(\S.*)$/);
+            if (mTag) { if (/补充题/.test(mTag[1])) bc = true; emit('', '<span class="ah-tag">' + esc(mTag[1]) + '</span>' + esc(mTag[2])); return; }
+            /* 版式定稿（v12）：不再自动拆行——一行数据渲染一段，与原书连排一致；
+               绿底只给整行纯公式的行，引导句断行由数据源手动控制 */
+            if (isFormula(t)) { emit('fm', fmHtml(t)); return; }
+            // 单独成行的短标题
+            if (isSubHead(t) && !bc) { emit('sub', withNum(t), true); return; }   // 补充题内不加粗小标题（小0主人定）
+            emit(RE_DI.test(t.trim()) ? 'lv3' : '', withNum(t), RE_NUM.test(t.trim()));
+        });
+        return out;
+    }
+
+    /* 出处小字：原样保留，淡绿底注释样式，不加标识、不加粗 */
+    function renderSrc(item) {
+        if (!item.src || !item.src.length) return '';
+        var h = '<div class="src">';
+        item.src.forEach(function (r) {
+            h += '<div class="src-row">' +
+                 '<span class="src-t">' + esc(r.t || '') + '</span></div>';
+        });
+        return h + '</div>';
+    }
+
+    function findPaper(key) {
+        for (var i = 0; i < BOOK.papers.length; i++) {
+            if (BOOK.papers[i].key === key) return BOOK.papers[i];
+        }
+        return null;
+    }
+    function findItem(id) {
+        for (var i = 0; i < BOOK.papers.length; i++) {
+            var p = BOOK.papers[i];
+            for (var j = 0; j < p.parts.length; j++) {
+                var it = p.parts[j].items;
+                for (var k = 0; k < it.length; k++) {
+                    if (it[k].id === id) return { paper: p, item: it[k] };
+                }
+            }
+        }
+        return null;
+    }
+    function allItems(p) {
+        var out = [];
+        p.parts.forEach(function (part) { out = out.concat(part.items); });
+        return out;
+    }
+    function paperCount(p) { return allItems(p).length; }
+    function countFilled(p) {
+        return allItems(p).filter(function (it) { return !!it.ans; }).length;
+    }
+
+    function tally(p) {
+        var t = { all: 0, ok: 0, meh: 0, no: 0, none: 0, weak: 0 };
+        allItems(p).forEach(function (it) {
+            t.all++;
+            var m = MARKS[it.id];
+            if (m === 'ok') t.ok++;
+            else if (m === 'meh') { t.meh++; t.weak++; }
+            else if (m === 'no') { t.no++; t.weak++; }
+            else t.none++;
+        });
+        return t;
+    }
+
+    function matchFacet(id) {
+        var m = MARKS[id];
+        if (facet === 'all') return true;
+        if (facet === 'weak') return m === 'meh' || m === 'no';
+        if (facet === 'none') return !m;
+        return m === facet;
+    }
+
+    function renderChips() {
+        var paper = findPaper(currentKey);
+        if (!paper) return;
+        var t = tally(paper);
+        var defs = [
+            ['all', '全部', t.all, ''],
+            ['weak', '只看不会的', t.weak, 'c-weak'],
+            ['ok', '会了', t.ok, 'c-ok'],
+            ['meh', '模糊', t.meh, 'c-meh'],
+            ['no', '忘了', t.no, 'c-no'],
+            ['none', '未测', t.none, 'c-none']
+        ];
+        chipsEl.innerHTML = defs.map(function (d) {
+            return '<div class="chip2 ' + d[3] + (facet === d[0] ? ' sel' : '') +
+                   '" data-f="' + d[0] + '">' + d[1] + '<b>' + d[2] + '</b></div>';
+        }).join('');
+    }
+
+    chipsEl.addEventListener('click', function (e) {
+        var c = e.target.closest ? e.target.closest('.chip2') : null;
+        if (!c) return;
+        facet = c.getAttribute('data-f');
+        renderPaper();
+    });
+
+    function renderYearbar() {
+        var cur = findPaper(currentKey);
+        var sub = cur ? cur.subject : BOOK.papers[0].subject;
+        var subjects = [];
+        BOOK.papers.forEach(function (p) {
+            if (subjects.indexOf(p.subject) === -1) subjects.push(p.subject);
+        });
+        if (lastSubj[sub] == null) lastSubj[sub] = currentKey;
+
+        var html = '<div class="yb-pick" id="ybPick">' +
+            '<button type="button" class="yb-btn" aria-haspopup="true" aria-expanded="false">' +
+            esc(sub) +
+            '<svg viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+            '</button><div class="yb-menu">';
+        subjects.forEach(function (s) {
+            var n = BOOK.papers.filter(function (p) { return p.subject === s; }).length;
+            html += '<button type="button" data-subj="' + esc(s) + '"' + (s === sub ? ' class="on"' : '') + '>' +
+                    esc(s) + '<span>' + n + ' 套</span></button>';
+        });
+        html += '</div></div><div class="yb-years">';
+        BOOK.papers.filter(function (p) { return p.subject === sub; }).forEach(function (p) {
+            var pend = !countFilled(p);
+            html += '<a href="#' + esc(p.key) + '" data-key="' + esc(p.key) + '"' +
+                    (p.key === currentKey ? ' class="active' + (pend ? ' pend' : '') + '"'
+                                          : (pend ? ' class="pend"' : '')) +
+                    ' title="' + esc(p.title + ' · ' + (pend ? '答案待录入' : paperCount(p) + ' 题')) + '">' +
+                    esc(p.short) + '</a>';
+        });
+        html += '</div>';
+        yearbarEl.innerHTML = html;
+
+        var pick = yearbarEl.querySelector('.yb-pick');
+        var btn = pick && pick.querySelector('.yb-btn');
+        if (btn) {
+            btn.addEventListener('click', function () {
+                var open = pick.classList.toggle('open');
+                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+        }
+        Array.prototype.forEach.call(yearbarEl.querySelectorAll('.yb-menu button'), function (m) {
+            m.addEventListener('click', function () {
+                var s = m.getAttribute('data-subj');
+                if (pick) pick.classList.remove('open');
+                if (s === sub) return;
+                var key = lastSubj[s];
+                if (!findPaper(key)) {
+                    var first = BOOK.papers.filter(function (p) { return p.subject === s; })[0];
+                    key = first ? first.key : null;
+                }
+                if (key) go(key);
+            });
+        });
+        Array.prototype.forEach.call(yearbarEl.querySelectorAll('.yb-years a'), function (a) {
+            a.addEventListener('click', function (e) {
+                e.preventDefault();
+                go(a.getAttribute('data-key'));
+            });
+        });
+        // 当前卷滚到可见（窄屏会横滑）
+        var box = yearbarEl.querySelector('.yb-years');
+        var act = box && box.querySelector('a.active');
+        if (act && box.scrollWidth > box.clientWidth) {
+            var br = box.getBoundingClientRect(), ar = act.getBoundingClientRect();
+            box.scrollLeft += (ar.left - br.left) - Math.min(40, (br.width - ar.width) / 2);
+        }
+    }
+
+    function renderPaper() {
+        var paper = findPaper(currentKey) || BOOK.papers[0];
+        if (!paper) return;
+        currentKey = paper.key;
+
+        var kw = keyword.trim().toLowerCase();
+        var types = paper.parts.map(function (p) { return p.type; });
+
+        var subEl = document.getElementById('tbSub');
+        if (subEl) subEl.textContent = paper.title.replace(/\s+/g, ' ') + ' · ' + paperCount(paper) + ' 题 · ' + types.join(' / ');
+
+        var total0 = paperCount(paper);
+        var filled0 = countFilled(paper);
+        var rec = '';
+        if (filled0 < total0) {
+            rec = '<div class="rec-bar"><b>' + (filled0 ? '本卷答案录入中' : '本卷答案待录入') + '</b>　' +
+                  '共 ' + total0 + ' 题，已录入 <span class="rec-num">' + filled0 + '</span> 题' +
+                  (filled0 ? '，其余正在整理，先看题干复习。' : '，题干已就绪，答案稍后补上。') + '</div>';
+        }
+
+        var html = rec +
+            '<div class="paper-head">' +
+            '<div class="crumb">' + esc(paper.meta) + '</div>' +
+            '<h2>' + esc(paper.title) + '</h2>' +
+            '<div class="meta">共 ' + paperCount(paper) + ' 题 · ' + types.join(' / ') + '</div>' +
+            '</div>';
+
+        var shown = 0;
+        var navParts = [];
+
+        paper.parts.forEach(function (part, pi) {
+            var items = part.items.filter(function (it) {
+                if (!matchFacet(it.id)) return false;
+                if (kw) {
+                    var hay = (it.stem + '\n' + it.ans).toLowerCase();
+                    if (hay.indexOf(kw) === -1) return false;
+                }
+                return true;
+            });
+            if (!items.length) return;
+            navParts.push({ type: part.type, items: items });
+
+            html += '<section class="part"><h3>' + CN[pi] + '、' + esc(part.type) +
+                    '<span>' + esc(part.note || '') + '</span></h3>';
+
+            items.forEach(function (it) {
+                shown++;
+                html += '<article class="item" id="' + esc(it.id) + '">' +
+                    '<div class="q-head"><span class="no">' + esc(it.qid) + '</span>' +
+                    '<div class="stem">' + esc(cleanStem(it.stem)) + '</div></div>' +
+                    renderSrc(it) +
+                    (it.ans
+                        ? '<div class="ans"><span class="ans-label">参考答案</span>' +
+                          '<div class="ans-body">' + renderAns(it.ans) + '</div></div>'
+                        : '<div class="ans ans-empty"><span class="ans-label">参考答案</span>' +
+                          '<div class="ans-wait">这一题的答案还在录入，先把题干过一遍。</div></div>') +
+                    '</article>';
+            });
+            html += '</section>';
+        });
+
+        if (!shown) {
+            var msg = '没有匹配的内容';
+            if (facet === 'weak') msg = '这一卷还没有标记「忘了 / 模糊」的题';
+            else if (facet === 'ok') msg = '这一卷还没有标记「会了」的题';
+            else if (facet === 'meh') msg = '这一卷还没有标记「模糊」的题';
+            else if (facet === 'no') msg = '这一卷还没有标记「忘了」的题';
+            else if (facet === 'none') msg = '这一卷的题都标记过了，没有「未测」的';
+            else if (kw) msg = '没有匹配「' + keyword.trim() + '」的内容';
+            html += '<div class="empty">' + esc(msg) +
+                    '<br><span>换个筛选条件，或者清空搜索框试试</span></div>';
+        }
+        contentEl.innerHTML = html;
+
+        buildNavPanel(paper, navParts);
+
+        renderYearbar();
+        renderChips();
+        updateUrl();
+    }
+
+    /* ---------- 左侧题号面板：构建 ---------- */
+    function buildNavPanel(paper, navParts) {
+        var panel = document.getElementById('navPanel');
+        var rows = document.getElementById('npRows');
+        navCur = null;
+        if (!navParts.length) { panel.hidden = true; return; }
+        panel.hidden = false;
+        document.getElementById('npTitle').innerHTML =
+            '<b>' + esc(paper.title) + '</b><br>' + esc(paper.subject);
+        var h = '';
+        navParts.forEach(function (part) {
+            h += '<div class="np-row"><span class="np-type">' + esc(part.type) + '</span>' +
+                 '<span class="np-nums">';
+            part.items.forEach(function (it) {
+                h += '<a href="#' + esc(it.id) + '" data-id="' + esc(it.id) + '">' + esc(it.qid) + '</a>';
+            });
+            h += '</span></div>';
+        });
+        rows.innerHTML = h;
+        if (pendingNavId && document.getElementById(pendingNavId)) {
+            navCur = pendingNavId;
+            navPaint(pendingNavId);   /* 首帧即点亮，不等滚动落定（320ms 抑制窗口只管滚动驱动的刷新） */
+        } else {
+            navSpy();
+        }
+        pendingNavId = null;   /* 一次性消费：不在本次渲染中兑现就作废，免得残留到下一次重建误点亮 */
+    }
+
+    function updateUrl() {
+        var cur = decodeURIComponent((location.hash || '').replace(/^#/, ''));
+        var hit = findItem(cur);
+        if (hit && hit.paper.key === currentKey) return;
+        if (cur === currentKey) return;
+        history.replaceState(null, '', '#' + currentKey);
+    }
+
+    function go(key) {
+        currentKey = key;
+        var gp = findPaper(key);
+        if (gp) lastSubj[gp.subject] = key;
+        window.scrollTo(0, 0);
+        try { sessionStorage.setItem(SCROLL_KEY, '0'); } catch (e) {}
+        renderPaper();
+        try { localStorage.setItem('past_answers_last', key); } catch (e) {}
+    }
+
+    var FLASH_KEY = 'past_ans_flashed';
+    var SCROLL_KEY = 'past_ans_scroll';
+    var scrollTimer = null;
+
+    function saveScroll() {
+        try { sessionStorage.setItem(SCROLL_KEY, String(Math.round(window.scrollY || 0))); } catch (e) {}
+    }
+    window.addEventListener('scroll', function () {
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(saveScroll, 160);
+    }, { passive: true });
+    /* 刷新/关闭前同步落盘：160ms 防抖可能漏掉最后一小段滚动，导致刷新后先落到旧位置再跳 */
+    window.addEventListener('pagehide', saveScroll);
+    window.addEventListener('beforeunload', saveScroll);
+
+    function restoreScroll() {
+        var y = 0;
+        try { y = parseInt(sessionStorage.getItem(SCROLL_KEY) || '0', 10) || 0; } catch (e) {}
+        if (y <= 0) return;
+        var apply = function () {
+            var max = document.documentElement.scrollHeight - window.innerHeight;
+            window.scrollTo(0, max > 0 ? Math.min(y, max) : y);
+        };
+        apply();
+        if (window.requestAnimationFrame) requestAnimationFrame(apply);
+        setTimeout(apply, 140);
+    }
+
+    function locateFromHash(hashOverride) {
+        var raw = (hashOverride != null) ? hashOverride : (location.hash || '');
+        var h = decodeURIComponent(raw.replace(/^#/, ''));
+        if (!h) return false;
+        var hit = findItem(h);
+        if (hit) {
+            var needRender = (currentKey !== hit.paper.key);
+            currentKey = hit.paper.key;
+            if (needRender) {
+                pendingNavId = h;   /* 面板重建时直接亮目标题，不等 scrollIntoView */
+                renderPaper();
+            } else {
+                navSpy(h);          /* 同卷：面板已在，直接点亮目标题——不重建面板/顶栏，避免高亮与顶栏闪动 */
+            }
+            var el = document.getElementById(h);
+            if (el) {
+                el.scrollIntoView({ block: 'start', behavior: 'auto' });
+                // 首次渲染时文档高度可能还没撑开，稍后再校一次
+                setTimeout(function () {
+                    var e2 = document.getElementById(h);
+                    if (e2) e2.scrollIntoView({ block: 'start', behavior: 'auto' });
+                }, 120);
+                // 同一题只高亮一次：刷新页面不再闪金框
+                var seen = false;
+                try { seen = sessionStorage.getItem(FLASH_KEY) === h; } catch (e) {}
+                if (!seen) {
+                    el.classList.add('flash');
+                    setTimeout(function () { el.classList.remove('flash'); }, 2600);
+                    try { sessionStorage.setItem(FLASH_KEY, h); } catch (e) {}
+                }
+            }
+            return 'item';
+        }
+        if (findPaper(h)) {
+            /* 已在该卷：不重复 renderPaper——否则顶栏与题号面板被重建，首屏闪一下、刚点亮的高亮被清空 */
+            if (currentKey !== h) { currentKey = h; renderPaper(); }
+            return 'paper';
+        }
+        return false;
+    }
+
+    var timer = null;
+    searchInput.addEventListener('input', function () {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            keyword = searchInput.value;
+            renderPaper();
+        }, 220);
+    });
+
+    window.addEventListener('hashchange', function () { locateFromHash(); });
+
+    /* ---------- 左侧题号面板：跳转 / 收展 / 在读高亮 ---------- */
+    var navPanelEl = document.getElementById('navPanel');
+    var navSpyTimer = null, navCur = null;
+    var navHold = true;   /* 初始化阶段抑制高亮：等滚动定位/恢复完再首次绘制，避免先亮第 1 题再跳 */
+    var pendingNavId = null;   /* 初始化已知的当前题（题 hash / 上次滚动位置推算）：构建面板时即刻点亮 */
+
+    function navPaint(cur) {
+        var box = document.getElementById('npRows');
+        var old = box.querySelector('a.on');
+        if (old) old.classList.remove('on');
+        var nu = box.querySelector('a[data-id="' + cur + '"]');
+        if (nu) nu.classList.add('on');
+    }
+    function navSpy(forceId) {
+        if (navPanelEl.hidden) return;
+        if (!forceId && navHold) return;   /* 初始化抑制；点题号的强制定位不受限 */
+        var cur = forceId;
+        if (!cur) {
+            /* 视口内可见面积最大的题判为「在读」，不足 1/5 视口高时保持原判 */
+            var vh = window.innerHeight || 800;
+            var items = contentEl.querySelectorAll('.item');
+            var best = null, bestArea = 0;
+            for (var i = 0; i < items.length; i++) {
+                var r = items[i].getBoundingClientRect();
+                var hh = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+                if (hh > bestArea) { bestArea = hh; best = items[i]; }
+            }
+            if (best && bestArea > vh * 0.18) cur = best.id;
+        }
+        if (!cur) { if (navCur) navPaint(navCur); return; }
+        navCur = cur;
+        navPaint(cur);
+    }
+    window.addEventListener('scroll', function () {
+        clearTimeout(navSpyTimer);
+        navSpyTimer = setTimeout(function () { navSpy(); }, 80);
+    }, { passive: true });
+
+    document.getElementById('npFab').addEventListener('click', function () {
+        navPanelEl.classList.toggle('open');
+    });
+    document.addEventListener('click', function (e) {
+        if (!navPanelEl.classList.contains('open')) return;
+        if (!navPanelEl.contains(e.target)) navPanelEl.classList.remove('open');
+    });
+    document.getElementById('npRows').addEventListener('click', function (e) {
+        var a = e.target.closest ? e.target.closest('a[data-id]') : null;
+        if (!a) return;
+        e.preventDefault();
+        var id = a.getAttribute('data-id');
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.scrollIntoView({ block: 'start', behavior: 'auto' });
+        el.classList.remove('flash');
+        void el.offsetWidth;                     /* 重新触发金框动画 */
+        el.classList.add('flash');
+        setTimeout(function () { el.classList.remove('flash'); }, 2600);
+        /* URL 只记卷号不记题号：刷新回到原位而不是强制跳回该题 */
+        try { history.replaceState(null, '', '#' + currentKey); } catch (e2) {}
+        navPanelEl.classList.remove('open');
+        navSpy(id);
+    });
+
+
+    /* 学科下拉：点空白处或按 Esc 收起 */
+    function closePick() {
+        var p = yearbarEl.querySelector('.yb-pick');
+        if (!p) return;
+        p.classList.remove('open');
+        var b = p.querySelector('.yb-btn');
+        if (b) b.setAttribute('aria-expanded', 'false');
+    }
+    document.addEventListener('click', function (e) {
+        var p = yearbarEl.querySelector('.yb-pick');
+        if (p && p.classList.contains('open') && !p.contains(e.target)) closePick();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' || e.key === 'Esc') closePick();
+    });
+
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+    var startKey = null;
+    var h0 = (location.hash || '').replace(/^#/, '');
+    var h0d = h0;
+    try { h0d = decodeURIComponent(h0); } catch (e) {}
+
+    if (h0d.indexOf('s-') === 0) {
+        // 学科入口：跳到该学科的第一套卷
+        var subjKey = h0d.slice(2);
+        for (var si = 0; si < BOOK.papers.length; si++) {
+            if (BOOK.papers[si].subject === subjKey) { startKey = BOOK.papers[si].key; break; }
+        }
+        h0 = '';
+    } else if (h0) {
+        var hit0 = findItem(h0d);
+        if (hit0) startKey = hit0.paper.key;
+        else if (findPaper(h0d)) startKey = h0d;
+    }
+    if (!startKey) {
+        try { startKey = localStorage.getItem('past_answers_last'); } catch (e) {}
+    }
+    if (!findPaper(startKey)) startKey = BOOK.papers[0].key;
+    currentKey = startKey;
+    /* 已知落点（题 hash，或 sessionStorage 里的上次滚动位置）→ 面板首帧即点亮当前题 */
+    if (h0d && findItem(h0d)) pendingNavId = h0d;
+    var savedY = 0;
+    if (!pendingNavId) {
+        try { savedY = parseInt(sessionStorage.getItem(SCROLL_KEY) || '0', 10) || 0; } catch (e0) {}
+    }
+    renderPaper();
+    if (!pendingNavId && savedY > 0) {
+        /* 从保存的滚动位置推算「在读」题——口径与 navSpy 完全一致（可见面积最大），
+           否则首帧按「顶部压着的题」点亮、320ms 校准时再改成「面积最大的题」，高亮就会跳一下 */
+        var its0 = contentEl.querySelectorAll('.item'), cand = null, bestA0 = 0;
+        var vh0 = window.innerHeight || 800, sy0 = window.scrollY || 0;
+        for (var iy = 0; iy < its0.length; iy++) {
+            var r0 = its0[iy].getBoundingClientRect();
+            var top0 = r0.top + sy0;
+            var vis0 = Math.min(top0 + r0.height, savedY + vh0) - Math.max(top0, savedY);
+            if (vis0 > bestA0) { bestA0 = vis0; cand = its0[iy]; }
+        }
+        if (cand) { navCur = cand.id; navPaint(cand.id); }
+    }
+    var landed = h0 ? locateFromHash('#' + h0) : false;
+    if (landed !== 'item') restoreScroll();
+    /* 兜底：既无题 hash 也无上次滚动位置（首次打开）→ 首帧直接点亮第一题，免得面板空窗到 320ms */
+    if (!navCur) {
+        var first0 = contentEl.querySelector('.item');
+        if (first0) { navCur = first0.id; navPaint(first0.id); }
+    }
+    /* 滚动定位（locate 120ms 校准 / restore 140ms 兜底）都结束后再按最终布局校正一次 */
+    setTimeout(function () { navHold = false; navSpy(); }, 320);
+})();
+</script>
+</body>
+</html>
