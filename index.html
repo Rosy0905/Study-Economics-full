@@ -1740,6 +1740,19 @@ function renderHome() {
       }
 
       toRemove.forEach(k => localStorage.removeItem(k));
+
+      /* 同前缀的「会话级」状态也一起清（滚动位置、搜索词、金框已闪等存在 sessionStorage），
+         否则清完数据再打开，页面还会被旧搜索词 / 旧滚动位置带走 */
+      try {
+        for (let i = sessionStorage.length - 1; i >= 0; i--) {
+          const sk = sessionStorage.key(i);
+          if (!sk) continue;
+          for (const idx of selected) {
+            const prefix = MODULES[idx].storagePrefix;
+            if (prefix && sk.startsWith(prefix)) { sessionStorage.removeItem(sk); break; }
+          }
+        }
+      } catch (e) {}
     } catch (e) {
       console.warn('清除失败', e);
     }

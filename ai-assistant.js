@@ -1577,8 +1577,19 @@ body.shared-ai-view .ai-close{display:none;}
 
   /* ===================== 读取页面上下文 ===================== */
 
+  /* 页面适配器：默认按「卡片列表」页的 .card-item 结构读卡。
+     结构不同的页面（如真题答案册的 .item 题目卡）可注册
+     window.__AI_CARD_ADAPTER__ = { all(), key(el), label(el), read(el, withAnswer), focus() }，
+     这里优先走适配器，未注册的页面行为完全不变 */
+  function adp() {
+    var a = window.__AI_CARD_ADAPTER__;
+    return (a && typeof a === 'object') ? a : null;
+  }
+
   function cardKey(card) {
     if (!card) return '';
+    var a = adp();
+    if (a && a.key) { try { return a.key(card) || ''; } catch (e) {} }
     if (card.dataset && card.dataset.id) return 'id:' + card.dataset.id;
     var labelEl = card.querySelector('.card-header .label');
     var label = labelEl ? labelEl.textContent.replace(/\s+/g, ' ').trim() : '';
@@ -1588,6 +1599,8 @@ body.shared-ai-view .ai-close{display:none;}
   }
 
   function cardLabel(card) {
+    var a = adp();
+    if (a && a.label) { try { var lb = a.label(card); if (lb) return lb; } catch (e) {} }
     var labelEl = card.querySelector('.card-header .label');
     var label = labelEl ? labelEl.textContent.replace(/\s+/g, ' ').trim() : '';
     if (label) return label.slice(0, 80);
@@ -1597,6 +1610,14 @@ body.shared-ai-view .ai-close{display:none;}
   }
 
   function readCard(card, withAnswer) {
+    var a = adp();
+    if (a && a.read) {
+      try {
+        var r = a.read(card, withAnswer);
+        if (r) return { key: r.key || cardKey(card), label: r.label || cardLabel(card),
+                        q: r.q || '', a: r.a || '', n: r.n || '' };
+      } catch (e) {}
+    }
     var qEl = card.querySelector('.q-text');
     var q = (qEl ? qEl.textContent : '').trim();
     var label = cardLabel(card);
@@ -1664,16 +1685,26 @@ body.shared-ai-view .ai-close{display:none;}
     var vh = window.innerHeight, vw = window.innerWidth;
 
     var allCards = [];
+    var _adp = adp();
+    if (_adp && _adp.all) {
+      try {
+        Array.prototype.forEach.call(_adp.all() || [], function (el) {
+          if (el && allCards.indexOf(el) === -1) allCards.push(el);
+        });
+      } catch (e) {}
+    }
     function collect(sel) {
       Array.prototype.forEach.call(document.querySelectorAll(sel), function (el) {
         if (allCards.indexOf(el) === -1) allCards.push(el);
       });
     }
-    collect('.card-item');
     if (!allCards.length) {
-      collect('[class*="card-item"]');
-      collect('.question-card');
-      collect('[data-card]');
+      collect('.card-item');
+      if (!allCards.length) {
+        collect('[class*="card-item"]');
+        collect('.question-card');
+        collect('[data-card]');
+      }
     }
 
     var visible = [];
@@ -1691,7 +1722,11 @@ body.shared-ai-view .ai-close{display:none;}
     visible.sort(function (a, b) { return b.score - a.score; });
 
     var focusEl = null;
-    if (lastFocusedCardKey) {
+    /* 适配器能直接给出「当前卡片」时优先用它（真题答案册：左侧题号面板高亮的那一题） */
+    if (_adp && _adp.focus) {
+      try { var _fe = _adp.focus(); if (_fe) focusEl = _fe; } catch (e) {}
+    }
+    if (!focusEl && lastFocusedCardKey) {
       for (var i = 0; i < visible.length; i++) {
         if (cardKey(visible[i].el) === lastFocusedCardKey) { focusEl = visible[i].el; break; }
       }

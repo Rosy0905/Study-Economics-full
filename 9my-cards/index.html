@@ -231,13 +231,14 @@
         max-width: 1200px; margin: 0 auto;
         display: grid; grid-template-columns: 1fr; gap: 18px;
     }
-    /* 26/09/20 第 13 轮：底部一行用法说明（居中、淡绿小字，常见桌面宽度下只占一行） */
+    /* 26/09/20 第 13 轮：底部一行用法说明（居中、淡绿小字，常见桌面宽度下只占一行）
+       26/10/22：与 1-8 子页页脚统一，改成 12px / #8aaa8a（原先 R 键提示那行的样式） */
     .usage-hint {
         max-width: 1200px; margin: 26px auto 6px auto;
-        text-align: center; font-size: 13px; line-height: 1.5;
-        color: #5c7d5c; letter-spacing: 0.2px;
+        text-align: center; font-size: 12px; line-height: 1.5;
+        color: #8aaa8a; letter-spacing: 0.2px;
     }
-    @media (max-width: 1080px) { .usage-hint { font-size: 12.5px; } }
+    @media (max-width: 1080px) { .usage-hint { font-size: 11.5px; } }
     @media (max-width: 560px) { .usage-hint { font-size: 11.5px; line-height: 1.7; margin-top: 20px; } }
     .chapter-divider {
         display: flex; align-items: center; gap: 10px;
@@ -1132,7 +1133,7 @@
 
     <div class="card-grid" id="cardGrid"></div>
 
-    <p class="usage-hint">点「新建卡片」添加卡片 · 答案支持富文本（BIU / 图片 / 表格 / 公式）· 数据只存在本机浏览器</p>
+    <p class="usage-hint">点击新建卡片即可添加卡片 · 答案支持富文本（BIU / 图片 / 表格 / 公式）</p>
 
     <!-- ================= 新建 / 编辑 弹层 ================= -->
     <div class="modal-overlay" id="editorOverlay">

@@ -663,16 +663,10 @@
             max-width: 1200px;
             margin: 30px auto 10px auto;
             text-align: center;
-            font-size: 13px;
-            color: #5f7f5f;
+            font-size: 12px;
+            color: #8aaa8a;
             border-top: 1px solid #cce0cc;
             padding-top: 18px;
-        }
-        .footer-note kbd {
-            background: #dce8dc;
-            padding: 0 8px;
-            border-radius: 4px;
-            font-size: 12px;
         }
         .toast {
             position: fixed;
@@ -815,6 +809,14 @@
 .filter-bar .btn-clear-filter:active { background: #b8d4b8; transform: scale(0.96); }
 .back-home:active { background: #a8d0a8; transform: translateX(-1px); }
 .card-note-area .img-resize-control .btn-reset-size:active { background: #b2d2b2; transform: scale(0.96); }
+/* 26/10/22 抽查模式（手机）：标题压成一行、隐藏已禁用的筛选栏，让抽查条和卡片一屏可见 */
+@media (max-width: 768px) {
+    body.single-on .app-header { padding: 8px 14px !important; margin-bottom: 10px !important; }
+    body.single-on .app-header h1 { font-size: 17px !important; }
+    body.single-on .app-header .stats { display: none !important; }
+    body.single-on .filter-bar { display: none !important; }
+    body.single-on .single-mode-bar { margin-bottom: 10px !important; }
+}
 </style>
 <!-- 26/10/17：筛选记忆（页面首次 render 前用 FilterMemory.apply() 还原，避免先画全量再变） -->
 <script src="../shared/filter-memory.js"></script>
@@ -865,9 +867,6 @@
 
     <div class="footer-note">
         点击题目区域可展开/收起答案 · 点击 ⭐ 收藏 · 点击 📝 添加笔记 · 点击 ✏️ 编辑题目/答案
-        <span style="display:block;font-size:12px;color:#8aaa8a;margin-top:4px;">
-            按 <kbd>R</kbd> 键快速随机抽查 · 抽查模式中 ◀ ▶ 切换卡片 · 点击笔记图片可调大小
-        </span>
     </div>
 
     <div class="toast" id="toast"></div>
@@ -1737,6 +1736,7 @@
             }
 
             const isSingleMode = singleModeId !== null;
+            document.body.classList.toggle('single-on', isSingleMode);
             let filtered;
 
             if (isSingleMode) {
@@ -2112,7 +2112,12 @@
 
 
             if (isSingleMode) {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                /* 26/10/22：原来固定滚回页面顶部，手机上一屏被标题+筛选栏占满，卡片本身被顶出视野。
+                   改为对齐抽查条（同屏可见 ◀ ▶ 与卡头）；抽查条没显示时退回卡片顶部 */
+                var _anc = (singleModeBar && singleModeBar.classList.contains('show'))
+                    ? singleModeBar : document.querySelector('.card-grid .card-item');
+                var _y = _anc ? (_anc.getBoundingClientRect().top + window.pageYOffset - 12) : 0;
+                window.scrollTo({ top: Math.max(0, _y), behavior: 'auto' });
             }
         }
 

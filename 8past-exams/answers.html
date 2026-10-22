@@ -34,13 +34,77 @@
     }
     .chips { display: flex; gap: 7px; flex-wrap: wrap; flex: 1 1 auto; min-width: 0; }
     .tb-tools { flex: 0 0 auto; margin-left: auto; display: flex; align-items: center; }
+    .search-wrap { position: relative; display: inline-flex; align-items: center; }
     .topbar input {
-        padding: 8px 16px; border-radius: 30px; border: 1px solid #b3d9b3;
+        padding: 8px 34px 8px 16px; border-radius: 30px; border: 1px solid #b3d9b3;
         background: #fafffa; font-size: 13px; color: #1e3a2a; outline: none;
         width: 260px;
     }
     .topbar input::placeholder { color: #86a98c; }
     .topbar input:focus { border-color: #6a9e6a; box-shadow: 0 0 0 3px rgba(80,150,80,.2); }
+    /* 搜索框里的重置按钮：只有输入了内容才出现。
+       图标用 SVG 不用「×」字——字符基线受字体影响，视觉上总偏下，SVG 才能精确居中 */
+    .search-reset {
+        position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
+        width: 19px; height: 19px; padding: 0; border: none; border-radius: 50%;
+        background: #e2f0e2; color: #4d7a58; font-family: inherit;
+        cursor: pointer;
+        display: none; align-items: center; justify-content: center;
+        transition: background .15s, color .15s;
+    }
+    .search-reset svg { width: 9px; height: 9px; display: block; }
+    .search-reset.show { display: inline-flex; }
+    .search-reset:hover { background: #cfe6cf; color: #23603a; }
+    /* ---------- 全站搜索结果 ---------- */
+    .search-head {
+        background: #fff; border-radius: 14px; padding: 14px 18px; margin-bottom: 12px;
+        font-size: 13.5px; color: #4a6a52; box-shadow: 0 2px 10px rgba(60,110,60,.08);
+    }
+    .search-head b { color: #1e4a2a; }
+    /* 搜索范围说明（统计条档位不是「全部」时才出现） */
+    .sc-scope {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin-top: 9px; padding-top: 9px;
+        border-top: 1px dashed rgba(110, 165, 115, 0.35);
+        font-size: 12px; color: #7b9a80;
+    }
+    .sc-scope b { color: #23603a; }
+    .sc-scope a { color: #23603a; font-weight: 600; text-decoration: none; }
+    .sc-scope a:hover { text-decoration: underline; }
+    .chips-cap { align-self: center; font-size: 11.5px; color: #7b9a80; letter-spacing: .2px; }
+    .sr-group {
+        background: #fff; border-radius: 14px; padding: 12px 16px 10px 16px; margin-bottom: 11px;
+        box-shadow: 0 2px 10px rgba(60,110,60,.08);
+    }
+    .sr-paper {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 13px; font-weight: 700; color: #1e4a2a; margin-bottom: 8px;
+    }
+    .sr-paper span { font-weight: 500; font-size: 11.5px; color: #7b9a80; }
+    .sr-item {
+        display: flex; gap: 9px; align-items: baseline;
+        padding: 7px 9px; border-radius: 9px; text-decoration: none;
+        color: #2c4a36; font-size: 13px; line-height: 1.65;
+        transition: background .14s;
+    }
+    .sr-item:hover { background: #f1f9f1; }
+    .sr-no {
+        flex: 0 0 auto; font-size: 11.5px; font-weight: 600; color: #4d7a58;
+        background: #eef7ee; border-radius: 6px; padding: 1px 7px; white-space: nowrap;
+    }
+    .sr-txt { flex: 1 1 auto; min-width: 0; }
+    .sr-txt em { font-style: normal; background: #fff3c4; color: #6b5010; border-radius: 3px; padding: 0 1px; }
+    .sr-tip { color: #8aa992; font-size: 11.5px; }
+    /* 卷内过滤态：顶部一条「回全站结果」，做成吸顶——滚到题目深处也找得到 */
+    .search-back {
+        position: sticky; top: 8px; z-index: 30;
+        background: #fff; border-radius: 12px; padding: 9px 16px; margin-bottom: 11px;
+        font-size: 12.5px; color: #4a6a52; box-shadow: 0 3px 14px rgba(60,110,60,.14);
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .search-back a { color: #23603a; font-weight: 600; text-decoration: none; }
+    .search-back a:hover { text-decoration: underline; }
+    .search-back b { color: #1e4a2a; }
     .chip2 {
         background: #fff; border: 1px solid #e6f0e6; border-radius: 12px;
         padding: 5px 12px; font-size: 12.5px; color: #4a6a52; cursor: pointer;
@@ -178,6 +242,8 @@
         text-indent: 1em;   /* 比正文 2em 少一点，让 ① 第一，看起来归它管 */
     }
     .ans-body p.sub:first-child { margin-top: 0; }
+    /* 【知识梳理】里的分节标题：缩进随正文 2em，不凸出（小0主人定 26/10/22） */
+    .ans-body p.sub.knhead { text-indent: 2em; }
     .ans-body p:last-child { margin-bottom: 0; }
     /* 行首【标签】：单独成行时整行加粗，跟正文时只加粗标签 */
     .ans-body .ah-tag { font-weight: 700; color: #1c4a2c; }
@@ -277,6 +343,7 @@
         top: 50%; transform: translateY(-50%);
         max-height: calc(100vh - 130px); display: flex; flex-direction: column;
     }
+    #navPanel[hidden] { display: none !important; }   /* hidden 属性要压过下面的 display:flex */
     #navPanel .np-card {
         background: #fff; border-radius: 13px; padding: 11px 11px 9px 11px;
         box-shadow: 0 2px 10px rgba(60,110,60,.10); overflow-y: auto; flex: 0 1 auto;
@@ -360,7 +427,10 @@
     <div class="tb-row2">
         <div class="chips" id="chips"></div>
         <div class="tb-tools">
-            <input id="searchInput" type="text" placeholder="搜题干 / 答案关键词…" />
+            <span class="search-wrap">
+                <input id="searchInput" type="text" placeholder="搜全部真题的题干 / 答案…" />
+                <button id="searchReset" class="search-reset" type="button" title="清空搜索" aria-label="清空搜索"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.2 2.2l7.6 7.6M9.8 2.2l-7.6 7.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+            </span>
         </div>
     </div>
 </div>
@@ -385,12 +455,40 @@
     }
 
     var CN = ['一', '二', '三', '四', '五', '六'];
+    /* v31：键名统一到 past_exams_ 前缀——主页「清除数据 · 真题」是按前缀 past_exams_ 清的，
+       旧键（past_answers_last / past_ans_*）清不掉会留下"标记清了、状态还在"的怪现象。这里一次性搬迁 */
+    (function () {
+        var pairs = [['past_answers_last', 'past_exams_last'], ['past_ans_scroll', 'past_exams_scroll'],
+                     ['past_ans_kw', 'past_exams_kw'], ['past_ans_flashed', 'past_exams_flashed']];
+        pairs.forEach(function (pr) {
+            try {
+                var v = localStorage.getItem(pr[0]);
+                if (v !== null) {
+                    if (localStorage.getItem(pr[1]) === null) localStorage.setItem(pr[1], v);
+                    localStorage.removeItem(pr[0]);
+                }
+            } catch (e) {}
+            try {
+                var s2 = sessionStorage.getItem(pr[0]);
+                if (s2 !== null) {
+                    if (sessionStorage.getItem(pr[1]) === null) sessionStorage.setItem(pr[1], s2);
+                    sessionStorage.removeItem(pr[0]);
+                }
+            } catch (e) {}
+        });
+    })();
     var MARKS_KEY = 'past_exams_selftest';
     var MARKS = (function () {
         try { return JSON.parse(localStorage.getItem(MARKS_KEY)) || {}; } catch (e) { return {}; }
     })();
+    var FACET_KEY = 'past_exams_facet';   /* 统计条（chips）的选择：和"上次看的卷"一样跨会话记住 */
     var facet = 'all';
+    try {
+        var facetSaved = localStorage.getItem(FACET_KEY);
+        if (facetSaved && /^(all|weak|ok|meh|no|none)$/.test(facetSaved)) facet = facetSaved;
+    } catch (e) {}
     var keyword = '';
+    var searchView = 'global';   /* 'global' = 全站结果列表；'paper' = 单卷内按词过滤 */
     var currentKey = null;
     var lastSubj = {};   /* 每个学科最后看的卷 */
 
@@ -456,14 +554,21 @@
             gap = false;
         }
         var bc = false;   // 已进入【补充题】：其解答行首的「解：」要保留，样式同标签
+        var kn = false;   // 已进入【知识梳理】：块内（N）不加粗，无序号短行才是分节标题（26/10/22 小0主人定）
         lines.forEach(function (raw) {
             var t = raw.replace(/\s+$/, '');
             if (!t.trim()) { gap = true; return; }
-            var mDa = t.match(/^[答解][:：]\s*/);
+            var mDa = t.match(/^(答|解|证明|证)[:：]\s*/);
             if (mDa) {
-                if (bc && mDa[0].charAt(0) === '解') {
-                    // 补充题解答开头的「解：」不剥除，显示为【解】标签（小0主人定）
-                    emit('', '<span class="ah-tag">【解】</span>' + withNum(t.slice(mDa[0].length)), true);
+                var kW = mDa[1];
+                if (kW === '证明' || kW === '证') {
+                    // 证明题开头的「证明：／证：」→【证】标签，样式与【解】完全相同（小0主人定）
+                    emit('', '<span class="ah-tag">【证】</span>' + withNum(t.slice(mDa[0].length)), true);
+                    return;
+                }
+                if (bc && (kW === '解' || kW === '答')) {
+                    // 补充题解答开头：原书是「答：」显示【答】、「解：」显示【解】，各按原书体例（26/10/22 小0主人定）
+                    emit('', '<span class="ah-tag">【' + kW + '】</span>' + withNum(t.slice(mDa[0].length)), true);
                     return;
                 }
                 t = t.slice(mDa[0].length);   // 「答：」「解：」不进正文，让小问标题顶到位
@@ -472,18 +577,37 @@
             // 图示占位
             if (/^［\s*此处有图示/.test(t)) { emit('fig', esc(t), true); return; }
             // 提示/校注：原书提示放末尾；校注是订正说明
-            var mNote = t.match(/^【((?:[^】]{0,10})?(?:提示|校注|注))】([\s\S]*)$/);
-            if (mNote) { emit('ans-tip', '<b>【' + esc(mNote[1]) + '】</b>' + esc(mNote[2]), true); return; }
+            // 多条提示写【提示1】【提示2】，序号紧跟、中间不留空格；数据里手滑写成「提示 1」也归一成「提示1」
+            var mNote = t.match(/^【((?:[^】]{0,12})?(?:提示|校注|注)\s*\d{0,2})】([\s\S]*)$/);
+            if (mNote) { emit('ans-tip', '<b>【' + esc(mNote[1].replace(/\s+/g, '')) + '】</b>' + esc(mNote[2]), true); return; }
             var mAh = t.match(/^\s*【([^【]+?)】\s*$/);
-            if (mAh) { if (mAh[1] === '补充题') bc = true; emit('ah', esc(mAh[1])); return; }
+            if (mAh) {
+                var hc = mAh[1].replace(/\s+/g, '');
+                if (hc === '补充题') { bc = true; kn = false; }
+                if (hc === '知识梳理') { kn = true; bc = false; }
+                emit('ah', esc(mAh[1]));
+                return;
+            }
             // 行首【标签】后面还跟着正文
             var mTag = t.match(/^\s*(【[^】]{1,20}】)\s*(\S.*)$/);
-            if (mTag) { if (/补充题/.test(mTag[1])) bc = true; emit('', '<span class="ah-tag">' + esc(mTag[1]) + '</span>' + esc(mTag[2])); return; }
+            if (mTag) {
+                if (/补充题/.test(mTag[1])) { bc = true; kn = false; }
+                if (/知识梳理/.test(mTag[1])) { kn = true; bc = false; }
+                emit('', '<span class="ah-tag">' + esc(mTag[1]) + '</span>' + esc(mTag[2]));
+                return;
+            }
             /* 版式定稿（v12）：不再自动拆行——一行数据渲染一段，与原书连排一致；
                绿底只给整行纯公式的行，引导句断行由数据源手动控制 */
             if (isFormula(t)) { emit('fm', fmHtml(t)); return; }
-            // 单独成行的短标题
-            if (isSubHead(t) && !bc) { emit('sub', withNum(t), true); return; }   // 补充题内不加粗小标题（小0主人定）
+            // 单独成行的短标题：正文区按（N）判；【补充题】【知识梳理】块内规则不同
+            if (isSubHead(t)) {
+                if (!bc && !kn) { emit('sub', withNum(t), true); return; }   // 补充题内不加粗（小0主人定）
+            } else if (kn && !/[。！？；：，、]/.test(t) && t.replace(/\s+/g, '').length <= 16) {
+                // 【知识梳理】里的无序号短行（如「凯恩斯的消费函数」）才是分节标题，
+                // 块内的（1）（2）回归正文——原书就是这样，避免标题层数倒挂；
+                // knhead：缩进与正文齐平，不凸出（26/10/22 小0主人定）
+                emit('sub knhead', withNum(t), true); return;
+            }
             emit(RE_DI.test(t.trim()) ? 'lv3' : '', withNum(t), RE_NUM.test(t.trim()));
         });
         return out;
@@ -549,10 +673,31 @@
         return m === facet;
     }
 
+    function facetLabel(f) {
+        var map = { all: '全部', weak: '只看不会的', ok: '会了', meh: '模糊', no: '忘了', none: '未测' };
+        return map[f] || '';
+    }
+    function facetCount(p) {
+        return allItems(p).filter(function (it) { return matchFacet(it.id); }).length;
+    }
+    /* 全站口径的档位统计：搜索结果是跨卷的，chips 上的数字得是全站池子，
+       否则会出现「只看不会的 0，却搜出 11 条」这种自相矛盾的画面 */
+    function tallyAll() {
+        var t = { all: 0, ok: 0, meh: 0, no: 0, none: 0, weak: 0 };
+        BOOK.papers.forEach(function (p) {
+            var x = tally(p);
+            for (var k in t) t[k] += x[k];
+        });
+        return t;
+    }
+    /* 当前是不是「全站结果列表」这个视图（决定 chips 用全站还是本卷口径、点 chip 是重搜还是回卷） */
+    function inSearchList() { return !!keyword.trim() && searchView === 'global'; }
+
     function renderChips() {
         var paper = findPaper(currentKey);
         if (!paper) return;
-        var t = tally(paper);
+        var isGlobal = inSearchList();
+        var t = isGlobal ? tallyAll() : tally(paper);
         var defs = [
             ['all', '全部', t.all, ''],
             ['weak', '只看不会的', t.weak, 'c-weak'],
@@ -561,17 +706,21 @@
             ['no', '忘了', t.no, 'c-no'],
             ['none', '未测', t.none, 'c-none']
         ];
-        chipsEl.innerHTML = defs.map(function (d) {
-            return '<div class="chip2 ' + d[3] + (facet === d[0] ? ' sel' : '') +
-                   '" data-f="' + d[0] + '">' + d[1] + '<b>' + d[2] + '</b></div>';
-        }).join('');
+        chipsEl.innerHTML = (isGlobal ? '<span class="chips-cap">全站</span>' : '') +
+            defs.map(function (d) {
+                return '<div class="chip2 ' + d[3] + (facet === d[0] ? ' sel' : '') +
+                       '" data-f="' + d[0] + '">' + d[1] + '<b>' + d[2] + '</b></div>';
+            }).join('');
     }
 
     chipsEl.addEventListener('click', function (e) {
         var c = e.target.closest ? e.target.closest('.chip2') : null;
         if (!c) return;
         facet = c.getAttribute('data-f');
-        renderPaper();
+        try { localStorage.setItem(FACET_KEY, facet); } catch (err) {}   /* 记住这次选择，刷新不丢 */
+        /* 搜索态：就地按新档位重搜，不跳回单卷视图——
+           和 1-7 子页一致（那里搜索与自测档位是叠在同一批卡上的，不会互相踢掉） */
+        if (inSearchList()) renderSearch(); else renderPaper();
     });
 
     function renderYearbar() {
@@ -641,6 +790,139 @@
         }
     }
 
+    /* ---------- 全站搜索：一次搜遍所有年份的卷 ---------- */
+    function searchAll(kw) {
+        var low = kw.toLowerCase(), groups = [], total = 0;
+        BOOK.papers.forEach(function (p) {
+            var hits = [];
+            p.parts.forEach(function (part) {
+                part.items.forEach(function (it) {
+                    if (!matchFacet(it.id)) return;   /* 与统计条叠加：档位不是「全部」就只在档位池里搜（子页口径） */
+                    var hay = (it.stem + '\n' + (it.ans || '')).toLowerCase();
+                    if (hay.indexOf(low) === -1) return;
+                    hits.push({ type: part.type, it: it });
+                });
+            });
+            if (hits.length) { groups.push({ paper: p, hits: hits }); total += hits.length; }
+        });
+        return { groups: groups, total: total };
+    }
+    function countKwHits(p, kw) {
+        var low = kw.toLowerCase(), n = 0;
+        p.parts.forEach(function (part) {
+            part.items.forEach(function (it) {
+                if (!matchFacet(it.id)) return;       /* 副标题「命中 N 题」要和列表实际显示的题数同口径 */
+                if ((it.stem + '\n' + (it.ans || '')).toLowerCase().indexOf(low) > -1) n++;
+            });
+        });
+        return n;
+    }
+    /* 命中片段：以命中词为中心取「命中句 + 前一句」，保证片段里一定看得到关键词
+       （旧版只截题干前 96 字，像搜 AD 这种命中在中后段的，片段里根本找不到 AD） */
+    function sentAround(s, i, len) {
+        var B = /[。！？；\n]/;
+        var curS = 0, k;
+        for (k = i - 1; k >= 0; k--) { if (B.test(s.charAt(k))) { curS = k + 1; break; } }
+        var curE = s.length;
+        for (k = i + len; k < s.length; k++) { if (B.test(s.charAt(k))) { curE = k + 1; break; } }
+        var from = curS;
+        /* 命中句太短时，前面再带一句（前一句不超过 70 字才带，免得整段搬过来） */
+        if (curS > 0 && curS < 46) {
+            var prev = 0;
+            for (k = curS - 2; k >= 0; k--) { if (B.test(s.charAt(k))) { prev = k + 1; break; } }
+            if (curS - prev <= 70) from = prev;
+        }
+        var to = curE;
+        if (to - from > 160) to = Math.min(curE, from + 160);   /* 单句超长时仍要保证命中词在内 */
+        return (from > 0 ? '…' : '') + s.slice(from, to) + (to < s.length ? '…' : '');
+    }
+    function kwSnippet(it, low) {
+        var stem = cleanStem(it.stem).replace(/\s+/g, ' ').trim();
+        var i = stem.toLowerCase().indexOf(low);
+        if (i > -1) return { text: sentAround(stem, i, low.length), where: 'stem' };
+        var ans = String(it.ans || '').replace(/\s+/g, ' ').trim();
+        var j = ans.toLowerCase().indexOf(low);
+        if (j > -1) return { text: sentAround(ans, j, low.length), where: 'ans' };
+        return { text: stem.slice(0, 96), where: 'stem' };
+    }
+    function hlEsc(text, low) {
+        var s = esc(text);
+        if (!low) return s;
+        try {
+            var re = new RegExp('(' + low.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+            return s.replace(re, '<em>$1</em>');
+        } catch (e) { return s; }
+    }
+
+    function renderSearch() {
+        var kw = keyword.trim();
+        var res = searchAll(kw);
+        var scope = facet !== 'all';
+        var subEl = document.getElementById('tbSub');
+        if (subEl) subEl.textContent = '全站搜索 · 命中 ' + res.total + ' 题' +
+            (scope ? '（' + facetLabel(facet) + '）' : '');
+
+        var html = '<div class="search-head">关键词 <b>「' + esc(kw) + '」</b>' +
+            (res.total
+                ? '　全站命中 <b>' + res.total + '</b> 题，分布在 <b>' + res.groups.length + '</b> 套卷'
+                : '') +
+            /* 档位不是「全部」时把搜索范围亮出来：统计条会持久记忆，
+               不写清楚的话很容易以为「怎么才搜到这么点」是搜索坏了 */
+            (scope
+                ? '<div class="sc-scope"><span>范围：<b>' + esc(facetLabel(facet)) + '</b>（统计条档位，全站 ' +
+                  tallyAll()[facet] + ' 题）</span><a href="#" id="scopeAll">不限档位 · 重搜全站</a></div>'
+                : '') +
+            '</div>';
+        if (!res.total) {
+            html += '<div class="empty">没搜到「' + esc(kw) + '」' +
+                    '<br><span>' + (scope
+                        ? '当前只在「' + esc(facetLabel(facet)) + '」范围内搜索，试试上面那个「不限档位 · 重搜全站」'
+                        : '换个关键词试试，比如「古诺」「外部性」「索洛」「价格歧视」') + '</span></div>';
+        }
+        var low = kw.toLowerCase();
+        res.groups.forEach(function (g) {
+            html += '<section class="sr-group"><div class="sr-paper">' +
+                esc(g.paper.title.replace(/\s+/g, ' ')) +
+                '<span>' + esc(g.paper.subject) + ' · ' + g.hits.length + ' 题</span></div>';
+            g.hits.forEach(function (h) {
+                var sn = kwSnippet(h.it, low);
+                html += '<a class="sr-item" href="#' + esc(h.it.id) + '" data-key="' + esc(g.paper.key) + '">' +
+                    '<span class="sr-no">' + esc(h.type) + ' ' + esc(h.it.qid) + '</span>' +
+                    '<span class="sr-txt">' + hlEsc(sn.text, low) +
+                    (sn.where === 'ans' ? '<span class="sr-tip">　· 命中在答案里</span>' : '') +
+                    '</span></a>';
+            });
+            html += '</section>';
+        });
+        contentEl.innerHTML = html;
+
+        var panel = document.getElementById('navPanel');
+        if (panel) panel.hidden = true;      /* 结果是跨卷的，单卷题号面板不适用 */
+        /* 面板不在时也要重算正文宽度：刷新后是直接进结果页、没走 renderPaper→buildNavPanel，
+           少了这次 layoutNav，正文就退回 CSS 的 1000px，比搜索时宽一截 */
+        layoutNav();
+
+        /* 结果页不属于任何一卷：把地址栏的卷/题 hash 去掉，
+           否则刷新时会被当成「那一卷的过滤视图」，回不到结果列表 */
+        try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+
+        renderYearbar();
+        renderChips();       /* 搜索态也渲染，否则刷新后顶栏第二行只剩搜索框、比搜索时窄一截 */
+        updateSearchUI();
+        window.scrollTo(0, 0);
+    }
+
+    function updateSearchUI() {
+        var btn = document.getElementById('searchReset');
+        if (btn) btn.classList.toggle('show', !!searchInput.value);
+    }
+    function saveKw() {
+        try {
+            if (keyword.trim()) sessionStorage.setItem(KW_KEY, keyword.trim());
+            else sessionStorage.removeItem(KW_KEY);
+        } catch (e) {}
+    }
+
     function renderPaper() {
         var paper = findPaper(currentKey) || BOOK.papers[0];
         if (!paper) return;
@@ -650,7 +932,13 @@
         var types = paper.parts.map(function (p) { return p.type; });
 
         var subEl = document.getElementById('tbSub');
-        if (subEl) subEl.textContent = paper.title.replace(/\s+/g, ' ') + ' · ' + paperCount(paper) + ' 题 · ' + types.join(' / ');
+        var kwHits = kw ? countKwHits(paper, kw) : 0;
+        /* 「共 N 题」在搜索态用档位池大小：档位不是「全部」时，列表里最多只有那么多题 */
+        var pool0 = facet !== 'all' ? facetCount(paper) : paperCount(paper);
+        if (subEl) subEl.textContent = paper.title.replace(/\s+/g, ' ') + ' · ' +
+            (kw ? ('命中 ' + kwHits + ' 题 / 共 ' + pool0 + ' 题') : (pool0 + ' 题')) +
+            (facet !== 'all' ? '（' + facetLabel(facet) + '）' : '') +
+            ' · ' + types.join(' / ');
 
         var total0 = paperCount(paper);
         var filled0 = countFilled(paper);
@@ -661,7 +949,14 @@
                   (filled0 ? '，其余正在整理，先看题干复习。' : '，题干已就绪，答案稍后补上。') + '</div>';
         }
 
-        var html = rec +
+        var html = '';
+        if (kw) {
+            html += '<div class="search-back">关键词「' + esc(keyword.trim()) + '」' +
+                    (facet !== 'all' ? '（' + esc(facetLabel(facet)) + '）' : '') +
+                    ' · 本卷命中 <b>' + kwHits + '</b> 题　全站 <b>' + searchAll(kw).total + '</b> 题' +
+                    '<a href="#" id="searchBack">← 回到全站搜索结果</a></div>';
+        }
+        html += rec +
             '<div class="paper-head">' +
             '<div class="crumb">' + esc(paper.meta) + '</div>' +
             '<h2>' + esc(paper.title) + '</h2>' +
@@ -720,6 +1015,7 @@
         renderYearbar();
         renderChips();
         updateUrl();
+        updateSearchUI();
     }
 
     /* ---------- 左侧题号面板：构建 ---------- */
@@ -795,16 +1091,18 @@
 
     function go(key) {
         currentKey = key;
+        if (keyword.trim()) searchView = 'paper';   /* 带着关键词切年份：看该卷里命中的题 */
         var gp = findPaper(key);
         if (gp) lastSubj[gp.subject] = key;
         window.scrollTo(0, 0);
         try { sessionStorage.setItem(SCROLL_KEY, '0'); } catch (e) {}
         renderPaper();
-        try { localStorage.setItem('past_answers_last', key); } catch (e) {}
+        try { localStorage.setItem('past_exams_last', key); } catch (e) {}
     }
 
-    var FLASH_KEY = 'past_ans_flashed';
-    var SCROLL_KEY = 'past_ans_scroll';
+    var FLASH_KEY = 'past_exams_flashed';
+    var SCROLL_KEY = 'past_exams_scroll';
+    var KW_KEY = 'past_exams_kw';          /* 搜索词记忆：刷新还在，只有清空搜索才抹掉 */
     var scrollTimer = null;
 
     function saveScroll() {
@@ -847,11 +1145,17 @@
             }
             var el = document.getElementById(h);
             if (el) {
+                /* 搜索态顶部有吸顶的「回全站结果」条，定位时把这段高度让出来，别压住题干第一行 */
+                var off = document.querySelector('.search-back') ? 48 : 0;
                 el.scrollIntoView({ block: 'start', behavior: 'auto' });
+                if (off) window.scrollBy(0, -off);
                 // 首次渲染时文档高度可能还没撑开，稍后再校一次
                 setTimeout(function () {
                     var e2 = document.getElementById(h);
-                    if (e2) e2.scrollIntoView({ block: 'start', behavior: 'auto' });
+                    if (e2) {
+                        e2.scrollIntoView({ block: 'start', behavior: 'auto' });
+                        if (off) window.scrollBy(0, -off);
+                    }
                 }, 120);
                 // 同一题只高亮一次：刷新页面不再闪金框
                 var seen = false;
@@ -874,11 +1178,66 @@
 
     var timer = null;
     searchInput.addEventListener('input', function () {
+        updateSearchUI();
         clearTimeout(timer);
         timer = setTimeout(function () {
             keyword = searchInput.value;
-            renderPaper();
+            searchView = 'global';          /* 改了关键词就回到全站结果列表 */
+            saveKw();
+            if (keyword.trim()) renderSearch(); else renderPaper();
         }, 220);
+    });
+
+    /* 搜索框右侧的重置按钮：清空关键词，回到当前卷完整视图 */
+    document.getElementById('searchReset').addEventListener('click', function () {
+        clearTimeout(timer);
+        searchInput.value = '';
+        keyword = '';
+        searchView = 'global';
+        saveKw();
+        updateSearchUI();
+        /* 取消搜索＝回到「正常浏览整卷」的状态：把地址栏的题 hash 去掉，
+           否则刷新还会被 bring 回跳转的那一道题，而不是记住当前浏览位置 */
+        try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+        renderPaper();
+        searchInput.focus();
+    });
+
+    contentEl.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+
+        var back = t.closest('#searchBack');
+        if (back) {
+            e.preventDefault();
+            searchView = 'global';
+            renderSearch();
+            return;
+        }
+
+        /* 「不限档位 · 重搜全站」：把统计条拨回「全部」再重搜（等于临时解除范围限制） */
+        var scopeAll = t.closest('#scopeAll');
+        if (scopeAll) {
+            e.preventDefault();
+            facet = 'all';
+            try { localStorage.setItem(FACET_KEY, facet); } catch (er) {}
+            renderSearch();
+            return;
+        }
+
+        var it = t.closest('.sr-item');
+        if (it) {
+            /* 结果页没有单卷 DOM，先渲染该卷的命中视图再定位，否则找不到 .item */
+            e.preventDefault();
+            var key = it.getAttribute('data-key');
+            var id = (it.getAttribute('href') || '').slice(1);
+            searchView = 'paper';
+            currentKey = key;
+            try { localStorage.setItem('past_exams_last', key); } catch (er) {}
+            renderPaper();
+            try { history.replaceState(null, '', '#' + id); } catch (er) { location.hash = id; }
+            locateFromHash(id);
+        }
     });
 
     window.addEventListener('hashchange', function () { locateFromHash(); });
@@ -991,40 +1350,103 @@
         else if (findPaper(h0d)) startKey = h0d;
     }
     if (!startKey) {
-        try { startKey = localStorage.getItem('past_answers_last'); } catch (e) {}
+        try { startKey = localStorage.getItem('past_exams_last'); } catch (e) {}
     }
     if (!findPaper(startKey)) startKey = BOOK.papers[0].key;
     currentKey = startKey;
-    /* 已知落点（题 hash，或 sessionStorage 里的上次滚动位置）→ 面板首帧即点亮当前题 */
-    if (h0d && findItem(h0d)) pendingNavId = h0d;
+    /* 恢复上次的搜索：sessionStorage 存，刷新还在、关标签页即清；只有清空搜索才算取消 */
+    var kwSaved = '';
+    try { kwSaved = sessionStorage.getItem(KW_KEY) || ''; } catch (e) {}
+    if (kwSaved) {
+        keyword = kwSaved;
+        searchInput.value = kwSaved;
+        updateSearchUI();
+    }
+    /* 「已知落点」只认题 hash：只有真正指向某道题的 #A2023-C4 才算用户要求落在这一题。
+       卷级 hash（#A2026）是页面自己 updateUrl() 写回地址栏的，刷新时必然跟着回来；
+       若把它也算作落点，正在搜索的用户一刷新就会掉进「该卷的命中视图」，看不到结果列表。 */
+    var hItem = (h0d && findItem(h0d)) ? h0d : '';
+    if (hItem) pendingNavId = hItem;
     var savedY = 0;
     if (!pendingNavId) {
         try { savedY = parseInt(sessionStorage.getItem(SCROLL_KEY) || '0', 10) || 0; } catch (e0) {}
     }
-    renderPaper();
-    if (!pendingNavId && savedY > 0) {
-        /* 从保存的滚动位置推算「在读」题——口径与 navSpy 完全一致（可见面积最大），
-           否则首帧按「顶部压着的题」点亮、320ms 校准时再改成「面积最大的题」，高亮就会跳一下 */
-        var its0 = contentEl.querySelectorAll('.item'), cand = null, bestA0 = 0;
-        var vh0 = window.innerHeight || 800, sy0 = window.scrollY || 0;
-        for (var iy = 0; iy < its0.length; iy++) {
-            var r0 = its0[iy].getBoundingClientRect();
-            var top0 = r0.top + sy0;
-            var vis0 = Math.min(top0 + r0.height, savedY + vh0) - Math.max(top0, savedY);
-            if (vis0 > bestA0) { bestA0 = vis0; cand = its0[iy]; }
+    if (kwSaved && !hItem) {
+        /* 有搜索词、地址栏又没有指定落点 → 直接回到全站结果列表 */
+        searchView = 'global';
+        renderSearch();
+        navHold = false;
+    } else {
+        searchView = kwSaved ? 'paper' : 'global';
+        renderPaper();
+        if (!pendingNavId && savedY > 0) {
+            /* 从保存的滚动位置推算「在读」题——口径与 navSpy 完全一致（可见面积最大），
+               否则首帧按「顶部压着的题」点亮、320ms 校准时再改成「面积最大的题」，高亮就会跳一下 */
+            var its0 = contentEl.querySelectorAll('.item'), cand = null, bestA0 = 0;
+            var vh0 = window.innerHeight || 800, sy0 = window.scrollY || 0;
+            for (var iy = 0; iy < its0.length; iy++) {
+                var r0 = its0[iy].getBoundingClientRect();
+                var top0 = r0.top + sy0;
+                var vis0 = Math.min(top0 + r0.height, savedY + vh0) - Math.max(top0, savedY);
+                if (vis0 > bestA0) { bestA0 = vis0; cand = its0[iy]; }
+            }
+            if (cand) { navCur = cand.id; navPaint(cand.id); }
         }
-        if (cand) { navCur = cand.id; navPaint(cand.id); }
-    }
-    var landed = h0 ? locateFromHash('#' + h0) : false;
-    if (landed !== 'item') restoreScroll();
-    /* 兜底：既无题 hash 也无上次滚动位置（首次打开）→ 首帧直接点亮第一题，免得面板空窗到 320ms */
-    if (!navCur) {
-        var first0 = contentEl.querySelector('.item');
-        if (first0) { navCur = first0.id; navPaint(first0.id); }
+        var landed = h0 ? locateFromHash('#' + h0) : false;
+        if (landed !== 'item') restoreScroll();
+        /* 兜底：既无题 hash 也无上次滚动位置（首次打开）→ 首帧直接点亮第一题，免得面板空窗到 320ms */
+        if (!navCur) {
+            var first0 = contentEl.querySelector('.item');
+            if (first0) { navCur = first0.id; navPaint(first0.id); }
+        }
     }
     /* 滚动定位（locate 120ms 校准 / restore 140ms 兜底）都结束后再按最终布局校正一次 */
     setTimeout(function () { navHold = false; navSpy(); }, 320);
+
+    /* ---------- 给页面上那个 AI 助手看的「当前卡片」 ----------
+       答案册的卡片是 .item 结构（不是卡片列表页的 .card-item），
+       这里注册适配器告诉它怎么找卡、怎么读卡；「当前卡片」＝左侧题号面板高亮的那一题 */
+    function aiLabelOf(el) {
+        if (!el || !el.id) return '';
+        var hit = findItem(el.id), type = '';
+        if (hit) {
+            hit.paper.parts.forEach(function (pt) {
+                pt.items.forEach(function (it) { if (it.id === el.id) type = pt.type; });
+            });
+        }
+        var noEl = el.querySelector('.q-head .no');
+        var no = noEl ? noEl.textContent.replace(/\s+/g, ' ').trim() : '';
+        var title = hit ? hit.paper.title.replace(/\s+/g, ' ') : '';
+        return (title ? title + ' · ' : '') + (type ? type + ' ' : '') + '第 ' + no + ' 题';
+    }
+    window.__AI_CARD_ADAPTER__ = {
+        all: function () { return contentEl.querySelectorAll('.item'); },
+        key: function (el) { return (el && el.id) ? 'id:' + el.id : ''; },
+        label: aiLabelOf,
+        read: function (el, withAnswer) {
+            if (!el || !el.id) return null;
+            var stemEl = el.querySelector('.q-head .stem');
+            var ansEl = el.querySelector('.ans-body');
+            return {
+                key: 'id:' + el.id,
+                label: aiLabelOf(el),
+                q: stemEl ? stemEl.textContent.replace(/\n{3,}/g, '\n\n').trim() : '',
+                a: (withAnswer && ansEl) ? ansEl.textContent.replace(/\n{3,}/g, '\n\n').trim() : '',
+                n: ''
+            };
+        },
+        focus: function () {
+            if (!navCur) return null;                 /* 左侧面板还没点亮时退回「可见面积最大」 */
+            var el = document.getElementById(navCur);
+            if (!el || el.className.indexOf('item') === -1) return null;
+            var r = el.getBoundingClientRect();
+            var vh = window.innerHeight || 800;
+            if (r.bottom <= 0 || r.top >= vh) return null;   /* 不在视口里就别硬塞给 AI */
+            return el;
+        }
+    };
 })();
 </script>
+<script src="../ai-assistant.js"></script>
 </body>
 </html>
