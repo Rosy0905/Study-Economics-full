@@ -999,6 +999,11 @@ body.shared-ai-view .ai-close{display:none;}
     /* 分享视图为纯只读：隐藏头部全部按钮（清空/设置/分享/关闭）与拖拽手柄 */
     var headR = panel.querySelector('.ai-head-r');
     if (headR) headR.style.display = on ? 'none' : '';
+    /* 26/10/23：头部左侧的「读卡」开关也隐藏——分享视图没有「当前卡片」可读，
+       留着个开关纯属误导（她反馈「分享链接里读卡按钮在顶部显示」）。
+       注意只动 display：syncReadCardUI 只管 class/title，两者不打架 */
+    var rc = $('aiReadCard');
+    if (rc) rc.style.display = on ? 'none' : '';
     var resize = panel.querySelector('.ai-resize');
     if (resize) resize.style.display = on ? 'none' : '';
     var title = $('aiHeadTitle');

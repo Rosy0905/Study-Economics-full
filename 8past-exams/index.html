@@ -203,7 +203,23 @@
         padding: 6px 22px 16px 22px; font-size: 15px; line-height: 1.75;
         color: #1c3322; cursor: pointer; user-select: none; position: relative;
     }
-    .card-question .q-text { display: inline; white-space: pre-wrap; word-break: break-word; }
+    .card-question .q-text { display: block; white-space: pre-wrap; word-break: break-word; }
+    /* 题干里的手工表格（26/10/23 晚小0主人定）：白底、边框用题干正文字色 #1c3322；居中、窄屏横向滑动。
+       注：米白 #faf7f0 试过，白卡片旁显黄，改纯白（26/10/23 晚小0主人：「黄了」） */
+    .card-question .tb-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: .5em 0 .6em 0; padding-bottom: 2px; cursor: auto; }
+    .card-question .tb-wrap::-webkit-scrollbar { height: 5px; }
+    .card-question .tb-wrap::-webkit-scrollbar-thumb { background: #d6d6d6; border-radius: 3px; }
+    .card-question table.ah-tb {
+        border-collapse: collapse; font-size: 13px; line-height: 1.6;
+        color: #1c3322; background: #ffffff; border: 1px solid #1c3322; border-radius: 7px;
+        margin: 0 auto; max-width: none;
+    }
+    .card-question table.ah-tb th, .card-question table.ah-tb td {
+        border: 1px solid #1c3322; padding: 4px 11px; text-align: center;
+        white-space: nowrap; font-weight: 400;
+    }
+    .card-question table.ah-tb th { background: #ffffff; font-weight: 600; color: #1c3322; }
+    .card-question table.ah-tb td.rh { background: #ffffff; color: #1c3322; font-weight: 500; }
     .card-question .toggle-hint {
         font-size: 13px; color: #5f8a5f; margin-left: 10px; font-weight: 400;
         opacity: 0.7; white-space: nowrap;
@@ -2127,7 +2143,7 @@ R²=0.17，SE=2.29，DW=1.54
   question:`简要解释短期菲利普斯曲线与长期菲利普斯曲线的区别。（6分）` },
 { id:'F2019-S7', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'7',
   question:`如果没有工资刚性的假设，凯恩斯扩张总需求的政策效应将如何？（6分）` },
-{ id:'F2019-J1', subject:'金融学', paper:'2019年（金融）', type:'计量', qid:'8',
+{ id:'F2019-J1', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'8',
   question:`恩格尔曲线表明了消费者对某一商品的消费支出占总收入的比重。令 Y 表示某一商品的消费支出，X 表示消费者收入，构建如下形式的模型：
 (a) Y_i=β₀+β₁X_i+ε_i
 (b) Y_i=β₀+β₁(1/X_i)+ε_i
@@ -2135,16 +2151,17 @@ R²=0.17，SE=2.29，DW=1.54
 (d) lnY_i=β₀+β₁(1/X_i)+ε_i
 (e) Y_i=β₀+β₁lnX_i+ε_i
 (f) lnY_i=β₀-β₁(1/X_i)+ε_i
-试回答：（1）给定样本的情形下，上述各模型的判定系数 R² 可以直接比较吗？如果不能，哪些能直接比较？（2分）
+试回答：
+（1）给定样本的情形下，上述各模型的判定系数 R² 可以直接比较吗？如果不能，哪些能直接比较？（2分）
 （2）写出上述各模型中商品的消费支出对收入的弹性系数的表达式。（2分）
 （3）如果 β₁>0，解释上述各收入弹性的意义。（2分）` },
-{ id:'F2019-J2', subject:'金融学', paper:'2019年（金融）', type:'计量', qid:'9',
+{ id:'F2019-J2', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'9',
   question:`已知“真实”模型的形式为：Y_i=β₀+β₁X_{1i}+ε_i（模型1）
 然而在构建模型时却引入了一个多余的“无关”解释变量 X₂，即：Y_i=β₀+β₁X_{1i}+β₂X_{2i}+υ_i（模型2）
 这里的“无关”是指解释变量 X₂ 的真实系数 β₂ 为0，ε_i 和 υ_i 为随机误差项，均满足经典线性回归模型的假定条件，若给定相同样本估计上述两个模型，试回答：
 （1）模型2的判定系数 R² 是否会大于模型1？并说明理由。
 （2）如果采用OLS估计模型2得到 β₁ 的估计量 β̂₁，那么无关解释变量 X₂ 的引入会对 β̂₁ 的方差估计有影响吗？并说明理由。（6分）` },
-{ id:'F2019-J3', subject:'金融学', paper:'2019年（金融）', type:'计量', qid:'10',
+{ id:'F2019-J3', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'10',
   question:`构建如下形式的联立方程模型：
 Y_{1t}=α₁+α₂Y_{2t}+α₃X_t+u_{1t}
 Y_{2t}=β₁+β₂Y_{1t}+u_{2t}
@@ -2155,13 +2172,13 @@ Y_{2t}=4+12X_t
 （1）依据简化模型的估计结果，可以估计哪些结构系数？并说明依据。（2分）
 （2）若获得先验信息 α₂=0，那么可以估计哪些结构系数？（2分）
 （3）若获得先验信息 α₁=0，那么可以估计哪些结构系数？（2分）` },
-{ id:'F2019-J4', subject:'金融学', paper:'2019年（金融）', type:'计量', qid:'11',
+{ id:'F2019-J4', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'11',
   question:`定义如下形式的时间序列：
 （a）X_t = θ₀ + t·ξ_t
 （b）Y_t = X_t − X_{t−1}
 （c）X_t = ξ_t − θ₁(ξ_{t−1})²
 其中 θ₀ 和 θ₁ 为非零常数；ξ_t 为相互独立同分布的白噪声过程。试判断上述三种设定下的时间序列是否平稳？并说明理由。（6分）` },
-{ id:'F2019-J5', subject:'金融学', paper:'2019年（金融）', type:'计量', qid:'12',
+{ id:'F2019-J5', subject:'金融学', paper:'2019年（金融）', type:'简答', qid:'12',
   question:`假设变量 Y_t 和 X_t 均为单位根过程：Y_t~I(1)、X_t~I(1)，并且两者存在协整关系，根据如下形式的动态分布滞后模型：Y_t=α₀+α₁Y_{t-1}+α₂Y_{t-2}+β₀X_t+β₁X_{t-1}+β₂X_{t-2}+u_t，其中 u_t 服从正态分布且相互独立，即 u_t~IN(0,σ²)。试推导其相应的误差修正模型表达式，并描述变量间的长期关系和短期关系。（6分）` },
 { id:'F2019-C1', subject:'金融学', paper:'2019年（金融）', type:'计算', qid:'1',
   question:`假定自发消费为100，边际消费倾向是0.8，投资是50，政府购买为200，政府转移支付是62.5；税率是0.25，（单位：亿美元）求：
@@ -2201,15 +2218,15 @@ A违约　800,-200　200,200
   question:`假定中央银行对货币增长有完全的控制能力，而公众的预期也完全理性，根据纳什均衡，如何运用货币政策来调整通货紧缩的倾向。（6分）` },
 { id:'F2018-S7', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'7',
   question:`经济发展的周期波动受很多因素的影响，简述凯恩斯的经济周期理论，政府支出会对经济周期有怎样的影响？（6分）` },
-{ id:'F2018-J1', subject:'金融学', paper:'2018年（金融）', type:'计量', qid:'8',
+{ id:'F2018-J1', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'8',
   question:`对于一元线性回归模型 Y_i=β₀+β₁X_i+u_i，假设 X 为随机变量且与扰动项 u 高度相关。假定 u 满足最小二乘法的其他假定条件：E(u_i)=0；Var(u_i)=σ_u²；Cov(u_i,u_j)=0，i≠j，i,j=1,2,3,…,n。请求解 β₀ 和 β₁ 的工具变量估计值表达式。（6分）` },
-{ id:'F2018-J2', subject:'金融学', paper:'2018年（金融）', type:'计量', qid:'9',
+{ id:'F2018-J2', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'9',
   question:`假定真实的模型是 Y_i=β₀+β₁X_i+β₂X_{2i}+u_i，但是出于某种原因，在实际估计模型时使用的是如下模型：Y_i=β₀+β₁X_i+u_i。请问：在什么情况下，β₁ 的最小二乘估计值是无偏的。（6分）` },
-{ id:'F2018-J3', subject:'金融学', paper:'2018年（金融）', type:'计量', qid:'10',
+{ id:'F2018-J3', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'10',
   question:`平稳的 AR(2) 过程如下：x(t)=φ₁x_{t-1}+φ₂x_{t-2}+u_t，φ₂+φ₁<1，φ₂-φ₁<1，-1<φ₂<1，u_t 为白噪声过程。请计算 AR(2) 过程的自相关函数表达式。（6分）` },
-{ id:'F2018-J4', subject:'金融学', paper:'2018年（金融）', type:'计量', qid:'11',
+{ id:'F2018-J4', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'11',
   question:`一元线性回归模型为：Y_i=β₀+β₁X_i+u_i，其估计方程为：Y_i=β̂₁+β̂₂X_i+û_i=Ŷ_i+û_i，其中 Ŷ_i 是 Y_i 的估计值。请证明：可决系数 R² 等于观测值 Y_i 与 Ŷ_i 之间的相关系数的平方。（6分）` },
-{ id:'F2018-J5', subject:'金融学', paper:'2018年（金融）', type:'计量', qid:'12',
+{ id:'F2018-J5', subject:'金融学', paper:'2018年（金融）', type:'简答', qid:'12',
   question:`已知三个时间序列 X_t、Y_t、Z_t 都是 I(1) 变量且相互之间存在 (1,1) 阶协整关系，经检验，它们之间的关系表达式为：Z_t=α₀+α₁Z_{t-1}+α₂X_t+α₃Y_t+α₄Y_{t-1}+μ_t。请推导误差修正模型的表达式，并指出误差修正模型中每个待估参数的经济意义。（6分）` },
 { id:'F2018-C1', subject:'金融学', paper:'2018年（金融）', type:'计算', qid:'1',
   question:`小陈在南开园拥有一家店，专门卖冷饮和热饮。他认为今年寒春的概率为0.55，暖春的概率为0.45。如果是寒春，学生会偏爱热饮，而如果是暖春，学生会偏爱冷饮。小陈必须要决定分别投入多少资金用于制作冷饮和热饮。他的报酬矩阵如下：
@@ -2251,18 +2268,18 @@ A违约　800,-200　200,200
   question:`当一国的中央银行打算降低通胀率，试利用菲利普斯曲线分析其短期影响和长期影响。（6分）` },
 { id:'F2017-S7', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'7',
   question:`请说明补偿变化和等价变化的含义及与消费者剩余的关系。（6分）` },
-{ id:'F2017-J1', subject:'金融学', paper:'2017年（金融）', type:'计量', qid:'8',
+{ id:'F2017-J1', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'8',
   question:`给定一个OLSE计量模型：Y_t=β₀+β₁X_t+u_t，证明参数估计值 β₁ 的无偏性和一致性。（6分）` },
-{ id:'F2017-J2', subject:'金融学', paper:'2017年（金融）', type:'计量', qid:'9',
+{ id:'F2017-J2', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'9',
   question:`两个计量模型：
 Y_t=β₀+β₁X_t+u_t
 Y_t=γ₀+γ₁(X_t-X̄)+u_t
 问：β₁ 与 γ₁ 的估计值是否相同，方差是否相同，为什么？（6分）` },
-{ id:'F2017-J3', subject:'金融学', paper:'2017年（金融）', type:'计量', qid:'10',
+{ id:'F2017-J3', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'10',
   question:`常见的货币政策规则体系有哪些？泰勒规则属于哪一种？其在低利率甚至“负利率时代”是否具有适用性？（6分）` },
-{ id:'F2017-J4', subject:'金融学', paper:'2017年（金融）', type:'计量', qid:'11',
+{ id:'F2017-J4', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'11',
   question:`对于随机游走序列 x_t=x_{t-1}+u_t，x₀=0，u_t~IN(0,σ_u²)。其中 u_t 为白噪声序列，IN(0,σ_u²) 表示 u_t 服从均值为零、方差为 σ_u² 的相互独立的正态分布，样本量为 T。试求 x_T 的期望、方差，以及 x_T 与 x_{T-k} 的相关系数 ρ_k。（6分）` },
-{ id:'F2017-J5', subject:'金融学', paper:'2017年（金融）', type:'计量', qid:'12',
+{ id:'F2017-J5', subject:'金融学', paper:'2017年（金融）', type:'简答', qid:'12',
   question:`给定如下 ADL(1,1) 模型：y_t=α₀+α₁y_{t-1}+β₀x_t+β₁x_{t-1}+u_t，其中 |α₁|<1，u_t~IID(0,σ²)。试求：误差修正模型的表达式，并说明长短期变量之间的关系。（6分）` },
 { id:'F2017-C1', subject:'金融学', paper:'2017年（金融）', type:'计算', qid:'1',
   question:`假设原油的需求由下式给定：Q=-2000P+70000，其中，Q 是原油产量，单位是千桶/每年，P 是每桶价格。还假设有1000个相同的小原油生产商，每一个厂商的边际成本由下式给出：MC=q+5，其中 q 是一般厂商的产量。
@@ -2342,6 +2359,81 @@ function saveFavs() { try { localStorage.setItem('past_exams_favs', JSON.stringi
 function saveNotes() { try { localStorage.setItem('past_exams_notes', JSON.stringify(notes)); } catch (err) { var _f=(err&&(err.name==='QuotaExceededError'||err.code===22||err.code===1014)); var _m=_f?'⚠️ 存储空间不足，这次没能保存！建议删掉笔记里的大图，或先「导出」备份再清理。':'⚠️ 保存失败'; try{ if(typeof showToast==='function'){showToast(_m);} else {alert(_m);} }catch(_x){alert(_m);} } }
 
 /* safeText() 已统一到 shared/escape.js */
+
+/* ---- 题干里的手工表格（收益矩阵 / 汇率表 / 报酬表）------
+   源数据靠空格对齐，比例字体下必然错位，这里识别成真表格。
+   判据与 answers.html 的 stemHtml() 完全一致（回归校验 _chk_stem_tb.js）：
+   连续 ≥2 行、每行含连续空白、列数一致（或表头少一列=缺左上角格）、
+   不含等号/句读/分值括注、首列不带冒号逗号、至少 2 行含 ≥2 个数字型单元格 */
+var RE_STEM_SP = /[\u3000 ]+/;
+var RE_STEM_NUM = /^[-−]?\d+(?:[.,\/][-−]?\d+)*$|^\(\s*[-−]?\d+\s*,\s*[-−]?\d+\s*\)$/;
+var RE_STEM_PAREN = /[（(][^）)]{0,20}[）)]/g;
+function stemCells(line) {
+    return String(line).replace(/^[\s\u3000]+|[\s\u3000]+$/g, '').split(RE_STEM_SP).filter(c => c);
+}
+function isStemTable(rows) {
+    if (!rows || rows.length < 2) return false;
+    const n = rows.map(r => stemCells(r).length);
+    const same = n.every(v => v === n[0]);
+    const headShort = n.slice(1).every(v => v === n[1]) && n[0] === n[1] - 1;
+    if (!(same || headShort)) return false;
+    if (Math.min.apply(null, n) < 2) return false;
+    const ok = rows.every(r => {
+        const cs = stemCells(r);
+        if (String(r).replace(RE_STEM_PAREN, '').indexOf('=') > -1) return false;
+        if (/[。；？]/.test(r)) return false;
+        if (/（\d+分）/.test(r)) return false;
+        if (cs.some(c => c.length > 24)) return false;
+        if (/[：，]/.test(cs[0])) return false;
+        return true;
+    });
+    if (!ok) return false;
+    return rows.filter(r => stemCells(r).filter(c => RE_STEM_NUM.test(c)).length >= 2).length >= 2;
+}
+function qtbHtml(rows) {
+    let h = '<div class="tb-wrap"><table class="ah-tb">';
+    rows.forEach((cells, ri) => {
+        h += '<tr>';
+        cells.forEach((c, ci) => {
+            const txt = safeText(c);
+            h += (ri === 0)
+                ? '<th>' + txt + '</th>'
+                : '<td' + (ci === 0 ? ' class="rh"' : '') + '>' + txt + '</td>';
+        });
+        h += '</tr>';
+    });
+    return h + '</table></div>';
+}
+function questionHtml(s) {
+    const lines = String(s || '').split('\n');
+    let out = '', buf = [];
+    const flushText = () => { if (buf.length) { out += safeText(buf.join('\n')); buf = []; } };
+    let i = 0;
+    while (i < lines.length) {
+        if (!lines[i].trim()) { buf.push(lines[i]); i++; continue; }
+        let j = i, run = [];
+        while (j < lines.length && lines[j].trim() &&
+               RE_STEM_SP.test(lines[j].replace(/^[\s\u3000]+|[\s\u3000]+$/g, ''))) {
+            run.push(lines[j]); j++;
+        }
+        if (run.length >= 2 && isStemTable(run)) {
+            flushText();
+            let rows = run.map(stemCells);
+            const width = Math.max.apply(null, rows.map(r => r.length));
+            rows = rows.map(r => {
+                if (r.length === width) return r;
+                const pad = []; for (let k = 0; k < width - r.length; k++) pad.push('');
+                return pad.concat(r);
+            });
+            out += qtbHtml(rows);
+            i = j;
+        } else {
+            buf.push(lines[i]); i++;
+        }
+    }
+    flushText();
+    return out;
+}
 
 // ---- 获取卡片数据 ----
 function getCardData(id) {
@@ -2591,7 +2683,7 @@ function render(singleId = null) {
                     </div>
                 </div>
                 <div class="card-question" data-id="${d.id}">
-                    <span class="q-text">${qText}</span>
+                    <div class="q-text">${questionHtml(d.question)}</div>
                     ${d.type !== '说明' ? '<span class="toggle-hint">(点击展开作答区)</span>' : ''}
                 </div>
                 <div class="card-note-area" data-id="${d.id}">

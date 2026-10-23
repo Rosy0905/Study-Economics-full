@@ -1111,10 +1111,11 @@
     <div class="filter-bar" id="filterBar">
         <button class="btn btn-primary" id="addCardBtn">＋ 新建卡片</button>
 
-        <!-- 26/09/20 第 8 轮：去掉「分类（宏微观）」筛选 —— 只留章节筛选，
-             下拉里已经按 微观 / 宏观 自动分成两组（optgroup）。 -->
+        <!-- 26/10/23：第 8 轮删掉的「分类」筛选回到了章节下拉里——组标题（微观 / 宏观）做成
+             可选中 option（原先 optgroup 浏览器不允许选中），选中 = 该分类全部章节；
+             子页 3/6/7 在 26/10/20 用同一打法修过同样的问题。 -->
         <label for="filterChapter">章节</label>
-        <select id="filterChapter" title="章节已按微观 / 宏观自动分组"><option value="all">全部</option></select>
+        <select id="filterChapter" title="章节按微观 / 宏观分组；选中组标题 = 该分类全部章节"><option value="all">全部</option></select>
 
         <label for="filterFav">⭐ 收藏</label>
         <select id="filterFav">
@@ -1777,6 +1778,12 @@
        注意不能用 \u0000 之类做分隔符 —— HTML 解析属性时会把 NUL 换成 U+FFFD，value 就对不上了。 */
     function chFilterValue(subject, name) { return JSON.stringify([normSubject(subject), name]); }
     function parseChFilter(v) {
+        /* __grp__ 前缀 = 分类组标题（选中=该分类全部章节）：映射成 {subject, name:''}，
+           让「新建卡片／AI 导入默认分类跟着筛选走」两处也认它（26/10/23） */
+        if (typeof v === 'string' && v.indexOf('__grp__') === 0) {
+            var gs = v.slice(7);
+            return SUBJECTS.indexOf(gs) >= 0 ? { subject: gs, name: '' } : null;
+        }
         try {
             var a = JSON.parse(v);
             return (Array.isArray(a) && a.length === 2) ? { subject: a[0], name: a[1] } : null;
@@ -1793,15 +1800,17 @@
 
     function updateChapterFilterOptions() {
         var prev = filterChapter.value;
+        /* 26/10/23：分组标题原来用 <optgroup>，浏览器不允许选中，点了没反应——宏微观想整类
+           看卡片根本选不了（子页 3/6/7 在 26/10/20 修过同样的问题，这里搬同一打法）。
+           改成「可点的组标题 option」+ 全角空格缩进的成员项：选中组标题 = 该分类全部章节。 */
         var html = '<option value="all">全部</option>';
         SUBJECTS.forEach(function (s) {
             var list = chList(s);
             if (!list.length) return;
-            html += '<optgroup label="' + safeText(s) + '">';
+            html += '<option value="__grp__' + safeText(s) + '" style="font-weight:600;">' + safeText(s) + '</option>';
             list.forEach(function (ch) {
-                html += '<option value="' + safeText(chFilterValue(s, ch)) + '">' + safeText(ch) + '</option>';
+                html += '<option value="' + safeText(chFilterValue(s, ch)) + '">　　' + safeText(ch) + '</option>';
             });
-            html += '</optgroup>';
         });
         filterChapter.innerHTML = html;
         var found = false;
@@ -2158,14 +2167,18 @@
        筛选 + 渲染
        ============================================================ */
     function getFilteredCards() {
-        /* 第 8 轮：不再有「分类」筛选，章节筛选自带分类（选项值里含分类） */
+        /* 26/10/23：章节下拉的组标题（__grp__微观 / __grp__宏观）可选中 = 该分类全部章节；
+            具体章节选项值里含分类（JSON ["微观","第一章"]） */
         var chVal = filterChapter.value;
         var chPick = (chVal === 'all') ? null : parseChFilter(chVal);
         var favVal = filterFav.value;
         var kw = filterSearch.value.trim().toLowerCase();
 
         var filtered = cards.filter(function (c) {
-            if (chPick && (normSubject(c.subject) !== chPick.subject || (c.chapter || '').trim() !== chPick.name)) return false;
+            if (chPick) {
+                if (normSubject(c.subject) !== chPick.subject) return false;
+                if (chPick.name && (c.chapter || '').trim() !== chPick.name) return false;   // name 为空 = 整类
+            }
             if (favVal === 'fav' && !c.fav) return false;
             if (kw) {
                 var q = (c.question || '').toLowerCase();

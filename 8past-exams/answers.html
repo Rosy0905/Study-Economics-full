@@ -88,6 +88,10 @@
         transition: background .14s;
     }
     .sr-item:hover { background: #f1f9f1; }
+    /* 从某题「回到全站搜索结果」时，刚点过的那一条闪一下，一眼能认出自己点的哪道 */
+    .sr-item.sr-hit {
+        background: #fff8e6; outline: 2px solid #e8c877; outline-offset: -2px;
+    }
     .sr-no {
         flex: 0 0 auto; font-size: 11.5px; font-weight: 600; color: #4d7a58;
         background: #eef7ee; border-radius: 6px; padding: 1px 7px; white-space: nowrap;
@@ -268,17 +272,56 @@
     }
     .ans-body p.fm .fm-end { color: #a3bba8; }
     .ans-body p.lead { margin-bottom: .2em; }
-    /* 图示占位：极淡底 + 虚线框居中，跟正文区分得开又不腻 */
+    /* 图示／表格占位：极淡底 + 虚线框居中，跟正文区分得开又不腻 */
     .ans-body p.fig {
         font-size: 12.5px; color: #52705d; background: #eaf3e6;
         border-radius: 7px; padding: 5px 11px; margin: .55em 0 .7em 0; line-height: 1.8;
     }
+    /* 题干区表格（.q-head .stem 内，26/10/23 晚小0主人定）：白底、边框用题干正文字色 #1c3322；
+       窄屏横向滑动，不挤成豆腐块。底部 margin 归 0——题干表格与「参考答案」区的间距
+       必须和普通题干文字一样（原 .8em 会多出约 10px，26/10/23 晚小0主人指出）。
+       注：米白 #faf7f0 试过，白卡片旁显黄，改纯白（26/10/23 晚小0主人：「黄了」） */
+    .q-head .stem .tb-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: .6em 0 0 0; padding-bottom: 2px; }
+    .q-head .stem .tb-wrap::-webkit-scrollbar { height: 5px; }
+    .q-head .stem .tb-wrap::-webkit-scrollbar-thumb { background: #d6d6d6; border-radius: 3px; }
+    .q-head .stem table.ah-tb {
+        border-collapse: collapse; font-size: 12.5px; line-height: 1.65;
+        color: #1c3322; background: #ffffff; border: 1px solid #1c3322; border-radius: 7px;
+        /* 居中：比容器窄时左右等分；比容器宽时 auto 退化为 0，仍能整表横向滑动不缺左边缘 */
+        margin: 0 auto; max-width: none;
+    }
+    .q-head .stem table.ah-tb th, .q-head .stem table.ah-tb td {
+        border: 1px solid #1c3322; padding: 4px 11px; text-align: center;
+        white-space: nowrap; font-weight: 400;
+    }
+    .q-head .stem table.ah-tb th { background: #ffffff; font-weight: 600; color: #1c3322; }
+    .q-head .stem table.ah-tb td.rh { background: #ffffff; color: #1c3322; font-weight: 500; }
+    /* 答案区表格：淡绿系，跟图示同一族；窄屏横向滑动，不挤成豆腐块（26/10/23 晚小0主人：答案页表格原样式很好，还原；
+       同晚再加：边框加深一档——表格底 #f6faf4 与答案区底 #f2f8ef 太近，原边框 #d2e2cd/#dae8d6 区分不出来） */
+    .ans-body .tb-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: .6em 0 .8em 0; padding-bottom: 2px; }
+    .ans-body .tb-wrap::-webkit-scrollbar { height: 5px; }
+    .ans-body .tb-wrap::-webkit-scrollbar-thumb { background: #cfe0cb; border-radius: 3px; }
+    .ans-body table.ah-tb {
+        border-collapse: collapse; font-size: 12.5px; line-height: 1.65;
+        color: #33503d; background: #f6faf4; border: 1px solid #b3d0aa; border-radius: 7px;
+        margin: 0 auto; max-width: none;
+    }
+    .ans-body table.ah-tb th, .ans-body table.ah-tb td {
+        border: 1px solid #c3dcbb; padding: 4px 11px; text-align: center;
+        white-space: nowrap; font-weight: 400;
+    }
+    .ans-body table.ah-tb th { background: #e9f3e4; font-weight: 600; color: #3f6b4d; }
+    .ans-body table.ah-tb td.rh { background: #eef6ea; color: #3f6b4d; font-weight: 500; }
+    .ans-body table.ah-tb td b { font-weight: 700; color: #2f5c3e; }
     /* 学长提示：按原书放在答案末尾，只留个小标签，不做卡片 */
     .ans-body p.ans-tip {
         font-size: 13.6px; line-height: 1.85; color: #5b7263;
         margin-top: 1.05em !important;
     }
     .ans-body p.ans-tip b { color: #3f6b4d; font-weight: 600; }
+    /* 提示条打头时贴顶：ans-tip 自带 1.05em 上边距是为「跟在正文后」设计的，
+       作为答案区第一个元素时要豁免，否则离「参考答案」标签多出一截（26/10/22 小0主人定） */
+    .ans-body p.ans-tip:first-child { margin-top: 0 !important; }
 
     /* 答案前的出处小字：淡绿底注释式，整块一条，不加标识、不加粗 */
     .src {
@@ -319,8 +362,10 @@
         .chips { flex: 1 1 100%; gap: 6px; }
         .tb-tools { flex: 1 1 100%; width: 100%; margin-left: 0; }
         .topbar input { width: 100%; }
-        .ans-body p.fm { margin-left: .5em; font-size: 14px; }
+        .ans-body p.fm { margin-left: .2em; font-size: 14px; }
         .ans-body p.fig { font-size: 12px; padding: 6px 9px; }
+        table.ah-tb { font-size: 12px; }
+        table.ah-tb th, table.ah-tb td { padding: 4px 8px; }
         .src { padding: 6px 10px 6px 8px; }
         .src-t { font-size: 11.5px; }
         .chip2 { padding: 4px 10px; font-size: 12px; }
@@ -411,6 +456,26 @@
         .ans { background: #fff; border: 0.5px solid #ccc; }
         .paper-head { box-shadow: none; }
     }
+
+    /* ===== 返回顶部：浅绿箭头（取 AI 按钮一族浅绿 #78d2b4，比图标 #3fa87a 淡多档，与 AI 按钮并排协调），无圆底、无文字 =====
+       位置不写死：由下方 JS 实测 .ai-fab 包围盒，水平居中于按钮、底边留 16px —— 任何屏宽/横竖屏/滚动条宽度都始终在按钮正上方。
+       下面 right/bottom 仅为 JS 失效时的兜底值。
+       显隐规则：本段上滑累计满 150px 且持续满 150ms 才出现（约三格滚轮；瞬时猛甩不足）；向下滚动、停止滚动约 1.5s、距顶 400px 以内、AI 面板展开时隐藏；鼠标停在箭头上时不自动隐藏。
+       pointer-events 离散过渡：隐藏方向延迟 .25s 失效，保证淡出过程中仍可点击 */
+    #toTop{
+        position:fixed; right:32px; bottom:96px; z-index:890;
+        width:38px; height:38px; padding:0; border:none; background:transparent;
+        cursor:pointer; line-height:0;
+        opacity:0; transform:translateY(10px); pointer-events:none;
+        transition:opacity .25s ease, transform .25s ease, filter .15s ease, pointer-events 0s .25s;
+        filter:drop-shadow(0 2px 4px rgba(120,210,180,.3));
+    }
+    #toTop svg{ display:block; }
+    #toTop.show{ opacity:1; transform:translateY(0); pointer-events:auto;
+        transition:opacity .25s ease, transform .25s ease, filter .15s ease, pointer-events 0s; }
+    #toTop:hover{ filter:drop-shadow(0 3px 7px rgba(120,210,180,.5)); }
+    #toTop:active{ transform:translateY(1px); }
+    #toTop:focus-visible{ outline:3px solid rgba(94,201,154,.6); outline-offset:3px; border-radius:4px; }
 </style>
 </head>
 <body>
@@ -492,6 +557,55 @@
     var currentKey = null;
     var lastSubj = {};   /* 每个学科最后看的卷 */
 
+    /* ---------- 搜索结果列表的位置记忆 ----------
+       从结果列表点进某题后，顶部有「← 回到全站搜索结果」。原来一点就 window.scrollTo(0,0)，
+       结果列表长的时候直接被甩回顶部，找不到刚才点的是哪一条。
+       这里记下「点进去的是哪一条」+「它当时在屏幕上的位置」，返回时把那条滚回原处并闪一下。 */
+    var SRPOS_KEY = 'past_exams_srpos';
+    var srPos = null;      /* { qid, kw, vtop, y } —— vtop=该条在视口中的位置，y=当时的滚动量 */
+    var srPushedQid = null; /* 从结果列表 pushState 进来的那道题：供 popstate 判方向 */
+    function saveSrPos(qid) {
+        var el = document.querySelector('.sr-item[data-qid="' + qid + '"]');
+        if (!el) { srPos = null; return; }
+        var r = el.getBoundingClientRect();
+        srPos = { qid: qid, kw: keyword.trim(), vtop: Math.round(r.top), y: Math.round(window.scrollY || 0) };
+        try { sessionStorage.setItem(SRPOS_KEY, JSON.stringify(srPos)); } catch (e) {}
+    }
+    function readSrPos() {
+        try {
+            var raw = sessionStorage.getItem(SRPOS_KEY);
+            if (!raw) return null;
+            var o = JSON.parse(raw);
+            return (o && o.qid) ? o : null;
+        } catch (e) { return null; }
+    }
+    /* 回到结果列表后：把刚点过的那条滚回它原来的位置，并短暂高亮 */
+    function restoreSrPos() {
+        var p = srPos || readSrPos();
+        if (!p) return false;
+        /* 关键词换过了：位置对不上，不硬拽 */
+        if (p.kw !== keyword.trim()) return false;
+        var el = document.querySelector('.sr-item[data-qid="' + p.qid + '"]');
+        if (!el) return false;      /* 结果集变了（换档位等）→ 不强行定位，留在顶部 */
+        var apply = function () {
+            var e2 = document.querySelector('.sr-item[data-qid="' + p.qid + '"]');
+            if (!e2) return;
+            var doc = e2.getBoundingClientRect().top + (window.scrollY || 0);
+            var max = document.documentElement.scrollHeight - window.innerHeight;
+            var want = doc - p.vtop;
+            window.scrollTo(0, max > 0 ? Math.min(Math.max(0, want), max) : Math.max(0, want));
+        };
+        apply();
+        if (window.requestAnimationFrame) requestAnimationFrame(apply);
+        setTimeout(apply, 120);
+        /* 刚点过的那条闪一下，省得在一堆结果里找不到 */
+        el.classList.remove('sr-hit');
+        void el.offsetWidth;
+        el.classList.add('sr-hit');
+        setTimeout(function () { el.classList.remove('sr-hit'); }, 2400);
+        return true;
+    }
+
     var yearbarEl = document.getElementById('yearbar');
     var contentEl = document.getElementById('content');
     var chipsEl = document.getElementById('chips');
@@ -526,7 +640,92 @@
         return esc(t).replace(/([\u4e00-\u9fa5，。；：、]+)/g, '<span class="fm-cn">$1</span>');
     }
 
-    /* 答案正文渲染：小标题 / 公式块 / 普通段落
+    /* 答案区表格：首行为表头，单元格用半角 | 分隔；单元格内 __x__ 渲染为加粗
+       （原书用划线标出的格子以加粗代替），首列自动作为行标题列（26/10/23 小0主人定） */
+    function tbHtml(rows) {
+        if (!rows || !rows.length) return '';
+        var h = '<div class="tb-wrap"><table class="ah-tb">';
+        rows.forEach(function (cells, ri) {
+            h += '<tr>';
+            cells.forEach(function (c, ci) {
+                var txt = esc(c).replace(/__([\s\S]+?)__/g, '<b>$1</b>');
+                h += (ri === 0)
+                    ? '<th>' + txt + '</th>'
+                    : '<td' + (ci === 0 ? ' class="rh"' : '') + '>' + txt + '</td>';
+            });
+            h += '</tr>';
+        });
+        return h + '</table></div>';
+    }
+
+    /* 题干里的手工表格（原书靠空格对齐的收益矩阵 / 汇率表 / 报酬表）
+       题干是纯文本、空格对齐，比例字体下必然错位，故识别成真表格（26/10/23 小0主人点名）
+       判据收紧到「恰好能认出全库 4 处、零误伤」，回归校验见 _chk_stem_tb.js：
+       连续 ≥2 行、每行含连续空白、列数一致（或表头少一列 = 缺左上角格）、
+       不含等号 / 句读 / 分值括注、首列不带冒号逗号、至少 2 行含 ≥2 个数字型单元格 */
+    var RE_SP = /[\u3000 ]+/;
+    var RE_NUMCELL = /^[-−]?\d+(?:[.,\/][-−]?\d+)*$|^\(\s*[-−]?\d+\s*,\s*[-−]?\d+\s*\)$/;
+    var RE_PAREN = /[（(][^）)]{0,20}[）)]/g;
+    function stemCells(line) {
+        var s = line.replace(/^[\s\u3000]+|[\s\u3000]+$/g, '');
+        return s.split(RE_SP).filter(function (c) { return c; });
+    }
+    function isStemTable(rows) {
+        if (!rows || rows.length < 2) return false;
+        var n = rows.map(function (r) { return stemCells(r).length; });
+        var same = n.every(function (v) { return v === n[0]; });
+        var headShort = n.slice(1).every(function (v) { return v === n[1]; }) && n[0] === n[1] - 1;
+        if (!(same || headShort)) return false;
+        if (Math.min.apply(null, n) < 2) return false;
+        var ok = rows.every(function (r) {
+            var cs = stemCells(r);
+            if (r.replace(RE_PAREN, '').indexOf('=') > -1) return false;
+            if (/[。；？]/.test(r)) return false;
+            if (/（\d+分）/.test(r)) return false;
+            if (cs.some(function (c) { return c.length > 24; })) return false;
+            if (/[：，]/.test(cs[0])) return false;
+            return true;
+        });
+        if (!ok) return false;
+        var numRows = rows.filter(function (r) {
+            return stemCells(r).filter(function (c) { return RE_NUMCELL.test(c); }).length >= 2;
+        }).length;
+        return numRows >= 2;
+    }
+    /* 题干渲染：普通行原样输出（.stem 是 pre-wrap），表格块换成真表格；表头缺左上角格时补空 */
+    function stemHtml(s) {
+        var lines = cleanStem(String(s || '')).split('\n');
+        var out = '', buf = [];
+        function flushText() {
+            if (buf.length) { out += esc(buf.join('\n')); buf = []; }
+        }
+        var i = 0;
+        while (i < lines.length) {
+            if (!lines[i].trim()) { buf.push(lines[i]); i++; continue; }
+            var j = i, run = [];
+            while (j < lines.length && lines[j].trim() && RE_SP.test(lines[j].replace(/^[\s\u3000]+|[\s\u3000]+$/g, ''))) {
+                run.push(lines[j]); j++;
+            }
+            if (run.length >= 2 && isStemTable(run)) {
+                flushText();
+                var rows = run.map(stemCells);
+                var width = Math.max.apply(null, rows.map(function (r) { return r.length; }));
+                rows = rows.map(function (r) {
+                    if (r.length === width) return r;
+                    var pad = []; for (var k = 0; k < width - r.length; k++) pad.push('');
+                    return pad.concat(r);
+                });
+                out += tbHtml(rows);
+                i = j;
+            } else {
+                buf.push(lines[i]); i++;
+            }
+        }
+        flushText();
+        return out;
+    }
+
+    /* 答案正文渲染：小标题 / 公式块 / 普通段落 / 表格块
        版式参考《计算要点》《专项训练》：正文首行缩进两字，仅小问标题行加粗，公式淡绿底 */
     var RE_NUM = /^(（[0-9一二三四五六七八九十]{1,3}）|[\u2460-\u2469]|第[一二三四五六七八九十]{1,2}，)/;
     /* 序号不单独加粗——只有小问标题行（p.sub）整体加粗，其余一律正文字重 */
@@ -549,20 +748,65 @@
         var lines = String(text || '（暂无答案）').split('\n');
         var out = '', gap = false;   // gap：上一个空行，用来区分“段”与“行”
         function emit(cls, html, blk) {
-            var c = (cls || '') + (gap || blk ? ' par' : '');
+            var isFirst = (out === '');   // 首个元素不加 par：段间距只作用于段与段之间，
+                                          // 答案区第一个元素贴「参考答案」标签（26/10/22 小0主人定）
+            var c = (cls || '') + ((gap || blk) && !isFirst ? ' par' : '');
             out += '<p' + (c.trim() ? ' class="' + c.trim() + '"' : '') + '>' + html + '</p>';
             gap = false;
         }
         var bc = false;   // 已进入【补充题】：其解答行首的「解：」要保留，样式同标签
         var kn = false;   // 已进入【知识梳理】：块内（N）不加粗，无序号短行才是分节标题（26/10/22 小0主人定）
+        var tbl = null;   // 正在收集表格行：［表格］…［/表格］
+        var fmBlk = null;   // 正在收集多行公式块：［公式］…［/公式］
         lines.forEach(function (raw) {
             var t = raw.replace(/\s+$/, '');
-            if (!t.trim()) { gap = true; return; }
+            /* 表格块：［表格］起、［/表格］止，中间每行即一行数据，单元格用半角 | 分隔，
+               首行为表头。空行在块内无意义（直接跳过），避免被 gap 逻辑打断（26/10/23 小0主人定） */
+            if (tbl) {
+                if (/^［\s*\/\s*表格\s*］$/.test(t.trim())) {
+                    out += tbHtml(tbl); tbl = null; gap = false; return;
+                }
+                if (t.trim()) tbl.push(t.split('|').map(function (c) { return c.trim(); }));
+                return;
+            }
+        if (/^［\s*表格\s*］$/.test(t.trim())) { tbl = []; gap = false; return; }
+        /* 公式块：［公式］起、［/公式］止，块内所有行合并成一个公式块——多行等式/推导不再被逐行拆碎，
+           且块内不经 isFormula 逐行判定，纯希腊符号行也有底色（26/10/23 小0主人定） */
+        if (fmBlk) {
+            if (/^［\s*\/\s*公式\s*］$/.test(t.trim())) { emit('fm', fmHtml(fmBlk.join('\n')), true); fmBlk = null; return; }
+            if (t.trim()) fmBlk.push(t.trim());
+            return;
+        }
+        if (/^［\s*公式\s*］$/.test(t.trim())) { fmBlk = []; gap = false; return; }
+        if (!t.trim()) { gap = true; return; }
+            /* 转录端（小兮）行首「!」前缀：无样式含义，剥掉后按常规判据渲染
+               （26/10/22 小0主人定——2010/2011 新录答案里出现 16 处，如 !（2）完全竞争市场…理由如下：） */
+            var mBang = t.match(/^!\s*(.+)$/);
+            if (mBang) t = mBang[1];
+            /* 数据层单设语法：行首「#」= 强制本行按小问标题渲染（p.sub 加粗）——给个别
+               字数超 30 但语义明确是标题的行用（26/10/22 小0主人定，A2015-E2 首用）。
+               「#」后有无空白均可；默认不写就不生效，不影响其他卷与自动判据 */
+            var mForce = t.match(/^#\s*(.+)$/);
+            if (mForce) { emit('sub', withNum(mForce[1].trim()), true); return; }
+            /* 反相单设：行首「~」= 强制本行按正文渲染（一律不加粗）——给个别短得会被
+               【知识梳理】/【知识总结】区 knhead 等自动判据误当成标题的行用
+               （26/10/22 小0主人定，A2014-C4 知识总结区首用：ρ——自然利率、①求动态总供给曲线方程等）。
+               与「#」相对，默认不写就不生效，不动全局判据。
+               不用「!」——那会跟转录端前缀撞车（见上 mBang） */
+            var mPlain = t.match(/^~\s*(.+)$/);
+            if (mPlain) {
+                var pt = mPlain[1].trim();
+                emit(RE_DI.test(pt) ? 'lv3' : '', withNum(pt), RE_NUM.test(pt));
+                return;
+            }
             var mDa = t.match(/^(答|解|证明|证)[:：]\s*/);
             if (mDa) {
                 var kW = mDa[1];
-                if (kW === '证明' || kW === '证') {
-                    // 证明题开头的「证明：／证：」→【证】标签，样式与【解】完全相同（小0主人定）
+                if (bc && (kW === '证明' || kW === '证')) {
+                    // 补充题区内「证明：／证：」→【证】标签，样式与【解】完全相同。
+                    // 【证】【解】【答】的【】标签样式只为【补充题】设计——区外一律剥掉前缀按正文渲染
+                    // （26/10/23 小0主人定：2009S1 原卷是「答：」、2008S3 原题「证明：」，都不该带标签；
+                    //  A2013-S5 提示区内引蒋殿春书的「证明：」同理）
                     emit('', '<span class="ah-tag">【证】</span>' + withNum(t.slice(mDa[0].length)), true);
                     return;
                 }
@@ -571,28 +815,35 @@
                     emit('', '<span class="ah-tag">【' + kW + '】</span>' + withNum(t.slice(mDa[0].length)), true);
                     return;
                 }
-                t = t.slice(mDa[0].length);   // 「答：」「解：」不进正文，让小问标题顶到位
+                t = t.slice(mDa[0].length);   // 区外「答：」「解：」「证明：」「证：」不进正文，让小问标题顶到位
                 if (!t.trim()) { gap = true; return; }
             }
-            // 图示占位
-            if (/^［\s*此处有图示/.test(t)) { emit('fig', esc(t), true); return; }
+            // 图示占位／表格占位：同款浅底块（26/10/23 小0主人定——表格要跟图示长一样）
+            if (/^［\s*此处有(?:图示|表格)/.test(t)) { emit('fig', esc(t), true); return; }
             // 提示/校注：原书提示放末尾；校注是订正说明
             // 多条提示写【提示1】【提示2】，序号紧跟、中间不留空格；数据里手滑写成「提示 1」也归一成「提示1」
-            var mNote = t.match(/^【((?:[^】]{0,12})?(?:提示|校注|注)\s*\d{0,2})】([\s\S]*)$/);
+            // 说明性栏目（命题背景/命题方式/热点背景/补充）与【提示】同款 ans-tip（26/10/22 小0主人定）；
+            // 【补充知识】不在此列——它与【补充题】【知识总结】【知识梳理】同属区块标题，走 ah 加粗（26/10/22 小0主人定）
+            var mNote = t.match(/^【((?:[^】]{0,12})?(?:提示|校注|注|命题背景|命题方式|热点背景|补充)\s*\d{0,2})】([\s\S]*)$/);
             if (mNote) { emit('ans-tip', '<b>【' + esc(mNote[1].replace(/\s+/g, '')) + '】</b>' + esc(mNote[2]), true); return; }
             var mAh = t.match(/^\s*【([^【]+?)】\s*$/);
             if (mAh) {
                 var hc = mAh[1].replace(/\s+/g, '');
                 if (hc === '补充题') { bc = true; kn = false; }
-                if (hc === '知识梳理') { kn = true; bc = false; }
-                emit('ah', esc(mAh[1]));
+                if (hc === '知识梳理' || hc === '知识总结') { kn = true; bc = false; }   // 原书「知识总结」框功能同知识梳理（26/10/22 小0主人定）
+                if (/^(命题背景|命题方式|热点背景|补充[:：]|补充$)/.test(hc)) {
+                    // 说明性栏目的整行写法（如 A2021-E2「【补充：除了回答需求政策之外…】」）同【提示】样式，不再走 ah 加粗
+                    emit('ans-tip', '<b>【' + esc(mAh[1]) + '】</b>', true); return;
+                }
+                // 整行【标签】：带回括号输出（26/10/22 修——原先只输出括号内文字，C2 的【知识总结】渲染成裸「知识总结」）
+                emit('ah', '【' + esc(mAh[1]) + '】');
                 return;
             }
             // 行首【标签】后面还跟着正文
             var mTag = t.match(/^\s*(【[^】]{1,20}】)\s*(\S.*)$/);
             if (mTag) {
                 if (/补充题/.test(mTag[1])) { bc = true; kn = false; }
-                if (/知识梳理/.test(mTag[1])) { kn = true; bc = false; }
+                if (/知识梳理|知识总结/.test(mTag[1])) { kn = true; bc = false; }
                 emit('', '<span class="ah-tag">' + esc(mTag[1]) + '</span>' + esc(mTag[2]));
                 return;
             }
@@ -854,7 +1105,9 @@
         } catch (e) { return s; }
     }
 
-    function renderSearch() {
+    /* opt.restore=true：从某题「回到全站搜索结果」时用——不甩回顶部，
+       而是把刚点过的那条滚回原来的位置（结果集变了才退回顶部） */
+    function renderSearch(opt) {
         var kw = keyword.trim();
         var res = searchAll(kw);
         var scope = facet !== 'all';
@@ -886,7 +1139,8 @@
                 '<span>' + esc(g.paper.subject) + ' · ' + g.hits.length + ' 题</span></div>';
             g.hits.forEach(function (h) {
                 var sn = kwSnippet(h.it, low);
-                html += '<a class="sr-item" href="#' + esc(h.it.id) + '" data-key="' + esc(g.paper.key) + '">' +
+                html += '<a class="sr-item" href="#' + esc(h.it.id) + '" data-key="' + esc(g.paper.key) +
+                    '" data-qid="' + esc(h.it.id) + '">' +
                     '<span class="sr-no">' + esc(h.type) + ' ' + esc(h.it.qid) + '</span>' +
                     '<span class="sr-txt">' + hlEsc(sn.text, low) +
                     (sn.where === 'ans' ? '<span class="sr-tip">　· 命中在答案里</span>' : '') +
@@ -909,7 +1163,7 @@
         renderYearbar();
         renderChips();       /* 搜索态也渲染，否则刷新后顶栏第二行只剩搜索框、比搜索时窄一截 */
         updateSearchUI();
-        window.scrollTo(0, 0);
+        if (!(opt && opt.restore && restoreSrPos())) window.scrollTo(0, 0);
     }
 
     function updateSearchUI() {
@@ -985,7 +1239,7 @@
                 shown++;
                 html += '<article class="item" id="' + esc(it.id) + '">' +
                     '<div class="q-head"><span class="no">' + esc(it.qid) + '</span>' +
-                    '<div class="stem">' + esc(cleanStem(it.stem)) + '</div></div>' +
+                    '<div class="stem">' + stemHtml(it.stem) + '</div></div>' +
                     renderSrc(it) +
                     (it.ans
                         ? '<div class="ans"><span class="ans-label">参考答案</span>' +
@@ -1083,6 +1337,9 @@
 
     function updateUrl() {
         var cur = decodeURIComponent((location.hash || '').replace(/^#/, ''));
+        /* 26/10/23：hash 带 conv=（AI 对话分享链接）时不覆盖。分享链接正常指向
+           share.html，但万一被贴到本页，也别把对话参数抹成 #A2026 */
+        if (cur.indexOf('conv=') >= 0) return;
         var hit = findItem(cur);
         if (hit && hit.paper.key === currentKey) return;
         if (cur === currentKey) return;
@@ -1211,7 +1468,8 @@
         if (back) {
             e.preventDefault();
             searchView = 'global';
-            renderSearch();
+            srPushedQid = null;   /* 已主动回列表：这条历史不再是「从列表推进来的题」 */
+            renderSearch({ restore: true });   /* 回到刚才那条结果的位置，不是回顶部 */
             return;
         }
 
@@ -1231,16 +1489,58 @@
             e.preventDefault();
             var key = it.getAttribute('data-key');
             var id = (it.getAttribute('href') || '').slice(1);
+            /* 先记下这一条在结果列表里的位置——「回到全站搜索结果」时靠它弹回原处 */
+            saveSrPos(id);
             searchView = 'paper';
             currentKey = key;
             try { localStorage.setItem('past_exams_last', key); } catch (er) {}
+            /* 用 pushState 而不是 replaceState：这样浏览器后退键能回到结果列表，
+               而不是直接跳出答案册（手机上按返回更常用）。
+               必须排在 renderPaper 前面：renderPaper 里的 updateUrl 会 replaceState
+               当前条目，排在后面会把结果列表那条历史的 URL 冲掉，后退键就找不到列表了。 */
+            try {
+                history.pushState({ srFrom: 'list', id: id }, '', '#' + id);
+                srPushedQid = id;   /* 记住「当前条目是从列表推进来的这道题」，后退时靠它认出方向 */
+            } catch (er) {
+                try { history.replaceState(null, '', '#' + id); } catch (er2) { location.hash = id; }
+            }
             renderPaper();
-            try { history.replaceState(null, '', '#' + id); } catch (er) { location.hash = id; }
             locateFromHash(id);
         }
     });
 
     window.addEventListener('hashchange', function () { locateFromHash(); });
+
+    /* 浏览器前进/后退键：从某道题退回结果列表时，要像点「回到全站搜索结果」一样弹回原处。
+       从结果列表进题时 pushState 记了 {srFrom:'list', id}，据此知道这一条历史是从列表来的。
+       方向靠两处信息合判：
+         · e.state 是「要去的那个条目」的状态 —— 前进时它是 {srFrom:'list'}（题目条目）；
+         · srPushedQid 是「当前这个条目」是从列表 push 进来的题目 —— 后退时靠它认出要回列表。
+       注：后退/前进会同时触发 popstate 和 hashchange；列表态 hash 为空时
+       locateFromHash 直接返回 false，不会重复渲染——两边不冲突。 */
+    window.addEventListener('popstate', function (e) {
+        var st = e.state;
+        var h = decodeURIComponent((location.hash || '').replace(/^#/, ''));
+        if (st && st.srFrom === 'list' && st.id === h) {
+            /* 前进回到那道题：重渲染单卷视图并定位 */
+            var hit = findItem(h);
+            if (hit) {
+                searchView = 'paper';
+                currentKey = hit.paper.key;
+                renderPaper();
+                locateFromHash(h);
+            }
+            /* 仍要记住「当前条目是从列表推进来的这道题」：
+               不然再按一次后退就认不出方向，页面会卡在题目视图 */
+            srPushedQid = h;
+            return;
+        }
+        if (!srPushedQid) return;   /* 当前条目不是从列表推   的 → 交给浏览器正常处理 */
+        srPushedQid = null;
+        /* 后退到结果列表：重渲染列表，并把刚点过的那条弹回原位 */
+        searchView = 'global';
+        renderSearch({ restore: true });
+    });
 
     /* ---------- 左侧题号面板：跳转 / 收展 / 在读高亮 ---------- */
     var navPanelEl = document.getElementById('navPanel');
@@ -1427,10 +1727,20 @@
             if (!el || !el.id) return null;
             var stemEl = el.querySelector('.q-head .stem');
             var ansEl = el.querySelector('.ans-body');
+            /* 题干表格的单元格在 DOM 里没有分隔符，直接取 textContent 会粘成一串，
+               克隆一份给每格补个空格再读（26/10/23 加） */
+            var qTxt = '';
+            if (stemEl) {
+                var c = stemEl.cloneNode(true);
+                Array.prototype.forEach.call(c.querySelectorAll('th,td'), function (td) {
+                    td.appendChild(document.createTextNode(' '));
+                });
+                qTxt = c.textContent.replace(/\n{3,}/g, '\n\n').trim();
+            }
             return {
                 key: 'id:' + el.id,
                 label: aiLabelOf(el),
-                q: stemEl ? stemEl.textContent.replace(/\n{3,}/g, '\n\n').trim() : '',
+                q: qTxt,
                 a: (withAnswer && ansEl) ? ansEl.textContent.replace(/\n{3,}/g, '\n\n').trim() : '',
                 n: ''
             };
@@ -1448,5 +1758,121 @@
 })();
 </script>
 <script src="../ai-assistant.js"></script>
+<!-- 26/10/23：答案册正文页接入「我的卡片」——与各子页/8past-exams/index.html 同款，
+     AI 面板右上角多 🗂 入口、每条 AI 回答右下角多存卡按钮（ai-cards-bridge.js 自包含，
+     只等 #aiPanel 出现后安装）。answers.html 在 8past-exams/ 下，相对路径 ../ 到项目根 -->
+<script src="../ai-cards-bridge.js"></script>
+
+<!-- 返回顶部：浅绿线条箭头（无圆底无文字）。仅"本段上滑累计满 150px 且持续满 150ms"才出现（约三格滚轮即出）；向下/静止/距顶400内/AI面板展开时隐藏；停止滚动约 1.5s 后隐藏，但鼠标停在箭头上时不隐藏（等她点完）；点击平滑回顶。
+     位置由 JS 实测 .ai-fab 动态居中于其正上方，不写死坐标 -->
+<button id="toTop" aria-label="返回顶部" title="返回顶部" type="button">
+    <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#78d2b4" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 20 V4 M12 4 L6 11 M12 4 L18 11"/>
+    </svg>
+</button>
+<script>
+(function(){
+    var btn = document.getElementById('toTop'); if(!btn) return;
+    var fab = document.querySelector('.ai-fab');
+    var GAP    = 16;    // 箭头底边与 AI 按钮顶边的间距
+    var MIN_Y  = 400;   // 距顶部 400 以内不出现（沿用旧阈值）
+    var IDLE_MS = 1500; // 停止滚动多久后隐藏（26/10/23 小0主人定 900→1500：出现的秒数久一点点；淡出 .25s 期间仍可点）
+    var UP_PX   = 150;  // 本段上滑累计满这么多像素就露出：约三格滚轮即出（26/10/23 小0主人定 250→150，原话"我滚三下鼠标滚轮出来了"）
+    var UP_MS   = 150;  // 同时要求持续上滑满这么久：仍挡开瞬时猛甩/惯性尖峰（250→150，快拂三下也认）
+    var JITTER  = 2;    // 位移小于此值视为抖动，不判方向
+    var lastY = window.scrollY || document.documentElement.scrollTop || 0;
+    var idleTimer = null, ticking = false, fabOn = true, upDist = 0, upMs = 0, lastT = -1, hovering = false;
+
+    function show(){ if(fabOn) btn.classList.add('show'); }
+    function hide(){ btn.classList.remove('show'); }
+    function armIdle(){
+        if(idleTimer) clearTimeout(idleTimer);
+        idleTimer = setTimeout(function(){
+            idleTimer = null;
+            if(hovering) return;              // 鼠标停在箭头上：不自动隐藏，等她点（26/10/23 小0主人定）
+            upDist = 0; upMs = 0; lastT = -1; hide();
+        }, IDLE_MS);
+    }
+
+    /* 悬停锁：鼠标进箭头清掉倒计时，离开后若还可见就重新倒计时。
+       不然箭头出来 1.5s 后自己淡出，她手挪过去还没点到就没了（26/10/23 小0主人点名） */
+    btn.addEventListener('mouseenter', function(){
+        hovering = true;
+        if(idleTimer){ clearTimeout(idleTimer); idleTimer = null; }
+    });
+    btn.addEventListener('mouseleave', function(){
+        hovering = false;
+        if(btn.classList.contains('show')) armIdle();
+    });
+
+    /* 动态对准：以 AI 按钮实际包围盒为基准 —— 水平中心对齐、底边留 GAP。
+       不靠写死 right/bottom：屏宽、横竖屏、滚动条宽度、按钮自身改尺寸/移位，始终居中于其正上方。
+       坐标系坑（26/10/23 晚修）：必须用 documentElement.clientWidth/Height（不含经典滚动条），
+       与 getBoundingClientRect 同属布局视口；window.innerWidth/Height 含滚动条宽，
+       Edge 的经典滚动条会把箭头往左带约一个滚动条宽（Firefox 滚动条不占布局宽所以看不出） */
+    function place(){
+        if(!fab) return;
+        var r = fab.getBoundingClientRect();
+        if(!r.width || !r.height) return;                 // 按钮未渲染则保留上次位置
+        var w = btn.offsetWidth || 38, h = btn.offsetHeight || 38;
+        var vw = document.documentElement.clientWidth  || window.innerWidth;
+        var vh = document.documentElement.clientHeight || window.innerHeight;
+        var cx = r.left + r.width / 2;                    // 按钮水平中心
+        btn.style.right  = Math.max(0, Math.round(vw - cx - w / 2)) + 'px';
+        // 箭头底边落在按钮顶边上方 GAP 处：bottom = 视口高 - (按钮顶 - GAP)
+        btn.style.bottom = Math.max(0, Math.round(vh - (r.top - GAP))) + 'px';
+    }
+
+    function update(){
+        ticking = false;
+        var y = window.scrollY || document.documentElement.scrollTop || 0;
+        var dy = y - lastY;
+        lastY = y;
+        var now = performance.now();
+        var dt = lastT > 0 ? now - lastT : 0; lastT = now;   // 首帧 dt=0：时长从本段上滑第一帧起算
+        if(dy < -JITTER){                 // 上滑中：累计本段位移与持续时长
+            upDist += -dy; upMs += dt;
+            if(y > MIN_Y){
+                if(upDist >= UP_PX && upMs >= UP_MS) show();   // 翻够距离且持续够久才露面
+            }else hide();
+        }else if(dy > JITTER){            // 向下滚动：打断累计，立即隐藏（悬停时例外：她正指着箭头要它别跑）
+            upDist = 0; upMs = 0; lastT = -1;
+            if(!hovering) hide();
+        }else{                            // 静止帧（微小抖动）：同样打断累计
+            upDist = 0; upMs = 0; lastT = -1;
+        }
+        armIdle();
+    }
+
+    window.addEventListener('scroll', function(){
+        if(!ticking){ window.requestAnimationFrame(update); ticking = true; }
+    }, {passive:true});
+    window.addEventListener('resize', place);
+    window.addEventListener('orientationchange', function(){ setTimeout(place, 120); });
+
+    /* AI 面板展开时按钮会被加 .hidden 隐身 —— 箭头不单独露脸浮在面板上；面板收起后恢复并对准 */
+    if(fab && window.MutationObserver){
+        new MutationObserver(function(){
+            fabOn = !fab.classList.contains('hidden');
+            if(!fabOn){ hide(); return; }
+            place();
+            /* 26/10/23 实测坑：面板收起时 fab 正从 scale(.5) 过渡回 scale(1)（.2s），
+               此刻 getBoundingClientRect 是缩小中间态，r.top 偏下 → 箭头算低约 14px
+               （vgap 16→2）。transition 列表里没有 right/bottom，过渡结束即终态，
+               所以延时再校准一次；transitionend 可能被中断，不依赖它 */
+            setTimeout(place, 260);
+        }).observe(fab, {attributes:true, attributeFilter:['class']});
+    }
+
+    btn.addEventListener('click', function(){
+        if(idleTimer){ clearTimeout(idleTimer); idleTimer = null; }
+        window.scrollTo({ top:0, behavior:'smooth' });   // 回顶动画期间仍在上行，箭头保持可见，到顶即隐
+    });
+
+    place();
+    window.addEventListener('load', place);
+    hide();
+})();
+</script>
 </body>
 </html>
