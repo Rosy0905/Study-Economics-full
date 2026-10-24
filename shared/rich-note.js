@@ -30,7 +30,10 @@
                 l.href = base + 'katex.min.css';
                 document.head.appendChild(l);
                 window.__rteKatexReady = true;
-                document.querySelectorAll('.note-editor').forEach(renderMathIn);
+                /* 26/10/24：编辑态的笔记框一律不渲染 —— 那里要保持 $...$ 源码（见 hookEditSource） */
+                document.querySelectorAll('.note-editor').forEach(function (ed) {
+                    if (ed.getAttribute('contenteditable') !== 'true') renderMathIn(ed);
+                });
             };
             s.onerror = next;
             document.head.appendChild(s);
@@ -1132,7 +1135,10 @@
                    而那条按钮排被本脚本藏起来了（display:none），所以用户点了看不到任何反馈。
                    这里在我们自己的按钮上重放一遍原效果：换字 + 变绿，1.2 秒后还原。 */
                 showSaved(b);
-                setTimeout(function () { renderMathIn(editor); }, 60);
+                setTimeout(function () {
+                    /* 还在编辑态就别渲染，保留源码给用户继续改 */
+                    if (editor.getAttribute('contenteditable') !== 'true') renderMathIn(editor);
+                }, 60);
             } else if (act === 'clear') {
                 var cv = area.querySelector('.note-clear');
                 if (cv) cv.click();
@@ -1619,10 +1625,109 @@
         }, true);
     }
 
+    /* ============ 26/10/24：笔记编辑态显示 LaTeX 原文 ======================
+       笔记框一个框两用（编辑态 + 查看态）。以前进编辑态不做还原，用户看到的是
+       KaTeX 拼出来的一堆 span，想改公式根本无从下手。现在：
+         · 进编辑态 → 把已渲染的公式还原成 $...$ 源码，直接改；
+         · 退出编辑（失焦 / 保存后）→ 再渲染回公式。
+       · 光标尽量落在你点的地方：点普通文字原地不动，点公式则落到该公式源码末尾。
+       · 已经还原过（没有 .katex-host）直接跳过，不会反复折腾。
+       · 没留源码的老公式（无 data-tex）不动，免得丢内容。 */
+    function hookEditSource() {
+        var pendingRange = null;   /* 这一次点击落在哪，进编辑态后用来摆光标 */
+
+        function pointRange(x, y) {
+            try {
+                if (document.caretRangeFromPoint) return document.caretRangeFromPoint(x, y);
+            } catch (e) {}
+            if (document.caretPositionFromPoint) {
+                var p = document.caretPositionFromPoint(x, y);
+                if (!p) return null;
+                var r = document.createRange();
+                r.setStart(p.offsetNode, p.offset);
+                r.collapse(true);
+                return r;
+            }
+            return null;
+        }
+
+        /* 点下去时先记位置：此刻还是渲染态，但位置信息等下要用 */
+        document.addEventListener('click', function (e) {
+            var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
+            if (!ed || ed.getAttribute('contenteditable') === 'true') { pendingRange = null; return; }
+            var r = pointRange(e.clientX, e.clientY);
+            pendingRange = (r && r.startContainer && ed.contains(r.startContainer)) ? r : null;
+        }, true);
+
+        /* 还原公式为源码，返回每个公式生成的文本节点（顺序与 .katex-host 一致） */
+        function deflateTracked(root) {
+            var out = [];
+            root.querySelectorAll('.katex-host').forEach(function (host) {
+                var tex = host.getAttribute('data-tex');
+                if (!tex) { out.push(null); return; }   /* 占位，保证与 .katex-host 的索引一一对应 */
+                var disp = host.getAttribute('data-disp') === '1';
+                var txt = document.createTextNode(disp ? ('$$' + tex + '$$') : ('$' + tex + '$'));
+                if (host.parentNode) { host.parentNode.replaceChild(txt, host); out.push(txt); }
+            });
+            return out;
+        }
+
+        function locate(ed, r) {
+            if (!r || !r.startContainer || !ed.contains(r.startContainer)) return null;
+            var hosts = ed.querySelectorAll('.katex-host');
+            for (var i = 0; i < hosts.length; i++) {
+                if (hosts[i].contains(r.startContainer)) return { host: i };
+            }
+            return { node: r.startContainer, offset: r.startOffset };
+        }
+
+        function putCaret(node, offset) {
+            if (!node || !node.parentNode) return;
+            try {
+                var len = node.nodeValue ? node.nodeValue.length : 0;
+                var r = document.createRange();
+                r.setStart(node, Math.max(0, Math.min(offset, len)));
+                r.collapse(true);
+                var sel = window.getSelection();
+                if (!sel) return;
+                sel.removeAllRanges();
+                sel.addRange(r);
+            } catch (e) {}
+        }
+
+        document.addEventListener('focusin', function (e) {
+            var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
+            if (!ed) return;
+            /* 子页的处理是先设 contenteditable 再 focus，走到这里应该已经是 true */
+            if (ed.getAttribute('contenteditable') !== 'true') return;
+            if (!ed.querySelector('.katex-host')) { pendingRange = null; return; }
+            var info = locate(ed, pendingRange);
+            pendingRange = null;
+            var made = deflateTracked(ed);
+            if (!info) return;
+            if (info.host !== undefined) {
+                var t = made[info.host];
+                if (t) putCaret(t, t.nodeValue.length);   /* 点在公式里 → 光标落到源码末尾 */
+            } else {
+                putCaret(info.node, info.offset);         /* 点在普通文字 → 原地不动 */
+            }
+        }, true);
+
+        document.addEventListener('focusout', function (e) {
+            var ed = e.target && e.target.closest ? e.target.closest('.note-editor') : null;
+            if (!ed) return;
+            /* 子页的 focusout 处理（把 contenteditable 设回 false）在冒泡阶段跑，等它跑完 */
+            setTimeout(function () {
+                if (ed.getAttribute('contenteditable') !== 'true') renderMathIn(ed);
+            }, 60);
+        }, true);
+    }
+
     function start() {
         injectStyle();
         scan();
         hookNativeSave();
+        hookEditSource();
         var mo = new MutationObserver(function () { scan(); });
         mo.observe(document.body, { childList: true, subtree: true });
         /* 老笔记里的公式也渲染一遍 */
