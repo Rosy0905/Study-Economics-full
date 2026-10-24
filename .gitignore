@@ -2,3 +2,7 @@
 *.bak.*
 edit-style-preview.html
 _github_sync/
+*.bak_*
+
+# 本地构建脚本、题干快照与答案源，全部不上传
+_tools/

@@ -416,9 +416,52 @@ AI 对话可以分享，做成勾选式：只把勾选的那几条生成分享�
 
 本知识库是纯静态网页，主要技术包括 HTML / CSS / JavaScript、浏览器 localStorage 本地存储、语音合成 API、文件读取 API、Canvas 图片压缩、Markdown 渲染、LaTeX 公式渲染（本地 KaTeX）和流式 AI 接口调用。数据不会自动上传到云端。AI 对话会发送到所配置的 API 服务商，请自行注意 API Key 和隐私安全。
 
-### 2. shared 目录
+### 2. 目录结构
 
-九个页面共用的部分放在 `shared/` 目录：确认弹窗（`confirm.js`）、存储安全（`storage-guard.js`）、板块串连导航（`section-nav.js`）、筛选记忆（`filter-memory.js`）、文本转义（`escape.js`）、富文本笔记（`rich-note.js`）。改一处，九个页面同时生效。
+纯静态站点，没有后端也没有构建步骤：仓库里的 HTML / JS 就是线上跑的那一份，改完推上去就生效。
+
+```
+.
+├─ index.html            首页：八个模块入口、学习进度、朗读、清除、同步
+├─ README.md             仓库首页，只有一句简介和本说明 / 工作日志两个链接
+├─ manifest.webmanifest  PWA 清单（图标、主题色、独立窗口打开）
+├─ .nojekyll             关掉 GitHub Pages 的 Jekyll 处理，否则 _docs/ 这类下划线开头的目录不会被发布
+├─ ai-assistant.js       AI 答疑助手，九个页面共用
+├─ ai-cards-bridge.js    AI 回答 → “我的卡片”的桥接层
+├─ self-test.js          自测模式（遮答案、会了 / 模糊 / 忘了、统计条）
+├─ shared/               九个页面共用的六个模块
+├─ vendor/katex/         本地公式渲染库（CSS + JS + 20 个字体文件）
+├─ icons/                站点图标与 PWA 图标（6 个）
+├─ 1micro-recitation/    背诵（微观）
+├─ 2macro-recitation/    背诵（宏观）
+├─ 3calc-keypoints/      计算要点
+├─ 4calc-special/        计算专项
+├─ 5micro-short-answer/  简答专项（微观）
+├─ 6macro-short-answer/  简答专项（宏观）
+├─ 7essay/               论述专项
+├─ 8past-exams/          历年真题（题库页 + 答案册）
+├─ 9my-cards/            我的卡片
+└─ _docs/                本说明与工作日志
+```
+
+**九个模块目录里固定是两个文件。** `index.html` 是页面本体，卡片数据以 `const cardData` 直接内嵌在文件里——改题目、改答案就是改这个 HTML，没有另外的数据文件要找。`share.html` 是一份几百字节的空壳，只为接住 AI 分享链接：对方打开只看得到分享的那段对话，看不到你的学习页面。
+
+**历年真题目录多两个文件。** `answers.html` 是答案册页；`answers-data.js` 装 32 套卷 463 道题的答案正文（1.5 MB），由本地脚本按答案源生成，答案册用 `<script src>` 整份读进来。这个 js 不要手改，下次重新生成会被覆盖。
+
+**`shared/` 六个文件，改一处九个页面同时生效：**
+
+| 文件                | 作用                |
+| ----------------- | ----------------- |
+| `confirm.js`      | 统一确认弹窗            |
+| `storage-guard.js` | localStorage 容量保护 |
+| `section-nav.js`  | 顶栏序号圆钮的模块串连切换     |
+| `filter-memory.js` | 筛选条件记忆            |
+| `escape.js`       | 文本转义              |
+| `rich-note.js`    | 富文本笔记             |
+
+`vendor/katex/` 是公式渲染的本地副本，断网也能显示；自己部署时容易漏传这个目录，漏了公式就会显示成 `$…$` 原文（见 8.2.3）。
+
+构建与校验脚本、答案源文件、题干快照都不随仓库发布（`.gitignore` 里排除了），仓库里只放站点运行必需的东西。
 
 ### 3. 总结
 
