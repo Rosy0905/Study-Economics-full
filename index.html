@@ -1728,7 +1728,7 @@ function renderHome() {
         const key = localStorage.key(i);
         if (!key) continue;
 
-        if (key === 'eco_kb_progress') { toRemove.push(key); continue; }
+        if (key === 'eco_kb_progress' || key === 'eco_kb_progress_at' || key === 'eco_kb_tts_rate') { toRemove.push(key); continue; }
 
         for (const idx of selected) {
           const prefix = MODULES[idx].storagePrefix;
