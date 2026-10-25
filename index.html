@@ -1826,8 +1826,10 @@ function renderHome() {
   const MODULE_PREFIXES = MODULES.map(m => m.storagePrefix).filter(Boolean)
                           .concat(['custom_cards_', 'custom_chapters_']);
 
-  /* 学习数据（全局） */
-  const ALLOW = ['eco_kb_progress', 'eco_kb_tts_rate'];
+  /* 学习数据（全局）。eco_kb_progress_at 是进度保存时间戳，
+     26/10/25 补上——主站同步球靠 eco_kb_ 前缀能收到它，
+     但本站自己的导出只认这个白名单，漏了它备份就少一个键 */
+  const ALLOW = ['eco_kb_progress', 'eco_kb_progress_at', 'eco_kb_tts_rate'];
 
   /* AI 对话历史 */
   const AI_HISTORY_PREFIXES = ['ai_assistant_history_'];
