@@ -1212,7 +1212,7 @@ footer {
         <span class="exp-tick"></span>
         <span class="exp-txt">
           <b>AI 配置</b>
-          <i>提示词 / 面板尺寸（不含 API Key）</i>
+          <i>提示词 / 面板尺寸 / 卡片记忆（不含 API Key）</i>
         </span>
       </label>
 
@@ -1799,7 +1799,7 @@ function renderHome() {
    同步内容：
    - 8 个模块的学习数据（收藏 / 笔记 / 编辑）
    - 学习进度记录
-   - AI 助手：提示词 / 对话历史 / 面板尺寸（可选）
+   - AI 相关：提示词 / 对话历史 / 面板尺寸 / 卡片记忆（可选）
    注意：
    - 导出时可自由勾选需要的内容，默认全选
    - 导出 AI 配置时会自动剔除 API Key，防止泄露
@@ -1834,11 +1834,15 @@ function renderHome() {
   /* AI 对话历史 */
   const AI_HISTORY_PREFIXES = ['ai_assistant_history_'];
 
-  /* AI 配置（提示词 / 面板尺寸 / 版本号） */
+  /* AI 配置（提示词 / 面板尺寸 / 版本号 / 卡片记忆）
+     26/10/26 补上 ai_cards_last_cfg：存成卡片时上次选的分类和章节。
+     主站导出一直带着它，本站自己的导出只认下面几个前缀，把它漏了，
+     换设备导入后要重新选一次 */
   const AI_CONFIG_PREFIXES  = [
     'ai_assistant_cfg_',
     'ai_assistant_size_',
-    'ai_assistant_sys_ver'
+    'ai_assistant_sys_ver',
+    'ai_cards_last_cfg'
   ];
 
   /* AI 配置的 key 名（导出时剔除 key / 导入时保留 key） */
