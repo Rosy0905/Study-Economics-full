@@ -1519,7 +1519,10 @@
             if (hasImg) return;
             var html = '';
             try { html = cd.getData('text/html') || ''; } catch (err) { html = ''; }
-            if (html) return;                       /* 自带富文本 → 原样粘 */
+            /* 26/10/26：安卓剪贴板连纯文本都会附带一层 HTML 空壳（只有 meta/br/p/span 之类），
+               以前见到 html 就原样交给浏览器，结果 AI 复制来的 md 表格整块塌成竖线。
+               只有真富文本（带表格/加粗/标题/图片等标签）才放过，空壳继续走下面的纯文本转换。 */
+            if (html && /<(table|thead|tbody|tr|td|th|strong|b|em|i|u|h[1-6]|ul|ol|li|img|pre|code|a|blockquote)[\s>]/i.test(html)) return;
             var txt = '';
             try { txt = cd.getData('text/plain') || ''; } catch (err2) { txt = ''; }
             if (!txt || !looksLikeMd(txt)) return;  /* 普通文字 → 原样粘 */

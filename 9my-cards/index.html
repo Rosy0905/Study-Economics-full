@@ -3019,10 +3019,12 @@
                 }
             }
         }
-        /* ② 剪贴板自带 HTML（鼠标选字复制 / Word / 网页）—— 原样放过，不转换、不膨胀 */
+        /* ② 剪贴板自带 HTML（鼠标选字复制 / Word / 网页）—— 原样放过，不转换、不膨胀。
+              26/10/26：安卓系统剪贴板会给纯文本套一层 HTML 空壳，得先甄别真假，
+              只有真富文本才放过，否则继续走③按 markdown 转换。 */
         var html = '';
         try { html = cd.getData('text/html'); } catch (x) {}
-        if (html && html.trim()) return;
+        if (html && /<(table|thead|tbody|tr|td|th|strong|b|em|i|u|h[1-6]|ul|ol|li|img|pre|code|a|blockquote)[\s>]/i.test(html)) return;
         /* ③ 纯文本：看着像 Markdown 才转成 HTML 插入；普通纯文本仍走浏览器默认粘贴 */
         var text = '';
         try { text = cd.getData('text/plain'); } catch (x) {}
