@@ -209,7 +209,7 @@
            与「我的卡片」保持同一套参数。 */
         '.note-editor .katex{font-size:1.05em;}',
         '.note-editor .katex-display>.katex{font-size:1.12em;line-height:1;padding:0.25em 0;}',
-        '.note-editor .katex-display{margin:1px 0;overflow-x:auto;}',
+        '.note-editor .katex-display{margin:1px 0;overflow-x:auto;overflow-y:hidden;}',
         /* 粘贴进来的标题：浏览器默认 h1 是 2em（28px），在 14px 的笔记里大得离谱，
            按「我的卡片」同一套值收一档。 */
         '.note-editor h1,.note-editor h2,.note-editor h3,.note-editor h4,.note-editor h5{',
