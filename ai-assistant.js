@@ -1004,7 +1004,7 @@ body.shared-ai-view .ai-close{display:none;}
     var headR = panel.querySelector('.ai-head-r');
     if (headR) headR.style.display = on ? 'none' : '';
     /* 26/10/23：头部左侧的「读卡」开关也隐藏——分享视图没有「当前卡片」可读，
-       留着个开关纯属误导（她反馈「分享链接里读卡按钮在顶部显示」）。
+       留着个开关纯属误导（分享链接里读卡按钮会显示在顶部）。
        注意只动 display：syncReadCardUI 只管 class/title，两者不打架 */
     var rc = $('aiReadCard');
     if (rc) rc.style.display = on ? 'none' : '';

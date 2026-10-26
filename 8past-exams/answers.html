@@ -234,9 +234,9 @@
     .ans-body p { margin: 0 0 .45em 0; text-indent: 2em; }
     .ans-body p.par { margin-top: .8em; }
     .ans-body p.fm, .ans-body p.fig { text-indent: 0; }
-    /* 独立成行的整行【标签】（如【补充：…】）：随正文首行缩进，不再顶格（小0主人定 26/10/21） */
+    /* 独立成行的整行【标签】（如【补充：…】）：随正文首行缩进，不再顶格（已定 26/10/21） */
     .ans-body p.ah { text-indent: 2em; }
-    /* 提示/校注/注：随正文首行缩进（小0主人定，26/10/21） */
+    /* 提示/校注/注：随正文首行缩进（已定，26/10/21） */
     /* 「第一，」是①的分点：与正文同宽同缩进，只靠序号本身区分层级 */
     .ans-body p.lv3 { margin-top: .35em; }
     /* 单独成行的小标题：①从用户角度分析 / （2）企业持有存货的原因： */
@@ -246,7 +246,7 @@
         text-indent: 1em;   /* 比正文 2em 少一点，让 ① 第一，看起来归它管 */
     }
     .ans-body p.sub:first-child { margin-top: 0; }
-    /* 【知识梳理】里的分节标题：缩进随正文 2em，不凸出（小0主人定 26/10/22） */
+    /* 【知识梳理】里的分节标题：缩进随正文 2em，不凸出（已定 26/10/22） */
     .ans-body p.sub.knhead { text-indent: 2em; }
     .ans-body p:last-child { margin-bottom: 0; }
     /* 行首【标签】：单独成行时整行加粗，跟正文时只加粗标签 */
@@ -277,10 +277,10 @@
         font-size: 12.5px; color: #52705d; background: #eaf3e6;
         border-radius: 7px; padding: 5px 11px; margin: .55em 0 .7em 0; line-height: 1.8;
     }
-    /* 题干区表格（.q-head .stem 内，26/10/23 晚小0主人定）：白底、边框用题干正文字色 #1c3322；
+    /* 题干区表格（.q-head .stem 内，26/10/23 晚已定）：白底、边框用题干正文字色 #1c3322；
        窄屏横向滑动，不挤成豆腐块。底部 margin 归 0——题干表格与「参考答案」区的间距
-       必须和普通题干文字一样（原 .8em 会多出约 10px，26/10/23 晚小0主人指出）。
-       注：米白 #faf7f0 试过，白卡片旁显黄，改纯白（26/10/23 晚小0主人：「黄了」） */
+       必须和普通题干文字一样（原 .8em 会多出约 10px，26/10/23 晚已改）。
+       注：米白 #faf7f0 试过，白卡片旁显黄，改纯白（26/10/23 晚） */
     .q-head .stem .tb-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: .6em 0 0 0; padding-bottom: 2px; }
     .q-head .stem .tb-wrap::-webkit-scrollbar { height: 5px; }
     .q-head .stem .tb-wrap::-webkit-scrollbar-thumb { background: #d6d6d6; border-radius: 3px; }
@@ -296,7 +296,7 @@
     }
     .q-head .stem table.ah-tb th { background: #ffffff; font-weight: 600; color: #1c3322; }
     .q-head .stem table.ah-tb td.rh { background: #ffffff; color: #1c3322; font-weight: 500; }
-    /* 答案区表格：淡绿系，跟图示同一族；窄屏横向滑动，不挤成豆腐块（26/10/23 晚小0主人：答案页表格原样式很好，还原；
+    /* 答案区表格：淡绿系，跟图示同一族；窄屏横向滑动，不挤成豆腐块（26/10/23 晚：还原原样式；
        同晚再加：边框加深一档——表格底 #f6faf4 与答案区底 #f2f8ef 太近，原边框 #d2e2cd/#dae8d6 区分不出来） */
     .ans-body .tb-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: .6em 0 .8em 0; padding-bottom: 2px; }
     .ans-body .tb-wrap::-webkit-scrollbar { height: 5px; }
@@ -320,7 +320,7 @@
     }
     .ans-body p.ans-tip b { color: #3f6b4d; font-weight: 600; }
     /* 提示条打头时贴顶：ans-tip 自带 1.05em 上边距是为「跟在正文后」设计的，
-       作为答案区第一个元素时要豁免，否则离「参考答案」标签多出一截（26/10/22 小0主人定） */
+       作为答案区第一个元素时要豁免，否则离「参考答案」标签多出一截（26/10/22 已定） */
     .ans-body p.ans-tip:first-child { margin-top: 0 !important; }
 
     /* 答案前的出处小字：淡绿底注释式，整块一条，不加标识、不加粗 */
@@ -641,7 +641,7 @@
     }
 
     /* 答案区表格：首行为表头，单元格用半角 | 分隔；单元格内 __x__ 渲染为加粗
-       （原书用划线标出的格子以加粗代替），首列自动作为行标题列（26/10/23 小0主人定） */
+       （原书用划线标出的格子以加粗代替），首列自动作为行标题列（26/10/23 已定） */
     function tbHtml(rows) {
         if (!rows || !rows.length) return '';
         var h = '<div class="tb-wrap"><table class="ah-tb">';
@@ -659,7 +659,7 @@
     }
 
     /* 题干里的手工表格（原书靠空格对齐的收益矩阵 / 汇率表 / 报酬表）
-       题干是纯文本、空格对齐，比例字体下必然错位，故识别成真表格（26/10/23 小0主人点名）
+       题干是纯文本、空格对齐，比例字体下必然错位，故识别成真表格（26/10/23 已定）
        判据收紧到「恰好能认出全库 4 处、零误伤」，回归校验见 _chk_stem_tb.js：
        连续 ≥2 行、每行含连续空白、列数一致（或表头少一列 = 缺左上角格）、
        不含等号 / 句读 / 分值括注、首列不带冒号逗号、至少 2 行含 ≥2 个数字型单元格 */
@@ -749,19 +749,19 @@
         var out = '', gap = false;   // gap：上一个空行，用来区分“段”与“行”
         function emit(cls, html, blk) {
             var isFirst = (out === '');   // 首个元素不加 par：段间距只作用于段与段之间，
-                                          // 答案区第一个元素贴「参考答案」标签（26/10/22 小0主人定）
+                                          // 答案区第一个元素贴「参考答案」标签（26/10/22 已定）
             var c = (cls || '') + ((gap || blk) && !isFirst ? ' par' : '');
             out += '<p' + (c.trim() ? ' class="' + c.trim() + '"' : '') + '>' + html + '</p>';
             gap = false;
         }
         var bc = false;   // 已进入【补充题】：其解答行首的「解：」要保留，样式同标签
-        var kn = false;   // 已进入【知识梳理】：块内（N）不加粗，无序号短行才是分节标题（26/10/22 小0主人定）
+        var kn = false;   // 已进入【知识梳理】：块内（N）不加粗，无序号短行才是分节标题（26/10/22 已定）
         var tbl = null;   // 正在收集表格行：［表格］…［/表格］
         var fmBlk = null;   // 正在收集多行公式块：［公式］…［/公式］
         lines.forEach(function (raw) {
             var t = raw.replace(/\s+$/, '');
             /* 表格块：［表格］起、［/表格］止，中间每行即一行数据，单元格用半角 | 分隔，
-               首行为表头。空行在块内无意义（直接跳过），避免被 gap 逻辑打断（26/10/23 小0主人定） */
+               首行为表头。空行在块内无意义（直接跳过），避免被 gap 逻辑打断（26/10/23 已定） */
             if (tbl) {
                 if (/^［\s*\/\s*表格\s*］$/.test(t.trim())) {
                     out += tbHtml(tbl); tbl = null; gap = false; return;
@@ -771,7 +771,7 @@
             }
         if (/^［\s*表格\s*］$/.test(t.trim())) { tbl = []; gap = false; return; }
         /* 公式块：［公式］起、［/公式］止，块内所有行合并成一个公式块——多行等式/推导不再被逐行拆碎，
-           且块内不经 isFormula 逐行判定，纯希腊符号行也有底色（26/10/23 小0主人定） */
+           且块内不经 isFormula 逐行判定，纯希腊符号行也有底色（26/10/23 已定） */
         if (fmBlk) {
             if (/^［\s*\/\s*公式\s*］$/.test(t.trim())) { emit('fm', fmHtml(fmBlk.join('\n')), true); fmBlk = null; return; }
             if (t.trim()) fmBlk.push(t.trim());
@@ -779,18 +779,18 @@
         }
         if (/^［\s*公式\s*］$/.test(t.trim())) { fmBlk = []; gap = false; return; }
         if (!t.trim()) { gap = true; return; }
-            /* 转录端（小兮）行首「!」前缀：无样式含义，剥掉后按常规判据渲染
-               （26/10/22 小0主人定——2010/2011 新录答案里出现 16 处，如 !（2）完全竞争市场…理由如下：） */
+            /* 转录端行首「!」前缀：无样式含义，剥掉后按常规判据渲染
+               （26/10/22 已定——2010/2011 新录答案里出现 16 处，如 !（2）完全竞争市场…理由如下：） */
             var mBang = t.match(/^!\s*(.+)$/);
             if (mBang) t = mBang[1];
             /* 数据层单设语法：行首「#」= 强制本行按小问标题渲染（p.sub 加粗）——给个别
-               字数超 30 但语义明确是标题的行用（26/10/22 小0主人定，A2015-E2 首用）。
+               字数超 30 但语义明确是标题的行用（26/10/22 已定，A2015-E2 首用）。
                「#」后有无空白均可；默认不写就不生效，不影响其他卷与自动判据 */
             var mForce = t.match(/^#\s*(.+)$/);
             if (mForce) { emit('sub', withNum(mForce[1].trim()), true); return; }
             /* 反相单设：行首「~」= 强制本行按正文渲染（一律不加粗）——给个别短得会被
                【知识梳理】/【知识总结】区 knhead 等自动判据误当成标题的行用
-               （26/10/22 小0主人定，A2014-C4 知识总结区首用：ρ——自然利率、①求动态总供给曲线方程等）。
+               （26/10/22 已定，A2014-C4 知识总结区首用：ρ——自然利率、①求动态总供给曲线方程等）。
                与「#」相对，默认不写就不生效，不动全局判据。
                不用「!」——那会跟转录端前缀撞车（见上 mBang） */
             var mPlain = t.match(/^~\s*(.+)$/);
@@ -805,32 +805,32 @@
                 if (bc && (kW === '证明' || kW === '证')) {
                     // 补充题区内「证明：／证：」→【证】标签，样式与【解】完全相同。
                     // 【证】【解】【答】的【】标签样式只为【补充题】设计——区外一律剥掉前缀按正文渲染
-                    // （26/10/23 小0主人定：2009S1 原卷是「答：」、2008S3 原题「证明：」，都不该带标签；
+                    // （26/10/23 已定：2009S1 原卷是「答：」、2008S3 原题「证明：」，都不该带标签；
                     //  A2013-S5 提示区内引蒋殿春书的「证明：」同理）
                     emit('', '<span class="ah-tag">【证】</span>' + withNum(t.slice(mDa[0].length)), true);
                     return;
                 }
                 if (bc && (kW === '解' || kW === '答')) {
-                    // 补充题解答开头：原书是「答：」显示【答】、「解：」显示【解】，各按原书体例（26/10/22 小0主人定）
+                    // 补充题解答开头：原书是「答：」显示【答】、「解：」显示【解】，各按原书体例（26/10/22 已定）
                     emit('', '<span class="ah-tag">【' + kW + '】</span>' + withNum(t.slice(mDa[0].length)), true);
                     return;
                 }
                 t = t.slice(mDa[0].length);   // 区外「答：」「解：」「证明：」「证：」不进正文，让小问标题顶到位
                 if (!t.trim()) { gap = true; return; }
             }
-            // 图示占位／表格占位：同款浅底块（26/10/23 小0主人定——表格要跟图示长一样）
+            // 图示占位／表格占位：同款浅底块（26/10/23 已定——表格要跟图示长一样）
             if (/^［\s*此处有(?:图示|表格)/.test(t)) { emit('fig', esc(t), true); return; }
             // 提示/校注：原书提示放末尾；校注是订正说明
             // 多条提示写【提示1】【提示2】，序号紧跟、中间不留空格；数据里手滑写成「提示 1」也归一成「提示1」
-            // 说明性栏目（命题背景/命题方式/热点背景/补充）与【提示】同款 ans-tip（26/10/22 小0主人定）；
-            // 【补充知识】不在此列——它与【补充题】【知识总结】【知识梳理】同属区块标题，走 ah 加粗（26/10/22 小0主人定）
+            // 说明性栏目（命题背景/命题方式/热点背景/补充）与【提示】同款 ans-tip（26/10/22 已定）；
+            // 【补充知识】不在此列——它与【补充题】【知识总结】【知识梳理】同属区块标题，走 ah 加粗（26/10/22 已定）
             var mNote = t.match(/^【((?:[^】]{0,12})?(?:提示|校注|注|命题背景|命题方式|热点背景|补充)\s*\d{0,2})】([\s\S]*)$/);
             if (mNote) { emit('ans-tip', '<b>【' + esc(mNote[1].replace(/\s+/g, '')) + '】</b>' + esc(mNote[2]), true); return; }
             var mAh = t.match(/^\s*【([^【]+?)】\s*$/);
             if (mAh) {
                 var hc = mAh[1].replace(/\s+/g, '');
                 if (hc === '补充题') { bc = true; kn = false; }
-                if (hc === '知识梳理' || hc === '知识总结') { kn = true; bc = false; }   // 原书「知识总结」框功能同知识梳理（26/10/22 小0主人定）
+                if (hc === '知识梳理' || hc === '知识总结') { kn = true; bc = false; }   // 原书「知识总结」框功能同知识梳理（26/10/22 已定）
                 if (/^(命题背景|命题方式|热点背景|补充[:：]|补充$)/.test(hc)) {
                     // 说明性栏目的整行写法（如 A2021-E2「【补充：除了回答需求政策之外…】」）同【提示】样式，不再走 ah 加粗
                     emit('ans-tip', '<b>【' + esc(mAh[1]) + '】</b>', true); return;
@@ -852,11 +852,11 @@
             if (isFormula(t)) { emit('fm', fmHtml(t)); return; }
             // 单独成行的短标题：正文区按（N）判；【补充题】【知识梳理】块内规则不同
             if (isSubHead(t)) {
-                if (!bc && !kn) { emit('sub', withNum(t), true); return; }   // 补充题内不加粗（小0主人定）
+                if (!bc && !kn) { emit('sub', withNum(t), true); return; }   // 补充题内不加粗（已定）
             } else if (kn && !/[。！？；：，、]/.test(t) && t.replace(/\s+/g, '').length <= 16) {
                 // 【知识梳理】里的无序号短行（如「凯恩斯的消费函数」）才是分节标题，
                 // 块内的（1）（2）回归正文——原书就是这样，避免标题层数倒挂；
-                // knhead：缩进与正文齐平，不凸出（26/10/22 小0主人定）
+                // knhead：缩进与正文齐平，不凸出（26/10/22 已定）
                 emit('sub knhead', withNum(t), true); return;
             }
             emit(RE_DI.test(t.trim()) ? 'lv3' : '', withNum(t), RE_NUM.test(t.trim()));
@@ -1776,8 +1776,8 @@
     var fab = document.querySelector('.ai-fab');
     var GAP    = 16;    // 箭头底边与 AI 按钮顶边的间距
     var MIN_Y  = 400;   // 距顶部 400 以内不出现（沿用旧阈值）
-    var IDLE_MS = 1500; // 停止滚动多久后隐藏（26/10/23 小0主人定 900→1500：出现的秒数久一点点；淡出 .25s 期间仍可点）
-    var UP_PX   = 150;  // 本段上滑累计满这么多像素就露出：约三格滚轮即出（26/10/23 小0主人定 250→150，原话"我滚三下鼠标滚轮出来了"）
+    var IDLE_MS = 1500; // 停止滚动多久后隐藏（26/10/23 已定 900→1500：出现的秒数久一点点；淡出 .25s 期间仍可点）
+    var UP_PX   = 150;  // 本段上滑累计满这么多像素就露出：约三格滚轮即出（26/10/23 已定 250→150）
     var UP_MS   = 150;  // 同时要求持续上滑满这么久：仍挡开瞬时猛甩/惯性尖峰（250→150，快拂三下也认）
     var JITTER  = 2;    // 位移小于此值视为抖动，不判方向
     var lastY = window.scrollY || document.documentElement.scrollTop || 0;
@@ -1789,13 +1789,13 @@
         if(idleTimer) clearTimeout(idleTimer);
         idleTimer = setTimeout(function(){
             idleTimer = null;
-            if(hovering) return;              // 鼠标停在箭头上：不自动隐藏，等她点（26/10/23 小0主人定）
+            if(hovering) return;              // 鼠标停在箭头上：不自动隐藏（26/10/23 已定）
             upDist = 0; upMs = 0; lastT = -1; hide();
         }, IDLE_MS);
     }
 
     /* 悬停锁：鼠标进箭头清掉倒计时，离开后若还可见就重新倒计时。
-       不然箭头出来 1.5s 后自己淡出，她手挪过去还没点到就没了（26/10/23 小0主人点名） */
+       不然箭头出来 1.5s 后自己淡出，手挪过去还没点到就没了（26/10/23 已定） */
     btn.addEventListener('mouseenter', function(){
         hovering = true;
         if(idleTimer){ clearTimeout(idleTimer); idleTimer = null; }
