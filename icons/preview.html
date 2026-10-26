@@ -173,24 +173,24 @@
   <h2>浏览器标签页</h2>
   <div class="card" style="padding:0;overflow:hidden">
     <div class="tabbar">
-      <div class="tab"><img src="favicon-16.png" alt=""><b>南开经济学 · 知识库</b><i>×</i></div>
-      <div class="tab" style="opacity:.55"><img src="favicon-16.png" alt=""><b>新标签页</b><i>×</i></div>
+      <div class="tab"><img src="icon.svg" alt=""><b>南开经济学 · 知识库</b><i>×</i></div>
+      <div class="tab" style="opacity:.55"><img src="icon.svg" alt=""><b>新标签页</b><i>×</i></div>
     </div>
-    <div class="pagebar">地址栏左侧显示的正是 16×16 图标</div>
+    <div class="pagebar">地址栏左侧的图标由 <code>icon.svg</code> 现场渲染，矢量缩到多小都清晰</div>
   </div>
   <div class="card" style="padding:0;overflow:hidden;margin-top:14px">
     <div class="tabbar dk">
-      <div class="tab"><img src="favicon-16.png" alt=""><b>南开经济学 · 知识库</b><i>×</i></div>
-      <div class="tab" style="opacity:.55"><img src="favicon-16.png" alt=""><b>新标签页</b><i>×</i></div>
+      <div class="tab"><img src="icon.svg" alt=""><b>南开经济学 · 知识库</b><i>×</i></div>
+      <div class="tab" style="opacity:.55"><img src="icon.svg" alt=""><b>新标签页</b><i>×</i></div>
     </div>
-    <div class="pagebar dk">深色主题下同一张 16×16。图标不透明，所以是一块浅色小方片，所有网站都这样</div>
+    <div class="pagebar dk">深色主题下还是同一份矢量。图标不透明，所以照样是一块浅色小方片，所有网站都这样</div>
   </div>
 
   <h2>收藏夹 / 书签栏</h2>
   <div class="card">
     <div class="bmbar">
-      <div class="bm"><img src="favicon-16.png" alt=""><span>经济学</span></div>
-      <div class="bm" style="opacity:.6"><img src="favicon-16.png" alt=""><span>其他书签</span></div>
+      <div class="bm"><img src="icon.svg" alt=""><span>经济学</span></div>
+      <div class="bm" style="opacity:.6"><img src="icon.svg" alt=""><span>其他书签</span></div>
     </div>
   </div>
 
@@ -233,7 +233,7 @@
       </div>
     </div>
     <p class="note">
-      装成应用后，任务栏取 192 或 512 那张缩到 24px 显示；窗口标题栏底色是 manifest 的 <code>theme_color</code>（<code>#E0D1EF</code>），左边那颗小图标取 32 那张。
+      装成应用后，任务栏与窗口标题栏左边那颗小图标，取 <code>favicon.ico</code> 或 manifest 图标里最接近的一帧，显示 24px；标题栏底色是 manifest 的 <code>theme_color</code>（<code>#E0D1EF</code>）。
     </p>
   </div>
 
@@ -248,7 +248,7 @@
       </div>
       <p class="note">
         点开应用那一瞬间显示的画面：底色取 manifest 的 <code>background_color</code>，中间那张来自 512 图标。<br>
-        所以背景色如果和图标底色差太远，这一下会闪；本页这张是按真实值铺的，看着不突兀就对了。
+        图标底色和启动底色本来就不是同一个值，所以中间会显出一块方形边，这是正常现象；本页照真实值铺，与实际启动画面一致。
       </p>
     </div>
   </div>
@@ -261,14 +261,14 @@
       <tr><td><code>index.html</code></td><td>—</td><td>主页面，按下方写法引用本目录图标</td></tr>
       <tr><td><code>manifest.webmanifest</code></td><td>—</td><td>PWA 声明，图标指向本目录</td></tr>
       <tr><td colspan="3" class="dim">本目录 <code>icons/</code></td></tr>
-      <tr><td><code>icon.svg</code></td><td>矢量</td><td>标签页、书签、Safari 固定标签页的源图</td></tr>
+      <tr><td><code>icon.svg</code></td><td>矢量</td><td>标签页、书签的源图；Safari 固定标签页读单色 mask-icon，本站指向同一份</td></tr>
       <tr><td><code>icon-maskable.svg</code></td><td>矢量</td><td>上面那份加 <code>scale(0.717)</code>，留出裁切安全边距</td></tr>
-      <tr><td><code>favicon.ico</code></td><td>16/32/48</td><td>传统标签页、Windows 快捷方式</td></tr>
+      <tr><td><code>favicon.ico</code></td><td>16/32/48</td><td>传统标签页、Windows 任务栏与快捷方式</td></tr>
       <tr><td><code>favicon-16.png</code></td><td>16</td><td>标签页、书签栏（源图直接缩放）</td></tr>
-      <tr><td><code>favicon-32.png</code></td><td>32</td><td>高分辨率标签页、书签、窗口小图标</td></tr>
+      <tr><td><code>favicon-32.png</code></td><td>32</td><td>不认 SVG 时的高分辨率退路</td></tr>
       <tr><td><code>favicon-48.png</code></td><td>48</td><td>Windows 站点图标</td></tr>
       <tr><td><code>apple-touch-icon.png</code></td><td>180</td><td>iOS / iPadOS 添加到主屏幕</td></tr>
-      <tr><td><code>icon-192.png</code></td><td>192</td><td>Android 主屏幕、任务栏</td></tr>
+      <tr><td><code>icon-192.png</code></td><td>192</td><td>Android 主屏幕 / 装成应用后的桌面图标</td></tr>
       <tr><td><code>icon-512.png</code></td><td>512</td><td>Android 启动画面 / PWA</td></tr>
       <tr><td><code>icon-maskable-512.png</code></td><td>512</td><td>Android 自适应图标</td></tr>
       <tr><td><code>preview.html</code></td><td>—</td><td>本页，只作查看用，不参与站点运行</td></tr>
@@ -316,13 +316,12 @@
   &lt;!-- 底色 --&gt;
   &lt;rect width="512" height="512" fill="#E0D1EF"/&gt;
 
-  &lt;!-- 整朵花居中：translate 定到画布中心，scale 控制大小 --&gt;
+  &lt;!-- 整朵花居中：translate 定到画布中心 --&gt;
   &lt;g transform="translate(256,256)"&gt;
 
     &lt;!-- 一片花瓣，复制五份，靠 rotate 转出整圈；fill 花瓣色，stroke 描边色 --&gt;
     &lt;path d="M0 0 C -62 -52, -66 -130, 0 -148 C 66 -130, 62 -52, 0 0 Z"
-          fill="#A86FD1" stroke="#6A2C91" stroke-width="22" stroke-linejoin="round"
-          transform="rotate(0)"/&gt;
+          fill="#A86FD1" stroke="#6A2C91" stroke-width="22" stroke-linejoin="round"/&gt;
     &lt;path d="M0 0 C -62 -52, -66 -130, 0 -148 C 66 -130, 62 -52, 0 0 Z"
           fill="#A86FD1" stroke="#6A2C91" stroke-width="22" stroke-linejoin="round"
           transform="rotate(72)"/&gt;
