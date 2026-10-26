@@ -2669,6 +2669,9 @@ body.shared-ai-view .ai-close{display:none;}
 
       tick.addEventListener('click', function (e) {
         e.stopPropagation();
+        /* 26/10/26：手指点横条不再直接跳，先把卡片展开让她挑，
+           省得手指落点稍偏就「只跳了一下、卡片没出来」；鼠标仍是一点即跳。 */
+        if (isTouchTap()) { showNavPanel(); return; }
         navScrollTo(i);
       });
     });
@@ -2728,7 +2731,19 @@ body.shared-ai-view .ai-close{display:none;}
     }
   }
 
-  /* 触屏没有 hover，改用「点一下展开 / 再点收起」；鼠标环境维持悬停展开。 */
+  /* 26/10/26：以前靠 (pointer:coarse) 猜设备，平板接鼠标时判断会打架，
+     导致「有时能弹、有时只剩跳转」。改成直接看这一次点的是不是手指。 */
+  var lastPointerType = '';
+  document.addEventListener('pointerdown', function (e) {
+    lastPointerType = (e && e.pointerType) || '';
+  }, true);
+  function isTouchTap() {
+    if (lastPointerType === 'mouse') return false;
+    if (lastPointerType === 'touch' || lastPointerType === 'pen') return true;
+    /* 拿不到 pointerType（老浏览器 / 键盘触发）时，按有没有触摸能力兜底 */
+    try { return (navigator.maxTouchPoints || 0) > 0 || isCoarsePointer(); }
+    catch (e) { return false; }
+  }
   function isCoarsePointer() {
     try { return !!(window.matchMedia && window.matchMedia('(pointer:coarse)').matches); }
     catch (e) { return false; }
@@ -2741,20 +2756,25 @@ body.shared-ai-view .ai-close{display:none;}
     var panelEl = document.getElementById('aiProgressPanel');
     if (!progress || !panelEl) return;
 
-    progress.addEventListener('mouseenter', function () {
-      if (isCoarsePointer()) return;      /* 触屏点按 own toggle，不再挂 hover */
+    /* 鼠标：划过进度条就展开、移开收起。用 pointerenter（自带 pointerType），
+       手指点按不会走到这里，和电脑上的手感一致。 */
+    progress.addEventListener('pointerenter', function (e) {
+      if (e.pointerType !== 'mouse') return;
       showNavPanel();
     });
-    progress.addEventListener('mouseleave', function () {
-      if (isCoarsePointer()) return;
+    progress.addEventListener('pointerleave', function (e) {
+      if (e.pointerType !== 'mouse') return;
       hideNavPanel();
     });
-    /* 触屏：点进度条区域展开/收起小卡片 */
+    /* 手指：点进度条（含横条本身）先展开卡片，再在卡片里挑去哪一问，和电脑的
+       「先看列表再选」是同一个节奏；鼠标点击不参与，仍是一点即跳。 */
     progress.addEventListener('click', function (e) {
-      if (!isCoarsePointer()) return;
+      if (!isTouchTap()) return;
       e.stopPropagation();
       panelEl.classList.toggle('show');
     });
+    /* 点卡片里的空白（不是某一行）不要冒泡回去，否则会立刻收起卡片 */
+    panelEl.addEventListener('click', function (e) { e.stopPropagation(); });
     /* 触屏：点别处收起 */
     document.addEventListener('click', function (e) {
       if (!panelEl.classList.contains('show')) return;
