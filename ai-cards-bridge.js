@@ -458,6 +458,13 @@
         if (!ans) {
             var clone = div.cloneNode(true);
             clone.querySelectorAll('.ai-msg-actions, .ai-select-box, .ai-cursor').forEach(function (n) { n.remove(); });
+            /* 26/10/26：AI 面板给表格套了一层 .ai-table-wrap（横向滚动 + 描边圆角），
+               这段样式在卡片页同样生效，原样搬进来表格外面就多一圈框。
+               拆掉这层容器，只留里面的 table，卡片自己的表格样式接管。 */
+            clone.querySelectorAll('.ai-table-wrap').forEach(function (n) {
+                while (n.firstChild) n.parentNode.insertBefore(n.firstChild, n);
+                n.parentNode.removeChild(n);
+            });
             ans = clone.innerHTML;
         }
         /* 提问：往上找最近的用户消息 */
