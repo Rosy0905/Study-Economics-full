@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>经济学 · 图标预览</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root{
+    --ink:#6A2C91; --ink2:#75389D; --muted:#9264B1; --faint:#A57EC0;
+    --acc:#A86FD1; --bg:#E0D1EF; --card:#FBF9FD;
+    --line:#C1A6D7; --line2:#CBB3DE;
+    --h1:#D4C0E6; --h2:#D9C7E9; --h3:#F3EEF9;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;padding:34px 22px 70px;
+    background:radial-gradient(900px 420px at 50% -80px,var(--h3),rgba(255,255,255,0)),var(--bg);
+    color:var(--ink2);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:900px;margin:0 auto}
+  header{display:flex;align-items:center;gap:16px;margin-bottom:4px}
+  header img{width:56px;height:56px;border-radius:13px;box-shadow:0 6px 18px rgba(0,0,0,.14)}
+  h1{margin:0;font-size:21px;color:var(--ink);letter-spacing:.3px}
+  .sub{margin:5px 0 0;font-size:12px;color:var(--muted)}
+  h2{font-size:14px;color:var(--ink);margin:34px 0 12px;letter-spacing:.4px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+  .note{font-size:12px;color:var(--muted);line-height:1.85;margin:10px 0 0}
+  .note b{color:var(--ink)}
+  .note:first-child{margin-top:0}
+
+  /* 尺寸一览 */
+  .sizes{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end}
+  .size{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .size img{display:block}
+  .size span{font-size:11px;color:var(--faint)}
+
+  /* 浅色 / 深色 */
+  .envs{display:flex;gap:16px;flex-wrap:wrap}
+  .env{display:flex;align-items:center;gap:20px;padding:14px 18px;border-radius:9px;border:1px solid}
+  .env-l{background:#FFFFFF;border-color:#E3E3E3}
+  .env-d{background:#20242B;border-color:#2E3540}
+  .env-img{display:flex;align-items:center;gap:16px}
+  .env-img img{display:block}
+  .env-l span{color:#8A8A8A}
+  .env-d span{color:#8E98A6}
+  .env-tag{font-size:11px}
+
+  /* 标签页 */
+  .tabbar{display:flex;align-items:flex-end;gap:6px;padding:9px 10px 0;background:var(--h1);border-radius:10px 10px 0 0}
+  .tab{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-bottom:0;
+       border-radius:8px 8px 0 0;padding:8px 12px 9px;min-width:200px;max-width:280px}
+  .tab img{width:16px;height:16px;display:block;flex:none}
+  .tab b{font-size:12px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tab i{margin-left:auto;font-style:normal;color:var(--line2);font-size:12px}
+  .pagebar{background:var(--card);border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;padding:10px 12px;font-size:12px;color:var(--faint)}
+  .tabbar.dk{background:#202124}
+  .tabbar.dk .tab{background:#35363A;border-color:#3C4043;border-bottom:0}
+  .tabbar.dk .tab b{color:#E8EAED}
+  .tabbar.dk .tab i{color:#8AB4F8}
+  .pagebar.dk{background:#292A2D;border-color:#3C4043;border-top:0;color:#9AA0A6}
+
+  /* 书签栏 */
+  .bmbar{display:flex;align-items:center;gap:10px;background:var(--h1);border-radius:9px;padding:8px 12px}
+  .bm{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
+  .bm img{width:16px;height:16px;display:block}
+  .bm span{font-size:12px;color:var(--ink)}
+
+  /* 主屏图标 */
+  .masks{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}
+  .mask{display:flex;flex-direction:column;align-items:center;gap:9px;width:132px}
+  .mask .frame{width:120px;height:120px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.16)}
+  .frame img{width:100%;height:100%;display:block}
+  .r-ios{border-radius:27px}
+  .r-squircle{border-radius:28px}
+  .r-circle{border-radius:50%}
+  .mask span{font-size:11px;color:var(--faint);text-align:center;line-height:1.5}
+
+  /* Windows 任务栏 */
+  .winbox{display:flex;flex-direction:column;gap:14px}
+  .taskbar{display:flex;align-items:center;gap:16px;height:46px;padding:0 18px;border-radius:9px}
+  .tb-l{background:#F3F3F3;border:1px solid #E2E2E2}
+  .tb-d{background:#1F1F1F;border:1px solid #2E2E2E}
+  .tb-icon{position:relative;width:24px;height:24px;flex:none}
+  .tb-icon img{width:24px;height:24px;display:block;border-radius:3px}
+  .tb-icon::after{content:"";position:absolute;left:50%;transform:translateX(-50%);bottom:-7px;width:13px;height:2.5px;border-radius:2px}
+  .tb-l .tb-icon::after{background:#9C9C9C}
+  .tb-d .tb-icon::after{background:#8A8A8A}
+  .tb-l span{font-size:11px;color:#9A9A9A;margin-left:4px}
+  .tb-d span{font-size:11px;color:#7C7C7C;margin-left:4px}
+
+  /* 应用窗口 */
+  .appwin{max-width:560px;border:1px solid #D4D4D4;border-radius:10px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.12)}
+  .titlebar{display:flex;align-items:center;gap:9px;height:38px;padding-left:13px;background:#E0D1EF}
+  .titlebar img{width:16px;height:16px;border-radius:3px;display:block}
+  .titlebar b{font-size:12px;font-weight:500;color:#6A2C91}
+  .titlebar .btns{margin-left:auto;display:flex;height:38px}
+  .titlebar .btns i{width:46px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;color:#4A4A4A}
+  .winbody{background:#FAFAFA;padding:20px 16px;min-height:76px;display:flex;flex-direction:column;gap:9px}
+  .winbody .bar{height:9px;border-radius:5px;background:#E7E7EA}
+  .winbody .bar.s{width:58%}
+  .winbody .bar.m{width:78%}
+
+  /* Android 启动画面 */
+  .splash-row{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+  .stage{background:#E9E9EC;border:1px solid #DCDCE1;border-radius:14px;padding:22px 26px;display:inline-flex}
+  .phone{width:172px;height:306px;border-radius:19px;overflow:hidden;display:flex;align-items:center;justify-content:center;
+         border:1px solid rgba(0,0,0,.16);box-shadow:0 8px 20px rgba(0,0,0,.16)}
+  .phone img{width:82px;height:82px;display:block}
+  .splash-row .note{margin:0;flex:1;min-width:250px}
+
+  /* 表格 */
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--h2);vertical-align:top}
+  th{color:var(--faint);font-weight:600;font-size:11px;letter-spacing:.4px}
+  td code{background:var(--h3);border:1px solid var(--h1);border-radius:4px;padding:1px 5px;font-size:11px;color:var(--ink)}
+  .dim{color:var(--muted)}
+  pre{background:var(--h3);border:1px solid var(--h1);border-radius:8px;padding:12px 14px;overflow:auto;
+      font-size:12px;line-height:1.7;color:var(--ink);margin:8px 0 0}
+  pre code{font:inherit}
+  .cap{font-size:11px;color:var(--faint);margin:0 0 10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="icon-192.png" alt="图标">
+    <div>
+      <h1>经济学 · 图标</h1>
+      <p class="sub">标签页 / 书签 / 桌面快捷方式 / iOS / Android</p>
+    </div>
+  </header>
+
+  <h2>多尺寸预览</h2>
+  <div class="card">
+    <div class="sizes">
+      <div class="size"><img src="favicon-16.png" width="16" height="16" alt=""><span>16</span></div>
+      <div class="size"><img src="favicon-32.png" width="32" height="32" alt=""><span>32</span></div>
+      <div class="size"><img src="favicon-48.png" width="48" height="48" alt=""><span>48</span></div>
+      <div class="size"><img src="apple-touch-icon.png" width="118" height="118" alt=""><span>180</span></div>
+      <div class="size"><img src="icon-192.png" width="118" height="118" alt=""><span>192</span></div>
+      <div class="size"><img src="icon-512.png" width="118" height="118" alt=""><span>512</span></div>
+    </div>
+  </div>
+
+  <h2>浅色 / 深色环境</h2>
+  <div class="card">
+    <p class="cap">图标本身不透明，放到深色底上会显出一块浅色方片，这是正常的。要看的是花瓣和描边分不分得开。</p>
+    <div class="envs">
+      <div class="env env-l">
+        <div class="env-img">
+          <img src="favicon-16.png" width="16" height="16" alt="">
+          <img src="favicon-32.png" width="32" height="32" alt="">
+          <img src="favicon-48.png" width="48" height="48" alt="">
+        </div>
+        <span class="env-tag">浅色</span>
+      </div>
+      <div class="env env-d">
+        <div class="env-img">
+          <img src="favicon-16.png" width="16" height="16" alt="">
+          <img src="favicon-32.png" width="32" height="32" alt="">
+          <img src="favicon-48.png" width="48" height="48" alt="">
+        </div>
+        <span class="env-tag">深色</span>
+      </div>
+    </div>
+  </div>
+
+  <h2>浏览器标签页</h2>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="tabbar">
+      <div class="tab"><img src="favicon-16.png" alt=""><b>南开经济学 · 知识库</b><i>×</i></div>
+      <div class="tab" style="opacity:.55"><img src="favicon-16.png" alt=""><b>新标签页</b><i>×</i></div>
+    </div>
+    <div class="pagebar">地址栏左侧显示的正是 16×16 图标</div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;margin-top:14px">
+    <div class="tabbar dk">
+      <div class="tab"><img src="favicon-16.png" alt=""><b>南开经济学 · 知识库</b><i>×</i></div>
+      <div class="tab" style="opacity:.55"><img src="favicon-16.png" alt=""><b>新标签页</b><i>×</i></div>
+    </div>
+    <div class="pagebar dk">深色主题下同一张 16×16。图标不透明，所以是一块浅色小方片，所有网站都这样</div>
+  </div>
+
+  <h2>收藏夹 / 书签栏</h2>
+  <div class="card">
+    <div class="bmbar">
+      <div class="bm"><img src="favicon-16.png" alt=""><span>经济学</span></div>
+      <div class="bm" style="opacity:.6"><img src="favicon-16.png" alt=""><span>其他书签</span></div>
+    </div>
+  </div>
+
+  <h2>主屏图标</h2>
+  <div class="card">
+    <p class="cap">系统会自己套圆角或圆形，所以要看的是裁完还剩多少花。</p>
+    <div class="masks">
+      <div class="mask"><div class="frame r-ios"><img src="apple-touch-icon.png" alt=""></div><span>iOS / iPadOS<br>180 加圆角</span></div>
+      <div class="mask"><div class="frame r-squircle"><img src="icon-maskable-512.png" alt=""></div><span>Android 圆角方形<br>maskable</span></div>
+      <div class="mask"><div class="frame r-circle"><img src="icon-maskable-512.png" alt=""></div><span>Android 圆形<br>maskable</span></div>
+    </div>
+    <p class="note">
+      安卓的圆角方形和圆形读的都是 manifest 里 <code>purpose: "maskable"</code> 那张，所以两个框里的花一样大。如果没声明 maskable，系统会拿普通图标往自适应框里塞，花会缩小并垫一圈底色。
+    </p>
+  </div>
+
+  <h2>Windows 任务栏与应用窗口</h2>
+  <div class="card">
+    <div class="winbox">
+      <div class="taskbar tb-l">
+        <div class="tb-icon"><img src="icon-192.png" alt=""></div>
+        <div class="tb-icon" style="opacity:.45"><img src="icon-192.png" alt=""></div>
+        <span>浅色任务栏 · 24×24</span>
+      </div>
+      <div class="taskbar tb-d">
+        <div class="tb-icon"><img src="icon-192.png" alt=""></div>
+        <div class="tb-icon" style="opacity:.45"><img src="icon-192.png" alt=""></div>
+        <span>深色任务栏 · 24×24</span>
+      </div>
+      <div class="appwin">
+        <div class="titlebar">
+          <img src="favicon-32.png" alt="">
+          <b>经济学</b>
+          <div class="btns"><i>—</i><i>□</i><i>✕</i></div>
+        </div>
+        <div class="winbody">
+          <div class="bar m"></div>
+          <div class="bar s"></div>
+        </div>
+      </div>
+    </div>
+    <p class="note">
+      装成应用后，任务栏取 192 或 512 那张缩到 24px 显示；窗口标题栏底色是 manifest 的 <code>theme_color</code>（<code>#E0D1EF</code>），左边那颗小图标取 32 那张。
+    </p>
+  </div>
+
+  <h2>Android 启动画面</h2>
+  <div class="card">
+    <div class="splash-row">
+      <div>
+        <div class="stage">
+          <div class="phone" style="background:#F2ECF8"><img src="icon-512.png" alt=""></div>
+        </div>
+        <p class="cap" style="margin:10px 0 0;text-align:center">底色 <code>#F2ECF8</code></p>
+      </div>
+      <p class="note">
+        点开应用那一瞬间显示的画面：底色取 manifest 的 <code>background_color</code>，中间那张来自 512 图标。<br>
+        所以背景色如果和图标底色差太远，这一下会闪；本页这张是按真实值铺的，看着不突兀就对了。
+      </p>
+    </div>
+  </div>
+
+  <h2>文件清单</h2>
+  <div class="card">
+    <table>
+      <tr><th>文件</th><th>尺寸</th><th>用途</th></tr>
+      <tr><td colspan="3" class="dim">上一级目录（站点根）</td></tr>
+      <tr><td><code>index.html</code></td><td>—</td><td>主页面，按下方写法引用本目录图标</td></tr>
+      <tr><td><code>manifest.webmanifest</code></td><td>—</td><td>PWA 声明，图标指向本目录</td></tr>
+      <tr><td colspan="3" class="dim">本目录 <code>icons/</code></td></tr>
+      <tr><td><code>icon.svg</code></td><td>矢量</td><td>标签页、书签、Safari 固定标签页的源图</td></tr>
+      <tr><td><code>icon-maskable.svg</code></td><td>矢量</td><td>上面那份加 <code>scale(0.717)</code>，留出裁切安全边距</td></tr>
+      <tr><td><code>favicon.ico</code></td><td>16/32/48</td><td>传统标签页、Windows 快捷方式</td></tr>
+      <tr><td><code>favicon-16.png</code></td><td>16</td><td>标签页、书签栏（源图直接缩放）</td></tr>
+      <tr><td><code>favicon-32.png</code></td><td>32</td><td>高分辨率标签页、书签、窗口小图标</td></tr>
+      <tr><td><code>favicon-48.png</code></td><td>48</td><td>Windows 站点图标</td></tr>
+      <tr><td><code>apple-touch-icon.png</code></td><td>180</td><td>iOS / iPadOS 添加到主屏幕</td></tr>
+      <tr><td><code>icon-192.png</code></td><td>192</td><td>Android 主屏幕、任务栏</td></tr>
+      <tr><td><code>icon-512.png</code></td><td>512</td><td>Android 启动画面 / PWA</td></tr>
+      <tr><td><code>icon-maskable-512.png</code></td><td>512</td><td>Android 自适应图标</td></tr>
+      <tr><td><code>preview.html</code></td><td>—</td><td>本页，只作查看用，不参与站点运行</td></tr>
+    </table>
+  </div>
+
+  <h2>接入方式</h2>
+  <div class="card">
+    <p class="note"><code>index.html</code> 的 <code>&lt;head&gt;</code> 里写这六条，路径都指向本目录：</p>
+<pre>&lt;link rel="icon" href="icons/icon.svg" type="image/svg+xml"&gt;
+&lt;link rel="icon" href="icons/favicon.ico" sizes="16x16 32x32 48x48"&gt;
+&lt;link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"&gt;
+&lt;link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png"&gt;
+&lt;link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png"&gt;
+&lt;link rel="mask-icon" href="icons/icon.svg" color="#6A2C91"&gt;</pre>
+    <p class="note">安装成应用还要靠 manifest，本目录相关的这几行是：</p>
+<pre>"icons": [
+  { "src": "icons/icon.svg",             "sizes": "any",     "type": "image/svg+xml", "purpose": "any" },
+  { "src": "icons/icon-192.png",         "sizes": "192x192", "type": "image/png",     "purpose": "any" },
+  { "src": "icons/icon-512.png",         "sizes": "512x512", "type": "image/png",     "purpose": "any" },
+  { "src": "icons/icon-maskable-512.png","sizes": "512x512", "type": "image/png",     "purpose": "maskable" }
+],
+"theme_color": "#E0D1EF",
+"background_color": "#F2ECF8"</pre>
+  </div>
+
+  <h2>设计说明</h2>
+  <div class="card">
+    <p class="note">
+      <b>配色</b>：底色 <code>#E0D1EF</code>、花瓣 <code>#A86FD1</code>、描边 <code>#6A2C91</code>、花心 <code>#F2C14E</code>。整个图标只有这四个值，换站换这四个就够。<br>
+      <b>两处底色</b>：应用窗口顶栏取 <code>theme_color</code> <code>#E0D1EF</code>，启动画面取 <code>background_color</code> <code>#F2ECF8</code>，这两项分开设置，改一处别忘了另一处。<br>
+      <b>16×16</b>：由 <code>icon.svg</code> 直接缩放，没有额外加粗。16px 已经是最小一档，描边会带一点抗锯齿，属于正常现象。<br>
+      <b>maskable 版</b>：安卓会按自己的形状裁切，所以内容缩到 71.7%，花瓣稳稳落在安全区内，圆角、圆形、水滴形怎么裁都切不到。
+    </p>
+  </div>
+
+  <h2>Svg 源码</h2>
+  <div class="card">
+    <p class="note">
+      所有尺寸都从这一个矢量源出，花型只有这一套。要换站，只改四个颜色：底色、花瓣、描边、花心。<br>
+      文件里是压成一整行的，下面按行拆开并加了注释，渲染结果与 <code>icon.svg</code> 逐像素相同，可以直接整段复制另存。
+    </p>
+<pre>&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"&gt;
+
+  &lt;!-- 底色 --&gt;
+  &lt;rect width="512" height="512" fill="#E0D1EF"/&gt;
+
+  &lt;!-- 整朵花居中：translate 定到画布中心，scale 控制大小 --&gt;
+  &lt;g transform="translate(256,256)"&gt;
+
+    &lt;!-- 一片花瓣，复制五份，靠 rotate 转出整圈；fill 花瓣色，stroke 描边色 --&gt;
+    &lt;path d="M0 0 C -62 -52, -66 -130, 0 -148 C 66 -130, 62 -52, 0 0 Z"
+          fill="#A86FD1" stroke="#6A2C91" stroke-width="22" stroke-linejoin="round"
+          transform="rotate(0)"/&gt;
+    &lt;path d="M0 0 C -62 -52, -66 -130, 0 -148 C 66 -130, 62 -52, 0 0 Z"
+          fill="#A86FD1" stroke="#6A2C91" stroke-width="22" stroke-linejoin="round"
+          transform="rotate(72)"/&gt;
+    &lt;path d="M0 0 C -62 -52, -66 -130, 0 -148 C 66 -130, 62 -52, 0 0 Z"
+          fill="#A86FD1" stroke="#6A2C91" stroke-width="22" stroke-linejoin="round"
+          transform="rotate(144)"/&gt;
+    &lt;path d="M0 0 C -62 -52, -66 -130, 0 -148 C 66 -130, 62 -52, 0 0 Z"
+          fill="#A86FD1" stroke="#6A2C91" stroke-width="22" stroke-linejoin="round"
+          transform="rotate(216)"/&gt;
+    &lt;path d="M0 0 C -62 -52, -66 -130, 0 -148 C 66 -130, 62 -52, 0 0 Z"
+          fill="#A86FD1" stroke="#6A2C91" stroke-width="22" stroke-linejoin="round"
+          transform="rotate(288)"/&gt;
+
+    &lt;!-- 花心 --&gt;
+    &lt;circle r="46" fill="#F2C14E" stroke="#6A2C91" stroke-width="22"/&gt;
+
+  &lt;/g&gt;
+&lt;/svg&gt;</pre>
+    <p class="note">
+      <b>maskable 版</b>只差一处，其余整段照抄，把那行换成：
+    </p>
+<pre>&lt;g transform="translate(256,256) scale(0.717)"&gt;</pre>
+    <p class="note">
+      0.717 是这么定的：安卓自适应图标只有中心那个直径占画布 80% 的圆一定不会被裁。花朵外接圆直径本来是画布的 62%，乘 0.717 后约 44%，四周还留一半余量，怎么裁都碰不到花瓣。
+    </p>
+  </div>
+</div>
+</body>
+</html>
