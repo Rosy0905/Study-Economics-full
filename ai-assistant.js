@@ -2661,7 +2661,7 @@ body.shared-ai-view .ai-close{display:none;}
         item.addEventListener('click', function (e) {
           e.stopPropagation();
           navScrollTo(i);
-          /* 触屏：选完就把小卡片收起来，<｜hy_place▁holder▁no▁813｜>地看着内容自己跳过去 */
+          /* 触屏：选完就把小卡片收起来，安静地看内容自己跳过去 */
           if (document.body && typeof hideNavPanel === 'function') setTimeout(hideNavPanel, 60);
         });
         panelInner.appendChild(item);
