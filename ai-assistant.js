@@ -134,6 +134,10 @@
 @media (hover: hover) and (pointer: fine) {
   .ai-msg:hover .ai-msg-actions{opacity:1;pointer-events:auto;}
 }
+/* 触屏设备（平板等）没有悬停，按钮直接常显，与手机端保持一致 */
+@media (hover: none), (pointer: coarse) {
+  .ai-msg-actions{opacity:.7;pointer-events:auto;}
+}
 .ai-act-btn{width:24px;height:24px;border:none;background:rgba(255,255,255,.85);border-radius:7px;cursor:pointer;color:#6a8f76;display:flex;align-items:center;justify-content:center;padding:0;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:0 1px 4px rgba(0,0,0,.06);transition:background .15s, color .15s, transform .15s;}
 .ai-act-btn svg{width:13px;height:13px;display:block;pointer-events:none;}
 @media (hover: hover) and (pointer: fine) {
