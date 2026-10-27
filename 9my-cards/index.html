@@ -392,6 +392,9 @@
     .card-answer .answer-inner .katex, .rich-editor .katex { font-size: 1.05em; }
     .card-answer .answer-inner .katex-display > .katex,
     .rich-editor .katex-display > .katex { font-size: 1.12em; line-height: 1; padding: 0.25em 0; }
+    /* 题目区公式：与答案区同口径，别用 KaTeX 默认 1.21em 显得过大 */
+    .card-question .katex { font-size: 1.05em; }
+    .card-question .katex-display > .katex { font-size: 1.05em; }
     .card-answer .answer-inner .katex-display, .rich-editor .katex-display { margin: 1px 0; overflow-x: auto; overflow-y: hidden; }
 /* 公式盒只显示横向滚动条，隐藏右侧竖滚动条（避免手机上出现绿色竖线） */
 .card-answer .answer-inner .katex-display::-webkit-scrollbar:vertical, .rich-editor .katex-display::-webkit-scrollbar:vertical { width: 0; }
