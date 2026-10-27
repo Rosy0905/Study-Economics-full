@@ -98,7 +98,7 @@
         /* 卡片 */
         /* 有答案的页面才隐藏「点击展开答案」提示；真题页要保留「点击展开作答区」 */
         (HAS_ANSWER ? 'body.st-on .toggle-hint{display:none;}' : ''),
-        (HAS_ANSWER ? 'body.st-on .card-question{cursor:default;}' : ''),
+        (HAS_ANSWER ? 'body.st-on .card-question{cursor:text;user-select:text;-webkit-user-select:text;}' : ''),
         '.card-item.st-hide{display:none !important;}',
         '.card-item.st-ok{border-left-color:#5ec99a;}',
         '.card-item.st-meh{border-left-color:#e0b152;}',
