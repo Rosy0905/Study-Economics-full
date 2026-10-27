@@ -69,14 +69,15 @@
         background: #c4e0c4; color: #1e4a2a; font-size: 13.5px; font-weight: 600;
         text-decoration: none; white-space: nowrap; flex-shrink: 0;
         box-shadow: 0 1px 3px rgba(60, 110, 60, 0.10);
-        /* 26/09/20：hover 只变色，不再位移 */
-        transition: background .15s;
+        /* 26/10/27：hover 按钮原地不动，只变底色与阴影；箭头单独左移 3px */
+        transition: background .2s, box-shadow .2s;
     }
     @media (hover: hover) and (pointer: fine) {
-        .back-home:hover { background: #a8d0a8; }
+        .back-home:hover { background: #a8d0a8; box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20); }
+        .back-home:hover .arrow { transform: translateX(-3px); }
     }
     .back-home:active { background: #a8d0a8; }
-    .back-home .arrow { font-size: 15px; line-height: 1; }
+    .back-home .arrow { font-size: 15px; line-height: 1; transition: transform .2s; }
 
     .app-header .header-right {
         display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
@@ -1071,6 +1072,8 @@
 </style>
 <!-- 26/10/17：筛选记忆（页面首次 render 前用 FilterMemory.apply() 还原，避免先画全量再变） -->
 <script src="../shared/filter-memory.js"></script>
+<!-- 全站搜索落点：必须放 head，遮罩要赶在首帧前挂上 -->
+<script src="../search-jump.js"></script>
 </head>
 <body>
 

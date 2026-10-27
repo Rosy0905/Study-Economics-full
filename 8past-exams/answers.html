@@ -19,12 +19,20 @@
     .tb-row1 { display: flex; align-items: center; gap: 13px; }
     .tb-sep { width: 1px; height: 26px; background: rgba(90, 140, 95, .28); flex: 0 0 auto; }
     .tb-title { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    /* 26/10/27：与各模块页返回按钮统一为同款 */
     .topbar .back {
-        display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
-        background: #b8d8b8; color: #14401f; padding: 6px 14px; border-radius: 30px;
-        font-size: 13px; font-weight: 600;
+        display: inline-flex; align-items: center; gap: 5px; text-decoration: none;
+        background: #c4e0c4; color: #1e4a2a; padding: 7px 15px 7px 11px; border-radius: 30px;
+        font-size: 13.5px; font-weight: 600; flex: 0 0 auto; white-space: nowrap;
+        box-shadow: 0 1px 3px rgba(60, 110, 60, 0.10);
+        transition: background .2s, box-shadow .2s;
     }
-    .topbar .back:hover { background: #a8d0a8; }
+    @media (hover: hover) and (pointer: fine) {
+        .topbar .back:hover { background: #a8d0a8; box-shadow: 0 4px 12px rgba(60, 110, 60, 0.20); }
+        .topbar .back:hover .arrow { transform: translateX(-3px); }
+    }
+    .topbar .back:active { background: #a8d0a8; }
+    .topbar .back .arrow { font-size: 15px; line-height: 1; transition: transform .2s; }
     .topbar h1 { font-size: 18px; font-weight: 600; color: #1e4a2a; letter-spacing: .3px; line-height: 1.35; }
     .tb-sub { font-size: 11.5px; color: #55805f; letter-spacing: .2px; }
     .tb-row2 {
@@ -477,12 +485,14 @@
     #toTop:active{ transform:translateY(1px); }
     #toTop:focus-visible{ outline:3px solid rgba(94,201,154,.6); outline-offset:3px; border-radius:4px; }
 </style>
+<!-- 全站搜索落点：必须放 head，遮罩要赶在首帧前挂上 -->
+<script src="../search-jump.js"></script>
 </head>
 <body>
 
 <div class="topbar">
     <div class="tb-row1">
-        <a class="back" href="index.html">⬅ 题库</a>
+        <a class="back" href="index.html"><span class="arrow">⬅</span><span>题库</span></a>
         <span class="tb-sep"></span>
         <div class="tb-title">
             <h1>真题答案册</h1>
@@ -1041,16 +1051,65 @@
         }
     }
 
+    /* ---------- 关键词匹配（26/10/27 重做） ----------
+       旧版拿整个输入当一根字符串去 indexOf，两个毛病：
+         ① 多词搜不到——「古诺 均衡」被当成含空格的整串，全库零命中；
+         ② 跨行断词搜不到——题干/答案里「消费者剩余」被换行拆成「消费者／剩余」，直接拼不上。
+       现在的口径：
+         · 按空白（半角+全角）切词、去重、转小写；
+         · 每个词逐字之间允许夹任意空白（\s*），跨行断开的词照样连得上；
+         · 多个词是 AND——全部出现才算命中，顺序不限、距离不限；
+         · 判定一律在「题干 + 换行 + 答案」整段上做；片段先看题干再看答案，
+           所以「命中在答案里」仍按第一个落在答案里的词来判。 */
+    function kwTerms(kw) {
+        var out = [];
+        String(kw || '').toLowerCase().split(/[\s\u3000]+/).forEach(function (t) {
+            t = t.trim();
+            if (t && out.indexOf(t) === -1) out.push(t);
+        });
+        return out;
+    }
+    function escRe(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+    /* 逐字之间插 \s*：消费者剩余 → 消\s*费\s*者\s*剩\s*余 */
+    function looseSrc(t) {
+        var cs = [], i;
+        for (i = 0; i < t.length; i++) cs.push(escRe(t.charAt(i)));
+        return cs.join('\\s*');
+    }
+    /* 预编译：tests 逐词判定（不带 g），hl 汇总高亮（带 g）。
+       词表为空返回 null＝没在搜，调用方自己判 */
+    function kwMatcher(kw) {
+        var terms = kwTerms(kw), tests = [], hl = null;
+        if (!terms.length) return null;
+        terms.forEach(function (t) {
+            try { tests.push(new RegExp(looseSrc(t), 'i')); } catch (e) { tests.push(null); }
+        });
+        try { hl = new RegExp('(' + terms.map(looseSrc).join('|') + ')', 'gi'); } catch (e) { hl = null; }
+        return { terms: terms, tests: tests, hl: hl };
+    }
+    /* 所有词都在这一段里（AND）。M 为 null 视为不过滤 */
+    function kwHit(text, M) {
+        if (!M) return true;
+        var s = String(text == null ? '' : text);
+        for (var i = 0; i < M.tests.length; i++) {
+            if (!M.tests[i] || !M.tests[i].test(s)) return false;
+        }
+        return true;
+    }
+    /* 某道题的搜索底本：题干 + 换行 + 答案 */
+    function kwHay(it) { return String(it.stem || '') + '\n' + String(it.ans || ''); }
+
     /* ---------- 全站搜索：一次搜遍所有年份的卷 ---------- */
-    function searchAll(kw) {
-        var low = kw.toLowerCase(), groups = [], total = 0;
+    function searchAll(kw, M) {
+        M = M || kwMatcher(kw);
+        var groups = [], total = 0;
+        if (!M) return { groups: groups, total: 0 };
         BOOK.papers.forEach(function (p) {
             var hits = [];
             p.parts.forEach(function (part) {
                 part.items.forEach(function (it) {
                     if (!matchFacet(it.id)) return;   /* 与统计条叠加：档位不是「全部」就只在档位池里搜（子页口径） */
-                    var hay = (it.stem + '\n' + (it.ans || '')).toLowerCase();
-                    if (hay.indexOf(low) === -1) return;
+                    if (!kwHit(kwHay(it), M)) return;
                     hits.push({ type: part.type, it: it });
                 });
             });
@@ -1058,12 +1117,13 @@
         });
         return { groups: groups, total: total };
     }
-    function countKwHits(p, kw) {
-        var low = kw.toLowerCase(), n = 0;
+    function countKwHits(p, M) {
+        var n = 0;
+        if (!M) return 0;
         p.parts.forEach(function (part) {
             part.items.forEach(function (it) {
                 if (!matchFacet(it.id)) return;       /* 副标题「命中 N 题」要和列表实际显示的题数同口径 */
-                if ((it.stem + '\n' + (it.ans || '')).toLowerCase().indexOf(low) > -1) n++;
+                if (kwHit(kwHay(it), M)) n++;
             });
         });
         return n;
@@ -1087,21 +1147,29 @@
         if (to - from > 160) to = Math.min(curE, from + 160);   /* 单句超长时仍要保证命中词在内 */
         return (from > 0 ? '…' : '') + s.slice(from, to) + (to < s.length ? '…' : '');
     }
-    function kwSnippet(it, low) {
+    /* 在折叠成一行的文本里找第一个命中的词：位置和长度按实际匹配到的串算，
+       跨行断开的词折叠后可能还留着空格，长度略大于词本身，片段照样能圈住 */
+    function locIn(s, M) {
+        if (!M || !M.hl) return null;
+        var m;
+        try { m = new RegExp(M.hl.source, 'gi').exec(s); } catch (e) { return null; }
+        return m ? { i: m.index, len: m[0].length } : null;
+    }
+    function kwSnippet(it, M) {
         var stem = cleanStem(it.stem).replace(/\s+/g, ' ').trim();
-        var i = stem.toLowerCase().indexOf(low);
-        if (i > -1) return { text: sentAround(stem, i, low.length), where: 'stem' };
         var ans = String(it.ans || '').replace(/\s+/g, ' ').trim();
-        var j = ans.toLowerCase().indexOf(low);
-        if (j > -1) return { text: sentAround(ans, j, low.length), where: 'ans' };
+        /* 先看题干再看答案，命中在答案里才标那句提示 */
+        var r1 = locIn(stem, M);
+        if (r1) return { text: sentAround(stem, r1.i, r1.len), where: 'stem' };
+        var r2 = locIn(ans, M);
+        if (r2) return { text: sentAround(ans, r2.i, r2.len), where: 'ans' };
         return { text: stem.slice(0, 96), where: 'stem' };
     }
-    function hlEsc(text, low) {
+    function hlEsc(text, M) {
         var s = esc(text);
-        if (!low) return s;
+        if (!M || !M.hl) return s;
         try {
-            var re = new RegExp('(' + low.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-            return s.replace(re, '<em>$1</em>');
+            return s.replace(new RegExp(M.hl.source, 'gi'), '<em>$1</em>');
         } catch (e) { return s; }
     }
 
@@ -1109,7 +1177,8 @@
        而是把刚点过的那条滚回原来的位置（结果集变了才退回顶部） */
     function renderSearch(opt) {
         var kw = keyword.trim();
-        var res = searchAll(kw);
+        var M = kwMatcher(kw);
+        var res = searchAll(kw, M);
         var scope = facet !== 'all';
         var subEl = document.getElementById('tbSub');
         if (subEl) subEl.textContent = '全站搜索 · 命中 ' + res.total + ' 题' +
@@ -1132,17 +1201,16 @@
                         ? '当前只在「' + esc(facetLabel(facet)) + '」范围内搜索，试试上面那个「不限档位 · 重搜全站」'
                         : '换个关键词试试，比如「古诺」「外部性」「索洛」「价格歧视」') + '</span></div>';
         }
-        var low = kw.toLowerCase();
         res.groups.forEach(function (g) {
             html += '<section class="sr-group"><div class="sr-paper">' +
                 esc(g.paper.title.replace(/\s+/g, ' ')) +
                 '<span>' + esc(g.paper.subject) + ' · ' + g.hits.length + ' 题</span></div>';
             g.hits.forEach(function (h) {
-                var sn = kwSnippet(h.it, low);
+                var sn = kwSnippet(h.it, M);
                 html += '<a class="sr-item" href="#' + esc(h.it.id) + '" data-key="' + esc(g.paper.key) +
                     '" data-qid="' + esc(h.it.id) + '">' +
                     '<span class="sr-no">' + esc(h.type) + ' ' + esc(h.it.qid) + '</span>' +
-                    '<span class="sr-txt">' + hlEsc(sn.text, low) +
+                    '<span class="sr-txt">' + hlEsc(sn.text, M) +
                     (sn.where === 'ans' ? '<span class="sr-tip">　· 命中在答案里</span>' : '') +
                     '</span></a>';
             });
@@ -1183,10 +1251,11 @@
         currentKey = paper.key;
 
         var kw = keyword.trim().toLowerCase();
+        var M = kw ? kwMatcher(kw) : null;   /* 卷内过滤与全站搜索同一套口径（切词 + 跨行） */
         var types = paper.parts.map(function (p) { return p.type; });
 
         var subEl = document.getElementById('tbSub');
-        var kwHits = kw ? countKwHits(paper, kw) : 0;
+        var kwHits = M ? countKwHits(paper, M) : 0;
         /* 「共 N 题」在搜索态用档位池大小：档位不是「全部」时，列表里最多只有那么多题 */
         var pool0 = facet !== 'all' ? facetCount(paper) : paperCount(paper);
         if (subEl) subEl.textContent = paper.title.replace(/\s+/g, ' ') + ' · ' +
@@ -1207,7 +1276,7 @@
         if (kw) {
             html += '<div class="search-back">关键词「' + esc(keyword.trim()) + '」' +
                     (facet !== 'all' ? '（' + esc(facetLabel(facet)) + '）' : '') +
-                    ' · 本卷命中 <b>' + kwHits + '</b> 题　全站 <b>' + searchAll(kw).total + '</b> 题' +
+                    ' · 本卷命中 <b>' + kwHits + '</b> 题　全站 <b>' + searchAll(kw, M).total + '</b> 题' +
                     '<a href="#" id="searchBack">← 回到全站搜索结果</a></div>';
         }
         html += rec +
@@ -1223,10 +1292,7 @@
         paper.parts.forEach(function (part, pi) {
             var items = part.items.filter(function (it) {
                 if (!matchFacet(it.id)) return false;
-                if (kw) {
-                    var hay = (it.stem + '\n' + it.ans).toLowerCase();
-                    if (hay.indexOf(kw) === -1) return false;
-                }
+                if (M && !kwHit(kwHay(it), M)) return false;
                 return true;
             });
             if (!items.length) return;

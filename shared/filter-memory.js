@@ -24,6 +24,14 @@
      <页面前缀>filters，例如 micro_recite_filters
      值形如 {"filterSpecial":"第3章|简答","filterFav":"fav","filterSearch":"弹性"}
 
+   暂停接口（给全站搜索跳转用，26/10/27 加）：
+     suspend() 期间不写存储，resume() 恢复；snapshot() 取原件，restore(raw) 原样写回
+     （raw 传 null 表示这个键本来不存在）。全站搜索带 ?kw= 进来时会往 #filterSearch
+     填临时词，不暂停就会被当成你的筛选记下来；退出搜索时要把它还原成进来之前的样子。
+     freezeText() / unfreezeText() 只冻结 #filterSearch 一项，下拉照常记：
+     搜索会话里改的章节是真筛选，该记；框里的临时词不该记。
+     冻结时存下去的是原件里那个词，不是框里当前的词。
+
    兜底：
      · 章节改名/删除后，存的值在下拉里找不到 → 忽略该项，自动回落「全部」
      · 隐私模式 / 存储配额满 → 静默降级，页面照常用，只是不记
@@ -60,11 +68,21 @@
     }
     var saved = load();
     var applying = false;                       // 还原过程中不触发记录，避免把中间态写回去
+    var paused = false;                         // 外部临时停记（全站搜索跳转时用，见文件头「暂停」）
+    var textFrozen = false;                     // 只冻结搜索框这一项，下拉照常记
 
     function saveNow() {
-        if (applying) return;
+        if (applying || paused) return;
         var o = {};
-        fields().forEach(function (f) { o[f.key] = f.el.value || ''; });
+        fields().forEach(function (f) {
+            /* 冻结期间搜索框里的词是临时借用的，不写进记忆；
+               记忆里原本那个词在下面原样补回，等于这次改动没碰过它 */
+            if (textFrozen && f.kind === 'text') return;
+            o[f.key] = f.el.value || '';
+        });
+        if (textFrozen && Object.prototype.hasOwnProperty.call(saved, TEXT_KEY)) {
+            o[TEXT_KEY] = saved[TEXT_KEY];
+        }
         try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {}
     }
 
@@ -188,7 +206,24 @@
     window.FilterMemory = {
         apply: apply,
         save: saveNow,
-        key: KEY
+        key: KEY,
+        /* 全站搜索跳转用：临时停记 / 恢复记录 */
+        suspend: function () { paused = true; },
+        resume: function () { paused = false; },
+        /* 只冻结搜索框：整个搜索会话期间，框里的词都不进记忆。
+           下拉不冻结 —— 从搜索进来后自己选的章节仍应算作他的筛选 */
+        freezeText: function () { textFrozen = true; },
+        unfreezeText: function () { textFrozen = false; },
+        /* 原件（整串 JSON）：跳转进来时拍一张，退出时原样写回 */
+        snapshot: function () {
+            try { return localStorage.getItem(KEY); } catch (e) { return null; }
+        },
+        restore: function (raw) {
+            try {
+                if (raw === null || raw === undefined) localStorage.removeItem(KEY);
+                else localStorage.setItem(KEY, raw);
+            } catch (e) {}
+        }
     };
 
     if (document.readyState === 'loading') {
