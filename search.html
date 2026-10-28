@@ -63,59 +63,61 @@
             rgba(63,174,140,.20) 0%, rgba(63,175,194,.17) 15%, rgba(90,150,222,.17) 32%,
             rgba(126,112,214,.155) 48%, rgba(155,107,196,.15) 63%, rgba(196,90,140,.16) 80%,
             rgba(205,96,66,.16) 100%), #fff;
-        border-radius: 14px; padding: 13px 18px; margin-bottom: 15px;
+        border-radius: 14px; padding: 13px 18px; margin-bottom: 14px;
         font-size: 13.5px; color: #1F2522;
     }
     .sum b { color: #0E1411; }
     /* 分组配色（26/10/28）：色值取自主页各模块卡片，卡片本身仍是白底，
        只在标题带、编号标签、章节文字三处上色，靠色相区分模块 */
-    /* 四个层级由深到浅：--c 标题 > --cd 标签文字 > --ch 悬停底 ≈ --soft 标签底 > --cm 章节文字
+    /* 四个层级由深到浅：--c 标题 > --cd 标签文字 > --soft 标题带 > --cm 章节文字
        --c 标题色（各模块色压深一档，整页只有这一层用重色）
-       --soft 标题带与编号标签底 / --cd 编号标签文字
-       --ch 单条悬停底（比 --soft 淡一档，指过去能看出来又不跳）
+       --soft 标题带 / --sb 编号标签底 / --cd 编号标签文字
+         带子和标签分开取值：带子要盖过页面底色 0.91 的亮度才看得出边界，取模块色 18% 混白；
+         标签是小字，底太深会压掉文字对比度，仍用原来的浅色，两种东西不共用一个值
+       --ch 单条悬停底（比 --sb 淡一档，指过去能看出来又不跳）
        --cm 章节与提示文字（最淡一层，只保留色相用来分组）
        --cbw 展开按钮文字（比 --cm 重一档，按钮要有存在感）
        --cb/--cbh/--cbd 展开按钮的底、悬停底、虚线框 */
     .grp {
-        --c: #1e4a2a; --soft: #f1f9f1; --cd: #4d7a58; --ch: #f1f9f1;
+        --c: #1e4a2a; --soft: #DCF0EA; --sb: #f1f9f1; --cd: #4d7a58; --ch: #f1f9f1;
         --cm: #9CB2A0; --cbw: #3f8a63; --cb: #f8fdf9; --cbh: #eefaf3; --cbd: #A9D6BE;
-        background: #fff; border-radius: 14px; padding: 0 16px 10px 16px; margin-bottom: 11px;
+        background: #fff; border-radius: 14px; padding: 0 16px 10px 16px; margin-bottom: 14px;
         box-shadow: 0 2px 10px rgba(60,110,60,.08);
     }
     .grp[data-mod="1micro-recitation"] {
-        --c: #1F4C3E; --soft: #EAF8F2; --cd: #4A806F; --ch: rgba(63,174,140,.08);
+        --c: #1F4C3E; --soft: #DCF0EA; --sb: #EAF8F2; --cd: #4A806F; --ch: rgba(63,174,140,.08);
         --cm: #9BB3AC; --cbw: #3B9B7E; --cb: #F6FBFA; --cbh: #EFF8F5; --cbd: #AFDED0;
     }
     .grp[data-mod="2macro-recitation"] {
-        --c: #1F344C; --soft: #EAF2FD; --cd: #4A6280; --ch: rgba(90,150,222,.08);
+        --c: #1F344C; --soft: #E1ECF9; --sb: #EAF2FD; --cd: #4A6280; --ch: rgba(90,150,222,.08);
         --cm: #9BA6B3; --cbw: #3B679B; --cb: #F6F8FB; --cbh: #EFF3F8; --cbd: #AFC5DE;
     }
     .grp[data-mod="3calc-keypoints"] {
-        --c: #4C3D1F; --soft: #FDF7E9; --cd: #806E4A; --ch: rgba(208,164,78,.08);
+        --c: #4C3D1F; --soft: #F7EFDF; --sb: #FDF7E9; --cd: #806E4A; --ch: rgba(208,164,78,.08);
         --cm: #B3AB9B; --cbw: #9B7B3B; --cb: #FBF9F6; --cbh: #F8F5EF; --cbd: #DECFAF;
     }
     .grp[data-mod="4calc-special"] {
-        --c: #4C1F32; --soft: #FCEFF5; --cd: #804A61; --ch: rgba(217,115,159,.08);
+        --c: #4C1F32; --soft: #F8E6EE; --sb: #FCEFF5; --cd: #804A61; --ch: rgba(217,115,159,.08);
         --cm: #B39BA5; --cbw: #9B3B64; --cb: #FBF6F8; --cbh: #F8EFF3; --cbd: #DEAFC4;
     }
     .grp[data-mod="5micro-short-answer"] {
-        --c: #1F464C; --soft: #E9F7F9; --cd: #4A7880; --ch: rgba(63,175,194,.08);
+        --c: #1F464C; --soft: #DCF1F4; --sb: #E9F7F9; --cd: #4A7880; --ch: rgba(63,175,194,.08);
         --cm: #9BAFB3; --cbw: #3B8D9B; --cb: #F6FBFB; --cbh: #EFF7F8; --cbd: #AFD8DE;
     }
     .grp[data-mod="6macro-short-answer"] {
-        --c: #251F4C; --soft: #F1EFFC; --cd: #514A80; --ch: rgba(126,112,214,.08);
+        --c: #251F4C; --soft: #E8E5F8; --sb: #F1EFFC; --cd: #514A80; --ch: rgba(126,112,214,.08);
         --cm: #9E9BB3; --cbw: #483B9B; --cb: #F7F6FB; --cbh: #F0EFF8; --cbd: #B6AFDE;
     }
     .grp[data-mod="7essay"] {
-        --c: #4C291F; --soft: #FDF1EC; --cd: #80564A; --ch: rgba(224,120,90,.08);
+        --c: #4C291F; --soft: #F9E7E1; --sb: #FDF1EC; --cd: #80564A; --ch: rgba(224,120,90,.08);
         --cm: #B3A09B; --cbw: #9B503B; --cb: #FBF7F6; --cbh: #F8F1EF; --cbd: #DEBAAF;
     }
     .grp[data-mod="8past-exams"] {
-        --c: #371F4C; --soft: #F7EFFB; --cd: #674A80; --ch: rgba(155,107,196,.08);
+        --c: #371F4C; --soft: #EDE4F4; --sb: #F7EFFB; --cd: #674A80; --ch: rgba(155,107,196,.08);
         --cm: #A89BB3; --cbw: #6F3B9B; --cb: #F9F6FB; --cbh: #F4EFF8; --cbd: #C9AFDE;
     }
     .grp[data-mod="9my-cards"] {
-        --c: #1F3D4C; --soft: #EDF4F8; --cd: #4A6E80; --ch: rgba(91,143,168,.08);
+        --c: #1F3D4C; --soft: #E1EBEF; --sb: #EDF4F8; --cd: #4A6E80; --ch: rgba(91,143,168,.08);
         --cm: #9BABB3; --cbw: #3B7C9B; --cb: #F6FAFB; --cbh: #EFF5F8; --cbd: #AFCFDE;
     }
     .grp-head {
@@ -136,7 +138,7 @@
     .hit.hit-flash { background: #fff8e6; outline: 2px solid #e8c877; outline-offset: -2px; }
     .no {
         flex: 0 0 auto; font-size: 11.5px; font-weight: 600; color: var(--cd);
-        background: var(--soft); border-radius: 6px; padding: 1px 7px; white-space: nowrap;
+        background: var(--sb); border-radius: 6px; padding: 1px 7px; white-space: nowrap;
     }
     .txt { flex: 1 1 auto; min-width: 0; }
     .txt em { font-style: normal; background: #fff3c4; color: #6b5010; border-radius: 3px; padding: 0 1px; }
